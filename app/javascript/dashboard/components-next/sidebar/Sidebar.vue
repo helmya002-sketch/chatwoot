@@ -378,19 +378,9 @@ const menuItems = computed(() => {
       activeOn: ['tolzar_dashboard'],
     },
     {
-      name: 'Inbox',
-      label: t('SIDEBAR.INBOX'),
-      icon: 'i-lucide-inbox',
-      to: accountScopedRoute('inbox_view'),
-      activeOn: ['inbox_view', 'inbox_view_conversation'],
-      getterKeys: {
-        count: 'notifications/getUnreadCount',
-      },
-    },
-    {
       name: 'Conversation',
-      label: t('SIDEBAR.CONVERSATIONS'),
-      icon: 'i-lucide-message-circle',
+      label: 'Inbox',
+      icon: 'i-lucide-inbox',
       children: [
         {
           name: 'All',
@@ -516,9 +506,76 @@ const menuItems = computed(() => {
       ],
     },
     {
+      name: 'Contacts',
+      label: t('SIDEBAR.CONTACTS'),
+      icon: 'i-lucide-contact',
+      children: [
+        {
+          name: 'All Contacts',
+          label: t('SIDEBAR.ALL_CONTACTS'),
+          to: accountScopedRoute(
+            'contacts_dashboard_index',
+            {},
+            { page: 1, search: undefined }
+          ),
+          activeOn: ['contacts_dashboard_index', 'contacts_edit'],
+        },
+        {
+          name: 'Active',
+          label: t('SIDEBAR.ACTIVE'),
+          to: accountScopedRoute('contacts_dashboard_active'),
+          activeOn: ['contacts_dashboard_active'],
+        },
+        {
+          name: 'Segments',
+          icon: 'i-lucide-group',
+          label: t('SIDEBAR.CUSTOM_VIEWS_SEGMENTS'),
+          collapsible: true,
+          showTreeLine: true,
+          children: contactCustomViews.value.map(view => ({
+            name: `${view.name}-${view.id}`,
+            label: view.name,
+            to: accountScopedRoute(
+              'contacts_dashboard_segments_index',
+              { segmentId: view.id },
+              { page: 1 }
+            ),
+            activeOn: [
+              'contacts_dashboard_segments_index',
+              'contacts_edit_segment',
+            ],
+          })),
+        },
+        {
+          name: 'Tagged With',
+          icon: 'i-lucide-tag',
+          label: t('SIDEBAR.TAGGED_WITH'),
+          collapsible: true,
+          showTreeLine: true,
+          children: labels.value.map(label => ({
+            name: `${label.title}-${label.id}`,
+            label: label.title,
+            icon: h('span', {
+              class: `size-[8px] rounded-sm`,
+              style: { backgroundColor: label.color },
+            }),
+            to: accountScopedRoute(
+              'contacts_dashboard_labels_index',
+              { label: label.title },
+              { page: 1, search: undefined }
+            ),
+            activeOn: [
+              'contacts_dashboard_labels_index',
+              'contacts_edit_label',
+            ],
+          })),
+        },
+      ],
+    },
+    {
       name: 'Captain',
       icon: 'i-woot-captain',
-      label: t('SIDEBAR.CAPTAIN'),
+      label: 'AI Agents',
       activeOn: ['captain_assistants_create_index'],
       children: [
         {
@@ -597,100 +654,34 @@ const menuItems = computed(() => {
         },
       ],
     },
-    ...(isCallsAvailable.value
-      ? [
-          {
-            name: 'Calls',
-            label: t('SIDEBAR.CALLS'),
-            icon: 'i-lucide-phone',
-            to: accountScopedRoute('calls_dashboard_index'),
-            activeOn: ['calls_dashboard_index'],
-          },
-        ]
-      : []),
     {
-      name: 'Contacts',
-      label: t('SIDEBAR.CONTACTS'),
-      icon: 'i-lucide-contact',
+      name: 'Campaigns',
+      label: 'Broadcasts',
+      icon: 'i-lucide-megaphone',
       children: [
         {
-          name: 'All Contacts',
-          label: t('SIDEBAR.ALL_CONTACTS'),
-          to: accountScopedRoute(
-            'contacts_dashboard_index',
-            {},
-            { page: 1, search: undefined }
-          ),
-          activeOn: ['contacts_dashboard_index', 'contacts_edit'],
+          name: 'Live chat',
+          label: t('SIDEBAR.LIVE_CHAT'),
+          to: accountScopedRoute('campaigns_livechat_index'),
         },
         {
-          name: 'Active',
-          label: t('SIDEBAR.ACTIVE'),
-          to: accountScopedRoute('contacts_dashboard_active'),
-          activeOn: ['contacts_dashboard_active'],
+          name: 'SMS',
+          label: t('SIDEBAR.SMS'),
+          to: accountScopedRoute('campaigns_sms_index'),
         },
         {
-          name: 'Segments',
-          icon: 'i-lucide-group',
-          label: t('SIDEBAR.CUSTOM_VIEWS_SEGMENTS'),
-          collapsible: true,
-          showTreeLine: true,
-          children: contactCustomViews.value.map(view => ({
-            name: `${view.name}-${view.id}`,
-            label: view.name,
-            to: accountScopedRoute(
-              'contacts_dashboard_segments_index',
-              { segmentId: view.id },
-              { page: 1 }
-            ),
-            activeOn: [
-              'contacts_dashboard_segments_index',
-              'contacts_edit_segment',
-            ],
-          })),
-        },
-        {
-          name: 'Tagged With',
-          icon: 'i-lucide-tag',
-          label: t('SIDEBAR.TAGGED_WITH'),
-          collapsible: true,
-          showTreeLine: true,
-          children: labels.value.map(label => ({
-            name: `${label.title}-${label.id}`,
-            label: label.title,
-            icon: h('span', {
-              class: `size-[8px] rounded-sm`,
-              style: { backgroundColor: label.color },
-            }),
-            to: accountScopedRoute(
-              'contacts_dashboard_labels_index',
-              { label: label.title },
-              { page: 1, search: undefined }
-            ),
-            activeOn: [
-              'contacts_dashboard_labels_index',
-              'contacts_edit_label',
-            ],
-          })),
+          name: 'WhatsApp',
+          label: t('SIDEBAR.WHATSAPP'),
+          to: accountScopedRoute('campaigns_whatsapp_index'),
         },
       ],
     },
     {
-      name: 'Companies',
-      label: t('SIDEBAR.COMPANIES'),
-      icon: 'i-lucide-building-2',
-      children: [
-        {
-          name: 'All Companies',
-          label: t('SIDEBAR.ALL_COMPANIES'),
-          to: accountScopedRoute(
-            'companies_dashboard_index',
-            {},
-            { page: 1, search: undefined }
-          ),
-          activeOn: ['companies_dashboard_index', 'companies_dashboard_show'],
-        },
-      ],
+      name: 'Workflows',
+      label: 'Workflows',
+      icon: 'i-lucide-git-branch',
+      to: accountScopedRoute('automation_list'),
+      activeOn: ['automation_list'],
     },
     {
       name: 'Reports',
@@ -733,75 +724,6 @@ const menuItems = computed(() => {
               },
             ]
           : []),
-      ],
-    },
-    {
-      name: 'Campaigns',
-      label: t('SIDEBAR.CAMPAIGNS'),
-      icon: 'i-lucide-megaphone',
-      children: [
-        {
-          name: 'Live chat',
-          label: t('SIDEBAR.LIVE_CHAT'),
-          to: accountScopedRoute('campaigns_livechat_index'),
-        },
-        {
-          name: 'SMS',
-          label: t('SIDEBAR.SMS'),
-          to: accountScopedRoute('campaigns_sms_index'),
-        },
-        {
-          name: 'WhatsApp',
-          label: t('SIDEBAR.WHATSAPP'),
-          to: accountScopedRoute('campaigns_whatsapp_index'),
-        },
-      ],
-    },
-    {
-      name: 'Portals',
-      label: t('SIDEBAR.HELP_CENTER.TITLE'),
-      icon: 'i-lucide-library-big',
-      children: [
-        {
-          name: 'Articles',
-          label: t('SIDEBAR.HELP_CENTER.ARTICLES'),
-          activeOn: [
-            'portals_articles_index',
-            'portals_articles_new',
-            'portals_articles_edit',
-          ],
-          to: accountScopedRoute('portals_index', {
-            navigationPath: 'portals_articles_index',
-          }),
-        },
-        {
-          name: 'Categories',
-          label: t('SIDEBAR.HELP_CENTER.CATEGORIES'),
-          activeOn: [
-            'portals_categories_index',
-            'portals_categories_articles_index',
-            'portals_categories_articles_edit',
-          ],
-          to: accountScopedRoute('portals_index', {
-            navigationPath: 'portals_categories_index',
-          }),
-        },
-        {
-          name: 'Locales',
-          label: t('SIDEBAR.HELP_CENTER.LOCALES'),
-          activeOn: ['portals_locales_index'],
-          to: accountScopedRoute('portals_index', {
-            navigationPath: 'portals_locales_index',
-          }),
-        },
-        {
-          name: 'Settings',
-          label: t('SIDEBAR.HELP_CENTER.SETTINGS'),
-          activeOn: ['portals_settings_index'],
-          to: accountScopedRoute('portals_index', {
-            navigationPath: 'portals_settings_index',
-          }),
-        },
       ],
     },
     {
