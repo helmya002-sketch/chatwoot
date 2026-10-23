@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import { useRoute } from 'vue-router';
+import ContactAPI from 'dashboard/api/contacts';
 
 // respond.io's exact lifecycle stages (the sales funnel spine)
 const STAGES = [
@@ -11,7 +11,6 @@ const STAGES = [
   { key: 'Customer Lost', label: 'Customer Lost', emoji: '😭' },
 ];
 
-const route = useRoute();
 const counts = ref({});
 const loaded = ref(false);
 const errored = ref(false);
@@ -26,37 +25,29 @@ const winRate = computed(() => {
   return decided ? Math.round((won.value / decided) * 100) : 0;
 });
 
-async function fetchStageCount(accountId, stage, csrf) {
-  const res = await fetch(`/api/v1/accounts/${accountId}/contacts/filter?page=1`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf },
-    credentials: 'include',
-    body: JSON.stringify({
-      payload: [
-        {
-          attribute_key: 'lifecycle_stage',
-          filter_operator: 'equal_to',
-          values: [stage],
-          query_operator: null,
-          custom_attribute_type: 'contact_attribute',
-        },
-      ],
-    }),
+async function fetchStageCount(stage) {
+  // ContactAPI uses the SPA's authenticated (devise-token-auth) axios and
+  // resolves the account from the route, so this carries the live session.
+  const { data } = await ContactAPI.filter(1, 'name', {
+    payload: [
+      {
+        attribute_key: 'lifecycle_stage',
+        filter_operator: 'equal_to',
+        values: [stage],
+        query_operator: null,
+        custom_attribute_type: 'contact_attribute',
+      },
+    ],
   });
-  if (!res.ok) throw new Error(`filter ${res.status}`);
-  const data = await res.json();
-  return (data.meta && data.meta.count) || 0;
+  return (data && data.meta && data.meta.count) || 0;
 }
 
 onMounted(async () => {
   try {
-    const accountId = route.params.accountId;
-    const csrf =
-      document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
     const out = {};
     for (const s of STAGES) {
       // eslint-disable-next-line no-await-in-loop
-      out[s.key] = await fetchStageCount(accountId, s.key, csrf);
+      out[s.key] = await fetchStageCount(s.key);
     }
     counts.value = out;
   } catch (e) {
