@@ -371,6 +371,13 @@ const reportRoutes = computed(() => newReportRoutes());
 const menuItems = computed(() => {
   return [
     {
+      name: 'Dashboard',
+      label: 'Dashboard',
+      icon: 'i-lucide-layout-dashboard',
+      to: accountScopedRoute('tolzar_dashboard'),
+      activeOn: ['tolzar_dashboard'],
+    },
+    {
       name: 'Inbox',
       label: t('SIDEBAR.INBOX'),
       icon: 'i-lucide-inbox',
