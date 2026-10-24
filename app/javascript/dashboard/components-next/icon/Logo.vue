@@ -17,7 +17,7 @@ const attrs = useAttrs();
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
-    <rect width="16" height="16" rx="4" fill="#12A594" />
+    <rect width="16" height="16" rx="4" fill="#5753C6" />
     <path d="M3.6 4.3H12.4V6.3H9V12.4H7V6.3H3.6V4.3Z" fill="white" />
   </svg>
 </template>

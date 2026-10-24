@@ -131,7 +131,7 @@ const emitNewAccount = () => {
             <Icon
               v-show="account.id === accountId"
               icon="i-lucide-check"
-              class="text-n-teal-11 size-5"
+              class="text-n-brand size-5"
             />
           </template>
         </DropdownItem>
