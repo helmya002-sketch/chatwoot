@@ -21,6 +21,8 @@ const agents = ref([]);
 const selectedId = ref(null); // null = list view, else builder
 const draft = ref(null); // editable copy while in builder
 const loaded = ref(false);
+const DEFAULT_KEY = 'tolzar_default_agent_v1';
+const defaultId = ref(null);
 
 // test chat (preview only — brain not connected yet)
 const testMsgs = ref([]);
@@ -73,6 +75,12 @@ function load() {
   } catch (e) {
     agents.value = seed();
   }
+  try {
+    defaultId.value = localStorage.getItem(DEFAULT_KEY);
+  } catch (e) {
+    /* storage unavailable */
+  }
+  if (!defaultId.value && agents.value.length) defaultId.value = agents.value[0].id;
   loaded.value = true;
 }
 
@@ -82,6 +90,21 @@ function persist() {
   } catch (e) {
     /* storage unavailable — shell still works in-memory */
   }
+}
+
+function setDefault(id, ev) {
+  if (ev) ev.stopPropagation();
+  defaultId.value = id;
+  try {
+    localStorage.setItem(DEFAULT_KEY, id);
+  } catch (e) {
+    /* storage unavailable */
+  }
+}
+function toggleStatus(a, ev) {
+  if (ev) ev.stopPropagation();
+  a.status = a.status === 'active' ? 'inactive' : 'active';
+  persist();
 }
 
 const selected = computed(() => agents.value.find(a => a.id === selectedId.value));
@@ -171,7 +194,7 @@ onMounted(load);
 <template>
   <div
     class="flex-1 overflow-auto"
-    data-tz-build="ai-agents-1"
+    data-tz-build="ai-agents-2"
     style="background: #f5f8fc"
   >
     <!-- ===================== LIST VIEW ===================== -->
@@ -190,6 +213,10 @@ onMounted(load);
         </button>
       </div>
 
+      <div style="margin-top: 14px; background: #eef7f6; border: 1px solid #cdebe6; border-radius: 10px; padding: 10px 14px; font-size: 12.5px; color: #0e6b62">
+        <strong>Default agent:</strong> {{ (agents.find(x => x.id === defaultId) || {}).name || 'none' }} — new open conversations are automatically assigned to it.
+      </div>
+
       <div
         style="display: grid; grid-template-columns: repeat(auto-fill,minmax(320px,1fr)); gap: 16px; margin-top: 24px"
       >
@@ -202,8 +229,12 @@ onMounted(load);
           <div style="display: flex; align-items: center; gap: 10px">
             <div style="font-size: 26px; line-height: 1">{{ a.emoji }}</div>
             <div style="flex: 1; min-width: 0">
-              <div style="font-weight: 700; color: #0b1f3a">{{ a.name }}</div>
+              <div style="display: flex; align-items: center; gap: 6px">
+                <span style="font-weight: 700; color: #0b1f3a">{{ a.name }}</span>
+                <span v-if="defaultId === a.id" style="font-size: 10px; font-weight: 700; color: #92400e; background: #fde68a; padding: 1px 7px; border-radius: 999px">DEFAULT</span>
+              </div>
               <span
+                title="Click to toggle"
                 :style="{
                   display: 'inline-block',
                   marginTop: '3px',
@@ -211,16 +242,22 @@ onMounted(load);
                   fontWeight: '700',
                   padding: '1px 8px',
                   borderRadius: '999px',
+                  cursor: 'pointer',
                   color: a.status === 'active' ? '#0e8f84' : '#64748b',
                   background: a.status === 'active' ? '#d8f5f0' : '#eef2f7',
                 }"
+                @click="toggleStatus(a, $event)"
               >{{ a.status === 'active' ? 'Active' : 'Inactive' }}</span>
             </div>
           </div>
           <p style="color: #64748b; font-size: 13px; margin: 12px 0 0; min-height: 34px">
             {{ a.description || 'No description yet.' }}
           </p>
-          <div style="margin-top: 12px; font-size: 13px; font-weight: 700; color: #12a594">Edit →</div>
+          <div style="margin-top: 12px; display: flex; align-items: center; justify-content: space-between">
+            <span style="font-size: 13px; font-weight: 700; color: #12a594">Edit →</span>
+            <button v-if="defaultId !== a.id" type="button" style="font-size: 12px; color: #64748b; background: transparent; border: 0; cursor: pointer" @click="setDefault(a.id, $event)">Set as default</button>
+            <span v-else style="font-size: 12px; color: #16a34a; font-weight: 600">✓ Default agent</span>
+          </div>
         </div>
 
         <div
@@ -243,12 +280,23 @@ onMounted(load);
           style="background: #fff; border: 1px solid #e3e9f2; border-radius: 8px; padding: 6px 12px; cursor: pointer; color: #475569; font-weight: 600"
           @click="cancelEdit"
         >‹ Back</button>
-        <select
-          v-model="draft.emoji"
-          style="font-size: 22px; border: 1px solid #e3e9f2; border-radius: 8px; padding: 2px 6px; background: #fff"
-        >
-          <option v-for="e in EMOJIS" :key="e" :value="e">{{ e }}</option>
-        </select>
+        <div style="display: flex; gap: 3px; flex-wrap: wrap; max-width: 230px">
+          <button
+            v-for="e in EMOJIS"
+            :key="e"
+            type="button"
+            :style="{
+              fontSize: '18px',
+              lineHeight: '1',
+              border: draft.emoji === e ? '2px solid #12a594' : '1px solid #e3e9f2',
+              borderRadius: '8px',
+              padding: '4px 6px',
+              background: '#fff',
+              cursor: 'pointer',
+            }"
+            @click="draft.emoji = e"
+          >{{ e }}</button>
+        </div>
         <input
           v-model="draft.name"
           style="font-size: 18px; font-weight: 800; color: #0b1f3a; border: 1px solid transparent; border-radius: 8px; padding: 4px 8px; flex: 1; min-width: 0"

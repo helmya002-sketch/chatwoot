@@ -191,7 +191,7 @@ onMounted(load);
 </script>
 
 <template>
-  <div class="flex-1 overflow-auto" data-tz-build="workflows-1" style="background: #f5f8fc">
+  <div class="flex-1 overflow-auto" data-tz-build="workflows-2" style="background: #f5f8fc">
     <!-- ===================== LIST VIEW ===================== -->
     <div v-if="!selectedId" style="max-width: 1120px; margin: 0 auto; padding: 32px 24px 64px">
       <div style="display: flex; align-items: center; justify-content: space-between">
@@ -224,9 +224,9 @@ onMounted(load);
       <!-- header -->
       <div style="display: flex; align-items: center; gap: 12px; padding: 12px 18px; background: #fff; border-bottom: 1px solid #e3e9f2">
         <button type="button" style="background: #fff; border: 1px solid #e3e9f2; border-radius: 8px; padding: 6px 12px; cursor: pointer; color: #475569; font-weight: 600" @click="backToList">‹ Back</button>
-        <input v-model="draft.name" style="font-size: 16px; font-weight: 800; color: #0b1f3a; border: 1px solid transparent; border-radius: 8px; padding: 4px 8px; flex: 1; min-width: 0" @focus="$event.target.style.borderColor = '#e3e9f2'" @blur="$event.target.style.borderColor = 'transparent'" />
-        <span style="font-size: 12px; color: #94a3b8">Steps: {{ stepCount }} / 100</span>
-        <select v-model="draft.status" style="border: 1px solid #e3e9f2; border-radius: 8px; padding: 6px 10px; font-size: 13px; background: #fff">
+        <input v-model="draft.name" style="font-size: 16px; font-weight: 800; color: #0b1f3a; border: 1px solid transparent; border-radius: 8px; padding: 4px 8px; flex: 1 1 200px; min-width: 160px; width: auto" @focus="$event.target.style.borderColor = '#e3e9f2'" @blur="$event.target.style.borderColor = 'transparent'" />
+        <span style="font-size: 12px; color: #94a3b8; flex: 0 0 auto; white-space: nowrap">Steps: {{ stepCount }} / 100</span>
+        <select v-model="draft.status" style="border: 1px solid #e3e9f2; border-radius: 8px; padding: 6px 10px; font-size: 13px; background: #fff; flex: 0 0 auto; width: 130px">
           <option value="draft">Draft</option>
           <option value="published">Published</option>
         </select>
