@@ -28,10 +28,15 @@ Rails.application.config.to_prepare do
     next unless klass.respond_to?(:_validators)
 
     Array(klass._validators[:email]).each do |validator|
-      if validator.is_a?(ActiveModel::Validations::FormatValidator) &&
-         validator.options[:with].is_a?(Regexp)
-        validator.options[:with] = TOLZAR_EMAIL_REGEXP
-      end
+      next unless validator.is_a?(ActiveModel::Validations::FormatValidator)
+      next unless validator.options[:with].is_a?(Regexp)
+
+      # validator.options is FROZEN — build a fresh unfrozen hash and swap the
+      # reference (the callback chain holds this same instance, so this takes
+      # effect without re-registering the validation).
+      new_opts = validator.options.dup
+      new_opts[:with] = TOLZAR_EMAIL_REGEXP
+      validator.instance_variable_set(:@options, new_opts)
     end
   end
 
