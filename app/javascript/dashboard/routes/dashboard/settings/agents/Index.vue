@@ -60,6 +60,11 @@ const findCustomRole = agent =>
 
 const getAgentRoleName = agent => {
   if (!agent.custom_role_id) {
+    // Tolzar: the account creator (first/lowest-id administrator) is the Owner;
+    // other administrators are Managers; everyone else keeps their role label.
+    if (agent.role === 'administrator' && agent.id === ownerId.value) {
+      return 'Owner';
+    }
     return t(`AGENT_MGMT.AGENT_TYPES.${agent.role.toUpperCase()}`);
   }
   const customRole = findCustomRole(agent);
@@ -78,6 +83,12 @@ const verifiedAdministrators = computed(() => {
   return agentList.value.filter(
     agent => agent.role === 'administrator' && agent.confirmed
   );
+});
+
+// Tolzar: the Owner = the account creator (lowest-id confirmed administrator).
+const ownerId = computed(() => {
+  const admins = verifiedAdministrators.value;
+  return admins.length ? Math.min(...admins.map(a => a.id)) : null;
 });
 
 const showEditAction = agent => {
