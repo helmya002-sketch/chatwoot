@@ -22,7 +22,7 @@
       "SHOPIFY_INSTALLATION_FAILED": "We couldn't complete your Shopify installation. Please restart installation from Shopify."
     },
     "FORGOT_PASSWORD": "Forgot your password?",
-    "CREATE_NEW_ACCOUNT": "Create a new account",
+    "CREATE_NEW_ACCOUNT": "Create a new workspace",
     "SUBMIT": "Login",
     "SAML": {
       "LABEL": "Login via SSO",
