@@ -605,8 +605,8 @@ const menuItems = computed(() => {
       name: 'Workflows',
       label: 'Workflows',
       icon: 'i-lucide-git-branch',
-      to: accountScopedRoute('automation_list'),
-      activeOn: ['automation_list'],
+      to: accountScopedRoute('tolzar_workflows'),
+      activeOn: ['tolzar_workflows'],
     },
     {
       name: 'Reports',
