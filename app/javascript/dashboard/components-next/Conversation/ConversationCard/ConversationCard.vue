@@ -60,6 +60,38 @@ const lastActivityAt = computed(() => {
   return timestamp ? shortTimestamp(dynamicTime(timestamp)) : '';
 });
 
+// Tolzar: lifecycle chip on the conversation card (respond.io-style sales funnel)
+const LIFECYCLE_STYLES = {
+  'New Lead': { background: '#e0edff', color: '#1d4ed8' },
+  Active: { background: '#d8f5f0', color: '#0e8f84' },
+  'Offer Sent Follow up': { background: '#fef3c7', color: '#b45309' },
+  'Customer Won': { background: '#dcfce7', color: '#15803d' },
+  'Customer Lost': { background: '#fee2e2', color: '#b91c1c' },
+};
+const LIFECYCLE_LABELS = { 'Offer Sent Follow up': 'Offer Sent' };
+const lifecycleStage = computed(
+  () => currentContact.value?.custom_attributes?.lifecycle_stage || ''
+);
+const lifecycleChipStyle = computed(() => {
+  const c = LIFECYCLE_STYLES[lifecycleStage.value] || {
+    background: '#eef2f7',
+    color: '#64748b',
+  };
+  return {
+    ...c,
+    display: 'inline-flex',
+    alignItems: 'center',
+    borderRadius: '999px',
+    padding: '1px 8px',
+    fontSize: '11px',
+    fontWeight: 700,
+    lineHeight: '1.5',
+  };
+});
+const lifecycleLabel = computed(
+  () => LIFECYCLE_LABELS[lifecycleStage.value] || lifecycleStage.value
+);
+
 const hasVisibleLabels = computed(() => {
   const { labels = [] } = props.conversation;
   return props.accountLabels.some(({ title }) => labels.includes(title));
@@ -131,6 +163,9 @@ const onCardClick = e => {
             {{ lastActivityAt }}
           </span>
         </div>
+      </div>
+      <div v-if="lifecycleStage" class="flex" data-tz-lifecycle>
+        <span :style="lifecycleChipStyle">{{ lifecycleLabel }}</span>
       </div>
       <CardMessagePreview
         v-show="showMessagePreviewWithoutMeta"
