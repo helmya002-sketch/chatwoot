@@ -22,11 +22,11 @@ const greeting = computed(() => {
 const STAGES = [
   { key: 'New Lead', label: 'New Lead', icon: 'i-lucide-user-plus', color: '#64748b' },
   { key: 'Active', label: 'Active', icon: 'i-lucide-activity', color: '#f59e0b' },
-  { key: 'Offer Sent Follow up', label: 'Offer Sent', icon: 'i-lucide-file-text', color: '#6366f1' },
+  { key: 'Offer Sent Follow up', label: 'Offer Sent', icon: 'i-lucide-file-text', color: '#5472e4' },
   { key: 'Customer Won', label: 'Won', icon: 'i-lucide-trophy', color: '#10b981' },
   { key: 'Customer Lost', label: 'Lost', icon: 'i-lucide-circle-x', color: '#f43f5e' },
 ];
-const TEAM_COLORS = ['#4f46e5', '#0ea5e9', '#8b5cf6', '#f59e0b', '#ec4899', '#64748b'];
+const TEAM_COLORS = ['#3e63dd', '#0ea5e9', '#8b5cf6', '#f59e0b', '#ec4899', '#64748b'];
 
 const counts = ref({});
 const conversations = ref([]);
@@ -83,7 +83,7 @@ const recent = computed(() =>
 );
 
 const kpis = computed(() => [
-  { k: 'Total contacts', v: total.value, icon: 'i-lucide-users', sub: `${pipeline.value} in active pipeline`, accent: '#4f46e5', go: 'contacts_dashboard_index' },
+  { k: 'Total contacts', v: total.value, icon: 'i-lucide-users', sub: `${pipeline.value} in active pipeline`, accent: '#3e63dd', go: 'contacts_dashboard_index' },
   { k: 'Open conversations', v: openConvs.value, icon: 'i-lucide-messages-square', sub: `${unassigned.value} unassigned`, accent: '#0ea5e9', go: 'home' },
   { k: 'Won', v: won.value, icon: 'i-lucide-trophy', sub: `${lost.value} lost`, accent: '#10b981' },
   { k: 'Win rate', v: `${winRate.value}%`, icon: 'i-lucide-target', sub: 'of decided leads', accent: '#8b5cf6' },
@@ -359,7 +359,7 @@ onMounted(async () => {
 <style scoped>
 /* premium hero: subtle brand wash + glow, elegant in both themes */
 .tz-hero {
-  background-image: linear-gradient(135deg, rgba(91, 91, 214, 0.06), rgba(91, 91, 214, 0) 42%);
+  background-image: linear-gradient(135deg, rgba(62, 99, 221, 0.06), rgba(62, 99, 221, 0) 42%);
 }
 .tz-hero-glow {
   position: absolute;
@@ -368,12 +368,12 @@ onMounted(async () => {
   width: 240px;
   height: 240px;
   border-radius: 9999px;
-  background: radial-gradient(circle, rgba(91, 91, 214, 0.14), rgba(91, 91, 214, 0) 70%);
+  background: radial-gradient(circle, rgba(62, 99, 221, 0.14), rgba(62, 99, 221, 0) 70%);
   pointer-events: none;
 }
 .tz-hero-mark {
-  background: linear-gradient(140deg, #6366f1, #4f46e5);
-  box-shadow: 0 8px 20px -6px rgba(79, 70, 229, 0.55);
+  background: linear-gradient(140deg, #5472e4, #3e63dd);
+  box-shadow: 0 8px 20px -6px rgba(62, 99, 221, 0.55);
 }
 .tz-attn {
   color: #b45309;

@@ -13,8 +13,8 @@ const TRIGGERS = [
   { type: 'webhook', label: 'Webhook' },
 ];
 const STEP_TYPES = [
-  { type: 'send_message', label: 'Send a Message', icon: 'i-lucide-message-circle', accent: '#5b5bd6' },
-  { type: 'ask_question', label: 'Ask a Question', icon: 'i-lucide-circle-help', accent: '#6366f1' },
+  { type: 'send_message', label: 'Send a Message', icon: 'i-lucide-message-circle', accent: '#3e63dd' },
+  { type: 'ask_question', label: 'Ask a Question', icon: 'i-lucide-circle-help', accent: '#5472e4' },
   { type: 'branch', label: 'Branch', icon: 'i-lucide-git-branch', accent: '#f59e0b' },
   { type: 'assign', label: 'Assign To', icon: 'i-lucide-user-round', accent: '#0ea5e9' },
   { type: 'update_field', label: 'Update Contact Field', icon: 'i-lucide-square-pen', accent: '#8b5cf6' },
@@ -22,7 +22,7 @@ const STEP_TYPES = [
   { type: 'add_tag', label: 'Add Tag', icon: 'i-lucide-tag', accent: '#10b981' },
   { type: 'comment', label: 'Add Comment', icon: 'i-lucide-message-square', accent: '#64748b' },
   { type: 'close', label: 'Close Conversation', icon: 'i-lucide-circle-check', accent: '#22c55e' },
-  { type: 'trigger_workflow', label: 'Trigger Workflow', icon: 'i-lucide-workflow', accent: '#4f46e5' },
+  { type: 'trigger_workflow', label: 'Trigger Workflow', icon: 'i-lucide-workflow', accent: '#3e63dd' },
   { type: 'http', label: 'HTTP Request', icon: 'i-lucide-globe', accent: '#3b82f6' },
   { type: 'wait', label: 'Wait / Delay', icon: 'i-lucide-clock', accent: '#94a3b8' },
 ];
@@ -397,8 +397,8 @@ onMounted(load);
 
 <style scoped>
 .tz-mark {
-  background: linear-gradient(140deg, #6366f1, #4f46e5);
-  box-shadow: 0 8px 20px -6px rgba(79, 70, 229, 0.5);
+  background: linear-gradient(140deg, #5472e4, #3e63dd);
+  box-shadow: 0 8px 20px -6px rgba(62, 99, 221, 0.5);
 }
 .tz-canvas {
   background-image: radial-gradient(rgba(100, 116, 139, 0.18) 1px, transparent 1px);
@@ -414,7 +414,7 @@ onMounted(load);
   place-content: center;
   width: 22px;
   height: 22px;
-  color: #5753c6;
+  color: #3e63dd;
   background: rgb(var(--solid-1));
   border: 1px dashed rgb(var(--border-strong));
   border-radius: 9999px;
@@ -432,7 +432,7 @@ onMounted(load);
   font-size: 0.875rem;
   font-weight: 600;
   color: #fff;
-  background: #5753c6;
+  background: #3e63dd;
   border: 0;
   border-radius: 0.75rem;
   cursor: pointer;
@@ -441,8 +441,8 @@ onMounted(load);
   transition: background 0.15s, box-shadow 0.15s;
 }
 .tz-btn-primary:hover {
-  background: #4a46ad;
-  box-shadow: 0 6px 16px -8px rgba(79, 70, 229, 0.6);
+  background: #3358d4;
+  box-shadow: 0 6px 16px -8px rgba(62, 99, 221, 0.6);
 }
 .tz-btn-ghost {
   display: inline-flex;
@@ -475,7 +475,7 @@ onMounted(load);
   transition: border-color 0.15s;
 }
 .tz-in:focus {
-  border-color: #5b5bd6;
+  border-color: #3e63dd;
 }
 .tz-rise {
   opacity: 0;

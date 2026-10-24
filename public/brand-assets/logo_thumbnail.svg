@@ -1,10 +1,8 @@
 <svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="tzmark" x1="0" y1="0" x2="180" y2="180" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#14B8A6"/>
-      <stop offset="1" stop-color="#0F766E"/>
-    </linearGradient>
-  </defs>
-  <rect width="180" height="180" rx="40" fill="url(#tzmark)"/>
-  <path d="M40 52 H140 V80 H101 V138 H79 V80 H40 Z" fill="#FFFFFF"/>
+  <g transform="scale(11.25)">
+    <rect width="16" height="16" rx="4" fill="#3E63DD"/>
+    <rect x="2.6" y="2.9" width="10.8" height="7.1" rx="2.3" fill="#FFFFFF"/>
+    <path d="M4.75 8.9 L4.75 12.25 A0.5 0.5 0 0 0 5.57 12.62 L8.7 9.5 Z" fill="#FFFFFF"/>
+    <path d="M8 3.75c.28 1.72.55 1.99 2.27 2.27-1.72.28-1.99.55-2.27 2.27-.28-1.72-.55-1.99-2.27-2.27 1.72-.28 1.99-.55 2.27-2.27Z" fill="#3E63DD"/>
+  </g>
 </svg>

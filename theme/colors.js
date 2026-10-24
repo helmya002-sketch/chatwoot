@@ -13,25 +13,25 @@ const {
   redDark,
   violet,
   violetDark,
-  iris,
-  irisDark,
+  indigo,
+  indigoDark,
 } = require('@radix-ui/colors');
 
 export const colors = {
-  // Tolzar brand accent — indigo (Radix iris). Replaces the legacy teal "woot" scale.
+  // Tolzar brand accent — royal blue (Radix indigo). Replaces the legacy teal "woot" scale.
   woot: {
-    25: iris.iris2,
-    50: iris.iris3,
-    75: iris.iris4,
-    100: iris.iris5,
-    200: iris.iris7,
-    300: iris.iris8,
-    400: irisDark.iris11,
-    500: irisDark.iris10,
-    600: irisDark.iris9,
-    700: irisDark.iris8,
-    800: irisDark.iris6,
-    900: irisDark.iris2,
+    25: indigo.indigo2,
+    50: indigo.indigo3,
+    75: indigo.indigo4,
+    100: indigo.indigo5,
+    200: indigo.indigo7,
+    300: indigo.indigo8,
+    400: indigoDark.indigo11,
+    500: indigoDark.indigo10,
+    600: indigoDark.indigo9,
+    700: indigoDark.indigo8,
+    800: indigoDark.indigo6,
+    900: indigoDark.indigo2,
   },
   green: {
     50: greenDark.green12,
@@ -231,7 +231,7 @@ export const colors = {
     },
 
     black: '#000000',
-    brand: '#5753C6',
+    brand: '#3E63DD',
     portal: 'var(--dynamic-portal-color)',
     'portal-soft': 'var(--dynamic-portal-color-soft)',
     'portal-faint': 'var(--dynamic-portal-color-faint)',

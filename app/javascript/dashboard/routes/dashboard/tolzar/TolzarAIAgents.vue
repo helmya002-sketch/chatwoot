@@ -215,7 +215,7 @@ async function sendTest() {
   }
 }
 
-const skillAccent = { assign: '#0ea5e9', update_fields: '#8b5cf6', update_lifecycle: '#ec4899', close: '#22c55e', comment: '#64748b', tags: '#10b981', workflow: '#4f46e5' };
+const skillAccent = { assign: '#0ea5e9', update_fields: '#8b5cf6', update_lifecycle: '#ec4899', close: '#22c55e', comment: '#64748b', tags: '#10b981', workflow: '#3e63dd' };
 function tint(hex) {
   return { color: hex, background: `${hex}1f` };
 }
@@ -266,7 +266,7 @@ onMounted(load);
                 title="Click to toggle"
                 class="inline-block px-2 py-px mt-1 text-[11px] font-bold rounded-full cursor-pointer"
                 :class="a.status === 'active' ? '' : 'text-n-slate-11 bg-n-alpha-2'"
-                :style="a.status === 'active' ? { color: '#4f46e5', background: 'rgba(91,91,214,.15)' } : {}"
+                :style="a.status === 'active' ? { color: '#3e63dd', background: 'rgba(62,99,221,.15)' } : {}"
                 @click="toggleStatus(a, $event)"
               >{{ a.status === 'active' ? '● Active' : 'Inactive' }}</span>
             </div>
@@ -311,7 +311,7 @@ onMounted(load);
           class="flex-1 px-2 py-1 min-w-0 text-lg font-extrabold rounded-lg border border-transparent outline-none text-n-slate-12 bg-n-background focus:border-n-weak"
         />
         <label class="flex gap-1.5 items-center text-[13px] text-n-slate-11">
-          <input type="checkbox" class="accent-[#4f46e5]" :checked="draft.status === 'active'" @change="draft.status = $event.target.checked ? 'active' : 'inactive'" />
+          <input type="checkbox" class="accent-[#3e63dd]" :checked="draft.status === 'active'" @change="draft.status = $event.target.checked ? 'active' : 'inactive'" />
           Active
         </label>
         <button type="button" class="tz-btn-ghost" @click="cancelEdit">Cancel</button>
@@ -393,7 +393,7 @@ onMounted(load);
             <h3 class="inline-flex gap-1.5 items-center m-0 text-[15px] font-semibold text-n-slate-12"><span class="i-lucide-message-circle size-4 text-n-brand" /> Test</h3>
             <button type="button" class="text-xs transition-colors text-n-slate-10 hover:text-n-slate-12" @click="testMsgs = []">Reset chat</button>
           </div>
-          <div class="flex gap-2 items-start px-2.5 py-2 mb-2.5 text-[11.5px] rounded-lg" style="color: #4338ca; background: rgba(91,91,214,.1); border: 1px solid rgba(91,91,214,.22)">
+          <div class="flex gap-2 items-start px-2.5 py-2 mb-2.5 text-[11.5px] rounded-lg" style="color: #3a5bc7; background: rgba(62,99,221,.1); border: 1px solid rgba(62,99,221,.22)">
             <span class="flex-shrink-0 mt-0.5 i-lucide-circle-check size-3.5" />
             <span class="dark:text-n-iris-11">Live — replies come from your self-hosted model using the instructions above. This won’t touch any real conversation.</span>
           </div>
@@ -428,8 +428,8 @@ onMounted(load);
 
 <style scoped>
 .tz-mark {
-  background: linear-gradient(140deg, #6366f1, #4f46e5);
-  box-shadow: 0 8px 20px -6px rgba(79, 70, 229, 0.5);
+  background: linear-gradient(140deg, #5472e4, #3e63dd);
+  box-shadow: 0 8px 20px -6px rgba(62, 99, 221, 0.5);
 }
 .tz-btn-primary {
   display: inline-flex;
@@ -440,7 +440,7 @@ onMounted(load);
   font-size: 0.875rem;
   font-weight: 600;
   color: #fff;
-  background: #5753c6;
+  background: #3e63dd;
   border: 0;
   border-radius: 0.75rem;
   cursor: pointer;
@@ -449,8 +449,8 @@ onMounted(load);
   transition: opacity 0.15s, box-shadow 0.15s, background 0.15s;
 }
 .tz-btn-primary:hover {
-  background: #4a46ad;
-  box-shadow: 0 6px 16px -8px rgba(79, 70, 229, 0.6);
+  background: #3358d4;
+  box-shadow: 0 6px 16px -8px rgba(62, 99, 221, 0.6);
 }
 .tz-btn-ghost {
   display: inline-flex;
@@ -500,7 +500,7 @@ onMounted(load);
   transition: border-color 0.15s;
 }
 .tz-in:focus {
-  border-color: #5b5bd6;
+  border-color: #3e63dd;
 }
 .tz-hover {
   transition: transform 0.18s ease, box-shadow 0.18s ease;
