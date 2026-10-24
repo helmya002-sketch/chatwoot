@@ -28,6 +28,11 @@ class TolzarNoProxyCache
     status, headers, body = @app.call(env)
     path = env['PATH_INFO'].to_s
 
+    # On-demand one-shot purge of any entries LSCache stored BEFORE this fix
+    # shipped. Trigger by sending the `X-Tolzar-Purge` request header once;
+    # LiteSpeed reads `X-LiteSpeed-Purge` from the backend response and flushes.
+    headers['X-LiteSpeed-Purge'] = '*' if env['HTTP_X_TOLZAR_PURGE'].present?
+
     unless path.match?(STATIC_PATH) || path.match?(STATIC_EXT)
       content_type = (headers['Content-Type'] || headers['content-type']).to_s
       if content_type.include?('text/html') || content_type.include?('application/json')
