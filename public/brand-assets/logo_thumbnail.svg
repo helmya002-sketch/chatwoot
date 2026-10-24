@@ -1,10 +1,10 @@
 <svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="tz" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#1FB6A6"/>
-      <stop offset="1" stop-color="#0E8F84"/>
+    <linearGradient id="tzmark" x1="0" y1="0" x2="180" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#14B8A6"/>
+      <stop offset="1" stop-color="#0F766E"/>
     </linearGradient>
   </defs>
-  <rect x="18" y="18" width="144" height="144" rx="36" fill="url(#tz)"/>
-  <text x="90" y="128" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="110" font-weight="800" fill="#ffffff" text-anchor="middle">T</text>
+  <rect width="180" height="180" rx="40" fill="url(#tzmark)"/>
+  <path d="M40 52 H140 V80 H101 V138 H79 V80 H40 Z" fill="#FFFFFF"/>
 </svg>

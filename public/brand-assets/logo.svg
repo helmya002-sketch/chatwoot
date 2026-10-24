@@ -1,11 +1,13 @@
 <svg width="760" height="180" viewBox="0 0 760 180" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="tz" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#1FB6A6"/>
-      <stop offset="1" stop-color="#0E8F84"/>
+    <linearGradient id="tzmark" x1="14" y1="30" x2="134" y2="150" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#14B8A6"/>
+      <stop offset="1" stop-color="#0F766E"/>
     </linearGradient>
   </defs>
-  <rect x="24" y="30" width="120" height="120" rx="30" fill="url(#tz)"/>
-  <text x="84" y="123" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="92" font-weight="800" fill="#ffffff" text-anchor="middle">T</text>
-  <text x="172" y="122" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="86" font-weight="800" letter-spacing="1" fill="#0B1F3A">Tolzar</text>
+  <g transform="translate(14,30)">
+    <rect width="120" height="120" rx="28" fill="url(#tzmark)"/>
+    <path d="M27 35 H93 V53 H67 V92 H53 V53 H27 Z" fill="#FFFFFF"/>
+  </g>
+  <text x="156" y="120" font-family="Inter, 'Helvetica Neue', Arial, sans-serif" font-size="92" font-weight="700" letter-spacing="-3" fill="#0F172A">Tolzar</text>
 </svg>

@@ -156,6 +156,13 @@ const isEffectivelyCollapsed = computed(
   () => !isMobile.value && isCollapsed.value
 );
 
+// Tolzar: explicit collapse/expand toggle (respond.io-style) so the feature is
+// discoverable instead of hidden behind the drag/double-click resize handle.
+const toggleSidebarCollapse = () => {
+  if (isCollapsed.value) snapToExpanded();
+  else snapToCollapsed();
+};
+
 // Resize handle logic
 const isResizing = ref(false);
 const startX = ref(0);
@@ -917,6 +924,26 @@ const menuItems = computed(() => {
             />
           </template>
         </ComposeConversation>
+        <Button
+          data-tz-collapse-toggle
+          :icon="
+            isEffectivelyCollapsed
+              ? 'i-lucide-chevrons-right'
+              : 'i-lucide-chevrons-left'
+          "
+          color="slate"
+          size="sm"
+          :title="
+            isEffectivelyCollapsed ? 'Expand sidebar' : 'Collapse sidebar'
+          "
+          class="dark:hover:!bg-n-slate-9/30"
+          :class="
+            isEffectivelyCollapsed
+              ? '!size-8 !outline-n-weak !text-n-slate-11'
+              : '!h-7 !outline-n-weak !text-n-slate-11'
+          "
+          @click="toggleSidebarCollapse"
+        />
       </div>
     </section>
     <nav
