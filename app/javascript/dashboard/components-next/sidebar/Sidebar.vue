@@ -253,6 +253,13 @@ const getFolderUnreadCount = useMapGetter(
   'conversationUnreadCounts/getFolderUnreadCount'
 );
 const teams = useMapGetter('teams/getMyTeams');
+// Tolzar: managers/owners (administrators) see ALL teams in the inbox rail
+// (respond.io-style team inbox); agents still see only the teams they belong to.
+const allTeams = useMapGetter('teams/getTeams');
+const currentRole = useMapGetter('getCurrentRole');
+const teamsForSidebar = computed(() =>
+  currentRole.value === 'administrator' ? allTeams.value : teams.value
+);
 const contactCustomViews = useMapGetter('customViews/getContactCustomViews');
 const conversationCustomViews = useMapGetter(
   'customViews/getConversationCustomViews'
@@ -319,7 +326,7 @@ const sortedFolders = computed(() =>
 );
 
 const sortedTeams = computed(() =>
-  sortSidebarItems(teams.value, {
+  sortSidebarItems(teamsForSidebar.value, {
     sortBy: getSortForSection(SIDEBAR_SORT_SECTIONS.TEAMS),
     labelKey: team => team.name,
     unreadCountKey: team => getTeamUnreadCount.value(team.id),
