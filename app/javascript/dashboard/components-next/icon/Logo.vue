@@ -1,19 +1,14 @@
 <script setup>
 import { useAttrs } from 'vue';
-import { useMapGetter } from 'dashboard/composables/store';
 
+// Tolzar: render the inline brand mark (bundled → cache-busts per build), not
+// an <img> from globalConfig.logoThumbnail (served with a 1-year cache at a
+// stable path, so a file swap never reaches existing browsers).
 const attrs = useAttrs();
-const globalConfig = useMapGetter('globalConfig/get');
 </script>
 
 <template>
-  <img
-    v-if="globalConfig.logoThumbnail"
-    v-bind="attrs"
-    :src="globalConfig.logoThumbnail"
-  />
   <svg
-    v-else
     v-once
     v-bind="attrs"
     width="16"
@@ -23,6 +18,6 @@ const globalConfig = useMapGetter('globalConfig/get');
     xmlns="http://www.w3.org/2000/svg"
   >
     <rect width="16" height="16" rx="4" fill="#12A594" />
-    <path d="M3.8 4H12.2V5.9H9V12.2H7V5.9H3.8V4Z" fill="white" />
+    <path d="M3.6 4.3H12.4V6.3H9V12.4H7V6.3H3.6V4.3Z" fill="white" />
   </svg>
 </template>
