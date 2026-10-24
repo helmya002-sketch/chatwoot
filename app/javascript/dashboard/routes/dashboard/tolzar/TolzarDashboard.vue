@@ -1,7 +1,6 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import axios from 'axios';
 import ContactAPI from 'dashboard/api/contacts';
 import { useMapGetter } from 'dashboard/composables/store';
 
@@ -134,7 +133,7 @@ onMounted(async () => {
     }
     counts.value = out;
     try {
-      const { data } = await axios.get(
+      const { data } = await window.axios.get(
         `/api/v1/accounts/${accountId.value}/conversations?status=all`
       );
       conversations.value = data?.data?.payload || [];
@@ -153,36 +152,36 @@ onMounted(async () => {
 <template>
   <div class="overflow-auto flex-1 bg-n-background" data-tz-build="dash-4">
     <div class="mx-auto max-w-[1180px] px-6 pb-16 pt-6">
-      <!-- hero -->
+      <!-- welcome card (matches the rest of the dashboard) -->
       <div
-        class="overflow-hidden relative rounded-2xl px-7 py-6 text-white shadow-lg"
-        style="background: linear-gradient(120deg, #0f4a66 0%, #156080 48%, #12a594 100%)"
+        class="flex flex-wrap gap-4 justify-between items-center p-5 rounded-2xl border shadow-sm md:p-6 bg-n-solid-1 border-n-weak"
       >
-        <div
-          class="absolute -top-20 ltr:-right-12 rtl:-left-12 size-56 rounded-full opacity-20"
-          style="background: radial-gradient(circle, #fff 0%, transparent 70%)"
-        />
-        <div class="flex relative flex-wrap gap-4 justify-between items-end">
-          <div>
-            <div class="text-xs font-semibold tracking-wider opacity-80">
+        <div class="flex gap-4 items-center min-w-0">
+          <span
+            class="grid flex-shrink-0 place-content-center rounded-2xl size-12 bg-n-alpha-2"
+          >
+            <span class="i-lucide-layout-dashboard size-6 text-n-brand" />
+          </span>
+          <div class="min-w-0">
+            <div class="text-[11px] font-semibold tracking-wider text-n-brand">
               YOUR SALES FUNNEL
             </div>
-            <h1 class="mt-1 text-2xl font-extrabold">
+            <h1 class="mt-0.5 text-xl font-extrabold text-n-slate-12">
               Welcome back, {{ firstName }}
             </h1>
-            <p class="mt-1 mb-0 text-sm opacity-90">
+            <p class="mt-0.5 mb-0 text-sm text-n-slate-11">
               {{ loaded ? `${openConvs} open conversations · ${won} won · ${winRate}% win rate` : 'Loading your pipeline…' }}
             </p>
           </div>
-          <button
-            type="button"
-            class="inline-flex gap-2 items-center px-4 h-9 text-sm font-semibold text-white rounded-lg backdrop-blur-sm transition-colors bg-white/15 hover:bg-white/25"
-            @click="go('home')"
-          >
-            <span class="i-lucide-inbox size-4" />
-            Open inbox
-          </button>
         </div>
+        <button
+          type="button"
+          class="inline-flex gap-2 items-center px-4 h-9 text-sm font-semibold text-white rounded-lg transition-opacity bg-n-brand hover:opacity-90"
+          @click="go('home')"
+        >
+          <span class="i-lucide-inbox size-4" />
+          Open inbox
+        </button>
       </div>
 
       <!-- KPI cards -->
