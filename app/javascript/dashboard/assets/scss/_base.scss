@@ -1,5 +1,32 @@
 // scss-lint:disable QualifyingElement
 
+// Tolzar modern foundation: crisp Inter rendering + thin modern scrollbars
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--slate-7, 205 206 214)) transparent;
+}
+*::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: rgb(var(--slate-6, 217 217 224));
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--slate-8, 185 187 198));
+}
+
 // Base typography
 // -------------------------
 h1,
