@@ -1,5 +1,6 @@
 import { frontendURL } from '../../../helper/URLHelper';
 import TolzarDashboard from './TolzarDashboard.vue';
+import TolzarPipeline from './TolzarPipeline.vue';
 import TolzarAIAgents from './TolzarAIAgents.vue';
 import TolzarWorkflows from './TolzarWorkflows.vue';
 
@@ -10,6 +11,12 @@ export const routes = [
     path: frontendURL('accounts/:accountId/tolzar-dashboard'),
     name: 'tolzar_dashboard',
     component: TolzarDashboard,
+    meta: PERMS,
+  },
+  {
+    path: frontendURL('accounts/:accountId/pipeline'),
+    name: 'tolzar_pipeline',
+    component: TolzarPipeline,
     meta: PERMS,
   },
   {

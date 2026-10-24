@@ -392,6 +392,13 @@ const menuItems = computed(() => {
       activeOn: ['tolzar_dashboard'],
     },
     {
+      name: 'Pipeline',
+      label: 'Pipeline',
+      icon: 'i-lucide-columns-3',
+      to: accountScopedRoute('tolzar_pipeline'),
+      activeOn: ['tolzar_pipeline'],
+    },
+    {
       name: 'Conversation',
       label: 'Inbox',
       icon: 'i-lucide-inbox',
