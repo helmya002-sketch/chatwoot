@@ -9,7 +9,14 @@
   update_available = latest_version && Gem::Version.new(latest_version) > Gem::Version.new(version)
 %>
 <div class="flex h-14 shrink-0 items-center gap-3">
-  <%= link_to image_tag("/brand-assets/logo_thumbnail.svg", alt: "", class: "size-8"), super_admin_root_path, class: "shrink-0", tabindex: -1, aria: { hidden: true } %>
+  <%# Tolzar: inline SVG mark (brand-assets are served 1-year immutable, so an
+      <img> would keep showing a stale/old logo after a rebrand). %>
+  <%= link_to super_admin_root_path, class: "shrink-0", tabindex: -1, aria: { hidden: true } do %>
+    <svg class="size-8" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+      <rect width="32" height="32" rx="8" fill="#12A594"/>
+      <path d="M9 10.5h14v3.2h-5.4V23h-3.2v-9.3H9z" fill="#ffffff"/>
+    </svg>
+  <% end %>
   <div class="min-w-0 whitespace-nowrap">
     <div class="flex items-baseline gap-1.5 leading-5">
       <%= link_to "Tolzar", super_admin_root_path, class: "text-sm font-medium text-n-slate-12" %>
