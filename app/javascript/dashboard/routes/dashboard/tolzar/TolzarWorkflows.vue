@@ -13,7 +13,7 @@ const TRIGGERS = [
   { type: 'webhook', label: 'Webhook' },
 ];
 const STEP_TYPES = [
-  { type: 'send_message', label: 'Send a Message', icon: 'i-lucide-message-circle', accent: '#12a594' },
+  { type: 'send_message', label: 'Send a Message', icon: 'i-lucide-message-circle', accent: '#5b5bd6' },
   { type: 'ask_question', label: 'Ask a Question', icon: 'i-lucide-circle-help', accent: '#6366f1' },
   { type: 'branch', label: 'Branch', icon: 'i-lucide-git-branch', accent: '#f59e0b' },
   { type: 'assign', label: 'Assign To', icon: 'i-lucide-user-round', accent: '#0ea5e9' },
@@ -22,7 +22,7 @@ const STEP_TYPES = [
   { type: 'add_tag', label: 'Add Tag', icon: 'i-lucide-tag', accent: '#10b981' },
   { type: 'comment', label: 'Add Comment', icon: 'i-lucide-message-square', accent: '#64748b' },
   { type: 'close', label: 'Close Conversation', icon: 'i-lucide-circle-check', accent: '#22c55e' },
-  { type: 'trigger_workflow', label: 'Trigger Workflow', icon: 'i-lucide-workflow', accent: '#0e8f84' },
+  { type: 'trigger_workflow', label: 'Trigger Workflow', icon: 'i-lucide-workflow', accent: '#4f46e5' },
   { type: 'http', label: 'HTTP Request', icon: 'i-lucide-globe', accent: '#3b82f6' },
   { type: 'wait', label: 'Wait / Delay', icon: 'i-lucide-clock', accent: '#94a3b8' },
 ];
@@ -187,196 +187,305 @@ const stepCount = computed(() => {
 const branchNode = computed(() => draft.value && draft.value.steps.find(s => s.type === 'branch'));
 const linearSteps = computed(() => (draft.value ? draft.value.steps.filter(s => s.type !== 'branch') : []));
 
+function nodeStyle(accent) {
+  return { borderTop: `3px solid ${accent}` };
+}
+
 onMounted(load);
 </script>
 
 <template>
-  <div class="flex-1 overflow-auto" data-tz-build="workflows-2" style="background: #f5f8fc">
+  <div class="overflow-auto flex-1 bg-n-background" data-tz-build="workflows-3">
     <!-- ===================== LIST VIEW ===================== -->
-    <div v-if="!selectedId" style="max-width: 1120px; margin: 0 auto; padding: 32px 24px 64px">
-      <div style="display: flex; align-items: center; justify-content: space-between">
-        <div>
-          <h1 style="font-size: 24px; font-weight: 800; color: #0b1f3a; margin: 0 0 2px">Workflows</h1>
-          <p style="color: #64748b; margin: 0">Automate conversations — triggers, branches and steps.</p>
+    <div v-if="!selectedId" class="mx-auto max-w-[1120px] px-5 pb-16 pt-7 md:px-6">
+      <div class="flex gap-4 justify-between items-center tz-rise">
+        <div class="flex gap-3 items-center">
+          <span class="tz-mark grid flex-shrink-0 place-content-center rounded-2xl size-11">
+            <span class="i-lucide-workflow size-6 text-white" />
+          </span>
+          <div>
+            <h1 class="m-0 text-[22px] font-extrabold tracking-tight text-n-slate-12">Workflows</h1>
+            <p class="m-0 text-sm text-n-slate-11">Automate conversations — triggers, branches and steps.</p>
+          </div>
         </div>
-        <button type="button" style="background: linear-gradient(180deg,#14b8a6,#0e8f84); color: #fff; border: 0; border-radius: 10px; padding: 10px 16px; font-weight: 700; cursor: pointer" @click="createFlow">+ Add Workflow</button>
+        <button type="button" class="tz-btn-primary" @click="createFlow"><span class="i-lucide-plus size-4" /> Add Workflow</button>
       </div>
 
-      <div style="margin-top: 22px; background: #fff; border: 1px solid #e3e9f2; border-radius: 14px; overflow: hidden">
-        <div style="display: grid; grid-template-columns: 110px 1fr 180px 130px 90px; gap: 12px; padding: 12px 18px; font-size: 12px; font-weight: 700; color: #64748b; background: #f8fafc; border-bottom: 1px solid #eef2f7">
+      <div class="tz-rise overflow-hidden mt-5 rounded-2xl border shadow-sm bg-n-solid-1 border-n-weak" style="animation-delay: 60ms">
+        <div class="grid gap-3 px-[18px] py-3 text-xs font-bold uppercase tracking-wide border-b grid-cols-[110px_1fr_180px_130px_80px] text-n-slate-10 bg-n-alpha-1 border-n-weak">
           <div>Status</div><div>Name</div><div>Trigger</div><div>Steps</div><div></div>
         </div>
-        <div v-for="f in flows" :key="f.id" style="display: grid; grid-template-columns: 110px 1fr 180px 130px 90px; gap: 12px; padding: 14px 18px; align-items: center; border-bottom: 1px solid #f1f5f9; cursor: pointer" @click="openFlow(f.id)">
+        <div
+          v-for="f in flows"
+          :key="f.id"
+          class="grid gap-3 items-center px-[18px] py-3.5 border-b transition-colors cursor-pointer grid-cols-[110px_1fr_180px_130px_80px] border-n-weak last:border-0 hover:bg-n-alpha-1"
+          @click="openFlow(f.id)"
+        >
           <div>
-            <span :style="{ fontSize: '11px', fontWeight: '700', padding: '2px 9px', borderRadius: '999px', color: f.status === 'published' ? '#0e8f84' : '#9a6b00', background: f.status === 'published' ? '#d8f5f0' : '#fef3c7' }">{{ f.status === 'published' ? 'Published' : 'Draft' }}</span>
+            <span
+              class="inline-flex gap-1 items-center px-2.5 py-0.5 text-[11px] font-bold rounded-full"
+              :class="f.status === 'published' ? 'text-emerald-600 bg-emerald-500/10 dark:text-emerald-400' : 'text-amber-600 bg-amber-500/10 dark:text-amber-400'"
+            >
+              <span class="inline-block rounded-full size-1.5" :class="f.status === 'published' ? 'bg-emerald-500' : 'bg-amber-500'" />
+              {{ f.status === 'published' ? 'Published' : 'Draft' }}
+            </span>
           </div>
-          <div style="font-weight: 600; color: #0b1f3a">{{ f.name }}</div>
-          <div style="color: #475569; font-size: 13px">{{ triggerLabel(f.trigger.type) }}</div>
-          <div style="color: #64748b; font-size: 13px">{{ f.steps.length }} top-level</div>
-          <div style="font-weight: 700; color: #12a594; font-size: 13px">Edit →</div>
+          <div class="font-semibold truncate text-n-slate-12">{{ f.name }}</div>
+          <div class="text-[13px] text-n-slate-11">{{ triggerLabel(f.trigger.type) }}</div>
+          <div class="text-[13px] text-n-slate-10">{{ f.steps.length }} top-level</div>
+          <div class="inline-flex gap-1 items-center text-[13px] font-bold text-n-brand">Edit <span class="i-lucide-arrow-right size-3.5 rtl:rotate-180" /></div>
         </div>
-        <div v-if="!flows.length" style="padding: 24px; text-align: center; color: #94a3b8">No workflows yet.</div>
+        <div v-if="!flows.length" class="p-6 text-center text-n-slate-10">No workflows yet.</div>
       </div>
     </div>
 
     <!-- ===================== BUILDER VIEW ===================== -->
-    <div v-else-if="draft" style="height: 100%; display: flex; flex-direction: column">
+    <div v-else-if="draft" class="flex flex-col h-full">
       <!-- header -->
-      <div style="display: flex; align-items: center; gap: 12px; padding: 12px 18px; background: #fff; border-bottom: 1px solid #e3e9f2">
-        <button type="button" style="background: #fff; border: 1px solid #e3e9f2; border-radius: 8px; padding: 6px 12px; cursor: pointer; color: #475569; font-weight: 600" @click="backToList">‹ Back</button>
-        <input v-model="draft.name" style="font-size: 16px; font-weight: 800; color: #0b1f3a; border: 1px solid transparent; border-radius: 8px; padding: 4px 8px; flex: 1 1 200px; min-width: 160px; width: auto" @focus="$event.target.style.borderColor = '#e3e9f2'" @blur="$event.target.style.borderColor = 'transparent'" />
-        <span style="font-size: 12px; color: #94a3b8; flex: 0 0 auto; white-space: nowrap">Steps: {{ stepCount }} / 100</span>
-        <select v-model="draft.status" style="border: 1px solid #e3e9f2; border-radius: 8px; padding: 6px 10px; font-size: 13px; background: #fff; flex: 0 0 auto; width: 130px">
+      <div class="flex flex-wrap gap-3 items-center px-[18px] py-3 border-b bg-n-solid-1 border-n-weak">
+        <button type="button" class="tz-btn-ghost" @click="backToList">‹ Back</button>
+        <input v-model="draft.name" class="flex-1 px-2 py-1 min-w-[160px] w-auto text-base font-extrabold rounded-lg border border-transparent outline-none text-n-slate-12 bg-n-background focus:border-n-weak" />
+        <span class="flex-shrink-0 text-xs whitespace-nowrap text-n-slate-10">Steps: {{ stepCount }} / 100</span>
+        <select v-model="draft.status" class="tz-in flex-shrink-0 !w-[130px]">
           <option value="draft">Draft</option>
           <option value="published">Published</option>
         </select>
-        <button type="button" style="background: #fff; border: 1px solid #e3e9f2; border-radius: 8px; padding: 8px 16px; cursor: pointer; color: #475569; font-weight: 600" @click="backToList">Cancel</button>
-        <button type="button" style="background: linear-gradient(180deg,#14b8a6,#0e8f84); color: #fff; border: 0; border-radius: 8px; padding: 8px 18px; font-weight: 700; cursor: pointer" @click="saveFlow">Save</button>
+        <button type="button" class="tz-btn-ghost" @click="backToList">Cancel</button>
+        <button type="button" class="tz-btn-primary" @click="saveFlow"><span class="i-lucide-check size-4" /> Save</button>
       </div>
 
-      <div style="flex: 1; display: flex; min-height: 0">
+      <div class="flex flex-1 min-h-0">
         <!-- canvas -->
-        <div style="flex: 1; overflow: auto; position: relative; background-color: #f5f8fc; background-image: radial-gradient(#d7e0ec 1px, transparent 1px); background-size: 22px 22px">
+        <div class="tz-canvas overflow-auto relative flex-1 bg-n-background">
           <!-- zoom controls -->
-          <div style="position: absolute; top: 14px; left: 14px; z-index: 2; background: #fff; border: 1px solid #e3e9f2; border-radius: 10px; display: flex; flex-direction: column; overflow: hidden">
-            <button type="button" style="border: 0; background: #fff; padding: 8px 10px; cursor: pointer; border-bottom: 1px solid #eef2f7" @click="zoom = Math.min(1.4, zoom + 0.1)">+</button>
-            <button type="button" style="border: 0; background: #fff; padding: 8px 10px; cursor: pointer; border-bottom: 1px solid #eef2f7" @click="zoom = Math.max(0.6, zoom - 0.1)">−</button>
-            <button type="button" style="border: 0; background: #fff; padding: 8px 10px; cursor: pointer; font-size: 12px" @click="zoom = 1">⊙</button>
+          <div class="flex overflow-hidden absolute top-3.5 left-3.5 z-10 flex-col rounded-xl border shadow-sm bg-n-solid-1 border-n-weak">
+            <button type="button" class="px-2.5 py-2 border-b transition-colors border-n-weak text-n-slate-11 hover:bg-n-alpha-1" @click="zoom = Math.min(1.4, zoom + 0.1)"><span class="i-lucide-plus size-4" /></button>
+            <button type="button" class="px-2.5 py-2 border-b transition-colors border-n-weak text-n-slate-11 hover:bg-n-alpha-1" @click="zoom = Math.max(0.6, zoom - 0.1)"><span class="i-lucide-minus size-4" /></button>
+            <button type="button" class="px-2.5 py-2 transition-colors text-n-slate-11 hover:bg-n-alpha-1" @click="zoom = 1"><span class="i-lucide-locate-fixed size-4" /></button>
           </div>
 
-          <div :style="{ transform: `scale(${zoom})`, transformOrigin: 'top center', padding: '40px 20px 80px', display: 'flex', flexDirection: 'column', alignItems: 'center' }">
+          <div class="flex flex-col items-center px-5 pt-10 pb-20" :style="{ transform: `scale(${zoom})`, transformOrigin: 'top center' }">
             <!-- Trigger -->
-            <div
-              style="width: 230px; background: #fff; border: 1px solid #f3c6c6; border-top: 3px solid #e11d48; border-radius: 12px; box-shadow: 0 3px 10px rgba(15,31,58,.06); cursor: pointer"
-              @click="selectTrigger"
-            >
-              <div style="padding: 10px 14px; border-bottom: 1px solid #f6e4e4; font-weight: 700; color: #0b1f3a; display: flex; align-items: center; gap: 8px">
-                <span class="i-lucide-zap" style="color: #e11d48; font-size: 15px"></span> Trigger
+            <div class="overflow-hidden w-[230px] rounded-xl border shadow-sm cursor-pointer bg-n-solid-1 border-n-weak" style="border-top: 3px solid #e11d48" @click="selectTrigger">
+              <div class="flex gap-2 items-center px-3.5 py-2.5 font-bold border-b border-n-weak text-n-slate-12">
+                <span class="i-lucide-zap size-4" style="color: #e11d48" /> Trigger
               </div>
-              <div style="padding: 10px 14px; color: #475569; font-size: 13px">{{ triggerLabel(draft.trigger.type) }}</div>
+              <div class="px-3.5 py-2.5 text-[13px] text-n-slate-11">{{ triggerLabel(draft.trigger.type) }}</div>
             </div>
 
             <!-- linear steps -->
-            <template v-for="(node, i) in linearSteps" :key="node.id">
-              <div style="width: 2px; height: 14px; background: #c6d2e3"></div>
-              <button type="button" style="border: 1px dashed #c6d2e3; background: #fff; color: #12a594; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-weight: 700; line-height: 1" @click="openPalette(null)">+</button>
-              <div style="width: 2px; height: 14px; background: #c6d2e3"></div>
-              <div
-                :style="{ width: '240px', background: '#fff', border: '1px solid #e3e9f2', borderTop: '3px solid ' + stepMeta(node.type).accent, borderRadius: '12px', boxShadow: '0 3px 10px rgba(15,31,58,.06)', cursor: 'pointer' }"
-                @click="selectNode(node)"
-              >
-                <div style="padding: 10px 14px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; gap: 8px">
-                  <span :class="stepMeta(node.type).icon" :style="{ color: stepMeta(node.type).accent, fontSize: '16px' }"></span>
-                  <span style="font-weight: 700; color: #0b1f3a; flex: 1; font-size: 13px">{{ node.title || stepMeta(node.type).label }}</span>
-                  <button type="button" style="border: 0; background: transparent; color: #cbd5e1; cursor: pointer; font-size: 14px" @click.stop="removeStep(node, null)">×</button>
+            <template v-for="node in linearSteps" :key="node.id">
+              <span class="tz-wire" />
+              <button type="button" class="tz-add-dot" @click="openPalette(null)"><span class="i-lucide-plus size-3" /></button>
+              <span class="tz-wire" />
+              <div class="overflow-hidden w-[240px] rounded-xl border shadow-sm cursor-pointer bg-n-solid-1 border-n-weak" :style="nodeStyle(stepMeta(node.type).accent)" @click="selectNode(node)">
+                <div class="flex gap-2 items-center px-3.5 py-2.5 border-b border-n-weak">
+                  <span :class="stepMeta(node.type).icon" class="size-4" :style="{ color: stepMeta(node.type).accent }" />
+                  <span class="flex-1 text-[13px] font-bold text-n-slate-12">{{ node.title || stepMeta(node.type).label }}</span>
+                  <button type="button" class="grid place-content-center rounded transition-colors size-5 text-n-slate-9 hover:text-rose-500 hover:bg-n-alpha-2" @click.stop="removeStep(node, null)"><span class="i-lucide-x size-3.5" /></button>
                 </div>
-                <div v-if="node.config" style="padding: 8px 14px; color: #64748b; font-size: 12px">{{ node.config }}</div>
+                <div v-if="node.config" class="px-3.5 py-2 text-xs text-n-slate-10">{{ node.config }}</div>
               </div>
             </template>
 
             <!-- branch node (one level) -->
             <template v-if="branchNode">
-              <div style="width: 2px; height: 14px; background: #c6d2e3"></div>
-              <button v-if="!linearSteps.length" type="button" style="border: 1px dashed #c6d2e3; background: #fff; color: #12a594; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-weight: 700; line-height: 1" @click="openPalette(null)">+</button>
-              <div v-if="!linearSteps.length" style="width: 2px; height: 14px; background: #c6d2e3"></div>
-              <div style="width: 240px; background: #fff; border: 1px solid #fde4b8; border-top: 3px solid #f59e0b; border-radius: 12px; box-shadow: 0 3px 10px rgba(15,31,58,.06); cursor: pointer" @click="selectNode(branchNode)">
-                <div style="padding: 10px 14px; border-bottom: 1px solid #fdf0d8; display: flex; align-items: center; gap: 8px">
-                  <span class="i-lucide-git-branch" style="color: #f59e0b; font-size: 15px"></span><span style="font-weight: 700; color: #0b1f3a; flex: 1; font-size: 13px">{{ branchNode.title }}</span>
-                  <button type="button" style="border: 0; background: transparent; color: #cbd5e1; cursor: pointer; font-size: 14px" @click.stop="removeStep(branchNode, null)">×</button>
+              <span class="tz-wire" />
+              <button v-if="!linearSteps.length" type="button" class="tz-add-dot" @click="openPalette(null)"><span class="i-lucide-plus size-3" /></button>
+              <span v-if="!linearSteps.length" class="tz-wire" />
+              <div class="w-[240px] overflow-hidden rounded-xl border shadow-sm cursor-pointer bg-n-solid-1 border-n-weak" style="border-top: 3px solid #f59e0b" @click="selectNode(branchNode)">
+                <div class="flex gap-2 items-center px-3.5 py-2.5 border-b border-n-weak">
+                  <span class="i-lucide-git-branch size-4" style="color: #f59e0b" /><span class="flex-1 text-[13px] font-bold text-n-slate-12">{{ branchNode.title }}</span>
+                  <button type="button" class="grid place-content-center rounded transition-colors size-5 text-n-slate-9 hover:text-rose-500 hover:bg-n-alpha-2" @click.stop="removeStep(branchNode, null)"><span class="i-lucide-x size-3.5" /></button>
                 </div>
-                <div style="padding: 8px 14px; color: #64748b; font-size: 12px">{{ branchNode.branches.length }} paths</div>
+                <div class="px-3.5 py-2 text-xs text-n-slate-10">{{ branchNode.branches.length }} paths</div>
               </div>
 
               <!-- branch paths as columns -->
-              <div style="width: 2px; height: 16px; background: #f59e0b"></div>
-              <div style="display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; justify-content: center">
-                <div v-for="(b, bi) in branchNode.branches" :key="bi" style="display: flex; flex-direction: column; align-items: center; min-width: 200px">
-                  <span style="font-size: 11px; font-weight: 700; color: #b45309; background: #fef3c7; padding: 2px 10px; border-radius: 999px">{{ b.label }}</span>
+              <span class="w-0.5 h-4" style="background: #f59e0b" />
+              <div class="flex flex-wrap gap-5 justify-center items-start">
+                <div v-for="(b, bi) in branchNode.branches" :key="bi" class="flex flex-col items-center min-w-[200px]">
+                  <span class="px-2.5 py-0.5 text-[11px] font-bold rounded-full text-amber-700 bg-amber-100 dark:text-amber-300 dark:bg-amber-500/15">{{ b.label }}</span>
                   <template v-for="snode in b.steps" :key="snode.id">
-                    <div style="width: 2px; height: 12px; background: #c6d2e3"></div>
-                    <div :style="{ width: '200px', background: '#fff', border: '1px solid #e3e9f2', borderTop: '3px solid ' + stepMeta(snode.type).accent, borderRadius: '12px', boxShadow: '0 2px 8px rgba(15,31,58,.05)', cursor: 'pointer' }" @click="selectNode(snode)">
-                      <div style="padding: 9px 12px; display: flex; align-items: center; gap: 7px">
-                        <span :class="stepMeta(snode.type).icon" :style="{ color: stepMeta(snode.type).accent, fontSize: '14px' }"></span>
-                        <span style="font-weight: 600; color: #0b1f3a; flex: 1; font-size: 12.5px">{{ snode.title }}</span>
-                        <button type="button" style="border: 0; background: transparent; color: #cbd5e1; cursor: pointer; font-size: 13px" @click.stop="removeStep(snode, bi)">×</button>
+                    <span class="tz-wire !h-3" />
+                    <div class="w-[200px] overflow-hidden rounded-xl border shadow-sm cursor-pointer bg-n-solid-1 border-n-weak" :style="nodeStyle(stepMeta(snode.type).accent)" @click="selectNode(snode)">
+                      <div class="flex gap-1.5 items-center px-3 py-2">
+                        <span :class="stepMeta(snode.type).icon" class="size-3.5" :style="{ color: stepMeta(snode.type).accent }" />
+                        <span class="flex-1 text-[12.5px] font-semibold text-n-slate-12">{{ snode.title }}</span>
+                        <button type="button" class="grid place-content-center rounded transition-colors size-5 text-n-slate-9 hover:text-rose-500 hover:bg-n-alpha-2" @click.stop="removeStep(snode, bi)"><span class="i-lucide-x size-3" /></button>
                       </div>
                     </div>
                   </template>
-                  <div style="width: 2px; height: 10px; background: #c6d2e3"></div>
-                  <button type="button" style="border: 1px dashed #c6d2e3; background: #fff; color: #12a594; border-radius: 8px; padding: 4px 10px; cursor: pointer; font-size: 12px" @click="openPalette(bi)">+ Add</button>
+                  <span class="tz-wire !h-2.5" />
+                  <button type="button" class="inline-flex gap-1 items-center px-2.5 py-1 text-xs rounded-lg border border-dashed transition-colors cursor-pointer border-n-strong text-n-brand bg-n-solid-1 hover:bg-n-alpha-1" @click="openPalette(bi)"><span class="i-lucide-plus size-3" /> Add</button>
                 </div>
-                <button type="button" style="border: 1px dashed #c6d2e3; background: #fff; color: #64748b; border-radius: 8px; padding: 6px 12px; cursor: pointer; font-size: 12px; align-self: center" @click="addPath">+ Path</button>
+                <button type="button" class="self-center px-3 py-1.5 text-xs rounded-lg border border-dashed transition-colors cursor-pointer border-n-strong text-n-slate-11 bg-n-solid-1 hover:bg-n-alpha-1" @click="addPath">+ Path</button>
               </div>
             </template>
 
             <!-- add first / next step when no branch -->
             <template v-if="!branchNode">
-              <div style="width: 2px; height: 14px; background: #c6d2e3"></div>
-              <button type="button" style="border: 1px dashed #c6d2e3; background: #fff; color: #12a594; border-radius: 10px; padding: 8px 16px; cursor: pointer; font-weight: 600; font-size: 13px" @click="openPalette(null)">+ Add step</button>
+              <span class="tz-wire" />
+              <button type="button" class="inline-flex gap-1.5 items-center px-4 py-2 text-[13px] font-semibold rounded-xl border border-dashed transition-colors cursor-pointer border-n-strong text-n-brand bg-n-solid-1 hover:bg-n-alpha-1" @click="openPalette(null)"><span class="i-lucide-plus size-3.5" /> Add step</button>
             </template>
           </div>
         </div>
 
         <!-- right panel: config OR palette -->
-        <div v-if="panel || paletteFor" style="width: 340px; flex-shrink: 0; background: #fff; border-left: 1px solid #e3e9f2; overflow: auto; padding: 18px">
+        <div v-if="panel || paletteFor" class="overflow-auto flex-shrink-0 p-[18px] w-[340px] border-l bg-n-solid-1 border-n-weak">
           <!-- palette -->
           <template v-if="paletteFor">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px">
-              <h3 style="margin: 0; font-size: 15px; color: #0b1f3a">Add a step</h3>
-              <button type="button" style="border: 0; background: transparent; color: #94a3b8; cursor: pointer; font-size: 18px" @click="paletteFor = null">×</button>
+            <div class="flex justify-between items-center mb-3">
+              <h3 class="m-0 text-[15px] font-semibold text-n-slate-12">Add a step</h3>
+              <button type="button" class="grid place-content-center rounded-lg transition-colors size-7 text-n-slate-10 hover:bg-n-alpha-2" @click="paletteFor = null"><span class="i-lucide-x size-4" /></button>
             </div>
             <button
               v-for="s in STEP_TYPES"
               :key="s.type"
               type="button"
               :disabled="s.type === 'branch' && (paletteFor.branch !== null || !!branchNode)"
-              style="display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; background: #fff; border: 1px solid #eef2f7; border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; cursor: pointer"
+              class="flex gap-2.5 items-center px-3 py-2.5 mb-2 w-full text-left rounded-xl border transition-colors cursor-pointer border-n-weak hover:bg-n-alpha-1 disabled:opacity-40 disabled:cursor-not-allowed"
               @click="addStep(s.type, paletteFor.branch)"
             >
-              <span :style="{ width: '26px', height: '26px', borderRadius: '7px', display: 'grid', placeContent: 'center', background: s.accent + '1a' }"><span :class="s.icon" :style="{ color: s.accent, fontSize: '15px' }"></span></span>
-              <span style="font-weight: 600; color: #0b1f3a; font-size: 13px">{{ s.label }}</span>
+              <span class="grid place-content-center rounded-lg size-[26px]" :style="{ background: s.accent + '1f' }"><span :class="s.icon" class="size-4" :style="{ color: s.accent }" /></span>
+              <span class="text-[13px] font-semibold text-n-slate-12">{{ s.label }}</span>
             </button>
           </template>
 
           <!-- node / trigger config -->
           <template v-else-if="panel && panel.kind === 'trigger'">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px">
-              <h3 style="margin: 0; font-size: 15px; color: #0b1f3a">Trigger</h3>
-              <button type="button" style="border: 0; background: transparent; color: #94a3b8; cursor: pointer; font-size: 18px" @click="panel = null">×</button>
+            <div class="flex justify-between items-center mb-3">
+              <h3 class="inline-flex gap-1.5 items-center m-0 text-[15px] font-semibold text-n-slate-12"><span class="i-lucide-zap size-4" style="color: #e11d48" /> Trigger</h3>
+              <button type="button" class="grid place-content-center rounded-lg transition-colors size-7 text-n-slate-10 hover:bg-n-alpha-2" @click="panel = null"><span class="i-lucide-x size-4" /></button>
             </div>
-            <label style="display: block; font-size: 12px; color: #64748b; margin-bottom: 4px">When this happens</label>
-            <select v-model="draft.trigger.type" style="width: 100%; border: 1px solid #e3e9f2; border-radius: 8px; padding: 9px; font-size: 13px; margin-bottom: 12px; background: #fff">
+            <label class="block mb-1 text-xs text-n-slate-11">When this happens</label>
+            <select v-model="draft.trigger.type" class="tz-in mb-3">
               <option v-for="t in TRIGGERS" :key="t.type" :value="t.type">{{ t.label }}</option>
             </select>
-            <label style="display: block; font-size: 12px; color: #64748b; margin-bottom: 4px">Condition (optional)</label>
-            <input v-model="draft.trigger.config" style="width: 100%; box-sizing: border-box; border: 1px solid #e3e9f2; border-radius: 8px; padding: 9px; font-size: 13px" placeholder="e.g. On Customer Won" />
+            <label class="block mb-1 text-xs text-n-slate-11">Condition (optional)</label>
+            <input v-model="draft.trigger.config" class="tz-in" placeholder="e.g. On Customer Won" />
           </template>
 
           <template v-else-if="panel && panel.kind === 'node'">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px">
-              <h3 style="margin: 0; font-size: 15px; color: #0b1f3a; display: flex; align-items: center; gap: 8px">
-                <span :class="stepMeta(panel.node.type).icon" :style="{ color: stepMeta(panel.node.type).accent, fontSize: '16px' }"></span>{{ stepMeta(panel.node.type).label }}
+            <div class="flex justify-between items-center mb-3">
+              <h3 class="inline-flex gap-2 items-center m-0 text-[15px] font-semibold text-n-slate-12">
+                <span :class="stepMeta(panel.node.type).icon" class="size-4" :style="{ color: stepMeta(panel.node.type).accent }" />{{ stepMeta(panel.node.type).label }}
               </h3>
-              <button type="button" style="border: 0; background: transparent; color: #94a3b8; cursor: pointer; font-size: 18px" @click="panel = null">×</button>
+              <button type="button" class="grid place-content-center rounded-lg transition-colors size-7 text-n-slate-10 hover:bg-n-alpha-2" @click="panel = null"><span class="i-lucide-x size-4" /></button>
             </div>
-            <label style="display: block; font-size: 12px; color: #64748b; margin-bottom: 4px">Title</label>
-            <input v-model="panel.node.title" style="width: 100%; box-sizing: border-box; border: 1px solid #e3e9f2; border-radius: 8px; padding: 9px; font-size: 13px; margin-bottom: 12px" />
-            <label style="display: block; font-size: 12px; color: #64748b; margin-bottom: 4px">Configuration</label>
-            <textarea v-model="panel.node.config" rows="5" style="width: 100%; box-sizing: border-box; border: 1px solid #e3e9f2; border-radius: 8px; padding: 9px; font-size: 13px; resize: vertical" placeholder="Describe what this step does…"></textarea>
+            <label class="block mb-1 text-xs text-n-slate-11">Title</label>
+            <input v-model="panel.node.title" class="tz-in mb-3" />
+            <label class="block mb-1 text-xs text-n-slate-11">Configuration</label>
+            <textarea v-model="panel.node.config" rows="5" class="tz-in resize-y" placeholder="Describe what this step does…"></textarea>
             <template v-if="panel.node.type === 'branch'">
-              <label style="display: block; font-size: 12px; color: #64748b; margin: 12px 0 4px">Paths</label>
-              <div v-for="(b, bi) in panel.node.branches" :key="bi" style="display: flex; gap: 6px; margin-bottom: 6px">
-                <input v-model="b.label" style="flex: 1; border: 1px solid #e3e9f2; border-radius: 8px; padding: 7px; font-size: 12px" />
-                <button type="button" style="border: 0; background: transparent; color: #cbd5e1; cursor: pointer" @click="panel.node.branches.splice(bi, 1)">×</button>
+              <label class="block mt-3 mb-1 text-xs text-n-slate-11">Paths</label>
+              <div v-for="(b, bi) in panel.node.branches" :key="bi" class="flex gap-1.5 mb-1.5">
+                <input v-model="b.label" class="flex-1 tz-in" />
+                <button type="button" class="grid place-content-center rounded-lg transition-colors size-8 text-n-slate-10 hover:text-rose-500 hover:bg-n-alpha-2" @click="panel.node.branches.splice(bi, 1)"><span class="i-lucide-x size-4" /></button>
               </div>
             </template>
           </template>
         </div>
       </div>
 
-      <div style="padding: 10px 18px; background: #fff; border-top: 1px solid #e3e9f2">
-        <button type="button" style="background: transparent; border: 0; color: #ef4444; font-size: 12px; cursor: pointer" @click="deleteFlow(draft.id)">Delete this workflow</button>
+      <div class="px-[18px] py-2.5 border-t bg-n-solid-1 border-n-weak">
+        <button type="button" class="inline-flex gap-1 items-center text-xs transition-colors text-n-slate-10 hover:text-rose-500" @click="deleteFlow(draft.id)"><span class="i-lucide-trash-2 size-3.5" /> Delete this workflow</button>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.tz-mark {
+  background: linear-gradient(140deg, #6366f1, #4f46e5);
+  box-shadow: 0 8px 20px -6px rgba(79, 70, 229, 0.5);
+}
+.tz-canvas {
+  background-image: radial-gradient(rgba(100, 116, 139, 0.18) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+.tz-wire {
+  width: 2px;
+  height: 0.875rem;
+  background: rgb(var(--border-strong));
+}
+.tz-add-dot {
+  display: grid;
+  place-content: center;
+  width: 22px;
+  height: 22px;
+  color: #5753c6;
+  background: rgb(var(--solid-1));
+  border: 1px dashed rgb(var(--border-strong));
+  border-radius: 9999px;
+  cursor: pointer;
+}
+.tz-add-dot:hover {
+  background: rgba(var(--alpha-1));
+}
+.tz-btn-primary {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  height: 2.25rem;
+  padding: 0 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #fff;
+  background: #5753c6;
+  border: 0;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+  transition: background 0.15s, box-shadow 0.15s;
+}
+.tz-btn-primary:hover {
+  background: #4a46ad;
+  box-shadow: 0 6px 16px -8px rgba(79, 70, 229, 0.6);
+}
+.tz-btn-ghost {
+  display: inline-flex;
+  gap: 0.375rem;
+  align-items: center;
+  height: 2.25rem;
+  padding: 0 0.875rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: rgb(var(--slate-11));
+  background: rgb(var(--solid-1));
+  border: 1px solid rgb(var(--border-weak));
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.tz-btn-ghost:hover {
+  background: rgba(var(--alpha-1));
+}
+.tz-in {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.5rem 0.625rem;
+  font-size: 0.8125rem;
+  color: rgb(var(--slate-12));
+  background: rgb(var(--solid-1));
+  border: 1px solid rgb(var(--border-weak));
+  border-radius: 0.5rem;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.tz-in:focus {
+  border-color: #5b5bd6;
+}
+.tz-rise {
+  opacity: 0;
+  animation: tz-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes tz-rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tz-rise { animation: none; opacity: 1; }
+}
+</style>
