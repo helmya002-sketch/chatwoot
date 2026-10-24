@@ -302,6 +302,41 @@ const onSelectMacro = macro => {
   emit('executeMacro', macro);
 };
 
+// Tolzar: a safe matcher for a single literal trigger char that may be
+// regex-special (e.g. "$"). The default triggerCharacters() interpolates the
+// char raw, so "$" would become an end-anchor and, with minChars 0, hang the
+// editor on every transaction. Escape the char and guard zero-length matches.
+function literalTrigger(char, minChars = 0) {
+  const esc = char.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return $position => {
+    if ($position.depth === 0) return null;
+    const regexp = new RegExp(`(?:^)?${esc}[^\\s${esc}\\0]{${minChars},}`, 'g');
+    const textFrom = $position.before();
+    const textTo = $position.end();
+    const text = $position.doc.textBetween(textFrom, textTo, '\0', '\0');
+    let match;
+    // eslint-disable-next-line no-cond-assign
+    while ((match = regexp.exec(text))) {
+      if (match[0].length === 0) {
+        regexp.lastIndex += 1;
+        // eslint-disable-next-line no-continue
+        continue;
+      }
+      const prefix = match.input.slice(Math.max(0, match.index - 1), match.index);
+      // eslint-disable-next-line no-continue
+      if (!/^[\s\0]?$/.test(prefix)) continue;
+      const from = match.index + $position.start();
+      const to = from + match[0].length;
+      if (from < $position.pos && to >= $position.pos) {
+        const fullMatch = match[0];
+        const trimmedText = fullMatch ? fullMatch.slice(char.length) : '';
+        return { range: { from, to }, text: trimmedText };
+      }
+    }
+    return null;
+  };
+}
+
 function createSuggestionPlugin({
   trigger,
   minChars = 0,
@@ -309,9 +344,10 @@ function createSuggestionPlugin({
   searchTerm,
   isAllowed = () => true,
   interceptEnter = false,
+  matcher,
 }) {
   return suggestionsPlugin({
-    matcher: triggerCharacters(trigger, minChars),
+    matcher: matcher || triggerCharacters(trigger, minChars),
     suggestionClass: '',
     onEnter: args => {
       if (!isAllowed()) return false;
@@ -368,6 +404,15 @@ const plugins = computed(() => {
       showMenu: showVariables,
       searchTerm: variableSearchKey,
       isAllowed: () => !props.isPrivate,
+    }),
+    // Tolzar: "$" is a respond.io-style alias for the variable picker. Uses a
+    // regex-safe matcher (literalTrigger) so it cannot hang the editor.
+    createSuggestionPlugin({
+      trigger: '$',
+      showMenu: showVariables,
+      searchTerm: variableSearchKey,
+      isAllowed: () => !props.isPrivate,
+      matcher: literalTrigger('$', 0),
     }),
     createVariableInputRule({
       isPrivate: () => props.isPrivate,
