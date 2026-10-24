@@ -39,6 +39,34 @@ const unreadCount = computed(() => props.chat.unread_count);
 const hasUnread = computed(() => unreadCount.value > 0);
 const lastMessageInChat = computed(() => getLastMessage(props.chat));
 
+// Tolzar: lifecycle stage chip (respond.io-style funnel marker on each card)
+const lifecycleStage = computed(
+  () => props.currentContact?.custom_attributes?.lifecycle_stage || ''
+);
+const lifecycleChipStyle = computed(() => {
+  const s = String(lifecycleStage.value).toLowerCase();
+  let bg = '#CCFBF1';
+  let fg = '#0F766E'; // teal (brand) fallback / "new lead"
+  if (/lost/.test(s)) {
+    bg = '#FEE2E2';
+    fg = '#B91C1C';
+  } else if (/won|customer/.test(s)) {
+    bg = '#DCFCE7';
+    fg = '#15803D';
+  } else if (/qualif|lead/.test(s)) {
+    bg = '#DBEAFE';
+    fg = '#1D4ED8';
+  } else if (/open|progress|active|engag|contact|negoti/.test(s)) {
+    bg = '#FEF3C7';
+    fg = '#B45309';
+  } else if (/new/.test(s)) {
+    bg = '#E2E8F0';
+    fg = '#475569';
+  }
+  return { backgroundColor: bg, color: fg };
+});
+const lifecycleLabel = computed(() => lifecycleStage.value);
+
 const voiceCallData = computed(() => {
   const last = lastMessageInChat.value;
   if (last?.content_type !== 'voice_call' || !last.call) {
@@ -184,6 +212,18 @@ watch(
       >
         {{ currentContact.name }}
       </h4>
+      <div
+        v-if="lifecycleLabel"
+        class="flex mx-2 mt-1"
+        data-tz-lifecycle
+      >
+        <span
+          class="inline-flex items-center text-xxs font-semibold leading-none rounded-full px-1.5 py-1 whitespace-nowrap"
+          :style="lifecycleChipStyle"
+        >
+          {{ lifecycleLabel }}
+        </span>
+      </div>
       <VoiceCallStatus
         v-if="voiceCallData.status"
         key="voice-status-row"
