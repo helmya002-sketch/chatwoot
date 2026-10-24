@@ -61,12 +61,13 @@ const lastActivityAt = computed(() => {
 });
 
 // Tolzar: lifecycle chip on the conversation card (respond.io-style sales funnel)
+// Tolzar: muted, eye-safe lifecycle pill colors (calmer for long shifts)
 const LIFECYCLE_STYLES = {
-  'New Lead': { background: '#e0edff', color: '#1d4ed8' },
-  Active: { background: '#d8f5f0', color: '#0e8f84' },
-  'Offer Sent Follow up': { background: '#fef3c7', color: '#b45309' },
-  'Customer Won': { background: '#dcfce7', color: '#15803d' },
-  'Customer Lost': { background: '#fee2e2', color: '#b91c1c' },
+  'New Lead': { background: '#e9eefb', color: '#3e63dd' },
+  Active: { background: '#e6f2ef', color: '#4e9488' },
+  'Offer Sent Follow up': { background: '#f6edd6', color: '#9a6b2f' },
+  'Customer Won': { background: '#e7f1ea', color: '#4a8560' },
+  'Customer Lost': { background: '#f6e7e6', color: '#b5564f' },
 };
 const LIFECYCLE_LABELS = { 'Offer Sent Follow up': 'Offer Sent' };
 const lifecycleStage = computed(
@@ -84,7 +85,7 @@ const lifecycleChipStyle = computed(() => {
     borderRadius: '999px',
     padding: '1px 8px',
     fontSize: '11px',
-    fontWeight: 700,
+    fontWeight: 600,
     lineHeight: '1.5',
   };
 });
