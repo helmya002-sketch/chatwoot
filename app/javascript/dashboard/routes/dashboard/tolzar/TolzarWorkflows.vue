@@ -13,21 +13,21 @@ const TRIGGERS = [
   { type: 'webhook', label: 'Webhook' },
 ];
 const STEP_TYPES = [
-  { type: 'send_message', label: 'Send a Message', emoji: '💬', accent: '#12a594' },
-  { type: 'ask_question', label: 'Ask a Question', emoji: '❓', accent: '#6366f1' },
-  { type: 'branch', label: 'Branch', emoji: '🔀', accent: '#f59e0b' },
-  { type: 'assign', label: 'Assign To', emoji: '👥', accent: '#0ea5e9' },
-  { type: 'update_field', label: 'Update Contact Field', emoji: '📝', accent: '#8b5cf6' },
-  { type: 'update_lifecycle', label: 'Update Lifecycle Stage', emoji: '🎯', accent: '#ec4899' },
-  { type: 'add_tag', label: 'Add Tag', emoji: '🏷️', accent: '#10b981' },
-  { type: 'comment', label: 'Add Comment', emoji: '📌', accent: '#64748b' },
-  { type: 'close', label: 'Close Conversation', emoji: '✅', accent: '#22c55e' },
-  { type: 'trigger_workflow', label: 'Trigger Workflow', emoji: '⚙️', accent: '#0e8f84' },
-  { type: 'http', label: 'HTTP Request', emoji: '🌐', accent: '#3b82f6' },
-  { type: 'wait', label: 'Wait / Delay', emoji: '⏱️', accent: '#94a3b8' },
+  { type: 'send_message', label: 'Send a Message', icon: 'i-lucide-message-circle', accent: '#12a594' },
+  { type: 'ask_question', label: 'Ask a Question', icon: 'i-lucide-circle-help', accent: '#6366f1' },
+  { type: 'branch', label: 'Branch', icon: 'i-lucide-git-branch', accent: '#f59e0b' },
+  { type: 'assign', label: 'Assign To', icon: 'i-lucide-user-round', accent: '#0ea5e9' },
+  { type: 'update_field', label: 'Update Contact Field', icon: 'i-lucide-square-pen', accent: '#8b5cf6' },
+  { type: 'update_lifecycle', label: 'Update Lifecycle Stage', icon: 'i-lucide-target', accent: '#ec4899' },
+  { type: 'add_tag', label: 'Add Tag', icon: 'i-lucide-tag', accent: '#10b981' },
+  { type: 'comment', label: 'Add Comment', icon: 'i-lucide-message-square', accent: '#64748b' },
+  { type: 'close', label: 'Close Conversation', icon: 'i-lucide-circle-check', accent: '#22c55e' },
+  { type: 'trigger_workflow', label: 'Trigger Workflow', icon: 'i-lucide-workflow', accent: '#0e8f84' },
+  { type: 'http', label: 'HTTP Request', icon: 'i-lucide-globe', accent: '#3b82f6' },
+  { type: 'wait', label: 'Wait / Delay', icon: 'i-lucide-clock', accent: '#94a3b8' },
 ];
 function stepMeta(type) {
-  return STEP_TYPES.find(s => s.type === type) || { label: type, emoji: '•', accent: '#64748b' };
+  return STEP_TYPES.find(s => s.type === type) || { label: type, icon: 'i-lucide-circle-dot', accent: '#64748b' };
 }
 function triggerLabel(type) {
   return (TRIGGERS.find(t => t.type === type) || {}).label || type;
@@ -61,7 +61,7 @@ function seed() {
           title: 'New or Returning Contact',
           config: '2 conditions provided',
           branches: [
-            { label: 'New Contact', steps: [{ id: uid(), type: 'send_message', title: 'Send greeting', config: 'Hello $contact.name, greetings from Aquarius Diving Club! 😊' }, { id: uid(), type: 'assign', title: 'Assign by location', config: 'Sharm → Francesca; Hurghada area → Hurghada Team' }] },
+            { label: 'New Contact', steps: [{ id: uid(), type: 'send_message', title: 'Send greeting', config: 'Hello $contact.name, greetings from Aquarius Diving Club!' }, { id: uid(), type: 'assign', title: 'Assign by location', config: 'Sharm → Francesca; Hurghada area → Hurghada Team' }] },
             { label: 'Returning Contact', steps: [{ id: uid(), type: 'assign', title: 'Assign to last agent', config: 'Route to previous assignee' }] },
             { label: 'Else', steps: [{ id: uid(), type: 'comment', title: 'Flag for review', config: 'Private note to team' }] },
           ],
@@ -251,7 +251,7 @@ onMounted(load);
               @click="selectTrigger"
             >
               <div style="padding: 10px 14px; border-bottom: 1px solid #f6e4e4; font-weight: 700; color: #0b1f3a; display: flex; align-items: center; gap: 8px">
-                <span style="color: #e11d48">⚡</span> Trigger
+                <span class="i-lucide-zap" style="color: #e11d48; font-size: 15px"></span> Trigger
               </div>
               <div style="padding: 10px 14px; color: #475569; font-size: 13px">{{ triggerLabel(draft.trigger.type) }}</div>
             </div>
@@ -266,7 +266,7 @@ onMounted(load);
                 @click="selectNode(node)"
               >
                 <div style="padding: 10px 14px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; gap: 8px">
-                  <span>{{ stepMeta(node.type).emoji }}</span>
+                  <span :class="stepMeta(node.type).icon" :style="{ color: stepMeta(node.type).accent, fontSize: '16px' }"></span>
                   <span style="font-weight: 700; color: #0b1f3a; flex: 1; font-size: 13px">{{ node.title || stepMeta(node.type).label }}</span>
                   <button type="button" style="border: 0; background: transparent; color: #cbd5e1; cursor: pointer; font-size: 14px" @click.stop="removeStep(node, null)">×</button>
                 </div>
@@ -281,7 +281,7 @@ onMounted(load);
               <div v-if="!linearSteps.length" style="width: 2px; height: 14px; background: #c6d2e3"></div>
               <div style="width: 240px; background: #fff; border: 1px solid #fde4b8; border-top: 3px solid #f59e0b; border-radius: 12px; box-shadow: 0 3px 10px rgba(15,31,58,.06); cursor: pointer" @click="selectNode(branchNode)">
                 <div style="padding: 10px 14px; border-bottom: 1px solid #fdf0d8; display: flex; align-items: center; gap: 8px">
-                  <span>🔀</span><span style="font-weight: 700; color: #0b1f3a; flex: 1; font-size: 13px">{{ branchNode.title }}</span>
+                  <span class="i-lucide-git-branch" style="color: #f59e0b; font-size: 15px"></span><span style="font-weight: 700; color: #0b1f3a; flex: 1; font-size: 13px">{{ branchNode.title }}</span>
                   <button type="button" style="border: 0; background: transparent; color: #cbd5e1; cursor: pointer; font-size: 14px" @click.stop="removeStep(branchNode, null)">×</button>
                 </div>
                 <div style="padding: 8px 14px; color: #64748b; font-size: 12px">{{ branchNode.branches.length }} paths</div>
@@ -296,7 +296,7 @@ onMounted(load);
                     <div style="width: 2px; height: 12px; background: #c6d2e3"></div>
                     <div :style="{ width: '200px', background: '#fff', border: '1px solid #e3e9f2', borderTop: '3px solid ' + stepMeta(snode.type).accent, borderRadius: '12px', boxShadow: '0 2px 8px rgba(15,31,58,.05)', cursor: 'pointer' }" @click="selectNode(snode)">
                       <div style="padding: 9px 12px; display: flex; align-items: center; gap: 7px">
-                        <span style="font-size: 13px">{{ stepMeta(snode.type).emoji }}</span>
+                        <span :class="stepMeta(snode.type).icon" :style="{ color: stepMeta(snode.type).accent, fontSize: '14px' }"></span>
                         <span style="font-weight: 600; color: #0b1f3a; flex: 1; font-size: 12.5px">{{ snode.title }}</span>
                         <button type="button" style="border: 0; background: transparent; color: #cbd5e1; cursor: pointer; font-size: 13px" @click.stop="removeStep(snode, bi)">×</button>
                       </div>
@@ -333,7 +333,7 @@ onMounted(load);
               style="display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; background: #fff; border: 1px solid #eef2f7; border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; cursor: pointer"
               @click="addStep(s.type, paletteFor.branch)"
             >
-              <span :style="{ width: '26px', height: '26px', borderRadius: '7px', display: 'grid', placeContent: 'center', background: s.accent + '1a' }">{{ s.emoji }}</span>
+              <span :style="{ width: '26px', height: '26px', borderRadius: '7px', display: 'grid', placeContent: 'center', background: s.accent + '1a' }"><span :class="s.icon" :style="{ color: s.accent, fontSize: '15px' }"></span></span>
               <span style="font-weight: 600; color: #0b1f3a; font-size: 13px">{{ s.label }}</span>
             </button>
           </template>
@@ -355,7 +355,7 @@ onMounted(load);
           <template v-else-if="panel && panel.kind === 'node'">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px">
               <h3 style="margin: 0; font-size: 15px; color: #0b1f3a; display: flex; align-items: center; gap: 8px">
-                <span>{{ stepMeta(panel.node.type).emoji }}</span>{{ stepMeta(panel.node.type).label }}
+                <span :class="stepMeta(panel.node.type).icon" :style="{ color: stepMeta(panel.node.type).accent, fontSize: '16px' }"></span>{{ stepMeta(panel.node.type).label }}
               </h3>
               <button type="button" style="border: 0; background: transparent; color: #94a3b8; cursor: pointer; font-size: 18px" @click="panel = null">×</button>
             </div>
