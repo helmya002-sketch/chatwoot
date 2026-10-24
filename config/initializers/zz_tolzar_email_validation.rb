@@ -1,30 +1,47 @@
 # frozen_string_literal: true
 
-# Tolzar: in this deployment, email validation rejects EVERY address (even
-# gmail.com) — agent invites fail ("Email is not an email") and contact emails
-# fail ("Invalid email"). That blocks onboarding any real teammate, so we relax
-# both validators to a standard `addr@domain.tld` format check:
+# Tolzar: in this deployment every email address is rejected (even gmail.com) —
+# agent invites fail ("Email is not an email") and contact emails fail ("Invalid
+# email"). That blocks onboarding any real teammate. We relax email validation to
+# a standard `addr@domain.tld` format check.
 #
-#   * Contact uses `format: { with: Devise.email_regexp }` — re-assert a standard
-#     permissive regexp (something resets it at runtime to one that rejects all).
-#   * User (devise_token_auth) uses `email: true` -> valid_email2's top-level
-#     EmailValidator, whose strict/MX/parse check fails here — override it to the
-#     same standard format check (no MX/disposable lookup).
+# Earlier attempts in `after_initialize` were too late (the validators had already
+# captured the strict regexp at model load). Instead, in `to_prepare` (runs after
+# models load on every boot/reload) we MUTATE the existing validator instances:
+#   * format validators on :email -> swap their regexp for a permissive one
+#   * valid_email2's EmailValidator -> redefine to the same permissive check
+# (no MX / disposable / strict-parse lookups, which fail in this container).
 
-STANDARD_EMAIL_REGEXP = /\A[^@\s]+@[^@\s]+\.[^@\s]+\z/
+TOLZAR_EMAIL_REGEXP = /\A[^@\s]+@[^@\s]+\.[^@\s]+\z/
 
-Rails.application.config.after_initialize do
-  Devise.email_regexp = STANDARD_EMAIL_REGEXP
-end
+# Belt-and-suspenders: also set the Devise regexp at load time.
+Devise.email_regexp = TOLZAR_EMAIL_REGEXP if defined?(Devise)
 
 Rails.application.config.to_prepare do
+  Devise.email_regexp = TOLZAR_EMAIL_REGEXP if defined?(Devise)
+
+  models = []
+  models << User if defined?(User)
+  models << Contact if defined?(Contact)
+
+  models.each do |klass|
+    next unless klass.respond_to?(:_validators)
+
+    Array(klass._validators[:email]).each do |validator|
+      if validator.is_a?(ActiveModel::Validations::FormatValidator) &&
+         validator.options[:with].is_a?(Regexp)
+        validator.options[:with] = TOLZAR_EMAIL_REGEXP
+      end
+    end
+  end
+
   if defined?(EmailValidator)
     EmailValidator.class_eval do
       def validate_each(record, attribute, value)
         return if value.blank?
 
         Array(value).each do |entry|
-          next if entry.to_s.match?(STANDARD_EMAIL_REGEXP)
+          next if entry.to_s.match?(TOLZAR_EMAIL_REGEXP)
 
           record.errors.add(attribute, options[:message] || :invalid)
         end
