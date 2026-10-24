@@ -256,6 +256,19 @@ const teams = useMapGetter('teams/getMyTeams');
 // Tolzar: managers/owners (administrators) see ALL teams in the inbox rail
 // (respond.io-style team inbox); agents still see only the teams they belong to.
 const allTeams = useMapGetter('teams/getTeams');
+
+// Tolzar: AI Agents tree (respond.io-style) — read the agents saved by the
+// AI Agents builder (localStorage); listed as children under the AI Agents nav.
+const tzAiAgents = ref([]);
+const loadTzAiAgents = () => {
+  try {
+    tzAiAgents.value = JSON.parse(
+      localStorage.getItem('tolzar_ai_agents_v1') || '[]'
+    );
+  } catch (e) {
+    tzAiAgents.value = [];
+  }
+};
 const currentRole = useMapGetter('getCurrentRole');
 const teamsForSidebar = computed(() =>
   currentRole.value === 'administrator' ? allTeams.value : teams.value
@@ -276,6 +289,7 @@ onMounted(() => {
   store.dispatch('attributes/get');
   store.dispatch('customViews/get', 'conversation');
   store.dispatch('customViews/get', 'contact');
+  loadTzAiAgents();
 });
 
 watch([accountId, hasConversationUnreadCounts], fetchConversationUnreadCounts, {
@@ -599,6 +613,18 @@ const menuItems = computed(() => {
       icon: 'i-lucide-bot',
       to: accountScopedRoute('tolzar_ai_agents'),
       activeOn: ['tolzar_ai_agents'],
+      collapsible: tzAiAgents.value.length > 0,
+      showTreeLine: true,
+      children:
+        tzAiAgents.value.length > 0
+          ? tzAiAgents.value.map(agent => ({
+              name: `ai-agent-${agent.id}`,
+              label: agent.name,
+              icon: 'i-lucide-bot',
+              to: accountScopedRoute('tolzar_ai_agents'),
+              activeOn: ['tolzar_ai_agents'],
+            }))
+          : undefined,
     },
     {
       name: 'Campaigns',
