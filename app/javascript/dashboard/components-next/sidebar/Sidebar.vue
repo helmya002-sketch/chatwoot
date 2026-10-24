@@ -273,6 +273,18 @@ const currentRole = useMapGetter('getCurrentRole');
 const teamsForSidebar = computed(() =>
   currentRole.value === 'administrator' ? allTeams.value : teams.value
 );
+
+// Tolzar: manager "Team Inbox" tree — each team expands to its agents, and a
+// click filters the inbox to that agent within that team (respond.io-style).
+// Administrators only; agents keep the plain per-team "Teams" group.
+const getTeamMembers = useMapGetter('teamMembers/getTeamMembers');
+const loadTeamAgents = () => {
+  if (currentRole.value !== 'administrator') return;
+  (allTeams.value || []).forEach(team =>
+    store.dispatch('teamMembers/get', { teamId: team.id })
+  );
+};
+
 const contactCustomViews = useMapGetter('customViews/getContactCustomViews');
 const conversationCustomViews = useMapGetter(
   'customViews/getConversationCustomViews'
@@ -299,6 +311,9 @@ watch([accountId, hasConversationUnreadCounts], fetchConversationUnreadCounts, {
 watch([accountId, currentUserId], fetchSidebarSortPreferences, {
   immediate: true,
 });
+
+// Load each team's agents once the team list is available (manager Team Inbox).
+watch(allTeams, loadTeamAgents, { immediate: true });
 
 const hasUnreadCountsForSection = section => {
   if (section === SIDEBAR_SORT_SECTIONS.FOLDERS) {
@@ -540,6 +555,65 @@ const menuItems = computed(() => {
         },
       ],
     },
+    // Tolzar: manager Team Inbox — teams → agents → filter inbox to that agent.
+    ...(currentRole.value === 'administrator'
+      ? [
+          {
+            name: 'Team Inbox',
+            label: 'Team Inbox',
+            icon: 'i-lucide-users-round',
+            children: sortedTeams.value.map(team => ({
+              name: `tz-team-${team.id}`,
+              label: team.name,
+              icon: team.icon
+                ? h(EmojiIcon, {
+                    value: team.icon,
+                    color: team.icon_color,
+                    class: 'size-3.5',
+                  })
+                : 'i-lucide-users',
+              collapsible: true,
+              showTreeLine: true,
+              children: [
+                {
+                  name: `tz-team-all-${team.id}`,
+                  label: t('SIDEBAR.ALL_CONVERSATIONS'),
+                  icon: 'i-lucide-inbox',
+                  badgeCount: getTeamUnreadCount.value(team.id),
+                  to: accountScopedRoute('team_conversations', {
+                    teamId: team.id,
+                  }),
+                },
+                ...(getTeamMembers.value(team.id) || []).map(agent => ({
+                  name: `tz-team-${team.id}-agent-${agent.id}`,
+                  label: agent.name || agent.available_name || agent.email,
+                  icon: 'i-lucide-user-round',
+                  to: accountScopedRoute(
+                    'home',
+                    {},
+                    {
+                      filters: JSON.stringify([
+                        {
+                          attribute_key: 'team_id',
+                          filter_operator: 'equal_to',
+                          values: { id: team.id },
+                          query_operator: 'and',
+                        },
+                        {
+                          attribute_key: 'assignee_id',
+                          filter_operator: 'equal_to',
+                          values: { id: agent.id },
+                          query_operator: 'and',
+                        },
+                      ]),
+                    }
+                  ),
+                })),
+              ],
+            })),
+          },
+        ]
+      : []),
     {
       name: 'Contacts',
       label: t('SIDEBAR.CONTACTS'),

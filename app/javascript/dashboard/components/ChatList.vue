@@ -840,6 +840,16 @@ onMounted(() => {
   }
 });
 
+// Tolzar: apply a `?filters=` query even when the inbox view is already mounted
+// (e.g. clicking a manager Team-Inbox agent while on /conversations) — a
+// query-only route change does not remount, so onMounted's handler won't re-run.
+watch(
+  () => route.query.filters,
+  serialized => {
+    if (serialized) applyRouteFilters();
+  }
+);
+
 const deleteConversationDialogRef = ref(null);
 const selectedConversationId = ref(null);
 
