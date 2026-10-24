@@ -11,6 +11,12 @@ const currentUser = useMapGetter('getCurrentUser');
 const firstName = computed(
   () => (currentUser.value?.name || '').trim().split(' ')[0] || 'there'
 );
+const greeting = computed(() => {
+  const h = new Date().getHours();
+  if (h < 12) return 'Good morning';
+  if (h < 18) return 'Good afternoon';
+  return 'Good evening';
+});
 
 // respond.io lifecycle stages (the funnel spine)
 const STAGES = [
@@ -68,7 +74,7 @@ const recent = computed(() =>
     .map(c => ({
       id: c.id,
       name: c.meta?.sender?.name || 'Unknown',
-      snippet: (c.last_non_activity_message?.content || '').slice(0, 70),
+      snippet: (c.last_non_activity_message?.content || '').slice(0, 72),
       team: c.meta?.team?.name || '',
       stage: c.meta?.sender?.custom_attributes?.lifecycle_stage || '',
       ts: c.last_activity_at,
@@ -77,10 +83,10 @@ const recent = computed(() =>
 );
 
 const kpis = computed(() => [
-  { k: 'Total contacts', v: total.value, icon: 'i-lucide-users', sub: `${pipeline.value} in active pipeline` },
-  { k: 'Open conversations', v: openConvs.value, icon: 'i-lucide-messages-square', sub: `${unassigned.value} unassigned` },
+  { k: 'Total contacts', v: total.value, icon: 'i-lucide-users', sub: `${pipeline.value} in active pipeline`, accent: '#0d9488', go: 'contacts_dashboard_index' },
+  { k: 'Open conversations', v: openConvs.value, icon: 'i-lucide-messages-square', sub: `${unassigned.value} unassigned`, accent: '#0ea5e9', go: 'home' },
   { k: 'Won', v: won.value, icon: 'i-lucide-trophy', sub: `${lost.value} lost`, accent: '#10b981' },
-  { k: 'Win rate', v: `${winRate.value}%`, icon: 'i-lucide-target', sub: 'of decided leads', accent: true },
+  { k: 'Win rate', v: `${winRate.value}%`, icon: 'i-lucide-target', sub: 'of decided leads', accent: '#8b5cf6' },
 ]);
 
 function stageStyle(color) {
@@ -103,7 +109,8 @@ function timeAgo(ts) {
   return `${Math.floor(s / 86400)}d`;
 }
 function go(name) {
-  router.push({ name, params: { accountId: accountId.value } });
+  if (!name) return;
+  router.push({ name, params: { accountId: accountId.value } }).catch(() => {});
 }
 function openConversation(id) {
   router.push({ name: 'inbox_conversation', params: { accountId: accountId.value, conversation_id: id } });
@@ -150,78 +157,92 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="overflow-auto flex-1 bg-n-background" data-tz-build="dash-4">
-    <div class="mx-auto max-w-[1180px] px-6 pb-16 pt-6">
-      <!-- welcome card (matches the rest of the dashboard) -->
+  <div class="overflow-auto flex-1 bg-n-background" data-tz-build="dash-5">
+    <div class="tz-dash mx-auto max-w-[1200px] px-5 pb-16 pt-6 md:px-7">
+      <!-- hero header -->
       <div
-        class="flex flex-wrap gap-4 justify-between items-center p-5 rounded-2xl border shadow-sm md:p-6 bg-n-solid-1 border-n-weak"
+        class="tz-rise tz-hero overflow-hidden relative p-6 rounded-3xl border shadow-sm md:p-7 bg-n-solid-1 border-n-weak"
+        style="animation-delay: 0ms"
       >
-        <div class="flex gap-4 items-center min-w-0">
-          <span
-            class="grid flex-shrink-0 place-content-center rounded-2xl size-12 bg-n-alpha-2"
-          >
-            <span class="i-lucide-layout-dashboard size-6 text-n-brand" />
-          </span>
-          <div class="min-w-0">
-            <div class="text-[11px] font-semibold tracking-wider text-n-brand">
-              YOUR SALES FUNNEL
+        <span class="tz-hero-glow" aria-hidden="true" />
+        <div class="flex relative flex-wrap gap-5 justify-between items-center">
+          <div class="flex gap-4 items-center min-w-0">
+            <span class="tz-hero-mark grid flex-shrink-0 place-content-center rounded-2xl size-14">
+              <span class="i-lucide-layout-dashboard size-7 text-white" />
+            </span>
+            <div class="min-w-0">
+              <div class="flex gap-2 items-center text-[11px] font-semibold tracking-[0.14em] uppercase text-n-brand">
+                <span class="inline-block rounded-full size-1.5 bg-n-brand tz-pulse" />
+                Your command center
+              </div>
+              <h1 class="mt-1 text-2xl font-extrabold tracking-tight md:text-[26px] text-n-slate-12">
+                {{ greeting }}, {{ firstName }}
+              </h1>
+              <p class="mt-1 mb-0 text-sm text-n-slate-11">
+                {{ loaded ? `${openConvs} open · ${won} won · ${winRate}% win rate` : 'Loading your pipeline…' }}
+              </p>
             </div>
-            <h1 class="mt-0.5 text-xl font-extrabold text-n-slate-12">
-              Welcome back, {{ firstName }}
-            </h1>
-            <p class="mt-0.5 mb-0 text-sm text-n-slate-11">
-              {{ loaded ? `${openConvs} open conversations · ${won} won · ${winRate}% win rate` : 'Loading your pipeline…' }}
-            </p>
+          </div>
+          <div class="flex flex-wrap gap-2.5 items-center">
+            <button
+              v-if="loaded && unassigned > 0"
+              type="button"
+              class="inline-flex gap-1.5 items-center px-3 h-9 text-[13px] font-semibold rounded-xl border transition-colors tz-attn"
+              @click="go('home')"
+            >
+              <span class="i-lucide-alert-circle size-4" />
+              {{ unassigned }} to assign
+            </button>
+            <button
+              type="button"
+              class="inline-flex gap-2 items-center px-4 h-9 text-sm font-semibold text-white rounded-xl shadow-sm transition-all bg-n-brand hover:opacity-90 hover:shadow-md"
+              @click="go('home')"
+            >
+              <span class="i-lucide-inbox size-4" />
+              Open inbox
+            </button>
           </div>
         </div>
-        <button
-          type="button"
-          class="inline-flex gap-2 items-center px-4 h-9 text-sm font-semibold text-white rounded-lg transition-opacity bg-n-brand hover:opacity-90"
-          @click="go('home')"
-        >
-          <span class="i-lucide-inbox size-4" />
-          Open inbox
-        </button>
       </div>
 
       <!-- KPI cards -->
-      <div class="grid grid-cols-2 gap-4 mt-5 lg:grid-cols-4">
-        <div
-          v-for="t in kpis"
+      <div class="grid grid-cols-2 gap-3.5 mt-4 lg:grid-cols-4">
+        <component
+          :is="t.go ? 'button' : 'div'"
+          v-for="(t, i) in kpis"
           :key="t.k"
-          class="p-4 rounded-2xl border shadow-sm bg-n-solid-1 border-n-weak"
+          :type="t.go ? 'button' : undefined"
+          class="tz-rise tz-card overflow-hidden relative p-4 w-full text-left rounded-2xl border shadow-sm bg-n-solid-1 border-n-weak"
+          :class="t.go ? 'tz-hover cursor-pointer' : ''"
+          :style="{ animationDelay: 60 + i * 50 + 'ms' }"
+          @click="t.go && go(t.go)"
         >
+          <span class="tz-accent" :style="{ background: t.accent }" aria-hidden="true" />
           <div class="flex gap-2.5 items-center">
-            <span class="grid place-content-center rounded-xl size-9 bg-n-alpha-2">
-              <span :class="t.icon" class="size-[18px] text-n-brand" />
+            <span class="grid place-content-center rounded-xl size-9" :style="stageStyle(t.accent)">
+              <span :class="t.icon" class="size-[18px]" />
             </span>
-            <div class="text-xs font-medium leading-tight text-n-slate-11">
-              {{ t.k }}
-            </div>
+            <div class="text-xs font-medium leading-tight text-n-slate-11">{{ t.k }}</div>
           </div>
-          <div
-            class="mt-3 text-[32px] font-extrabold leading-none tabular-nums"
-            :style="t.accent && t.accent !== true ? { color: t.accent } : undefined"
-            :class="t.accent === true ? 'text-n-brand' : (t.accent ? '' : 'text-n-slate-12')"
-          >
+          <div class="mt-3 text-[34px] font-extrabold leading-none tabular-nums text-n-slate-12">
             {{ loaded ? t.v : '—' }}
           </div>
           <div class="mt-1.5 text-xs text-n-slate-10">{{ t.sub }}</div>
-        </div>
+        </component>
       </div>
 
       <!-- funnel + team -->
-      <div class="grid grid-cols-1 gap-4 mt-4 lg:grid-cols-3">
+      <div class="grid grid-cols-1 gap-3.5 mt-3.5 lg:grid-cols-3">
         <!-- lifecycle funnel -->
-        <div class="p-5 rounded-2xl border shadow-sm lg:col-span-2 bg-n-solid-1 border-n-weak">
+        <div class="tz-rise p-5 rounded-2xl border shadow-sm lg:col-span-2 bg-n-solid-1 border-n-weak" style="animation-delay: 300ms">
           <div class="flex justify-between items-center mb-4">
             <h3 class="m-0 text-sm font-semibold text-n-slate-12">Lifecycle funnel</h3>
-            <span class="text-xs text-n-slate-10">{{ total }} contacts</span>
+            <span class="px-2 py-0.5 text-[11px] font-medium rounded-full bg-n-alpha-2 text-n-slate-11">{{ total }} contacts</span>
           </div>
           <div
             v-for="s in STAGES"
             :key="s.key"
-            class="grid gap-3 items-center mb-3.5 last:mb-0 grid-cols-[120px_1fr_64px] md:grid-cols-[150px_1fr_72px]"
+            class="grid gap-3 items-center mb-3 last:mb-0 grid-cols-[112px_1fr_60px] md:grid-cols-[150px_1fr_72px]"
           >
             <div class="flex gap-2 items-center min-w-0">
               <span class="grid place-content-center rounded-lg size-6" :style="stageStyle(s.color)">
@@ -231,8 +252,8 @@ onMounted(async () => {
             </div>
             <div class="overflow-hidden h-7 rounded-lg bg-n-alpha-2">
               <div
-                class="flex items-center h-full rounded-lg transition-[width] duration-700 ease-out ltr:pl-2.5 rtl:pr-2.5"
-                :style="{ width: (loaded ? Math.max(6, Math.round(((counts[s.key]||0)/funnelMax)*100)) : 0) + '%', background: s.color }"
+                class="h-full rounded-lg transition-[width] duration-700 ease-out"
+                :style="{ width: (loaded ? Math.max(5, Math.round(((counts[s.key]||0)/funnelMax)*100)) : 0) + '%', background: `linear-gradient(90deg, ${s.color}, ${s.color}cc)` }"
               />
             </div>
             <div class="font-extrabold text-right text-n-slate-12 tabular-nums">
@@ -245,16 +266,16 @@ onMounted(async () => {
         </div>
 
         <!-- by team -->
-        <div class="p-5 rounded-2xl border shadow-sm bg-n-solid-1 border-n-weak">
+        <div class="tz-rise p-5 rounded-2xl border shadow-sm bg-n-solid-1 border-n-weak" style="animation-delay: 350ms">
           <h3 class="m-0 mb-4 text-sm font-semibold text-n-slate-12">Conversations by team</h3>
           <div v-if="loaded && teamDist.length">
             <div v-for="t in teamDist" :key="t.name" class="mb-3.5 last:mb-0">
               <div class="flex justify-between mb-1 text-xs">
-                <span class="font-semibold capitalize text-n-slate-11 truncate">{{ t.name }}</span>
+                <span class="font-semibold capitalize truncate text-n-slate-11">{{ t.name }}</span>
                 <span class="font-bold text-n-slate-12 tabular-nums">{{ t.n }}</span>
               </div>
               <div class="overflow-hidden h-2 rounded-full bg-n-alpha-2">
-                <div class="h-full rounded-full transition-[width] duration-700" :style="{ width: t.pct + '%', background: t.color }" />
+                <div class="h-full rounded-full transition-[width] duration-700" :style="{ width: t.pct + '%', background: `linear-gradient(90deg, ${t.color}, ${t.color}cc)` }" />
               </div>
             </div>
           </div>
@@ -263,11 +284,11 @@ onMounted(async () => {
       </div>
 
       <!-- recent conversations -->
-      <div class="mt-4 rounded-2xl border shadow-sm bg-n-solid-1 border-n-weak">
+      <div class="tz-rise mt-3.5 rounded-2xl border shadow-sm bg-n-solid-1 border-n-weak" style="animation-delay: 400ms">
         <div class="flex justify-between items-center px-5 py-4 border-b border-n-weak">
           <h3 class="m-0 text-sm font-semibold text-n-slate-12">Recent conversations</h3>
-          <button type="button" class="text-xs font-semibold text-n-brand hover:underline" @click="go('home')">
-            View all →
+          <button type="button" class="inline-flex gap-1 items-center text-xs font-semibold text-n-brand hover:underline" @click="go('home')">
+            View all <span class="i-lucide-arrow-right size-3.5 rtl:rotate-180" />
           </button>
         </div>
         <div v-if="loaded && recent.length">
@@ -304,16 +325,17 @@ onMounted(async () => {
       </div>
 
       <!-- quick links -->
-      <div class="grid grid-cols-1 gap-4 mt-4 md:grid-cols-3">
+      <div class="grid grid-cols-1 gap-3.5 mt-3.5 md:grid-cols-3">
         <button
-          v-for="q in [
+          v-for="(q, i) in [
             { name: 'tolzar_ai_agents', icon: 'i-lucide-bot', label: 'AI Agents', sub: 'Build your sellers' },
             { name: 'tolzar_workflows', icon: 'i-lucide-workflow', label: 'Workflows', sub: 'Automate conversations' },
             { name: 'home', icon: 'i-lucide-inbox', label: 'Inbox', sub: 'All conversations' },
           ]"
           :key="q.name"
           type="button"
-          class="flex gap-3 items-center p-4 text-left rounded-2xl border shadow-sm transition-colors bg-n-solid-1 border-n-weak hover:bg-n-alpha-1"
+          class="tz-rise tz-card tz-hover flex gap-3 items-center p-4 text-left rounded-2xl border shadow-sm cursor-pointer bg-n-solid-1 border-n-weak"
+          :style="{ animationDelay: 450 + i * 50 + 'ms' }"
           @click="go(q.name)"
         >
           <span class="grid flex-shrink-0 place-content-center rounded-xl size-10 bg-n-alpha-2">
@@ -333,3 +355,66 @@ onMounted(async () => {
     </div>
   </div>
 </template>
+
+<style scoped>
+/* premium hero: subtle brand wash + glow, elegant in both themes */
+.tz-hero {
+  background-image: linear-gradient(135deg, rgba(20, 184, 166, 0.06), rgba(20, 184, 166, 0) 42%);
+}
+.tz-hero-glow {
+  position: absolute;
+  inset-inline-end: -60px;
+  top: -70px;
+  width: 240px;
+  height: 240px;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(20, 184, 166, 0.14), rgba(20, 184, 166, 0) 70%);
+  pointer-events: none;
+}
+.tz-hero-mark {
+  background: linear-gradient(140deg, #14b8a6, #0e8f84);
+  box-shadow: 0 8px 20px -6px rgba(14, 143, 132, 0.55);
+}
+.tz-attn {
+  color: #b45309;
+  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.35);
+}
+.tz-attn:hover {
+  background: rgba(245, 158, 11, 0.2);
+}
+/* KPI accent bar */
+.tz-card {
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.tz-accent {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 3px;
+  opacity: 0.9;
+}
+.tz-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px -14px rgba(15, 23, 42, 0.28);
+}
+.tz-pulse {
+  animation: tz-pulse 2s ease-in-out infinite;
+}
+@keyframes tz-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.82); }
+}
+/* staggered entrance */
+.tz-rise {
+  opacity: 0;
+  animation: tz-rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes tz-rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tz-rise, .tz-pulse { animation: none; opacity: 1; }
+}
+</style>
