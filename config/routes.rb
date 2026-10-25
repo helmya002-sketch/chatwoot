@@ -10,6 +10,9 @@ Rails.application.routes.draw do
 
   post 'resend_confirmation', to: 'auth/resend_confirmations#create'
 
+  # Tolzar shadow mirror: PUBLIC respond.io webhook receiver (HMAC-verified, read-only).
+  post 'tolzar/mirror/respondio/:tenant', to: 'tolzar/mirror/respondio#create', as: :tolzar_mirror_respondio
+
   ## renders the frontend paths only if its not an api only server
   if ActiveModel::Type::Boolean.new.cast(ENV.fetch('CW_API_ONLY_SERVER', false))
     root to: 'api#index'

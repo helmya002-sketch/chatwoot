@@ -1,0 +1,20 @@
+# Tolzar shadow mirror — tenant registry (no secrets; signing keys come from env).
+# P2 adds `inboxes:` mapping each respond.io channel id -> the Chatwoot mirror inbox id.
+tenants:
+  aquarius:
+    space_id: 282271
+    account_id: 1
+    # inboxes:            # rio_channel_id: chatwoot_inbox_id  (filled in P2)
+    #   499994: null      # WhatsApp
+    #   374254: null      # Email reservation@
+    #   570174: null      # Hurghada Instagram
+    #   570175: null      # Hurghada Messenger
+    #   570176: null      # Sharm Messenger
+  xplorer:
+    space_id: 484132
+    account_id: 3         # Chatwoot "Xplorer Red Sea (mirror)" account (created in P2)
+    # inboxes:
+    #   567990: null      # WhatsApp
+    #   567987: null      # Email
+    #   567991: null      # Messenger
+    #   567993: null      # Instagram

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_10_19_143116) do
+ActiveRecord::Schema[7.1].define(version: 2026_10_25_120000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1752,6 +1752,23 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_19_143116) do
       before(:insert).
       for_each(:row) do
     "NEW.display_id := nextval('conv_dpid_seq_' || NEW.account_id);"
+  end
+
+  create_table "tolzar_mirror_events", force: :cascade do |t|
+    t.string "tenant", null: false
+    t.string "event_id", null: false
+    t.string "event_type"
+    t.bigint "rio_contact_id"
+    t.bigint "rio_message_id"
+    t.jsonb "payload", default: {}, null: false
+    t.datetime "received_at", null: false
+    t.datetime "processed_at"
+    t.string "error"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_id"], name: "index_tolzar_mirror_events_on_event_id", unique: true
+    t.index ["processed_at"], name: "index_tolzar_mirror_events_on_processed_at"
+    t.index ["tenant", "received_at"], name: "index_tolzar_mirror_events_on_tenant_and_received_at"
   end
 
   create_trigger("camp_dpid_before_insert", :generated => true, :compatibility => 1).
