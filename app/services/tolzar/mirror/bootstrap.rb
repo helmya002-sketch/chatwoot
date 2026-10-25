@@ -15,7 +15,11 @@ class Tolzar::Mirror::Bootstrap
   pattr_initialize [:tenant!]
 
   def account
-    @account ||= find_or_create_account
+    @account ||= begin
+      acc = find_or_create_account
+      link_observer(acc)
+      acc
+    end
   end
 
   def inbox
@@ -110,5 +114,20 @@ class Tolzar::Mirror::Bootstrap
   rescue ActiveRecord::RecordNotUnique, ActiveRecord::RecordInvalid
     # concurrent link (DB unique race, or the uniqueness VALIDATION firing first)
     # — the link already exists, nothing to do.
+  end
+
+  # Link the brain's read/write user (a Chatwoot user id in TOLZAR_MIRROR_OBSERVER_USER_ID)
+  # to every mirror account as administrator, so the brain can read mirrored threads and
+  # post its private "[Tolzar · would] …" eval notes on tenants beyond account 1. The brain
+  # authenticates to Chatwoot with this user's token; a mirror account it is not a member of
+  # returns 401. No-op when unset, when the user is missing, or when already linked.
+  def link_observer(acc)
+    uid = ENV['TOLZAR_MIRROR_OBSERVER_USER_ID'].to_i
+    return if uid <= 0
+    return unless User.exists?(id: uid)
+
+    AccountUser.find_or_create_by!(account_id: acc.id, user_id: uid) { |au| au.role = :administrator }
+  rescue ActiveRecord::RecordNotUnique, ActiveRecord::RecordInvalid
+    # already linked (DB unique race, or the uniqueness validation firing first)
   end
 end
