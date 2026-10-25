@@ -110,6 +110,22 @@ const copyConversationId = async () => {
     // error
   }
 };
+
+// Tolzar: lead score surfaced in the conversation header so it is noticeable
+// (the brain writes these custom attributes on the contact).
+const tolzarLeadScore = computed(() => {
+  const n = Number(currentContact.value?.custom_attributes?.tolzar_lead_score);
+  return Number.isFinite(n) && n > 0 ? Math.min(100, Math.round(n)) : null;
+});
+const tolzarLeadLabel = computed(
+  () => currentContact.value?.custom_attributes?.tolzar_lead_label || 'Lead score'
+);
+const tolzarLeadHint = computed(
+  () => currentContact.value?.custom_attributes?.tolzar_lead_hint || ''
+);
+const leadRingStyle = computed(() => ({
+  background: `conic-gradient(rgb(var(--blue-9)) ${tolzarLeadScore.value}%, rgb(var(--slate-5)) 0)`,
+}));
 </script>
 
 <template>
@@ -181,6 +197,19 @@ const copyConversationId = async () => {
     <div
       class="flex flex-row items-center justify-start xl:justify-end flex-shrink-0 gap-2 w-full xl:w-auto header-actions-wrap"
     >
+      <div
+        v-if="tolzarLeadScore"
+        v-tooltip="tolzarLeadHint || 'Tolzar lead score'"
+        class="tolzar-leadscore hidden md:flex"
+      >
+        <span class="tz-ring" :style="leadRingStyle">
+          <i>{{ tolzarLeadScore }}</i>
+        </span>
+        <span class="tz-txt">
+          <b>{{ tolzarLeadLabel }}</b>
+          <i v-if="tolzarLeadHint">{{ tolzarLeadHint }}</i>
+        </span>
+      </div>
       <SLACardLabel
         v-if="hasSlaPolicyId"
         :chat="chat"
@@ -193,3 +222,51 @@ const copyConversationId = async () => {
     </div>
   </div>
 </template>
+
+<style scoped>
+/* Tolzar lead-score badge — premium, theme-aware via Radix tokens */
+.tolzar-leadscore {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  background: rgb(var(--blue-9) / 0.1);
+  border: 1px solid rgb(var(--blue-9) / 0.2);
+  border-radius: 11px;
+  padding: 3px 12px 3px 5px;
+}
+.tolzar-leadscore .tz-ring {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  flex: 0 0 30px;
+  display: grid;
+  place-items: center;
+}
+.tolzar-leadscore .tz-ring i {
+  width: 23px;
+  height: 23px;
+  border-radius: 50%;
+  background: rgb(var(--surface-1));
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 800;
+  font-style: normal;
+  color: rgb(var(--slate-12));
+}
+.tolzar-leadscore .tz-txt {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+.tolzar-leadscore .tz-txt b {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgb(var(--slate-12));
+}
+.tolzar-leadscore .tz-txt i {
+  font-size: 10px;
+  font-style: normal;
+  color: rgb(var(--slate-11));
+}
+</style>
