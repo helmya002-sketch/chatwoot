@@ -155,7 +155,7 @@ class Tolzar::Mirror::Projector
     inner = m['message'] || {}
     content = inner['text'].presence || "[#{inner['type'].presence || 'message'}]"
 
-    conv.messages.create!(
+    msg = conv.messages.create!(
       account_id: account.id,
       inbox_id: inbox.id,
       message_type: outgoing ? :outgoing : :incoming,
@@ -164,6 +164,12 @@ class Tolzar::Mirror::Projector
       source_id: src,
       content_attributes: m['timestamp'].present? ? { external_created_at: m['timestamp'] } : {}
     )
+    # Hand each customer turn to the Tolzar brain for read-only shadow evaluation.
+    # Direct internal call (see BrainNotifyJob) — not a Chatwoot webhook, so it is
+    # not blocked by Chatwoot's webhook SSRF guard. No-op unless TOLZAR_BRAIN_HOOK_URL
+    # is set. Agent/outgoing turns are not sent: the brain reads the full thread at
+    # triage time and only acts on a customer turn.
+    Tolzar::Mirror::BrainNotifyJob.perform_later(msg.id) unless outgoing
   end
 
   def project_assignee
