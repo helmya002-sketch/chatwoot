@@ -46,22 +46,45 @@ class Tolzar::Mirror::RespondioController < ActionController::API
   def status
     tenant = params[:tenant].to_s
     return head(:not_found) unless Tolzar::MirrorConfig.tenant?(tenant)
-
-    provided = request.headers['X-Tolzar-Mirror-Key'].to_s
-    authed = provided.present? && Tolzar::MirrorConfig.signing_keys(tenant).any? do |k|
-      ActiveSupport::SecurityUtils.secure_compare(provided, k)
-    end
-    return head(:unauthorized) unless authed
+    return head(:unauthorized) unless authed?(tenant)
 
     scope = Tolzar::MirrorEvent.where(tenant: tenant)
+    errored = scope.where.not(error: nil)
     render json: {
-      tenant:    tenant,
-      total:     scope.count,
-      pending:   scope.where(processed_at: nil).count,
-      processed: scope.where.not(processed_at: nil).count,
-      recent:    scope.order(received_at: :desc).limit(10)
-                      .pluck(:event_type, :event_id, :received_at)
-                      .map { |t, id, at| { event_type: t, event_id: id, received_at: at } }
+      tenant:     tenant,
+      total:      scope.count,
+      pending:    scope.where(processed_at: nil).count,
+      processed:  scope.where.not(processed_at: nil).count,
+      errors:     errored.count,
+      last_error: errored.order(received_at: :desc).limit(1).pluck(:event_type, :error).first,
+      recent:     scope.order(received_at: :desc).limit(10)
+                       .pluck(:event_type, :event_id, :received_at)
+                       .map { |t, id, at| { event_type: t, event_id: id, received_at: at } }
     }
+  end
+
+  # Secret-guarded: re-run projection for a tenant's events. By default only the
+  # errored ones; with ?all=1, every event. Used to project the already-stored
+  # events against a new/fixed projector. Clears processed_at + error, re-enqueues.
+  def reprocess
+    tenant = params[:tenant].to_s
+    return head(:not_found) unless Tolzar::MirrorConfig.tenant?(tenant)
+    return head(:unauthorized) unless authed?(tenant)
+
+    scope = Tolzar::MirrorEvent.where(tenant: tenant)
+    target = params[:all].to_s == '1' ? scope : scope.where.not(error: nil)
+    ids = target.pluck(:id)
+    target.update_all(processed_at: nil, error: nil)
+    ids.each { |id| Tolzar::Mirror::ProjectJob.perform_later(id) }
+    render json: { tenant: tenant, requeued: ids.size }
+  end
+
+  private
+
+  def authed?(tenant)
+    provided = request.headers['X-Tolzar-Mirror-Key'].to_s
+    provided.present? && Tolzar::MirrorConfig.signing_keys(tenant).any? do |k|
+      ActiveSupport::SecurityUtils.secure_compare(provided, k)
+    end
   end
 end

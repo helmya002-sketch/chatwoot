@@ -17,6 +17,10 @@ class SendReplyJob < ApplicationJob
 
   def perform(message_id)
     message = Message.find(message_id)
+
+    # Tolzar shadow mirror: never deliver anything for a mirror inbox.
+    return if Tolzar::MirrorConfig.mirror_inbox?(message.conversation.inbox)
+
     channel_name = message.conversation.inbox.channel.class.to_s
 
     Captain::Conversation::AgentMessageTranslationService.new(message: message).perform if message.content_attributes['translation_pending']

@@ -12,6 +12,9 @@ require 'base64'
 module Tolzar
   module MirrorConfig
     CONFIG_PATH = Rails.root.join('config', 'tolzar_mirror.yml')
+    # additional_attributes flag set on every mirror inbox; used as the hard
+    # send-prevention guard in SendReplyJob (a mirror must never send anything).
+    MIRROR_INBOX_TAG = 'tolzar_mirror'.freeze
 
     module_function
 
@@ -29,6 +32,20 @@ module Tolzar
 
     def account_id(name)
       tenants.dig(name.to_s, 'account_id')
+    end
+
+    def account_name(name)
+      tenants.dig(name.to_s, 'account_name')
+    end
+
+    # True when the inbox is a Tolzar mirror inbox (so SendReplyJob can bail out).
+    # The tag lives on the API channel (the inboxes table has no additional_attributes).
+    def mirror_inbox?(inbox)
+      channel = inbox&.channel
+      return false unless channel.respond_to?(:additional_attributes)
+
+      attrs = channel.additional_attributes
+      !!(attrs.is_a?(Hash) && attrs[MIRROR_INBOX_TAG])
     end
 
     def signing_keys(tenant)

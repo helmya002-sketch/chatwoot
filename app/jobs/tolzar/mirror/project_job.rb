@@ -1,6 +1,7 @@
-# Tolzar shadow mirror: project a stored respond.io event into Tolzar.
-# P1: ingest-only — just mark the event processed. P2 adds the real projector
-# (upsert the mirror contact + conversation + message into the tenant's mirror inbox).
+# Tolzar shadow mirror: project a stored respond.io event into Chatwoot.
+# Runs the real projector (P2); records any projection error on the row and
+# still marks it processed so the queue drains (the raw payload is retained, so
+# an errored event can be reprocessed later by clearing processed_at + error).
 class Tolzar::Mirror::ProjectJob < ApplicationJob
   queue_as :low
 
@@ -8,7 +9,12 @@ class Tolzar::Mirror::ProjectJob < ApplicationJob
     event = Tolzar::MirrorEvent.find_by(id: event_id)
     return if event.nil? || event.processed_at.present?
 
-    # TODO(P2): Tolzar::Mirror::Projector.new(event).call
-    event.update!(processed_at: Time.current)
+    begin
+      Tolzar::Mirror::Projector.new(event: event).call
+      event.update!(processed_at: Time.current, error: nil)
+    rescue StandardError => e
+      Rails.logger.error("[tolzar-mirror] projection error event=#{event.id} #{e.class}: #{e.message}")
+      event.update!(processed_at: Time.current, error: "#{e.class}: #{e.message}".first(480))
+    end
   end
 end
