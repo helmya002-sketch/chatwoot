@@ -12,6 +12,8 @@ import RequestContactInfoButton from '../RequestContactInfoButton.vue';
 import { INBOX_TYPES } from 'dashboard/helper/inbox';
 import { mapGetters } from 'vuex';
 import NextButton from 'dashboard/components-next/button/Button.vue';
+import { emitter } from 'shared/helpers/mitt';
+import { BUS_EVENTS } from 'shared/constants/busEvents';
 
 export default {
   name: 'ReplyBottomPanel',
@@ -168,7 +170,17 @@ export default {
       accountId: 'getCurrentAccountId',
       isFeatureEnabledonAccount: 'accounts/isFeatureEnabledonAccount',
       uiFlags: 'integrations/getUIFlags',
+      currentChat: 'getSelectedChat',
     }),
+    // Tolzar: the brain's suggested reply for a one-tap composer draft.
+    tolzarSuggestedReply() {
+      return (
+        this.currentChat?.custom_attributes?.tolzar_suggested_reply || ''
+      ).trim();
+    },
+    showTolzarDraft() {
+      return !this.isNote && !this.isEditorDisabled && !!this.tolzarSuggestedReply;
+    },
     wrapClass() {
       return {
         'is-note-mode': this.isNote,
@@ -258,6 +270,14 @@ export default {
     ActiveStorage.start();
   },
   methods: {
+    draftWithTolzar() {
+      if (this.tolzarSuggestedReply) {
+        emitter.emit(
+          BUS_EVENTS.INSERT_INTO_RICH_EDITOR,
+          this.tolzarSuggestedReply
+        );
+      }
+    },
     toggleMessageSignature() {
       this.setSignatureFlagForInbox(this.channelType, !this.sendWithSignature);
     },
@@ -271,6 +291,16 @@ export default {
 <template>
   <div class="flex justify-between p-3" :class="wrapClass">
     <div class="left-wrap">
+      <NextButton
+        v-if="showTolzarDraft"
+        v-tooltip.top-end="'Draft with Tolzar'"
+        label="Tolzar"
+        icon="i-ph-sparkle"
+        blue
+        faded
+        sm
+        @click="draftWithTolzar"
+      />
       <NextButton
         v-if="!isEditorDisabled"
         v-tooltip.top-end="$t('CONVERSATION.REPLYBOX.TIP_EMOJI_ICON')"

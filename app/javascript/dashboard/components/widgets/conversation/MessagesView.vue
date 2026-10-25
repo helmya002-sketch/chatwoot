@@ -31,6 +31,7 @@ import NextButton from 'dashboard/components-next/button/Button.vue';
 import CollapsedReplyBar from './CollapsedReplyBar.vue';
 import ResizableEditorWrapper from './ResizableEditorWrapper.vue';
 import ReferralBubble from 'dashboard/components-next/Conversation/ReferralBubble.vue';
+import TolzarCopilotCard from 'next/Tolzar/CopilotCard.vue';
 
 // stores and apis
 import { mapGetters } from 'vuex';
@@ -84,6 +85,7 @@ export default {
     CollapsedReplyBar,
     ResizableEditorWrapper,
     ReferralBubble,
+    TolzarCopilotCard,
   },
   mixins: [inboxMixin],
   setup() {
@@ -632,6 +634,7 @@ export default {
           "
           @navigate="openConversation(newerConversation)"
         />
+        <TolzarCopilotCard />
       </template>
     </MessageList>
     <div class="flex relative flex-col bg-n-surface-1">

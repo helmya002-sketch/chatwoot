@@ -10,6 +10,7 @@ import { useUISettings } from 'dashboard/composables/useUISettings';
 import { FEATURE_FLAGS } from 'dashboard/featureFlags';
 
 import AccordionItem from 'dashboard/components/Accordion/AccordionItem.vue';
+import TolzarSidebarPanel from 'dashboard/components-next/Tolzar/SidebarPanel.vue';
 import ContactConversations from './ContactConversations.vue';
 import ConversationAction from './ConversationAction.vue';
 import ConversationParticipant from './ConversationParticipant.vue';
@@ -151,6 +152,9 @@ onMounted(() => {
       @close="closeContactPanel"
     />
     <ContactInfo :contact="contact" :channel-type="channelType" />
+    <div class="px-2 pt-3">
+      <TolzarSidebarPanel :contact="contact" />
+    </div>
     <div class="px-2 pb-8 list-group">
       <Draggable
         :list="conversationSidebarItems"

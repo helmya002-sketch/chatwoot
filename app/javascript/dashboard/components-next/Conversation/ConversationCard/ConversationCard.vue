@@ -93,6 +93,11 @@ const lifecycleLabel = computed(
   () => LIFECYCLE_LABELS[lifecycleStage.value] || lifecycleStage.value
 );
 
+// Tolzar: a quiet "why" line on the card (the brain's lead hint).
+const tolzarHint = computed(
+  () => currentContact.value?.custom_attributes?.tolzar_lead_hint || ''
+);
+
 const hasVisibleLabels = computed(() => {
   const { labels = [] } = props.conversation;
   return props.accountLabels.some(({ title }) => labels.includes(title));
@@ -167,6 +172,13 @@ const onCardClick = e => {
       </div>
       <div v-if="lifecycleStage" class="flex" data-tz-lifecycle>
         <span :style="lifecycleChipStyle">{{ lifecycleLabel }}</span>
+      </div>
+      <div
+        v-if="tolzarHint"
+        class="text-xs truncate text-n-slate-11"
+        data-tz-why
+      >
+        {{ tolzarHint }}
       </div>
       <CardMessagePreview
         v-show="showMessagePreviewWithoutMeta"
