@@ -3,7 +3,9 @@
 # still marks it processed so the queue drains (the raw payload is retained, so
 # an errored event can be reprocessed later by clearing processed_at + error).
 class Tolzar::Mirror::ProjectJob < ApplicationJob
-  queue_as :low
+  # :medium, not :low — Chatwoot works queues in strict priority order, so :low
+  # starves behind the live instance's higher-queue jobs and the mirror lags.
+  queue_as :medium
 
   def perform(event_id)
     event = Tolzar::MirrorEvent.find_by(id: event_id)
