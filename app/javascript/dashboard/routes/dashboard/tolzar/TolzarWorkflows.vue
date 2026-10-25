@@ -204,8 +204,13 @@ onMounted(load);
             <span class="i-lucide-workflow size-6 text-white" />
           </span>
           <div>
-            <h1 class="m-0 text-[22px] font-extrabold tracking-tight text-n-slate-12">Workflows</h1>
-            <p class="m-0 text-sm text-n-slate-11">Automate conversations — triggers, branches and steps.</p>
+            <div class="flex gap-2 items-center">
+              <h1 class="m-0 text-[22px] font-extrabold tracking-tight text-n-slate-12">Workflows</h1>
+              <span class="inline-flex gap-1 items-center px-2 py-0.5 text-[11px] font-semibold rounded-full text-amber-600 bg-amber-500/10 dark:text-amber-400">
+                <span class="inline-block rounded-full size-1.5 bg-amber-500" /> Preview
+              </span>
+            </div>
+            <p class="m-0 text-sm text-n-slate-11">Design automations visually. Saved as drafts — they don't run yet.</p>
           </div>
         </div>
         <button type="button" class="tz-btn-primary" @click="createFlow"><span class="i-lucide-plus size-4" /> Add Workflow</button>
@@ -224,10 +229,10 @@ onMounted(load);
           <div>
             <span
               class="inline-flex gap-1 items-center px-2.5 py-0.5 text-[11px] font-bold rounded-full"
-              :class="f.status === 'published' ? 'text-emerald-600 bg-emerald-500/10 dark:text-emerald-400' : 'text-amber-600 bg-amber-500/10 dark:text-amber-400'"
+              :class="f.status === 'published' ? 'text-sky-600 bg-sky-500/10 dark:text-sky-400' : 'text-n-slate-11 bg-n-alpha-2'"
             >
-              <span class="inline-block rounded-full size-1.5" :class="f.status === 'published' ? 'bg-emerald-500' : 'bg-amber-500'" />
-              {{ f.status === 'published' ? 'Published' : 'Draft' }}
+              <span class="inline-block rounded-full size-1.5" :class="f.status === 'published' ? 'bg-sky-500' : 'bg-n-slate-9'" />
+              {{ f.status === 'published' ? 'Preview' : 'Draft' }}
             </span>
           </div>
           <div class="font-semibold truncate text-n-slate-12">{{ f.name }}</div>

@@ -29,6 +29,10 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
     http.read_timeout = 130
     http.open_timeout = 5
     req = Net::HTTP::Post.new(uri.path, 'Content-Type' => 'application/json')
+    # Shared secret so only this proxy can reach the brain's internal endpoints.
+    # Harmless until the brain is configured to require it (TOLZAR_BRAIN_SECRET).
+    secret = ENV['TOLZAR_BRAIN_SECRET'].to_s
+    req['X-Tolzar-Brain-Secret'] = secret unless secret.empty?
     req.body = body.to_json
     res = http.request(req)
     JSON.parse(res.body)

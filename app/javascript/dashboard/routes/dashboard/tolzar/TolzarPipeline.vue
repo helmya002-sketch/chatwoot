@@ -82,6 +82,16 @@ const totalValue = computed(() =>
   STAGES.reduce((a, s) => a + colValue(s.key), 0)
 );
 
+// Each column loads only the first page (≤15 cards), so a column with more
+// leads would make the summed value wrong. Only surface the total when every
+// column is fully loaded — otherwise we'd show a misleadingly low number.
+const allLoaded = computed(() =>
+  STAGES.every(s => {
+    const c = cols.value[s.key];
+    return c && !c.loading && (c.contacts?.length || 0) >= (c.count || 0);
+  })
+);
+
 onMounted(async () => {
   for (const s of STAGES) {
     // eslint-disable-next-line no-await-in-loop
@@ -107,9 +117,19 @@ async function move(card, fromKey, toKey) {
   to.count += 1;
   movingId.value = card.id;
   try {
-    await ContactAPI.update(card.id, {
-      custom_attributes: { ...card.ca, lifecycle_stage: toKey },
-    });
+    // Re-read the contact's current attributes so we only change lifecycle_stage
+    // and don't revert edits another agent made since this board loaded
+    // (Chatwoot replaces the whole custom_attributes hash on update).
+    let current = card.ca;
+    try {
+      const { data } = await ContactAPI.show(card.id);
+      current = data?.payload?.custom_attributes || data?.custom_attributes || card.ca;
+    } catch (readErr) {
+      current = card.ca; // fall back to the snapshot if the re-read fails
+    }
+    const merged = { ...current, lifecycle_stage: toKey };
+    await ContactAPI.update(card.id, { custom_attributes: merged });
+    card.ca = merged;
   } catch (e) {
     // revert
     to.contacts = to.contacts.filter(c => c.id !== card.id);
@@ -145,7 +165,7 @@ function otherStages(key) {
         </div>
       </div>
       <div class="flex gap-2 items-center">
-        <span v-if="totalValue" class="px-3 py-1.5 text-[13px] font-semibold rounded-xl bg-n-alpha-2 text-n-slate-11">
+        <span v-if="totalValue && allLoaded" class="px-3 py-1.5 text-[13px] font-semibold rounded-xl bg-n-alpha-2 text-n-slate-11">
           Pipeline value <span class="text-n-slate-12">{{ money(totalValue) }}</span>
         </span>
       </div>
