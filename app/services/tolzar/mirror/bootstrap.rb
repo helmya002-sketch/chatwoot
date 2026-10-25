@@ -107,7 +107,8 @@ class Tolzar::Mirror::Bootstrap
 
   def link_user_to_account(user)
     AccountUser.find_or_create_by!(account_id: account.id, user_id: user.id) { |au| au.role = :agent }
-  rescue ActiveRecord::RecordNotUnique
-    # concurrent link — already present, nothing to do
+  rescue ActiveRecord::RecordNotUnique, ActiveRecord::RecordInvalid
+    # concurrent link (DB unique race, or the uniqueness VALIDATION firing first)
+    # — the link already exists, nothing to do.
   end
 end
