@@ -90,7 +90,12 @@ class Tolzar::Mirror::Bootstrap
     user = User.find_by(email: email)
     return user if user
 
-    user = User.new(name: display_name.presence || 'Agent', email: email)
+    # Chatwoot requires a complex password (>=6, upper/lower/number/special).
+    # This placeholder agent never logs in, so the value is irrelevant — it just
+    # has to pass validation. "Mir9!" supplies all four classes.
+    pw = "Mir9!#{SecureRandom.hex(20)}"
+    user = User.new(name: display_name.presence || 'Agent', email: email,
+                    password: pw, password_confirmation: pw)
     user.skip_confirmation!              # sets confirmed_at (account already confirmed)
     user.skip_confirmation_notification! # and never enqueue the confirmation email
     user.save!
