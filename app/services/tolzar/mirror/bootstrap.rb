@@ -39,13 +39,16 @@ class Tolzar::Mirror::Bootstrap
     existing = acc_id && Account.find_by(id: acc_id)
     return existing if existing
 
-    Account.find_or_create_by!(name: Tolzar::MirrorConfig.account_name(tenant) || "#{tenant} (mirror)")
+    name = Tolzar::MirrorConfig.account_name(tenant) || "#{tenant} (mirror)"
+    Account.find_or_create_by!(name: name)
+  rescue ActiveRecord::RecordNotUnique, ActiveRecord::RecordInvalid => e
+    Account.find_by(name: name) || raise(e)
   end
 
   def find_or_create_inbox
     # The mirror tag lives on the API channel (inboxes have no additional_attributes).
     found = account.inboxes.find { |i| Tolzar::MirrorConfig.mirror_inbox?(i) }
-    return found if found
+    return ensure_inbox_config(found) if found
 
     tag = Tolzar::MirrorConfig::MIRROR_INBOX_TAG
     channel = Channel::Api.create!(
@@ -58,22 +61,48 @@ class Tolzar::Mirror::Bootstrap
       channel: channel,
       greeting_enabled: false,
       enable_email_collect: false,
-      enable_auto_assignment: false
+      enable_auto_assignment: false,
+      lock_to_single_conversation: true # one thread per contact, like respond.io
     )
+  end
+
+  # Self-heal an existing mirror inbox to the safe config (idempotent).
+  def ensure_inbox_config(inbox)
+    changes = {}
+    changes[:lock_to_single_conversation] = true unless inbox.lock_to_single_conversation
+    changes[:greeting_enabled] = false if inbox.greeting_enabled
+    changes[:enable_email_collect] = false if inbox.enable_email_collect
+    changes[:enable_auto_assignment] = false if inbox.enable_auto_assignment
+    inbox.update!(changes) if changes.any?
+    inbox
   end
 
   # Maps a respond.io display name to a Chatwoot agent user in this account.
   # slug keeps emails unique + stable; no real email is ever used.
   def find_or_create_agent(display_name, slug)
     email = "mirror-#{tenant}-#{slug}@#{AGENT_EMAIL_DOMAIN}".downcase
-    user = User.find_by(email: email)
-    if user.nil?
-      user = User.new(name: display_name.presence || 'Agent', email: email)
-      user.skip_confirmation!              # sets confirmed_at (account already confirmed)
-      user.skip_confirmation_notification! # and never enqueue the confirmation email
-      user.save!
-    end
-    AccountUser.find_or_create_by!(account_id: account.id, user_id: user.id) { |au| au.role = :agent }
+    user = find_or_create_user(email, display_name)
+    link_user_to_account(user)
     user
+  end
+
+  def find_or_create_user(email, display_name)
+    user = User.find_by(email: email)
+    return user if user
+
+    user = User.new(name: display_name.presence || 'Agent', email: email)
+    user.skip_confirmation!              # sets confirmed_at (account already confirmed)
+    user.skip_confirmation_notification! # and never enqueue the confirmation email
+    user.save!
+    user
+  rescue ActiveRecord::RecordNotUnique, ActiveRecord::RecordInvalid => e
+    found = User.find_by(email: email)
+    found || raise(e)
+  end
+
+  def link_user_to_account(user)
+    AccountUser.find_or_create_by!(account_id: account.id, user_id: user.id) { |au| au.role = :agent }
+  rescue ActiveRecord::RecordNotUnique
+    # concurrent link — already present, nothing to do
   end
 end

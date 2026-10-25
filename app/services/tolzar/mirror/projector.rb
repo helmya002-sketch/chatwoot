@@ -76,13 +76,22 @@ class Tolzar::Mirror::Projector
   end
 
   def find_or_create_contact(rio_id, c)
+    identifier = "rio:#{rio_id}"
     tries = 0
     begin
-      account.contacts.find_or_create_by!(identifier: "rio:#{rio_id}") { |ct| ct.name = contact_name(c, rio_id) }
-    rescue ActiveRecord::RecordNotUnique
+      existing = account.contacts.find_by(identifier: identifier)
+      return existing if existing
+
+      account.contacts.create!(identifier: identifier, name: contact_name(c, rio_id))
+    rescue ActiveRecord::RecordNotUnique, ActiveRecord::RecordInvalid => e
+      # A concurrent job may have created it (DB unique race -> RecordNotUnique, or
+      # the uniqueness VALIDATION fires first -> RecordInvalid). Re-find and reuse.
+      found = account.contacts.find_by(identifier: identifier)
+      return found if found
+
       tries += 1
-      retry if tries < 3 # lost the create race; retry will find the existing row
-      raise
+      retry if tries < 3
+      raise e
     end
   end
 
