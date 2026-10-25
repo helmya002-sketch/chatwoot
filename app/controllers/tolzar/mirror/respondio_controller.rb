@@ -39,4 +39,29 @@ class Tolzar::Mirror::RespondioController < ActionController::API
     Rails.logger.error("[tolzar-mirror] ingest error tenant=#{params[:tenant]}: #{e.class} #{e.message}")
     head :ok
   end
+
+  # Secret-guarded read-only verification/ops endpoint (P1 acceptance + P2 ops).
+  # Guard reuses the tenant's webhook signing keys — send one as X-Tolzar-Mirror-Key.
+  # Returns counts + recent event TYPES/IDS only; never payloads (those carry PII).
+  def status
+    tenant = params[:tenant].to_s
+    return head(:not_found) unless Tolzar::MirrorConfig.tenant?(tenant)
+
+    provided = request.headers['X-Tolzar-Mirror-Key'].to_s
+    authed = provided.present? && Tolzar::MirrorConfig.signing_keys(tenant).any? do |k|
+      ActiveSupport::SecurityUtils.secure_compare(provided, k)
+    end
+    return head(:unauthorized) unless authed
+
+    scope = Tolzar::MirrorEvent.where(tenant: tenant)
+    render json: {
+      tenant:    tenant,
+      total:     scope.count,
+      pending:   scope.where(processed_at: nil).count,
+      processed: scope.where.not(processed_at: nil).count,
+      recent:    scope.order(received_at: :desc).limit(10)
+                      .pluck(:event_type, :event_id, :received_at)
+                      .map { |t, id, at| { event_type: t, event_id: id, received_at: at } }
+    }
+  end
 end
