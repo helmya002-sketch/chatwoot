@@ -1,5 +1,8 @@
 <script setup>
 import { h, ref, computed, onMounted, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { usePolicy } from 'dashboard/composables/usePolicy';
+import { useUISettings } from 'dashboard/composables/useUISettings';
 import { provideSidebarContext, useSidebarResize } from './provider';
 import { useAccount } from 'dashboard/composables/useAccount';
 import { useConfig } from 'dashboard/composables/useConfig';
@@ -19,6 +22,7 @@ import SidebarChangelogCard from './SidebarChangelogCard.vue';
 import SidebarChangelogButton from './SidebarChangelogButton.vue';
 import ChannelLeaf from './ChannelLeaf.vue';
 import ChannelIcon from 'next/icon/ChannelIcon.vue';
+import Icon from 'next/icon/Icon.vue';
 import EmojiIcon from 'next/emoji-icon-picker/EmojiIcon.vue';
 import SidebarAccountSwitcher from './SidebarAccountSwitcher.vue';
 import Logo from 'next/icon/Logo.vue';
@@ -169,10 +173,13 @@ const isResizing = ref(false);
 const startX = ref(0);
 const startWidth = ref(0);
 
+// Tolzar nav-IA: the sub-sidebar column always renders the active section's tree
+// in expanded form, so the shared context is never "collapsed" — the icon rail
+// is its own markup below, not a collapsed SidebarGroup.
 provideSidebarContext({
   expandedItem,
   setExpandedItem,
-  isCollapsed: isEffectivelyCollapsed,
+  isCollapsed: computed(() => false),
   sidebarWidth,
   isResizing,
 });
@@ -921,6 +928,131 @@ const menuItems = computed(() => {
     },
   ];
 });
+
+// ───────────────────────────────────────────────────────────────────────────
+// Tolzar nav-IA (respond.io-style): a persistent icon rail (every top-level
+// section) + a docked sub-sidebar showing the ACTIVE section's tree. Clicking a
+// rail icon switches the docked panel and navigates into the section.
+// ───────────────────────────────────────────────────────────────────────────
+const route = useRoute();
+const router = useRouter();
+const { shouldShow } = usePolicy();
+const { uiSettings, updateUISettings } = useUISettings();
+
+const resolveMeta = (to, key, dflt) => {
+  if (!to) return dflt;
+  try {
+    if (to.params?.navigationPath) {
+      const r = router
+        .getRoutes()
+        .find(x => x.name === to.params.navigationPath);
+      return r?.meta?.[key] ?? dflt;
+    }
+    return router.resolve(to)?.meta?.[key] ?? dflt;
+  } catch (e) {
+    return dflt;
+  }
+};
+
+const isNavAllowed = to => {
+  if (!to) return false;
+  return shouldShow(
+    resolveMeta(to, 'featureFlag', ''),
+    resolveMeta(to, 'permissions', []),
+    resolveMeta(to, 'installationTypes', [])
+  );
+};
+
+// Flatten a section to its navigable leaves (children + grandchildren).
+const leavesOf = item => {
+  const out = [];
+  (item.children || []).forEach(child => {
+    if (child.children) child.children.forEach(g => out.push(g));
+    else out.push(child);
+  });
+  return out;
+};
+
+const firstAccessibleLeaf = item =>
+  leavesOf(item).find(l => l.to && isNavAllowed(l.to));
+
+const sectionAccessible = item =>
+  (item.to && isNavAllowed(item.to)) || !!firstAccessibleLeaf(item);
+
+const visibleSections = computed(() =>
+  menuItems.value.filter(sectionAccessible)
+);
+
+const matchesTo = to => {
+  if (!to) return false;
+  try {
+    return route.path === router.resolve(to).path;
+  } catch (e) {
+    return false;
+  }
+};
+
+const itemMatchesRoute = item => {
+  if (item.activeOn?.includes(route.name)) return true;
+  if (matchesTo(item.to)) return true;
+  if ((item.children || []).some(c => c.activeOn?.includes(route.name)))
+    return true;
+  return leavesOf(item).some(
+    l => l.activeOn?.includes(route.name) || matchesTo(l.to)
+  );
+};
+
+const routeSectionName = computed(
+  () =>
+    (visibleSections.value.find(itemMatchesRoute) || visibleSections.value[0])
+      ?.name
+);
+
+const activeSectionName = ref(null);
+watch(
+  routeSectionName,
+  name => {
+    if (name && name !== activeSectionName.value) {
+      activeSectionName.value = name;
+      expandedItem.value = name;
+    }
+  },
+  { immediate: true }
+);
+
+const activeGroup = computed(() =>
+  visibleSections.value.find(i => i.name === activeSectionName.value)
+);
+
+const isSectionActive = item => item.name === activeSectionName.value;
+
+// Sub-sidebar visibility: only sections that have a tree get a docked panel;
+// leaf sections (Dashboard, Pipeline, Workflows) just show their page.
+const subNavCollapsed = ref(!!uiSettings.value.tz_subnav_collapsed);
+const toggleSubNav = () => {
+  subNavCollapsed.value = !subNavCollapsed.value;
+  updateUISettings({ tz_subnav_collapsed: subNavCollapsed.value });
+};
+const activeHasTree = computed(() => (activeGroup.value?.children?.length || 0) > 0);
+const showSubSidebar = computed(
+  () => activeHasTree.value && !subNavCollapsed.value
+);
+
+const selectSection = item => {
+  activeSectionName.value = item.name;
+  expandedItem.value = item.name;
+  // reopen the panel if it was collapsed and this section has a tree
+  if (item.children?.length && subNavCollapsed.value) {
+    subNavCollapsed.value = false;
+    updateUISettings({ tz_subnav_collapsed: false });
+  }
+  if (item.children?.length) {
+    const first = firstAccessibleLeaf(item);
+    if (first?.to) router.push(first.to).catch(() => {});
+  } else if (item.to) {
+    router.push(item.to).catch(() => {});
+  }
+};
 </script>
 
 <template>
@@ -935,68 +1067,24 @@ const menuItems = computed(() => {
         ],
       },
     ]"
-    class="bg-n-background flex flex-col text-sm pb-px fixed top-0 ltr:left-0 rtl:right-0 h-full z-40 w-[200px] md:w-auto md:relative md:flex-shrink-0 md:ltr:translate-x-0 md:rtl:translate-x-0 ltr:border-r rtl:border-l border-n-weak"
-    :class="[
-      {
-        'shadow-lg md:shadow-none': isMobileSidebarOpen,
-        'ltr:-translate-x-full rtl:translate-x-full': !isMobileSidebarOpen,
-        'transition-transform duration-200 ease-out md:transition-[width]':
-          !isResizing,
-      },
-    ]"
-    :style="isMobile ? undefined : { width: `${sidebarWidth}px` }"
+    class="bg-n-background flex text-sm fixed top-0 ltr:left-0 rtl:right-0 h-full z-40 md:relative md:flex-shrink-0 md:ltr:translate-x-0 md:rtl:translate-x-0 ltr:border-r rtl:border-l border-n-weak transition-transform duration-200 ease-out"
+    :class="{
+      'shadow-lg md:shadow-none': isMobileSidebarOpen,
+      'ltr:-translate-x-full rtl:translate-x-full': !isMobileSidebarOpen,
+    }"
   >
-    <section
-      class="grid"
-      :class="isEffectivelyCollapsed ? 'mt-3 mb-6 gap-4' : 'mt-1 mb-4 gap-2'"
+    <!-- Tolzar nav-IA: COL 1 — persistent icon rail (every top-level section) -->
+    <div
+      class="tz-rail flex flex-col flex-shrink-0 w-14 h-full ltr:border-r rtl:border-l border-n-weak"
     >
-      <div
-        class="flex gap-2 items-center min-w-0"
-        :class="{
-          'justify-center px-1': isEffectivelyCollapsed,
-          'px-2': !isEffectivelyCollapsed,
-        }"
-      >
-        <template v-if="isEffectivelyCollapsed">
-          <SidebarAccountSwitcher
-            is-collapsed
-            @show-create-account-modal="emit('showCreateAccountModal')"
-          />
-        </template>
-        <template v-else>
-          <div class="grid flex-shrink-0 place-content-center size-6">
-            <Logo class="size-4" />
-          </div>
-          <div class="flex-shrink-0 w-px h-3 bg-n-strong" />
-          <SidebarAccountSwitcher
-            class="flex-grow -mx-1 min-w-0"
-            @show-create-account-modal="emit('showCreateAccountModal')"
-          />
-        </template>
-      </div>
-      <div
-        class="flex gap-2"
-        :class="isEffectivelyCollapsed ? 'flex-col items-center' : 'px-2'"
-      >
+      <div class="flex flex-col gap-2 items-center pt-3 pb-2">
+        <SidebarAccountSwitcher
+          is-collapsed
+          @show-create-account-modal="emit('showCreateAccountModal')"
+        />
         <RouterLink
-          v-if="!isEffectivelyCollapsed"
           :to="{ name: 'search' }"
-          class="flex gap-2 items-center px-2 py-1 w-full h-7 rounded-lg outline outline-1 outline-n-weak bg-n-button-color transition-all duration-100 ease-out"
-        >
-          <span class="flex-shrink-0 i-lucide-search size-4 text-n-slate-10" />
-          <span class="flex-grow text-start text-n-slate-10">
-            {{ t('COMBOBOX.SEARCH_PLACEHOLDER') }}
-          </span>
-          <span
-            class="hidden tracking-wide pointer-events-none select-none text-n-slate-10"
-          >
-            {{ searchShortcut }}
-          </span>
-        </RouterLink>
-        <RouterLink
-          v-else
-          :to="{ name: 'search' }"
-          class="flex items-center justify-center size-8 rounded-lg outline outline-1 outline-n-weak bg-n-button-color transition-all duration-100 ease-out hover:bg-n-alpha-2 dark:hover:bg-n-slate-9/30"
+          class="flex justify-center items-center rounded-lg outline outline-1 size-8 outline-n-weak bg-n-button-color hover:bg-n-alpha-2 dark:hover:bg-n-slate-9/30"
           :title="t('COMBOBOX.SEARCH_PLACEHOLDER')"
         >
           <span class="i-lucide-search size-4 text-n-slate-11" />
@@ -1007,100 +1095,85 @@ const menuItems = computed(() => {
               icon="i-lucide-pen-line"
               color="slate"
               size="sm"
-              class="dark:hover:!bg-n-slate-9/30"
-              :class="[
-                isEffectivelyCollapsed
-                  ? '!size-8 !outline-n-weak !text-n-slate-11'
-                  : '!h-7 !outline-n-weak !text-n-slate-11',
-                { '!bg-n-alpha-2 dark:!bg-n-slate-9/30': isOpen },
-              ]"
+              class="!size-8 !outline-n-weak !text-n-slate-11 dark:hover:!bg-n-slate-9/30"
+              :class="{ '!bg-n-alpha-2 dark:!bg-n-slate-9/30': isOpen }"
             />
           </template>
         </ComposeConversation>
-        <Button
-          data-tz-collapse-toggle
-          :icon="
-            isEffectivelyCollapsed
-              ? 'i-lucide-chevrons-right'
-              : 'i-lucide-chevrons-left'
-          "
-          color="slate"
-          size="sm"
-          :title="
-            isEffectivelyCollapsed ? 'Expand sidebar' : 'Collapse sidebar'
-          "
-          class="dark:hover:!bg-n-slate-9/30"
-          :class="
-            isEffectivelyCollapsed
-              ? '!size-8 !outline-n-weak !text-n-slate-11'
-              : '!h-7 !outline-n-weak !text-n-slate-11'
-          "
-          @click="toggleSidebarCollapse"
-        />
       </div>
-    </section>
-    <nav
-      class="grid overflow-y-scroll flex-grow gap-2 pb-5 no-scrollbar min-w-0"
-      :class="isEffectivelyCollapsed ? 'px-1' : 'px-2'"
-    >
-      <ul
-        class="flex flex-col gap-1 m-0 list-none min-w-0"
-        :class="{ 'items-center': isEffectivelyCollapsed }"
+      <nav
+        class="flex flex-col flex-grow gap-1 items-center px-1 py-2 overflow-y-auto no-scrollbar"
       >
-        <SidebarGroup
-          v-for="item in menuItems"
+        <component
+          :is="
+            item.children && item.children.length ? 'button' : 'router-link'
+          "
+          v-for="item in visibleSections"
           :key="item.name"
-          v-bind="item"
-        />
-      </ul>
-    </nav>
-    <section
-      class="flex relative flex-col flex-shrink-0 gap-1 justify-between items-center"
-    >
+          :to="item.children && item.children.length ? undefined : item.to"
+          :title="item.label"
+          class="tz-rail-ic flex relative justify-center items-center rounded-lg size-10"
+          :class="
+            isSectionActive(item)
+              ? 'text-n-slate-12 bg-n-alpha-2'
+              : 'text-n-slate-11 hover:bg-n-alpha-2'
+          "
+          @click="selectSection(item)"
+        >
+          <span
+            v-if="isSectionActive(item)"
+            class="absolute top-2 bottom-2 ltr:-left-1 rtl:-right-1 w-0.5 rounded-full bg-n-brand"
+          />
+          <Icon :icon="item.icon" class="size-5" />
+        </component>
+      </nav>
       <div
-        class="pointer-events-none absolute inset-x-0 -top-[1.938rem] h-8 bg-gradient-to-t from-n-background to-transparent"
-      />
-      <SidebarChangelogCard
-        v-if="
-          isOnChatwootCloud &&
-          !isACustomBrandedInstance &&
-          !isEffectivelyCollapsed
-        "
-      />
-      <SidebarChangelogButton
-        v-if="
-          isOnChatwootCloud &&
-          !isACustomBrandedInstance &&
-          isEffectivelyCollapsed
-        "
-      />
-      <div
-        class="px-1 py-1.5 flex-shrink-0 flex w-full z-50 gap-2 items-center border-t border-n-weak shadow-[0px_-2px_4px_0px_rgba(27,28,29,0.02)]"
-        :class="
-          isEffectivelyCollapsed
-            ? 'flex-col justify-center'
-            : 'justify-between'
-        "
+        class="flex flex-col flex-shrink-0 gap-1 items-center px-1 py-2 border-t border-n-weak"
       >
+        <SidebarChangelogButton
+          v-if="isOnChatwootCloud && !isACustomBrandedInstance"
+        />
         <SidebarProfileMenu
-          :is-collapsed="isEffectivelyCollapsed"
+          is-collapsed
           @open-key-shortcut-modal="emit('openKeyShortcutModal')"
         />
         <!-- Tolzar #11: notifications bell at the bottom of the rail -->
-        <NotificationsBell :is-collapsed="isEffectivelyCollapsed" />
+        <NotificationsBell is-collapsed />
       </div>
-    </section>
-    <!-- Resize Handle (desktop only) -->
+    </div>
+
+    <!-- Tolzar nav-IA: COL 2 — docked sub-sidebar for the active section's tree -->
     <div
-      class="hidden md:block absolute top-0 h-full w-1 cursor-col-resize z-40 ltr:right-0 rtl:left-0 group"
-      @mousedown="onResizeStart"
-      @touchstart="onResizeStart"
-      @dblclick="onResizeHandleDoubleClick"
+      v-if="showSubSidebar"
+      class="tz-sub flex flex-col flex-shrink-0 w-60 h-full"
     >
-      <div
-        class="absolute top-0 h-full w-px ltr:right-0 rtl:left-0 bg-transparent group-hover:bg-n-brand transition-colors"
-        :class="{ 'bg-n-brand': isResizing }"
-      />
+      <div class="flex gap-1 items-center px-3 pt-4 pb-1">
+        <h2
+          class="flex-1 m-0 text-lg font-bold tracking-tight truncate text-n-slate-12"
+        >
+          {{ activeGroup.label }}
+        </h2>
+        <RouterLink
+          :to="{ name: 'search' }"
+          class="flex justify-center items-center rounded-md size-7 text-n-slate-11 hover:bg-n-alpha-2"
+          :title="t('COMBOBOX.SEARCH_PLACEHOLDER')"
+        >
+          <span class="i-lucide-search size-4" />
+        </RouterLink>
+        <button
+          type="button"
+          class="flex justify-center items-center rounded-md size-7 text-n-slate-11 hover:bg-n-alpha-2"
+          title="Collapse panel"
+          @click="toggleSubNav"
+        >
+          <span class="i-lucide-panel-left-close size-4" />
+        </button>
+      </div>
+      <nav class="overflow-y-auto flex-grow px-2 pb-5 no-scrollbar min-w-0">
+        <ul class="flex flex-col gap-1 m-0 list-none min-w-0">
+          <SidebarGroup :key="activeGroup.name" v-bind="activeGroup" docked />
+        </ul>
+      </nav>
     </div>
   </aside>
 </template>

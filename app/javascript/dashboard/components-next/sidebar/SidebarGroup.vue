@@ -18,6 +18,10 @@ const props = defineProps({
   activeOn: { type: Array, default: () => [] },
   children: { type: Array, default: undefined },
   getterKeys: { type: Object, default: () => ({}) },
+  // Tolzar nav-IA: docked = rendered inside the persistent sub-sidebar column.
+  // Hide the group's own accordion header and always show its children (the
+  // section title lives in the sub-sidebar header instead).
+  docked: { type: Boolean, default: false },
 });
 
 const {
@@ -310,6 +314,7 @@ watch(
     <!-- Expanded State -->
     <template v-else>
       <SidebarGroupHeader
+        v-if="!docked"
         :icon
         :name
         :label
@@ -323,7 +328,7 @@ watch(
       />
       <ul
         v-if="hasChildren"
-        v-show="isExpanded || hasActiveChild"
+        v-show="docked || isExpanded || hasActiveChild"
         class="grid m-0 list-none min-w-0"
       >
         <template v-for="child in visibleChildren" :key="child.name">
@@ -336,7 +341,7 @@ watch(
             :collapsible="child.collapsible"
             :show-tree-line="child.showTreeLine"
             :end-tree-line="child.showTreeLine && isLastVisibleChild(child)"
-            :is-expanded="isExpanded"
+            :is-expanded="docked || isExpanded"
             :active-child="activeChild"
             :sort-options="child.sortOptions"
             :active-sort="child.activeSort"
@@ -344,7 +349,7 @@ watch(
           />
           <SidebarGroupLeaf
             v-else-if="isAllowed(child.to)"
-            v-show="isExpanded || activeChild?.name === child.name"
+            v-show="docked || isExpanded || activeChild?.name === child.name"
             v-bind="child"
             :active="activeChild?.name === child.name"
           />
