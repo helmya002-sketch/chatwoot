@@ -58,6 +58,9 @@ const triggerRect = ref({ top: 0, left: 0, bottom: 0, right: 0 });
 // The sort dropdown teleports outside the popover; keep the popover open while
 // it is showing so moving the cursor onto it does not close everything.
 const isSortMenuOpen = ref(false);
+// Tolzar #10: when the rail is collapsed, a CLICK pins this page's sub-menu open
+// (respond.io two-level feel) instead of the hover-only flyout.
+const pinned = ref(false);
 
 const openPopover = () => {
   if (triggerRef.value) {
@@ -73,10 +76,30 @@ const openPopover = () => {
 };
 
 const closePopover = () => {
+  pinned.value = false;
   if (activePopover.value === props.name) {
     closeActivePopover();
   }
 };
+
+// Tolzar #10: click a collapsed page icon to PIN its sub-menu open; click the
+// same icon again (or outside / a leaf) to close. Leaf pages still navigate.
+const onTriggerClick = e => {
+  if (!hasChildren.value) return;
+  e.preventDefault();
+  if (isPopoverOpen.value && pinned.value) {
+    pinned.value = false;
+    closePopover();
+  } else {
+    pinned.value = true;
+    openPopover();
+  }
+};
+
+// Opening another group's flyout drops this one's pin.
+watch(activePopover, name => {
+  if (name !== props.name) pinned.value = false;
+});
 
 const handleMouseEnter = () => {
   if (!hasChildren.value || isResizing.value) return;
@@ -85,7 +108,7 @@ const handleMouseEnter = () => {
 };
 
 const handleMouseLeave = () => {
-  if (!hasChildren.value || isSortMenuOpen.value) return;
+  if (!hasChildren.value || isSortMenuOpen.value || pinned.value) return;
   scheduleClose(200);
 };
 
@@ -263,10 +286,11 @@ watch(
           type="button"
           class="flex items-center justify-center size-10 rounded-lg"
           :class="{
-            'text-n-slate-12 bg-n-alpha-2': isActive || hasActiveChild,
+            'text-n-slate-12 bg-n-alpha-2': isActive || hasActiveChild || (isPopoverOpen && pinned),
             'text-n-slate-11 hover:bg-n-alpha-2': !isActive && !hasActiveChild,
           }"
           :title="label"
+          @click="onTriggerClick"
         >
           <Icon v-if="icon" :icon="icon" class="size-4" />
         </component>

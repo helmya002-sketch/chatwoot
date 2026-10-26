@@ -22,6 +22,7 @@ import ChannelIcon from 'next/icon/ChannelIcon.vue';
 import EmojiIcon from 'next/emoji-icon-picker/EmojiIcon.vue';
 import SidebarAccountSwitcher from './SidebarAccountSwitcher.vue';
 import Logo from 'next/icon/Logo.vue';
+import NotificationsBell from 'dashboard/components-next/Tolzar/NotificationsBell.vue';
 import ComposeConversation from 'dashboard/components-next/NewConversation/ComposeConversation.vue';
 import {
   SIDEBAR_SORT_SECTIONS,
@@ -278,6 +279,8 @@ const teamsForSidebar = computed(() =>
 // click filters the inbox to that agent within that team (respond.io-style).
 // Administrators only; agents keep the plain per-team "Teams" group.
 const getTeamMembers = useMapGetter('teamMembers/getTeamMembers');
+// Tolzar #1: separate Users tree — filter the inbox by a single agent (assignee).
+const verifiedAgents = useMapGetter('agents/getVerifiedAgents');
 const loadTeamAgents = () => {
   if (currentRole.value !== 'administrator') return;
   (allTeams.value || []).forEach(team =>
@@ -301,6 +304,7 @@ onMounted(() => {
   store.dispatch('attributes/get');
   store.dispatch('customViews/get', 'conversation');
   store.dispatch('customViews/get', 'contact');
+  store.dispatch('agents/get');
   loadTzAiAgents();
 });
 
@@ -509,6 +513,38 @@ const menuItems = computed(() => {
             to: accountScopedRoute('team_conversations', { teamId: team.id }),
           })),
         },
+        // Tolzar #1: Users tree — one leaf per agent, filters the inbox to that
+        // assignee (managers/admins only; pairs with the per-team "Teams" tree).
+        ...(currentRole.value === 'administrator'
+          ? [
+              {
+                name: 'Users',
+                label: 'Users',
+                icon: 'i-lucide-user-round',
+                collapsible: true,
+                showTreeLine: true,
+                children: (verifiedAgents.value || []).map(agent => ({
+                  name: `tz-user-${agent.id}`,
+                  label: agent.name || agent.available_name || agent.email,
+                  icon: 'i-lucide-user-round',
+                  to: accountScopedRoute(
+                    'home',
+                    {},
+                    {
+                      filters: JSON.stringify([
+                        {
+                          attribute_key: 'assignee_id',
+                          filter_operator: 'equal_to',
+                          values: { id: agent.id },
+                          query_operator: 'and',
+                        },
+                      ]),
+                    }
+                  ),
+                })),
+              },
+            ]
+          : []),
         {
           name: 'Channels',
           label: t('SIDEBAR.CHANNELS'),
@@ -555,65 +591,8 @@ const menuItems = computed(() => {
         },
       ],
     },
-    // Tolzar: manager Team Inbox — teams → agents → filter inbox to that agent.
-    ...(currentRole.value === 'administrator'
-      ? [
-          {
-            name: 'Team Inbox',
-            label: 'Team Inbox',
-            icon: 'i-lucide-users-round',
-            children: sortedTeams.value.map(team => ({
-              name: `tz-team-${team.id}`,
-              label: team.name,
-              icon: team.icon
-                ? h(EmojiIcon, {
-                    value: team.icon,
-                    color: team.icon_color,
-                    class: 'size-3.5',
-                  })
-                : 'i-lucide-users',
-              collapsible: true,
-              showTreeLine: true,
-              children: [
-                {
-                  name: `tz-team-all-${team.id}`,
-                  label: t('SIDEBAR.ALL_CONVERSATIONS'),
-                  icon: 'i-lucide-inbox',
-                  badgeCount: getTeamUnreadCount.value(team.id),
-                  to: accountScopedRoute('team_conversations', {
-                    teamId: team.id,
-                  }),
-                },
-                ...(getTeamMembers.value(team.id) || []).map(agent => ({
-                  name: `tz-team-${team.id}-agent-${agent.id}`,
-                  label: agent.name || agent.available_name || agent.email,
-                  icon: 'i-lucide-user-round',
-                  to: accountScopedRoute(
-                    'home',
-                    {},
-                    {
-                      filters: JSON.stringify([
-                        {
-                          attribute_key: 'team_id',
-                          filter_operator: 'equal_to',
-                          values: { id: team.id },
-                          query_operator: 'and',
-                        },
-                        {
-                          attribute_key: 'assignee_id',
-                          filter_operator: 'equal_to',
-                          values: { id: agent.id },
-                          query_operator: 'and',
-                        },
-                      ]),
-                    }
-                  ),
-                })),
-              ],
-            })),
-          },
-        ]
-      : []),
+    // Tolzar #1: the old nested "Team Inbox" (team → agents) is superseded by the
+    // flat Teams tree + the new Users tree under the Inbox group above.
     {
       name: 'Contacts',
       label: t('SIDEBAR.CONTACTS'),
@@ -1097,12 +1076,18 @@ const menuItems = computed(() => {
       />
       <div
         class="px-1 py-1.5 flex-shrink-0 flex w-full z-50 gap-2 items-center border-t border-n-weak shadow-[0px_-2px_4px_0px_rgba(27,28,29,0.02)]"
-        :class="isEffectivelyCollapsed ? 'justify-center' : 'justify-between'"
+        :class="
+          isEffectivelyCollapsed
+            ? 'flex-col justify-center'
+            : 'justify-between'
+        "
       >
         <SidebarProfileMenu
           :is-collapsed="isEffectivelyCollapsed"
           @open-key-shortcut-modal="emit('openKeyShortcutModal')"
         />
+        <!-- Tolzar #11: notifications bell at the bottom of the rail -->
+        <NotificationsBell :is-collapsed="isEffectivelyCollapsed" />
       </div>
     </section>
     <!-- Resize Handle (desktop only) -->

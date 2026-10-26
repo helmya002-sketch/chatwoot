@@ -2,12 +2,56 @@
 import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import ContactAPI from 'dashboard/api/contacts';
-import { useMapGetter } from 'dashboard/composables/store';
+import { useMapGetter, useStore } from 'dashboard/composables/store';
 
 const route = useRoute();
 const router = useRouter();
+const store = useStore();
 const accountId = computed(() => route.params.accountId);
 const currentUser = useMapGetter('getCurrentUser');
+
+// Tolzar D1: a manager (administrator) sees every agent's presence, across all
+// teams — the agents endpoint is account-wide, so no per-team scoping is needed.
+const currentRole = useMapGetter('getCurrentRole');
+const isManager = computed(() => currentRole.value === 'administrator');
+const agents = useMapGetter('agents/getVerifiedAgents');
+const PRESENCE = [
+  { key: 'online', label: 'Online', color: '#10b981' },
+  { key: 'busy', label: 'Busy', color: '#f59e0b' },
+  { key: 'offline', label: 'Offline', color: '#94a3b8' },
+];
+const presence = computed(() => {
+  const groups = { online: [], busy: [], offline: [] };
+  (agents.value || []).forEach(a => {
+    const s = a.availability_status || 'offline';
+    (groups[s] || groups.offline).push(a);
+  });
+  return groups;
+});
+const onlineCount = computed(() => presence.value.online.length);
+const agentTotal = computed(() => (agents.value || []).length);
+
+// Tolzar D2: surface the viewer's timezone and when these numbers were last
+// refreshed, so the figures are never read as "now" when they are minutes old.
+const timezone = computed(() => {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+  } catch (e) {
+    return '';
+  }
+});
+const lastUpdated = ref(null);
+const lastUpdatedLabel = computed(() => {
+  if (!lastUpdated.value) return '';
+  try {
+    return lastUpdated.value.toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  } catch (e) {
+    return '';
+  }
+});
 const firstName = computed(
   () => (currentUser.value?.name || '').trim().split(' ')[0] || 'there'
 );
@@ -132,6 +176,7 @@ async function fetchStageCount(stage) {
 }
 
 onMounted(async () => {
+  store.dispatch('agents/get').catch(() => {});
   try {
     const out = {};
     for (const s of STAGES) {
@@ -152,12 +197,13 @@ onMounted(async () => {
     errored.value = true;
   } finally {
     loaded.value = true;
+    lastUpdated.value = new Date();
   }
 });
 </script>
 
 <template>
-  <div class="overflow-auto flex-1 bg-n-background" data-tz-build="dash-5">
+  <div class="overflow-auto flex-1 bg-n-background" data-tz-build="dash-6">
     <div class="tz-dash mx-auto max-w-[1200px] px-5 pb-16 pt-6 md:px-7">
       <!-- hero header -->
       <div
@@ -180,6 +226,18 @@ onMounted(async () => {
               </h1>
               <p class="mt-1 mb-0 text-sm text-n-slate-11">
                 {{ loaded ? `${openConvs} open · ${won} won · ${winRate}% win rate` : 'Loading your pipeline…' }}
+              </p>
+              <!-- Tolzar D2: timezone + when these numbers were last refreshed -->
+              <p
+                v-if="loaded"
+                class="flex flex-wrap gap-x-2 gap-y-0.5 items-center mt-1 mb-0 text-[11px] text-n-slate-10"
+              >
+                <span v-if="timezone" class="inline-flex gap-1 items-center">
+                  <span class="i-lucide-globe size-3" />{{ timezone }}
+                </span>
+                <span v-if="lastUpdatedLabel" class="inline-flex gap-1 items-center">
+                  <span class="i-lucide-refresh-cw size-3" />Updated {{ lastUpdatedLabel }}
+                </span>
               </p>
             </div>
           </div>
@@ -265,6 +323,8 @@ onMounted(async () => {
           </div>
         </div>
 
+        <!-- right column: team mix + (managers) live presence -->
+        <div class="flex flex-col gap-3.5">
         <!-- by team -->
         <div class="tz-rise p-5 rounded-2xl border shadow-sm bg-n-solid-1 border-n-weak" style="animation-delay: 350ms">
           <h3 class="m-0 mb-4 text-sm font-semibold text-n-slate-12">Conversations by team</h3>
@@ -280,6 +340,52 @@ onMounted(async () => {
             </div>
           </div>
           <p v-else class="text-xs text-n-slate-10">No conversations yet.</p>
+        </div>
+
+        <!-- Tolzar D1: live team presence (managers see every agent) -->
+        <div
+          v-if="isManager"
+          class="tz-rise p-5 rounded-2xl border shadow-sm bg-n-solid-1 border-n-weak"
+          style="animation-delay: 380ms"
+        >
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="m-0 text-sm font-semibold text-n-slate-12">Team presence</h3>
+            <span class="px-2 py-0.5 text-[11px] font-medium rounded-full bg-n-alpha-2 text-n-slate-11">
+              {{ onlineCount }}/{{ agentTotal }} online
+            </span>
+          </div>
+          <div v-if="agentTotal">
+            <div v-for="p in PRESENCE" :key="p.key" class="mb-3 last:mb-0">
+              <div class="flex gap-1.5 items-center mb-1.5">
+                <span class="inline-block rounded-full size-2" :style="{ background: p.color }" />
+                <span class="text-xs font-semibold text-n-slate-11">{{ p.label }}</span>
+                <span class="text-[11px] font-bold text-n-slate-12 tabular-nums">{{ presence[p.key].length }}</span>
+              </div>
+              <div v-if="presence[p.key].length" class="flex flex-wrap gap-1.5">
+                <span
+                  v-for="a in presence[p.key].slice(0, 10)"
+                  :key="a.id"
+                  v-tooltip.top="a.name"
+                  class="grid relative place-content-center text-[10px] font-bold rounded-full size-7 bg-n-alpha-2 text-n-slate-11"
+                  :class="{ 'opacity-60': p.key === 'offline' }"
+                >
+                  {{ initials(a.name) }}
+                  <span
+                    class="absolute -bottom-0.5 ltr:-right-0.5 rtl:-left-0.5 rounded-full size-2.5 ring-2 ring-n-solid-1"
+                    :style="{ background: p.color }"
+                  />
+                </span>
+                <span
+                  v-if="presence[p.key].length > 10"
+                  class="grid place-content-center text-[10px] font-semibold rounded-full size-7 bg-n-alpha-2 text-n-slate-10"
+                >
+                  +{{ presence[p.key].length - 10 }}
+                </span>
+              </div>
+            </div>
+          </div>
+          <p v-else class="text-xs text-n-slate-10">No teammates yet.</p>
+        </div>
         </div>
       </div>
 

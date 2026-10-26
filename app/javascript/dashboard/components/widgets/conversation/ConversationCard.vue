@@ -8,6 +8,7 @@ import {
 } from 'shared/helpers/timeHelper';
 import Avatar from 'next/avatar/Avatar.vue';
 import Icon from 'dashboard/components-next/icon/Icon.vue';
+import ChannelIcon from 'next/icon/ChannelIcon.vue';
 import MessagePreview from './MessagePreview.vue';
 import InboxName from '../InboxName.vue';
 import TimeAgo from 'dashboard/components/ui/TimeAgo.vue';
@@ -186,17 +187,17 @@ watch(
     @contextmenu="$emit('contextmenu', $event)"
   >
     <div
-      class="relative"
+      v-if="!hideThumbnail"
+      class="relative flex-shrink-0"
+      :class="!showInboxName ? 'mt-4' : 'mt-8'"
       @mouseenter="onThumbnailHover"
       @mouseleave="onThumbnailLeave"
     >
       <Avatar
-        v-if="!hideThumbnail"
         :name="currentContact.name"
         :src="currentContact.thumbnail"
         :size="32"
         :status="currentContact.availability_status"
-        :class="!showInboxName ? 'mt-4' : 'mt-8'"
         hide-offline-status
       >
         <template #overlay="{ size }">
@@ -210,6 +211,14 @@ watch(
           </label>
         </template>
       </Avatar>
+      <!-- Tolzar #12: channel badge on the avatar (WhatsApp / email / Messenger / etc.) -->
+      <span
+        v-if="inbox && inbox.channel_type"
+        v-tooltip.top="inbox.name"
+        class="tz-channel-badge absolute -bottom-1 ltr:-right-1 rtl:-left-1 z-[11] flex items-center justify-center size-[15px] rounded-full bg-n-background ring-2 ring-n-background"
+      >
+        <ChannelIcon :inbox="inbox" class="size-[13px]" />
+      </span>
     </div>
     <div class="px-0 py-3 flex-1 min-w-0 border-line">
       <div

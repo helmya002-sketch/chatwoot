@@ -26,6 +26,8 @@ import SidebarActionsHeader from 'dashboard/components-next/SidebarActionsHeader
 import LinearIssuesList from 'dashboard/components/widgets/conversation/linear/IssuesList.vue';
 import LinearSetupCTA from 'dashboard/components/widgets/conversation/linear/LinearSetupCTA.vue';
 import StripeCustomer from 'dashboard/components/widgets/conversation/StripeCustomer.vue';
+// Tolzar #13: surface Chatwoot's existing contact-merge as one obvious action.
+import ContactMergeModal from 'dashboard/modules/contact/ContactMergeModal.vue';
 
 const props = defineProps({
   conversationId: {
@@ -379,6 +381,31 @@ const TZ_TABS = [
           </div>
         </template>
       </Draggable>
+      <!-- Tolzar #13: one-click contact merge (opens the stock merge picker) -->
+      <div
+        v-show="activeTab === 'actions'"
+        v-if="contact && contact.id"
+        class="pt-1 pb-2"
+      >
+        <ContactMergeModal :primary-contact="contact">
+          <template #trigger>
+            <button type="button" class="tz-merge-btn">
+              <svg
+                class="size-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+              >
+                <path d="M7 4v5a5 5 0 0 0 5 5 5 5 0 0 0 5-5V4" />
+                <line x1="12" y1="14" x2="12" y2="20" />
+                <polyline points="9 17 12 20 15 17" />
+              </svg>
+              <span>{{ $t('MERGE_CONTACTS.TITLE') || 'Merge contact' }}</span>
+            </button>
+          </template>
+        </ContactMergeModal>
+      </div>
     </div>
       </div>
       <!-- Tolzar #3: vertical icon rail switching the contact-pane tabs -->
@@ -481,5 +508,30 @@ const TZ_TABS = [
   font-weight: 600;
   line-height: 1;
   letter-spacing: 0.01em;
+}
+
+/* Tolzar #13: merge-contact action button */
+.tz-merge-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgb(var(--slate-11));
+  border: 1px solid rgb(var(--slate-5));
+  background: rgb(var(--surface-1));
+  transition:
+    background 0.12s ease,
+    color 0.12s ease,
+    border-color 0.12s ease;
+}
+.tz-merge-btn:hover {
+  color: rgb(var(--slate-12));
+  border-color: rgb(var(--slate-7));
+  background: rgb(var(--slate-3));
 }
 </style>
