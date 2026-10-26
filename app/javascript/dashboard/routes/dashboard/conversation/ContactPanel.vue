@@ -143,16 +143,41 @@ onMounted(() => {
   store.dispatch('attributes/get', 0);
   store.dispatch('integrations/get');
 });
+
+// Tolzar #3: group the sidebar sections under a vertical icon rail so the contact
+// pane reads as tabs (Overview / Files / Actions) instead of one long scroll.
+const activeTab = ref('overview');
+const SECTION_TAB = {
+  conversation_info: 'overview',
+  contact_attributes: 'overview',
+  contact_notes: 'overview',
+  shared_files: 'files',
+  conversation_actions: 'actions',
+  conversation_participants: 'actions',
+  previous_conversation: 'actions',
+  macros: 'actions',
+  linear_issues: 'actions',
+  shopify_orders: 'actions',
+  stripe_customer: 'actions',
+};
+const tabOf = name => SECTION_TAB[name] || 'actions';
+const TZ_TABS = [
+  { key: 'overview', label: 'Overview' },
+  { key: 'files', label: 'Files' },
+  { key: 'actions', label: 'Actions' },
+];
 </script>
 
 <template>
-  <div class="w-full">
+  <div class="w-full flex flex-col h-full min-h-0">
     <SidebarActionsHeader
       :title="$t('CONVERSATION.SIDEBAR.CONTACT')"
       @close="closeContactPanel"
     />
+    <div class="flex flex-1 min-h-0">
+      <div class="flex-1 min-w-0 overflow-y-auto">
     <ContactInfo :contact="contact" :channel-type="channelType" />
-    <div class="px-2 pt-3">
+    <div v-show="activeTab === 'overview'" class="px-2 pt-3">
       <TolzarSidebarPanel :contact="contact" />
     </div>
     <div class="px-2 pb-8 list-group">
@@ -167,6 +192,7 @@ onMounted(() => {
         @end="onDragEnd"
       >
         <template #item="{ element }">
+          <div v-show="tabOf(element.name) === activeTab">
           <div
             v-if="element.name === 'conversation_actions'"
             class="conversation--actions"
@@ -350,8 +376,62 @@ onMounted(() => {
               <SharedFiles />
             </AccordionItem>
           </div>
+          </div>
         </template>
       </Draggable>
+    </div>
+      </div>
+      <!-- Tolzar #3: vertical icon rail switching the contact-pane tabs -->
+      <nav class="tz-rail">
+        <button
+          v-for="tab in TZ_TABS"
+          :key="tab.key"
+          v-tooltip.left="tab.label"
+          type="button"
+          class="tz-rail-btn"
+          :class="{ 'tz-rail-on': activeTab === tab.key }"
+          @click="activeTab = tab.key"
+        >
+          <svg
+            v-if="tab.key === 'overview'"
+            class="tz-rail-ic"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.7"
+          >
+            <circle cx="12" cy="8" r="3.4" />
+            <path d="M5.5 20c0-3.3 2.9-5.8 6.5-5.8s6.5 2.5 6.5 5.8" />
+          </svg>
+          <svg
+            v-else-if="tab.key === 'files'"
+            class="tz-rail-ic"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.7"
+          >
+            <path
+              d="M7 3h7l4 4v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"
+            />
+            <path d="M14 3v4h4" />
+          </svg>
+          <svg
+            v-else
+            class="tz-rail-ic"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.7"
+          >
+            <line x1="4" y1="8" x2="20" y2="8" />
+            <circle cx="10" cy="8" r="2.2" fill="currentColor" stroke="none" />
+            <line x1="4" y1="16" x2="20" y2="16" />
+            <circle cx="15" cy="16" r="2.2" fill="currentColor" stroke="none" />
+          </svg>
+          <span class="tz-rail-lbl">{{ tab.label }}</span>
+        </button>
+      </nav>
     </div>
   </div>
 </template>
@@ -359,5 +439,47 @@ onMounted(() => {
 <style lang="scss" scoped>
 :deep(.contact--profile) {
   @apply pb-3 border-b border-solid border-n-weak;
+}
+
+/* Tolzar #3: vertical icon rail on the contact pane's edge */
+.tz-rail {
+  flex: 0 0 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2px;
+  padding: 8px 4px;
+  border-inline-start: 1px solid rgb(var(--slate-4));
+  background: rgb(var(--surface-1));
+}
+.tz-rail-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 7px 0 6px;
+  border-radius: 8px;
+  color: rgb(var(--slate-10));
+  transition:
+    background 0.12s ease,
+    color 0.12s ease;
+}
+.tz-rail-btn:hover {
+  background: rgb(var(--slate-3));
+  color: rgb(var(--slate-12));
+}
+.tz-rail-on {
+  background: rgb(var(--blue-3));
+  color: rgb(var(--blue-11));
+}
+.tz-rail-ic {
+  width: 19px;
+  height: 19px;
+}
+.tz-rail-lbl {
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.01em;
 }
 </style>

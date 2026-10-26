@@ -30,6 +30,7 @@ import {
 } from 'dashboard/composables/useTransformKeys';
 import { useEmitter } from 'dashboard/composables/emitter';
 import { useConversationRequiredAttributes } from 'dashboard/composables/useConversationRequiredAttributes';
+import { useResizablePane } from 'dashboard/composables/useResizablePane';
 
 import { emitter } from 'shared/helpers/mitt';
 
@@ -75,6 +76,16 @@ const activeAssigneeTab = ref(wootConstants.ASSIGNEE_TYPE.ME);
 const activeStatus = ref(wootConstants.STATUS_TYPE.OPEN);
 const activeSortBy = ref(wootConstants.SORT_BY_TYPE.LAST_ACTIVITY_AT_DESC);
 const showAdvancedFilters = ref(false);
+// Tolzar #6b: top-bar quick filters + list-scoped search (client-side over the
+// loaded list). "Unreplied" = open conversations still awaiting an agent reply.
+const tzUnreplied = ref(false);
+const tzSearch = ref('');
+// Tolzar #2: draggable list↔conversation boundary (persisted width).
+const {
+  widthStyle: tzListStyle,
+  startDrag: tzListDrag,
+  reset: tzListReset,
+} = useResizablePane('tz_list_width', { min: 300, max: 560 });
 // chatsOnView is to store the chats that are currently visible on the screen,
 // which mirrors the conversationList.
 const chatsOnView = ref([]);
@@ -350,7 +361,38 @@ const conversationList = computed(() => {
     localConversationList = sortByUnreadStatus(localConversationList);
   }
 
+  // Tolzar #6b: "Unreplied" = still awaiting an agent reply (waiting_since set),
+  // among open conversations. Client-side over the loaded list.
+  if (tzUnreplied.value) {
+    localConversationList = localConversationList.filter(c => {
+      const w = Number(c.waitingSince ?? c.waiting_since);
+      return Number.isFinite(w) && w > 0 && c.status === wootConstants.STATUS_TYPE.OPEN;
+    });
+  }
+
+  // Tolzar #6b: list-scoped search over contact name / last message / id.
+  const q = tzSearch.value.trim().toLowerCase();
+  if (q) {
+    localConversationList = localConversationList.filter(c => {
+      const name = (c.meta?.sender?.name || '').toLowerCase();
+      const msg = (
+        c.lastNonActivityMessage?.content ||
+        c.last_non_activity_message?.content ||
+        ''
+      ).toLowerCase();
+      return name.includes(q) || msg.includes(q) || String(c.id).includes(q);
+    });
+  }
+
   return localConversationList;
+});
+
+// Tolzar #6b: which quick-filter segment is active for the top-bar control.
+const tzStatusSegment = computed(() => {
+  if (tzUnreplied.value) return 'unreplied';
+  return activeStatus.value === wootConstants.STATUS_TYPE.RESOLVED
+    ? 'resolved'
+    : 'open';
 });
 
 const showEndOfListMessage = computed(() => {
@@ -649,6 +691,8 @@ function updateAssigneeTab(selectedTab) {
 function onBasicFilterChange(value, type) {
   if (type === 'status') {
     activeStatus.value = value;
+    // Tolzar #6b: leaving Open via the dropdown clears the Unreplied sub-filter.
+    if (value !== wootConstants.STATUS_TYPE.OPEN) tzUnreplied.value = false;
   } else {
     activeSortBy.value = value;
   }
@@ -667,6 +711,30 @@ function onBasicFilterChange(value, type) {
   }
 
   resetAndFetchData();
+}
+
+// Tolzar #6b: top-bar Open / Unreplied / Closed. Open/Closed reuse the existing
+// status fetch path; Unreplied is an Open sub-view filtered client-side.
+function onTzSegment(seg) {
+  if (seg === 'unreplied') {
+    tzUnreplied.value = true;
+    if (activeStatus.value !== wootConstants.STATUS_TYPE.OPEN) {
+      onBasicFilterChange(wootConstants.STATUS_TYPE.OPEN, 'status');
+    }
+    return;
+  }
+  tzUnreplied.value = false;
+  const next =
+    seg === 'resolved'
+      ? wootConstants.STATUS_TYPE.RESOLVED
+      : wootConstants.STATUS_TYPE.OPEN;
+  if (activeStatus.value !== next) {
+    onBasicFilterChange(next, 'status');
+  }
+}
+
+function onTzSearch(value) {
+  tzSearch.value = value || '';
 }
 
 function openLastSavedItemInFolder() {
@@ -920,8 +988,17 @@ watch(appliedFilters, () => resetBulkActions());
       { hidden: !showConversationList },
       isOnExpandedLayout ? 'basis-full' : 'w-[340px] 2xl:w-[412px]',
     ]"
+    :style="isOnExpandedLayout ? {} : tzListStyle"
   >
     <slot />
+    <!-- Tolzar #2: drag to resize the list; double-click to reset -->
+    <div
+      v-if="!isOnExpandedLayout"
+      class="tz-resize tz-resize-end"
+      title="Drag to resize · double-click to reset"
+      @pointerdown="e => tzListDrag(e, 'end')"
+      @dblclick="tzListReset"
+    />
     <ChatListHeader
       :page-title="pageTitle"
       :contact-filter="appliedContactFilter"
@@ -931,11 +1008,15 @@ watch(appliedFilters, () => resetBulkActions());
       :is-on-expanded-layout="isOnExpandedLayout"
       :conversation-stats="conversationStats"
       :is-list-loading="chatListLoading && !conversationList.length"
+      :status-segment="tzStatusSegment"
+      :search-query="tzSearch"
       @add-folders="onClickOpenAddFoldersModal"
       @delete-folders="onClickOpenDeleteFoldersModal"
       @filters-modal="onToggleAdvanceFiltersModal"
       @reset-filters="resetFilters"
       @basic-filter-change="onBasicFilterChange"
+      @status-segment="onTzSegment"
+      @search-change="onTzSearch"
     />
 
     <TeleportWithDirection
@@ -1027,3 +1108,33 @@ watch(appliedFilters, () => resetBulkActions());
     />
   </div>
 </template>
+
+<style scoped>
+/* Tolzar #2: pane resize handle */
+.tz-resize {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 7px;
+  z-index: 30;
+  cursor: col-resize;
+  touch-action: none;
+}
+.tz-resize-end {
+  inset-inline-end: -3px;
+}
+.tz-resize::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  inset-inline-end: 3px;
+  width: 2px;
+  background: transparent;
+  transition: background 0.12s ease;
+}
+.tz-resize:hover::after,
+.tz-resize:active::after {
+  background: rgb(var(--blue-9));
+}
+</style>

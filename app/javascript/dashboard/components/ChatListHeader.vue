@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, ref, nextTick } from 'vue';
 import { useUISettings } from 'dashboard/composables/useUISettings';
 import { formatNumber } from '@chatwoot/utils';
 import wootConstants from 'dashboard/constants/globals';
@@ -17,6 +17,10 @@ const props = defineProps({
   isOnExpandedLayout: { type: Boolean, required: true },
   conversationStats: { type: Object, required: true },
   isListLoading: { type: Boolean, required: true },
+  // Tolzar #6b: the active quick-filter segment ('open' | 'unreplied' | 'resolved')
+  statusSegment: { type: String, default: 'open' },
+  // Tolzar #6b: the current list-scoped search text (client-side, the loaded list)
+  searchQuery: { type: String, default: '' },
 });
 
 const emit = defineEmits([
@@ -25,7 +29,31 @@ const emit = defineEmits([
   'resetFilters',
   'basicFilterChange',
   'filtersModal',
+  // Tolzar #6b: top-bar quick filters + list search (no extra row)
+  'statusSegment',
+  'searchChange',
 ]);
+
+// Tolzar #6b: Open / Unreplied / Closed as a compact segmented control on the
+// existing top row. 'resolved' is labelled "Closed" to match team wording.
+const TZ_SEGMENTS = [
+  { key: 'open', label: 'Open' },
+  { key: 'unreplied', label: 'Unreplied' },
+  { key: 'resolved', label: 'Closed' },
+];
+const showSearch = ref(false);
+const searchInputRef = ref(null);
+
+const openSearch = async () => {
+  showSearch.value = true;
+  await nextTick();
+  searchInputRef.value?.focus();
+};
+const closeSearch = () => {
+  showSearch.value = false;
+  if (props.searchQuery) emit('searchChange', '');
+};
+const onSearchInput = e => emit('searchChange', e.target.value);
 
 const { uiSettings, updateUISettings } = useUISettings();
 
@@ -77,7 +105,28 @@ const toggleConversationLayout = () => {
       'border-b border-n-strong': hasAppliedFiltersOrActiveFolders,
     }"
   >
-    <div class="flex items-center justify-center min-w-0">
+    <!-- Tolzar #6b: list-scoped search overlays the title area when active -->
+    <div v-if="showSearch" class="flex items-center flex-1 min-w-0 gap-1">
+      <input
+        ref="searchInputRef"
+        type="text"
+        :value="searchQuery"
+        placeholder="Search this list"
+        class="flex-1 min-w-0 bg-transparent border-0 outline-none text-sm text-n-slate-12 placeholder:text-n-slate-10"
+        @input="onSearchInput"
+        @keydown.esc="closeSearch"
+      />
+      <NextButton
+        v-tooltip.top="'Close search'"
+        icon="i-lucide-x"
+        slate
+        xs
+        faded
+        class="shrink-0"
+        @click="closeSearch"
+      />
+    </div>
+    <div v-else class="flex items-center min-w-0">
       <NextButton
         v-if="showFilterScope"
         v-tooltip.right="$t('FILTER.CLEAR_BUTTON_LABEL')"
@@ -89,7 +138,10 @@ const toggleConversationLayout = () => {
         ghost
         @click="emit('resetFilters')"
       />
-      <h1 class="text-base font-medium truncate text-n-slate-12" :title="title">
+      <h1
+        class="text-base font-medium truncate text-n-slate-12 shrink"
+        :title="title"
+      >
         {{ title }}
       </h1>
       <span
@@ -101,14 +153,38 @@ const toggleConversationLayout = () => {
       >
         {{ formattedAllCount }}
       </span>
-      <span
+      <!-- Tolzar #6b: Open / Unreplied / Closed quick filter (replaces the status chip) -->
+      <div
         v-if="!hasAppliedFiltersOrActiveFolders"
-        class="px-2 py-1 my-0.5 mx-1 rounded-md capitalize bg-n-slate-3 text-xxs text-n-slate-12 shrink-0"
+        class="tz-seg shrink-0"
+        role="tablist"
       >
-        {{ $t(`CHAT_LIST.CHAT_STATUS_FILTER_ITEMS.${activeStatus}.TEXT`) }}
-      </span>
+        <button
+          v-for="s in TZ_SEGMENTS"
+          :key="s.key"
+          type="button"
+          role="tab"
+          class="tz-seg-btn"
+          :class="{ 'tz-seg-on': statusSegment === s.key }"
+          @click="emit('statusSegment', s.key)"
+        >
+          {{ s.label }}
+        </button>
+      </div>
     </div>
     <div class="flex items-center gap-1">
+      <!-- Tolzar #6b: toggle the list-scoped search -->
+      <NextButton
+        v-if="!isContactScoped"
+        v-tooltip.top="'Search this list'"
+        :aria-label="'Search this list'"
+        :icon="showSearch ? 'i-lucide-x' : 'i-lucide-search'"
+        slate
+        xs
+        faded
+        class="shrink-0"
+        @click="showSearch ? closeSearch() : openSearch()"
+      />
       <template v-if="hasAppliedFilters && !hasActiveFolders">
         <div class="relative">
           <NextButton
@@ -182,3 +258,36 @@ const toggleConversationLayout = () => {
     </div>
   </div>
 </template>
+
+<style scoped>
+/* Tolzar #6b: compact Open / Unreplied / Closed quick-filter on the top row */
+.tz-seg {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin: 0 2px;
+  padding: 2px;
+  border-radius: 7px;
+  background: rgb(var(--slate-3));
+}
+.tz-seg-btn {
+  padding: 2px 7px;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: rgb(var(--slate-11));
+  white-space: nowrap;
+  transition:
+    background 0.12s ease,
+    color 0.12s ease;
+}
+.tz-seg-btn:hover {
+  color: rgb(var(--slate-12));
+}
+.tz-seg-on {
+  background: rgb(var(--surface-1));
+  color: rgb(var(--blue-11));
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.06);
+}
+</style>

@@ -126,6 +126,43 @@ const tolzarLeadHint = computed(
 const leadRingStyle = computed(() => ({
   background: `conic-gradient(rgb(var(--blue-9)) ${tolzarLeadScore.value}%, rgb(var(--slate-5)) 0)`,
 }));
+
+// Tolzar #5: set the sales lifecycle Stage from the conversation header. Writes
+// the contact's `lifecycle_stage` custom attribute — the same field the list-card
+// pill reads, so the card updates instantly. Existing attributes are preserved.
+const STAGES = [
+  'New Lead',
+  'Active',
+  'Offer Sent Follow up',
+  'Customer Won',
+  'Customer Lost',
+];
+const STAGE_LABELS = { 'Offer Sent Follow up': 'Offer Sent' };
+const STAGE_COLOR = {
+  'New Lead': '#3e63dd',
+  Active: '#4e9488',
+  'Offer Sent Follow up': '#9a6b2f',
+  'Customer Won': '#4a8560',
+  'Customer Lost': '#b5564f',
+};
+const stageOpen = ref(false);
+const currentStage = computed(
+  () => currentContact.value?.custom_attributes?.lifecycle_stage || 'New Lead'
+);
+const stageLabel = computed(
+  () => STAGE_LABELS[currentStage.value] || currentStage.value
+);
+const stageColor = stage => STAGE_COLOR[stage] || '#64748b';
+const setStage = stage => {
+  stageOpen.value = false;
+  const cc = currentContact.value;
+  if (!cc?.id || stage === currentStage.value) return;
+  const merged = { ...(cc.custom_attributes || {}), lifecycle_stage: stage };
+  store
+    .dispatch('contacts/update', { id: cc.id, customAttributes: merged })
+    .then(() => useAlert(`Stage set to ${STAGE_LABELS[stage] || stage}`))
+    .catch(() => useAlert('Could not update the stage'));
+};
 </script>
 
 <template>
@@ -197,6 +234,48 @@ const leadRingStyle = computed(() => ({
     <div
       class="flex flex-row items-center justify-start xl:justify-end flex-shrink-0 gap-2 w-full xl:w-auto header-actions-wrap"
     >
+      <!-- Tolzar #5: per-conversation Stage control (writes contact lifecycle_stage) -->
+      <div v-if="currentContact && currentContact.id" class="tz-stage">
+        <button
+          type="button"
+          class="tz-stage-btn"
+          v-tooltip="'Set the sales stage'"
+          @click="stageOpen = !stageOpen"
+        >
+          <span
+            class="tz-stage-dot"
+            :style="{ background: stageColor(currentStage) }"
+          />
+          <span class="tz-stage-lbl">{{ stageLabel }}</span>
+          <svg
+            class="tz-stage-caret"
+            viewBox="0 0 16 16"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.6"
+          >
+            <path d="M4 6l4 4 4-4" />
+          </svg>
+        </button>
+        <div
+          v-if="stageOpen"
+          class="tz-stage-backdrop"
+          @click="stageOpen = false"
+        />
+        <div v-if="stageOpen" class="tz-stage-menu">
+          <button
+            v-for="s in STAGES"
+            :key="s"
+            type="button"
+            class="tz-stage-opt"
+            :class="{ 'tz-stage-opt-on': s === currentStage }"
+            @click="setStage(s)"
+          >
+            <span class="tz-stage-dot" :style="{ background: stageColor(s) }" />
+            <span>{{ STAGE_LABELS[s] || s }}</span>
+          </button>
+        </div>
+      </div>
       <div
         v-if="tolzarLeadScore"
         v-tooltip="tolzarLeadHint || 'Tolzar lead score'"
@@ -268,5 +347,77 @@ const leadRingStyle = computed(() => ({
   font-size: 10px;
   font-style: normal;
   color: rgb(var(--slate-11));
+}
+
+/* Tolzar #5: Stage control in the conversation header */
+.tz-stage {
+  position: relative;
+  flex-shrink: 0;
+}
+.tz-stage-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 8px 0 9px;
+  border-radius: 8px;
+  border: 1px solid rgb(var(--slate-5));
+  background: rgb(var(--surface-1));
+  font-size: 12px;
+  font-weight: 600;
+  color: rgb(var(--slate-12));
+  white-space: nowrap;
+  transition: border-color 0.12s ease;
+}
+.tz-stage-btn:hover {
+  border-color: rgb(var(--slate-7));
+}
+.tz-stage-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: 0 0 8px;
+}
+.tz-stage-caret {
+  width: 13px;
+  height: 13px;
+  color: rgb(var(--slate-10));
+}
+.tz-stage-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+}
+.tz-stage-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  inset-inline-end: 0;
+  z-index: 41;
+  min-width: 180px;
+  padding: 4px;
+  border-radius: 10px;
+  border: 1px solid rgb(var(--slate-4));
+  background: rgb(var(--surface-1));
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);
+}
+.tz-stage-opt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 9px;
+  border-radius: 7px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: rgb(var(--slate-12));
+  text-align: start;
+}
+.tz-stage-opt:hover {
+  background: rgb(var(--slate-3));
+}
+.tz-stage-opt-on {
+  background: rgb(var(--blue-3));
+  color: rgb(var(--blue-11));
+  font-weight: 600;
 }
 </style>
