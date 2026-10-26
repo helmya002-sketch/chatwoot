@@ -1,6 +1,11 @@
 <script setup>
 import { computed, ref, watch } from 'vue';
 import { getLastMessage } from 'dashboard/helper/conversationHelper';
+import {
+  messageStamp,
+  shortTimestamp,
+  dynamicTime,
+} from 'shared/helpers/timeHelper';
 import Avatar from 'next/avatar/Avatar.vue';
 import Icon from 'dashboard/components-next/icon/Icon.vue';
 import MessagePreview from './MessagePreview.vue';
@@ -39,9 +44,41 @@ const unreadCount = computed(() => props.chat.unread_count);
 const hasUnread = computed(() => unreadCount.value > 0);
 const lastMessageInChat = computed(() => getLastMessage(props.chat));
 
-// Tolzar: lifecycle stage chip (respond.io-style funnel marker on each card)
+// Tolzar #14: clock time of the last interaction for today ("time is important,
+// like 3 am"); short relative age for older threads.
+const lastTimeDisplay = computed(() => {
+  const ts = props.chat?.timestamp;
+  if (!ts) return '';
+  const d = new Date(ts * 1000);
+  const n = new Date();
+  const sameDay =
+    d.getFullYear() === n.getFullYear() &&
+    d.getMonth() === n.getMonth() &&
+    d.getDate() === n.getDate();
+  return sameDay ? messageStamp(ts, 'h:mm a') : shortTimestamp(dynamicTime(ts));
+});
+// Tolzar #14: "no reply till now" — how long the thread has waited for an agent
+// reply (Chatwoot's waiting_since). Only while the thread is open.
+const compactAgo = secs => {
+  if (secs < 60) return `${Math.max(1, secs)}s`;
+  const m = Math.floor(secs / 60);
+  if (m < 60) return `${m}m`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h`;
+  return `${Math.floor(h / 24)}d`;
+};
+const noReplyFor = computed(() => {
+  const w = Number(props.chat?.waiting_since ?? props.chat?.waitingSince);
+  if (!Number.isFinite(w) || w <= 0) return '';
+  if (props.chat?.status !== 'open') return '';
+  const secs = Math.floor(Date.now() / 1000) - w;
+  return secs > 60 ? compactAgo(secs) : '';
+});
+
+// Tolzar #9: every card shows a Stage so staff can plan at a glance; un-staged
+// contacts default to the funnel entry "New Lead".
 const lifecycleStage = computed(
-  () => props.currentContact?.custom_attributes?.lifecycle_stage || ''
+  () => props.currentContact?.custom_attributes?.lifecycle_stage || 'New Lead'
 );
 const lifecycleChipStyle = computed(() => {
   const s = String(lifecycleStage.value).toLowerCase();
@@ -190,15 +227,22 @@ watch(
             'flex-1 justify-between': !showInboxName,
           }"
         >
+          <!-- Tolzar #6a: assignee as a circle avatar (name on hover), not text. -->
+          <Avatar
+            v-if="showAssignee && assignee.name && !isAIAssignee"
+            v-tooltip.top="assignee.name"
+            :name="assignee.name"
+            :src="assignee.thumbnail"
+            :size="18"
+            rounded-full
+            class="flex-shrink-0"
+          />
           <span
-            v-if="showAssignee && assignee.name"
-            class="text-n-slate-11 text-xs font-medium leading-3 py-0.5 px-0 inline-flex items-center gap-px truncate"
+            v-else-if="showAssignee && assignee.name"
+            v-tooltip.top="assignee.name"
+            class="inline-flex items-center flex-shrink-0 text-n-slate-11"
           >
-            <Icon
-              :icon="isAIAssignee ? 'i-lucide-bot' : 'i-lucide-user-round'"
-              class="size-3 text-n-slate-11 flex-shrink-0"
-            />
-            <span class="truncate">{{ assignee.name }}</span>
+            <Icon icon="i-lucide-bot" class="size-3.5 text-n-slate-11" />
           </span>
           <CardPriorityIcon
             :priority="chat.priority"
@@ -254,15 +298,36 @@ watch(
         </span>
       </p>
       <div
-        class="absolute flex flex-col ltr:right-3 rtl:left-3"
+        class="absolute flex flex-col items-end ltr:right-3 rtl:left-3"
         :class="showMetaSection ? 'top-8' : 'top-4'"
       >
-        <span class="ml-auto font-normal leading-4 text-xxs">
-          <TimeAgo
-            :last-activity-timestamp="chat.timestamp"
-            :created-at-timestamp="chat.created_at"
-            :conversation-id="chat.id"
-          />
+        <!-- Tolzar #14: clock time of the last interaction, + "no reply for X". -->
+        <span
+          v-tooltip.left="chat.timestamp ? messageStamp(chat.timestamp, 'MMM d, h:mm a') : ''"
+          class="ml-auto font-normal leading-4 text-xxs text-n-slate-11"
+        >
+          {{ lastTimeDisplay }}
+        </span>
+        <span
+          v-if="noReplyFor"
+          v-tooltip.left="'No reply yet'"
+          class="inline-flex items-center gap-0.5 mt-1 rounded px-1 py-px text-xxs font-semibold leading-none"
+          :style="{
+            color: 'rgb(var(--amber-11, 166 108 11))',
+            background: 'rgb(var(--amber-9, 255 197 61) / 0.16)',
+          }"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            class="size-2.5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+          >
+            <circle cx="12" cy="12" r="9" />
+            <path d="M12 7.5V12l3 2" />
+          </svg>
+          {{ noReplyFor }}
         </span>
         <UnreadBadge
           v-if="hasUnread"
