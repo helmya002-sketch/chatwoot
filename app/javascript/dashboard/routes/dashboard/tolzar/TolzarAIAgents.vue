@@ -4,10 +4,11 @@ import { useMapGetter } from 'dashboard/composables/store';
 
 const accountId = useMapGetter('getCurrentAccountId');
 
-// --- AI Agents pillar (respond.io clone). Shell UI; persists to localStorage for now.
-// Data model maps 1:1 to the future brain API (agents CRUD + test-chat).
-const STORE_KEY = 'tolzar_ai_agents_v1';
+// --- AI Agents pillar (respond.io clone). Configs are stored SERVER-SIDE by the brain
+// (CRUD proxied through Chatwoot at /tolzar/agents); the brain reads the active agent and
+// uses its instructions when it replies. No localStorage — shared across users + devices.
 const EMOJIS = ['😇', '😎', '🤖', '🐬', '💬', '⚓', '🧭', '🌊'];
+const apiBase = computed(() => `/api/v1/accounts/${accountId.value}/tolzar`);
 
 // Skill catalog — mirrors respond.io AI Skills; each maps to a Chatwoot action we already script.
 const SKILL_CATALOG = [
@@ -24,7 +25,6 @@ const agents = ref([]);
 const selectedId = ref(null); // null = list view, else builder
 const draft = ref(null); // editable copy while in builder
 const loaded = ref(false);
-const DEFAULT_KEY = 'tolzar_default_agent_v1';
 const defaultId = ref(null);
 
 // test chat (preview only — brain not connected yet)
@@ -35,79 +35,40 @@ function uid() {
   return 'a' + Math.random().toString(36).slice(2, 9);
 }
 
-function seed() {
-  return [
-    {
-      id: uid(),
-      name: 'Alex 2',
-      emoji: '🐬',
-      status: 'active',
-      description:
-        'Greets customers, answers from the team price templates, drives to the free pre-booking voucher, hands over at confirmation.',
-      instructions:
-        '# CONTEXT\nYou are Alex, the friendly sales coordinator at Aquarius Diving Club. Understand each contact’s intent, answer from the approved price templates, and drive toward the free, no-obligation pre-booking voucher. Hand over to a specialist at confirmation.\n\n# STYLE\n- Warm, second person, contractions. Reply in the contact’s language.\n- Never mention AI or automation. At most one 😊 per message. 2–4 sentences.\n- Greet once, in the first reply, combined with the next step.\n\n# ROUTING\n- Sharm El Sheikh → Francesca.\n- Hurghada / Makadi / Makadi Bay / Sahl Hasheesh / Soma Bay / El Gouna → Hurghada Team (round robin).\n- Jobs / spam / booking.com / submarine → Ahmed.',
-      knowledge: [
-        { type: 'url', label: 'Aquarius', value: 'https://www.aquariusredsea.com/' },
-        { type: 'file', label: 'Hotels', value: 'hotels.csv' },
-        { type: 'url', label: 'Live prices', value: 'prices.yaml (read-only endpoint)' },
-      ],
-      skills: [
-        { type: 'assign', config: 'Fire in the SAME turn as any handover. Sharm→Francesca; Hurghada area→Hurghada Team round robin; jobs/spam/booking.com/submarine or +972/Hebrew→Ahmed.' },
-        { type: 'update_fields', config: 'Save location to one of the 4 centers (El Gouna/Soma Bay→Hurghada); set country from the phone number.' },
-        { type: 'update_lifecycle', config: 'Move to Offer Sent when a price/voucher is offered; Customer Won at confirmation.' },
-      ],
-    },
-    {
-      id: uid(),
-      name: 'Booking Value Extractor',
-      emoji: '🤖',
-      status: 'inactive',
-      description: 'Reads a won conversation and saves the booking value to the contact.',
-      instructions: 'When a booking is confirmed, extract the total booking value (EUR) and save it to the booking_value_eur field.',
-      knowledge: [],
-      skills: [{ type: 'update_fields', config: 'Save the confirmed total to booking_value_eur.' }],
-    },
-  ];
-}
-
-function load() {
+async function load() {
   try {
-    const raw = localStorage.getItem(STORE_KEY);
-    agents.value = raw ? JSON.parse(raw) : seed();
-    if (!raw) persist();
+    const { data } = await window.axios.get(`${apiBase.value}/agents`);
+    agents.value = Array.isArray(data.agents) ? data.agents : [];
+    defaultId.value =
+      data.default_id || (agents.value[0] && agents.value[0].id) || null;
   } catch (e) {
-    agents.value = seed();
+    agents.value = [];
   }
-  try {
-    defaultId.value = localStorage.getItem(DEFAULT_KEY);
-  } catch (e) {
-    /* storage unavailable */
-  }
-  if (!defaultId.value && agents.value.length) defaultId.value = agents.value[0].id;
   loaded.value = true;
 }
 
-function persist() {
-  try {
-    localStorage.setItem(STORE_KEY, JSON.stringify(agents.value));
-  } catch (e) {
-    /* storage unavailable — shell still works in-memory */
-  }
+async function saveToServer(agent) {
+  // id/name/description/instructions/knowledge/skills/status/emoji — stored as-is.
+  await window.axios.post(`${apiBase.value}/agents`, { agent });
 }
 
-function setDefault(id, ev) {
+async function setDefault(id, ev) {
   if (ev) ev.stopPropagation();
   defaultId.value = id;
   try {
-    localStorage.setItem(DEFAULT_KEY, id);
+    await window.axios.post(`${apiBase.value}/agents/default`, { id });
   } catch (e) {
-    /* storage unavailable */
+    /* non-fatal */
   }
 }
-function toggleStatus(a, ev) {
+async function toggleStatus(a, ev) {
   if (ev) ev.stopPropagation();
   a.status = a.status === 'active' ? 'inactive' : 'active';
-  persist();
+  try {
+    await saveToServer(a);
+  } catch (e) {
+    /* non-fatal */
+  }
 }
 
 const selected = computed(() => agents.value.find(a => a.id === selectedId.value));
@@ -118,7 +79,7 @@ function openAgent(id) {
   testMsgs.value = [];
 }
 
-function createAgent() {
+async function createAgent() {
   const a = {
     id: uid(),
     name: 'New AI Agent',
@@ -130,7 +91,11 @@ function createAgent() {
     skills: [],
   };
   agents.value.push(a);
-  persist();
+  try {
+    await saveToServer(a);
+  } catch (e) {
+    /* non-fatal */
+  }
   openAgent(a.id);
 }
 
@@ -139,19 +104,28 @@ function cancelEdit() {
   draft.value = null;
 }
 
-function saveAgent() {
+async function saveAgent() {
   const i = agents.value.findIndex(a => a.id === draft.value.id);
   if (i >= 0) agents.value[i] = JSON.parse(JSON.stringify(draft.value));
-  persist();
+  const payload = JSON.parse(JSON.stringify(draft.value));
+  try {
+    await saveToServer(payload);
+  } catch (e) {
+    /* non-fatal */
+  }
   selectedId.value = null;
   draft.value = null;
 }
 
-function deleteAgent(id) {
+async function deleteAgent(id) {
   // eslint-disable-next-line no-alert
   if (!window.confirm('Delete this AI Agent?')) return;
   agents.value = agents.value.filter(a => a.id !== id);
-  persist();
+  try {
+    await window.axios.post(`${apiBase.value}/agents/delete`, { id });
+  } catch (e) {
+    /* non-fatal */
+  }
   if (selectedId.value === id) cancelEdit();
 }
 
@@ -224,7 +198,7 @@ onMounted(load);
 </script>
 
 <template>
-  <div class="overflow-auto flex-1 bg-n-background" data-tz-build="ai-agents-4">
+  <div class="overflow-auto flex-1 bg-n-background" data-tz-build="ai-agents-5-serverside">
     <!-- ===================== LIST VIEW ===================== -->
     <div v-if="!selectedId" class="mx-auto max-w-[1120px] px-5 pb-16 pt-7 md:px-6">
       <div class="flex gap-4 justify-between items-start tz-rise">

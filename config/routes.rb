@@ -63,6 +63,11 @@ Rails.application.routes.draw do
         scope module: :accounts do
           # Tolzar: admin-gated proxy to the internal brain's AI-Agents test chat.
           post 'tolzar/agent_test', to: 'tolzar#agent_test'
+          # Tolzar: server-side AI-Agent configs (CRUD), proxied to the brain.
+          get    'tolzar/agents',         to: 'tolzar#agents'
+          post   'tolzar/agents',         to: 'tolzar#agent_save'
+          post   'tolzar/agents/delete',  to: 'tolzar#agent_delete'
+          post   'tolzar/agents/default', to: 'tolzar#agent_default'
           if ChatwootApp.enterprise?
             resources :monitors, only: [:index, :show, :create, :update, :destroy] do
               collection do
