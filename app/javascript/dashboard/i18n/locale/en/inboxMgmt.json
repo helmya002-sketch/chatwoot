@@ -1341,7 +1341,7 @@
       "SET_FIELDS": "Pre chat form fields",
       "SET_FIELDS_HEADER": {
         "FIELDS": "Fields",
-        "LABEL": "Label",
+        "LABEL": "Tag",
         "PLACE_HOLDER": "Placeholder",
         "KEY": "Key",
         "TYPE": "Type",
@@ -1418,12 +1418,12 @@
       "SURVEY_RULE": {
         "LABEL": "Survey rule",
         "DESCRIPTION_PREFIX": "Send the survey if the conversation",
-        "DESCRIPTION_SUFFIX": "any of the labels",
+        "DESCRIPTION_SUFFIX": "any of the tags",
         "OPERATOR": {
           "CONTAINS": "contains",
           "DOES_NOT_CONTAINS": "does not contain"
         },
-        "SELECT_PLACEHOLDER": "select labels"
+        "SELECT_PLACEHOLDER": "select tags"
       },
       "NOTE": "Note: CSAT surveys are sent only once per conversation",
       "WHATSAPP_NOTE": "Note: When you save, the system creates a dedicated CSAT template in WhatsApp (used to capture rating and feedback in reports) and submits it as Utility for approval. Meta may still classify it as Marketing based on content. After approval, surveys are sent only once per conversation as per the survey rule.",

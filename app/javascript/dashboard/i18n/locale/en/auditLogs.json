@@ -29,7 +29,7 @@
         "INBOXES": "Inboxes",
         "WEBHOOKS": "Webhooks",
         "AUTOMATION_RULES": "Automation rules",
-        "MACROS": "Macros",
+        "MACROS": "Quick Actions",
         "CONVERSATION_DELETIONS": "Conversation deletions",
         "MESSAGE_DELETIONS": "Message deletions"
       },
@@ -87,9 +87,9 @@
       "DELETE": "{agentName} deleted a team (#{id})"
     },
     "MACRO": {
-      "ADD": "{agentName} created a new macro (#{id})",
-      "EDIT": "{agentName} updated a macro (#{id})",
-      "DELETE": "{agentName} deleted a macro (#{id})"
+      "ADD": "{agentName} created a new quick action (#{id})",
+      "EDIT": "{agentName} updated a quick action (#{id})",
+      "DELETE": "{agentName} deleted a quick action (#{id})"
     },
     "INBOX_MEMBER": {
       "ADD": "{agentName} added {user} to the inbox(#{inbox_id})",
