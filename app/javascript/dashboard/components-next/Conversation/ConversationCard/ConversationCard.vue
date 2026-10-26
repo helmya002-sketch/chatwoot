@@ -3,7 +3,11 @@ import { computed, ref } from 'vue';
 import { getInboxIconByType } from 'dashboard/helper/inbox';
 import { useRouter, useRoute } from 'vue-router';
 import { frontendURL, conversationUrl } from 'dashboard/helper/URLHelper.js';
-import { dynamicTime, shortTimestamp } from 'shared/helpers/timeHelper';
+import {
+  dynamicTime,
+  shortTimestamp,
+  messageStamp,
+} from 'shared/helpers/timeHelper';
 import { useExactTimestamp } from 'shared/composables/useExactTimestamp';
 
 import Icon from 'dashboard/components-next/icon/Icon.vue';
@@ -56,8 +60,35 @@ const inboxIcon = computed(() => {
 });
 
 const lastActivityAt = computed(() => {
-  const timestamp = props.conversation?.timestamp;
-  return timestamp ? shortTimestamp(dynamicTime(timestamp)) : '';
+  const ts = props.conversation?.timestamp;
+  if (!ts) return '';
+  // Owner #14: the clock time of the last interaction for today's threads
+  // ("time is important, like 3 am"); the short relative age for older ones.
+  const d = new Date(ts * 1000);
+  const n = new Date();
+  const sameDay =
+    d.getFullYear() === n.getFullYear() &&
+    d.getMonth() === n.getMonth() &&
+    d.getDate() === n.getDate();
+  return sameDay ? messageStamp(ts, 'h:mm a') : shortTimestamp(dynamicTime(ts));
+});
+
+// Owner #14: "no reply till now" — how long the thread has been waiting for an
+// agent reply (Chatwoot's waiting_since). Shown only while the thread is open.
+const compactAgo = secs => {
+  if (secs < 60) return `${Math.max(1, secs)}s`;
+  const m = Math.floor(secs / 60);
+  if (m < 60) return `${m}m`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h`;
+  return `${Math.floor(h / 24)}d`;
+};
+const noReplyFor = computed(() => {
+  const w = Number(props.conversation?.waitingSince);
+  if (!Number.isFinite(w) || w <= 0) return '';
+  if (props.conversation?.status !== 'open') return '';
+  const secs = Math.floor(Date.now() / 1000) - w;
+  return secs > 60 ? compactAgo(secs) : '';
 });
 
 // Tolzar: lifecycle chip on the conversation card (respond.io-style sales funnel)
@@ -70,8 +101,10 @@ const LIFECYCLE_STYLES = {
   'Customer Lost': { background: '#f6e7e6', color: '#b5564f' },
 };
 const LIFECYCLE_LABELS = { 'Offer Sent Follow up': 'Offer Sent' };
+// Owner #9: every card shows a Stage so staff can plan at a glance; un-staged
+// contacts default to the funnel entry "New Lead".
 const lifecycleStage = computed(
-  () => currentContact.value?.custom_attributes?.lifecycle_stage || ''
+  () => currentContact.value?.custom_attributes?.lifecycle_stage || 'New Lead'
 );
 const lifecycleChipStyle = computed(() => {
   const c = LIFECYCLE_STYLES[lifecycleStage.value] || {
@@ -159,6 +192,27 @@ const onCardClick = e => {
               class="flex-shrink-0 text-n-slate-11 size-3"
             />
           </div>
+          <span
+            v-if="noReplyFor"
+            v-tooltip.top="'No reply yet'"
+            class="inline-flex items-center gap-0.5 flex-shrink-0 rounded px-1.5 py-0.5 text-xs font-semibold"
+            :style="{
+              color: 'rgb(var(--amber-11, 166 108 11))',
+              background: 'rgb(var(--amber-9, 255 197 61) / 0.16)',
+            }"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              class="size-3"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 7.5V12l3 2" />
+            </svg>
+            {{ noReplyFor }}
+          </span>
           <span
             v-tooltip.top="{
               content: exactTimestamp(conversation?.timestamp),

@@ -100,6 +100,7 @@ defineExpose({
       </div>
       <Avatar
         v-if="assignee.name"
+        v-tooltip.top="assignee.name"
         :name="assignee.name"
         :src="assignee.thumbnail"
         :size="20"
