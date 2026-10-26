@@ -92,6 +92,9 @@ const useReply = () => {
 <style scoped>
 .tz-copilot {
   position: relative;
+  /* The card is a direct flex child of the .conversation-panel column (display:flex);
+     without flex-shrink:0 flexbox crushes it to ~27px and overflow:hidden clips the body. */
+  flex-shrink: 0;
   margin: 10px 16px 14px;
   border-radius: 15px;
   border: 1px solid rgb(var(--slate-5));

@@ -353,4 +353,30 @@ const jump = id => {
   line-height: 1.55;
   padding: 2px 4px 4px;
 }
+
+/* #3 fix — when the contact pane opens (push layout), the conversation column narrows.
+   Let the greeting/status text shrink + truncate so the "See briefing" button always
+   fits inside the column (never spilling past the right edge under the contact pane).
+   No overflow:hidden on .tz-brief — that would clip the briefing popover below it. */
+.tz-brief .tz-g,
+.tz-brief .tz-calm,
+.tz-brief .tz-nudge {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tz-brief .tz-nudge {
+  flex-shrink: 1;
+}
+.tz-brief .tz-nudge b {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tz-brief .tz-more,
+.tz-brief .tz-x,
+.tz-brief .tz-m,
+.tz-brief .tz-sep {
+  flex-shrink: 0;
+}
 </style>
