@@ -9,7 +9,6 @@ import { ref, computed, onMounted } from 'vue';
 import { onClickOutside } from '@vueuse/core';
 import { useStore, useMapGetter } from 'dashboard/composables/store';
 import { useRouter } from 'vue-router';
-import { useI18n } from 'vue-i18n';
 import InboxCard from 'dashboard/components-next/Inbox/InboxCard.vue';
 
 defineProps({
@@ -18,7 +17,6 @@ defineProps({
 
 const store = useStore();
 const router = useRouter();
-const { t } = useI18n();
 
 const isOpen = ref(false);
 const rootRef = ref(null);
@@ -102,7 +100,7 @@ onMounted(() => {
       type="button"
       class="tz-bell relative flex items-center justify-center size-8 rounded-lg text-n-slate-11 hover:bg-n-alpha-2 transition-colors"
       :class="{ 'bg-n-alpha-2 text-n-slate-12': isOpen }"
-      :title="t('INBOX.MENU_ITEM') || 'Notifications'"
+      title="Notifications"
       @click="toggle"
     >
       <span class="i-lucide-bell size-4" />
@@ -125,14 +123,14 @@ onMounted(() => {
         <span
           class="text-xs font-medium text-n-slate-11 uppercase tracking-wider"
         >
-          {{ t('INBOX.MENU_ITEM') || 'Notifications' }}
+          Notifications
         </span>
         <button
           type="button"
           class="text-xs font-medium text-n-brand hover:underline"
           @click="seeAll"
         >
-          {{ t('INBOX.LIST.SEE_ALL') || 'See all' }}
+          See all
         </button>
       </div>
       <div class="max-h-[400px] overflow-y-auto no-scrollbar px-1 py-1">
@@ -148,7 +146,7 @@ onMounted(() => {
           v-if="!uiFlags.isFetching && notifications.length === 0"
           class="p-4 text-sm font-medium text-center text-n-slate-10"
         >
-          {{ t('INBOX.LIST.NO_NOTIFICATIONS') || 'You have no notifications' }}
+          You have no notifications
         </p>
       </div>
     </div>
