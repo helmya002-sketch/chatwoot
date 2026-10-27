@@ -673,5 +673,45 @@
         "SEND": "Send ({keyCode})"
       }
     }
+  },
+  "TOLZAR_CONTACTS": {
+    "TABLE": {
+      "CONTACT": "Contact",
+      "STAGE": "Stage",
+      "LEAD_SCORE": "Lead score",
+      "PLACE": "Hotel / place",
+      "LAST_INTERACTION": "Last interaction",
+      "SUMMARY_MARK": "✦"
+    },
+    "STAGES": {
+      "ALL": "All stages",
+      "SET": "Set stage",
+      "SAVING": "Saving…",
+      "SET_SUCCESS": "Stage set to {stage}",
+      "SET_FAILED": "Could not update the stage",
+      "BULK_SUCCESS": "Stage set to {stage} for {count} contacts",
+      "BULK_PARTIAL": "Stage set to {stage} for {done} of {count} contacts"
+    },
+    "PANE": {
+      "FULL_PROFILE": "Full profile",
+      "STAGE": "Stage",
+      "LOST": "Lost",
+      "SUMMARY": "Tolzar summary",
+      "NO_SUMMARY": "No summary yet. Tolzar writes one after it reads a conversation.",
+      "LEAD_SCORE": "Lead score",
+      "DETAILS": "Details",
+      "TAGS": "Tags",
+      "RECENT": "Recent conversations",
+      "NONE_YET": "None yet.",
+      "HOTEL": "Hotel",
+      "PLACE": "Place",
+      "TRIP_STARTS": "Trip starts",
+      "CERTIFICATION": "Certification",
+      "GROUP_SIZE": "Group size",
+      "BOOKING_VALUE": "Booking value",
+      "LANGUAGE": "Language",
+      "PHONE": "Phone",
+      "EMAIL": "Email"
+    }
   }
 }

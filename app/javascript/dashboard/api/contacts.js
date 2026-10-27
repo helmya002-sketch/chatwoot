@@ -1,8 +1,10 @@
 /* global axios */
 import ApiClient from './ApiClient';
 
+// Tolzar: the Contacts table shows each contact's channel, so list calls include the
+// contact's inboxes (15 per page, eager-loaded server-side).
 export const buildContactParams = (page, sortAttr, label, search) => ({
-  include_contact_inboxes: false,
+  include_contact_inboxes: true,
   page,
   sort: sortAttr,
   ...(search ? { q: search } : {}),

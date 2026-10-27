@@ -11,7 +11,11 @@ import filterQueryGenerator from 'dashboard/helper/filterQueryGenerator';
 import ContactsListLayout from 'dashboard/components-next/Contacts/ContactsListLayout.vue';
 import ContactEmptyState from 'dashboard/components-next/Contacts/EmptyState/ContactEmptyState.vue';
 import Spinner from 'dashboard/components-next/spinner/Spinner.vue';
-import ContactsList from 'dashboard/components-next/Contacts/Pages/ContactsList.vue';
+import ContactsTable from 'dashboard/components-next/Tolzar/ContactsTable.vue';
+import ContactPreviewPane from 'dashboard/components-next/Tolzar/ContactPreviewPane.vue';
+import StageFilterBar from 'dashboard/components-next/Tolzar/StageFilterBar.vue';
+import ContactAPI from 'dashboard/api/contacts';
+import { stageOf } from 'dashboard/components-next/Tolzar/tolzarStages';
 import ContactsBulkActionBar from '../components/ContactsBulkActionBar.vue';
 import Dialog from 'dashboard/components-next/dialog/Dialog.vue';
 import BulkActionsAPI from 'dashboard/api/bulkActions';
@@ -425,6 +429,83 @@ const handleSort = async ({ sort, order }) => {
     : fetchContacts());
 };
 
+// Tolzar Contacts pass 1: preview pane, one-click stage views, bulk stage.
+const previewContactId = ref(null);
+const openPreview = id => {
+  previewContactId.value = previewContactId.value === id ? null : id;
+};
+watch(visibleContactIds, ids => {
+  if (previewContactId.value && !ids.includes(previewContactId.value)) {
+    previewContactId.value = null;
+  }
+});
+
+const STAGE_KEY = 'lifecycle_stage';
+const activeStage = computed(() => {
+  const list = appliedFilters.value || [];
+  if (activeSegmentId.value || list.length !== 1) return '';
+  const [f] = list;
+  return f.attribute_key === STAGE_KEY && f.filter_operator === 'equal_to'
+    ? [f.values].flat()[0] || ''
+    : '';
+});
+
+const applyStage = async key => {
+  if (!key) {
+    await fetchContacts();
+    return;
+  }
+  const filters = [
+    {
+      attribute_key: STAGE_KEY,
+      filter_operator: 'equal_to',
+      values: [key],
+      query_operator: 'and',
+      attribute_model: 'customAttributes',
+    },
+  ];
+  await store.dispatch('contacts/setContactFilters', filters);
+  await fetchSavedOrAppliedFilteredContact(filterQueryGenerator(filters));
+};
+
+const setStageForSelected = async key => {
+  const ids = [...selectedContactIds.value];
+  if (!ids.length) return;
+  isBulkActionLoading.value = true;
+  let failed = 0;
+  // One contact at a time, each re-read first: custom_attributes is replaced as a whole.
+  // eslint-disable-next-line no-restricted-syntax
+  for (const id of ids) {
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      const { data } = await ContactAPI.show(id);
+      const fresh = data?.payload?.custom_attributes || {};
+      // eslint-disable-next-line no-await-in-loop
+      await store.dispatch('contacts/update', {
+        id,
+        customAttributes: { ...fresh, [STAGE_KEY]: key },
+      });
+    } catch (e) {
+      failed += 1;
+    }
+  }
+  isBulkActionLoading.value = false;
+  const stage = stageOf(key).label;
+  useAlert(
+    failed
+      ? t('TOLZAR_CONTACTS.STAGES.BULK_PARTIAL', {
+          stage,
+          done: ids.length - failed,
+          count: ids.length,
+        })
+      : t('TOLZAR_CONTACTS.STAGES.BULK_SUCCESS', { stage, count: ids.length })
+  );
+  clearSelection();
+  await fetchContactsBasedOnContext(pageNumber.value, {
+    clearSelection: false,
+  });
+};
+
 const createContact = async contact => {
   await store.dispatch('contacts/create', contact);
 };
@@ -539,6 +620,15 @@ onMounted(async () => {
           @assign-labels="assignLabels"
           @remove-labels="removeLabels"
           @delete-selected="openBulkDeleteDialog"
+          @set-stage="setStageForSelected"
+        />
+        <StageFilterBar
+          v-if="
+            !activeSegmentId && !isSearchView && !activeLabel && !isActiveView
+          "
+          :active-stage="activeStage"
+          class="pt-3"
+          @select="applyStage"
         />
         <ContactEmptyState
           v-if="showEmptyStateLayout"
@@ -559,10 +649,13 @@ onMounted(async () => {
         </div>
 
         <div v-else class="flex flex-col gap-4 pt-4 pb-6">
-          <ContactsList
+          <ContactsTable
             :contacts="contacts"
             :selected-contact-ids="selectedContactIds"
+            :active-contact-id="previewContactId"
             @toggle-contact="toggleContactSelection"
+            @toggle-all="toggleSelectAll"
+            @open="openPreview"
           />
           <Dialog
             v-if="selectedCount"
@@ -575,6 +668,13 @@ onMounted(async () => {
             @confirm="deleteContacts"
           />
         </div>
+      </template>
+      <template #aside>
+        <ContactPreviewPane
+          v-if="previewContactId"
+          :contact-id="previewContactId"
+          @close="previewContactId = null"
+        />
       </template>
     </ContactsListLayout>
   </div>

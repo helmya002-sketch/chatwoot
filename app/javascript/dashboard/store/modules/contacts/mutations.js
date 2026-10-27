@@ -58,10 +58,16 @@ export const mutations = {
   },
 
   [types.EDIT_CONTACT]: ($state, data) => {
-    const existingAttachments = $state.records[data.id]?.attachments;
-    $state.records[data.id] = existingAttachments
-      ? { ...data, attachments: existingAttachments }
+    const existing = $state.records[data.id] || {};
+    const next = existing.attachments
+      ? { ...data, attachments: existing.attachments }
       : data;
+    // Tolzar: update responses come without contact_inboxes; keep the ones the list loaded
+    // so the Contacts table's channel badge survives a stage change.
+    $state.records[data.id] =
+      existing.contact_inboxes && !data.contact_inboxes
+        ? { ...next, contact_inboxes: existing.contact_inboxes }
+        : next;
   },
 
   [types.SET_CONTACT_ATTACHMENTS]: ($state, { id, data }) => {

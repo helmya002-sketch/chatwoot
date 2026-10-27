@@ -78,6 +78,33 @@ describe('#mutations', () => {
         attachments,
       });
     });
+
+    // Tolzar: update responses omit contact_inboxes; the Contacts table needs them.
+    it('keeps loaded contact_inboxes when the update response has none', () => {
+      const contactInboxes = [
+        { inbox: { id: 2, channel_type: 'Channel::Api' } },
+      ];
+      const state = {
+        records: { 1: { id: 1, name: 'a', contact_inboxes: contactInboxes } },
+      };
+      mutations[types.EDIT_CONTACT](state, { id: 1, name: 'b' });
+      expect(state.records[1]).toEqual({
+        id: 1,
+        name: 'b',
+        contact_inboxes: contactInboxes,
+      });
+    });
+
+    it('takes contact_inboxes from the response when it has them', () => {
+      const state = {
+        records: { 1: { id: 1, contact_inboxes: [{ inbox: { id: 2 } }] } },
+      };
+      mutations[types.EDIT_CONTACT](state, {
+        id: 1,
+        contact_inboxes: [{ inbox: { id: 3 } }],
+      });
+      expect(state.records[1].contact_inboxes).toEqual([{ inbox: { id: 3 } }]);
+    });
   });
 
   describe('#SET_CONTACT_FILTERS', () => {

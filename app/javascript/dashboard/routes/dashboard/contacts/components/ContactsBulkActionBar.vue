@@ -6,6 +6,7 @@ import BulkSelectBar from 'dashboard/components-next/captain/assistant/BulkSelec
 import Button from 'dashboard/components-next/button/Button.vue';
 import BulkLabelActions from 'dashboard/components/widgets/conversation/conversationBulkActions/BulkLabelActions.vue';
 import Policy from 'dashboard/components/policy.vue';
+import BulkStageAction from 'dashboard/components-next/Tolzar/BulkStageAction.vue';
 
 const props = defineProps({
   visibleContactIds: {
@@ -28,6 +29,7 @@ const emit = defineEmits([
   'removeLabels',
   'toggleAll',
   'deleteSelected',
+  'setStage',
 ]);
 
 const { t } = useI18n();
@@ -114,6 +116,12 @@ const handleRemoveLabels = labels => {
             :is-loading="isLoading"
             :disabled="!selectedCount"
             @remove="handleRemoveLabels"
+          />
+          <!-- Tolzar: bulk lifecycle stage -->
+          <BulkStageAction
+            :is-loading="isLoading"
+            :disabled="!selectedCount"
+            @set="key => emit('setStage', key)"
           />
           <div class="w-px h-3 bg-n-weak rounded-lg" />
           <Policy :permissions="['administrator']">

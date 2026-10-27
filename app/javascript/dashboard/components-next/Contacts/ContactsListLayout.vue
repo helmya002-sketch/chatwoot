@@ -126,5 +126,7 @@ const showPagination = computed(() => {
         />
       </footer>
     </div>
+    <!-- Tolzar: contact preview pane (full height, right of the list) -->
+    <slot name="aside" />
   </section>
 </template>
