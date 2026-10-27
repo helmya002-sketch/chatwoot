@@ -71,10 +71,10 @@ const rows = computed(() =>
       <colgroup>
         <col class="w-10" />
         <col />
-        <col class="w-32" />
         <col class="w-28" />
+        <col class="w-24" />
         <col class="hidden w-40 2xl:table-column" />
-        <col class="w-36" />
+        <col v-if="!activeContactId" class="w-36" />
       </colgroup>
       <thead>
         <tr class="text-xs text-n-slate-10 border-b border-n-weak">
@@ -97,7 +97,10 @@ const rows = computed(() =>
           <th class="hidden px-2 py-2.5 font-normal text-start 2xl:table-cell">
             {{ t('TOLZAR_CONTACTS.TABLE.PLACE') }}
           </th>
-          <th class="px-2 py-2.5 font-normal text-start">
+          <th
+            v-if="!activeContactId"
+            class="px-2 py-2.5 font-normal text-start"
+          >
             {{ t('TOLZAR_CONTACTS.TABLE.LAST_INTERACTION') }}
           </th>
         </tr>
@@ -189,7 +192,8 @@ const rows = computed(() =>
               {{ row.place || '—' }}
             </span>
           </td>
-          <td class="px-2 py-2.5 align-top">
+          <!-- With the preview pane open, the pane shows this; give the name the room. -->
+          <td v-if="!activeContactId" class="px-2 py-2.5 align-top">
             <div class="text-xs text-n-slate-12 whitespace-nowrap">
               {{ row.lastAt ? dynamicTime(row.lastAt) : '—' }}
             </div>

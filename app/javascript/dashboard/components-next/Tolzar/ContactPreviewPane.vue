@@ -51,6 +51,7 @@ const score = computed(() => leadScore(attrs.value));
 const summary = computed(() => (attrs.value.tolzar_summary || '').trim());
 const scoreLabel = computed(() => attrs.value.tolzar_lead_label || '');
 const scoreHint = computed(() => (attrs.value.tolzar_lead_hint || '').trim());
+const hintText = computed(() => `: ${scoreHint.value}`);
 const scoreText = computed(() =>
   [score.value, scoreLabel.value]
     .filter(v => v !== null && v !== '')
@@ -150,7 +151,7 @@ const openConversation = conv => {
 
 <template>
   <aside
-    class="flex flex-col w-[22rem] flex-shrink-0 h-full overflow-y-auto border-s border-n-weak bg-n-background"
+    class="flex flex-col w-80 flex-shrink-0 h-full overflow-y-auto border-s border-n-weak bg-n-background"
   >
     <div class="p-4 border-b border-n-weak">
       <div class="flex items-start gap-3">
@@ -276,7 +277,7 @@ const openConversation = conv => {
       <p v-if="score !== null" class="mt-2 mb-0 text-xs text-n-slate-11">
         {{ t('TOLZAR_CONTACTS.PANE.LEAD_SCORE') }}
         <b :class="scoreTone(score)">{{ scoreText }}</b>
-        <span v-if="scoreHint">{{ scoreHint }}</span>
+        <span v-if="scoreHint">{{ hintText }}</span>
       </p>
     </section>
 
