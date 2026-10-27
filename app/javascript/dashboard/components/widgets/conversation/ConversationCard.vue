@@ -9,6 +9,7 @@ import {
 import Avatar from 'next/avatar/Avatar.vue';
 import Icon from 'dashboard/components-next/icon/Icon.vue';
 import ChannelIcon from 'next/icon/ChannelIcon.vue';
+import { channelFromSource } from 'dashboard/components-next/Tolzar/tolzarChannel';
 import MessagePreview from './MessagePreview.vue';
 import InboxName from '../InboxName.vue';
 import TimeAgo from 'dashboard/components/ui/TimeAgo.vue';
@@ -42,6 +43,18 @@ const emit = defineEmits([
 const hovered = ref(false);
 
 const unreadCount = computed(() => props.chat.unread_count);
+// Tolzar: mirror conversations all sit in one API inbox; show the guest's real channel
+// (WhatsApp / Instagram / email ...) from the mirror's rio_channel_source.
+const badgeInbox = computed(() => {
+  const real = channelFromSource(
+    props.chat?.additional_attributes?.rio_channel_source
+  );
+  if (!real) return props.inbox;
+  return {
+    ...real,
+    name: [real.name, props.inbox?.name].filter(Boolean).join(' · '),
+  };
+});
 const hasUnread = computed(() => unreadCount.value > 0);
 const lastMessageInChat = computed(() => getLastMessage(props.chat));
 
@@ -213,11 +226,11 @@ watch(
       </Avatar>
       <!-- Tolzar #12: channel badge on the avatar (WhatsApp / email / Messenger / etc.) -->
       <span
-        v-if="inbox && inbox.channel_type"
-        v-tooltip.top="inbox.name"
+        v-if="badgeInbox && badgeInbox.channel_type"
+        v-tooltip.top="badgeInbox.name"
         class="tz-channel-badge absolute -bottom-1 ltr:-right-1 rtl:-left-1 z-[11] flex items-center justify-center size-[15px] rounded-full bg-n-background ring-2 ring-n-background"
       >
-        <ChannelIcon :inbox="inbox" class="size-[13px]" />
+        <ChannelIcon :inbox="badgeInbox" class="size-[13px]" />
       </span>
     </div>
     <div class="px-0 py-3 flex-1 min-w-0 border-line">
@@ -265,11 +278,7 @@ watch(
       >
         {{ currentContact.name }}
       </h4>
-      <div
-        v-if="lifecycleLabel"
-        class="flex mx-2 mt-1"
-        data-tz-lifecycle
-      >
+      <div v-if="lifecycleLabel" class="flex mx-2 mt-1" data-tz-lifecycle>
         <span
           class="inline-flex items-center text-xxs font-semibold leading-none rounded-full px-1.5 py-1 whitespace-nowrap"
           :style="lifecycleChipStyle"
@@ -312,7 +321,9 @@ watch(
       >
         <!-- Tolzar #14: clock time of the last interaction, + "no reply for X". -->
         <span
-          v-tooltip.left="chat.timestamp ? messageStamp(chat.timestamp, 'MMM d, h:mm a') : ''"
+          v-tooltip.left="
+            chat.timestamp ? messageStamp(chat.timestamp, 'MMM d, h:mm a') : ''
+          "
           class="ml-auto font-normal leading-4 text-xxs text-n-slate-11"
         >
           {{ lastTimeDisplay }}
