@@ -720,6 +720,12 @@ const menuItems = computed(() => {
       label: t('SIDEBAR.REPORTS'),
       icon: 'i-lucide-chart-spline',
       children: [
+        // Tolzar: leads, bookings, team speed + the AI scoreboard in one page.
+        {
+          name: 'Tolzar Reports',
+          label: t('TOLZAR_REPORTS.TITLE'),
+          to: accountScopedRoute('tolzar_reports'),
+        },
         {
           name: 'Report Overview',
           label: t('SIDEBAR.REPORTS_OVERVIEW'),
@@ -1033,7 +1039,9 @@ const toggleSubNav = () => {
   subNavCollapsed.value = !subNavCollapsed.value;
   updateUISettings({ tz_subnav_collapsed: subNavCollapsed.value });
 };
-const activeHasTree = computed(() => (activeGroup.value?.children?.length || 0) > 0);
+const activeHasTree = computed(
+  () => (activeGroup.value?.children?.length || 0) > 0
+);
 const showSubSidebar = computed(
   () => activeHasTree.value && !subNavCollapsed.value
 );
@@ -1105,9 +1113,7 @@ const selectSection = item => {
         class="flex flex-col flex-grow gap-1 items-center px-1 py-2 overflow-y-auto no-scrollbar"
       >
         <component
-          :is="
-            item.children && item.children.length ? 'button' : 'router-link'
-          "
+          :is="item.children && item.children.length ? 'button' : 'router-link'"
           v-for="item in visibleSections"
           :key="item.name"
           :to="item.children && item.children.length ? undefined : item.to"

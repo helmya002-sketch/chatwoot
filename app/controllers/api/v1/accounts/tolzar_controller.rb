@@ -33,6 +33,12 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
     render json: post_to_brain('/agents/default', { account_id: account_scope_id, id: params[:id].to_s })
   end
 
+  # Shadow-eval scoreboard for the Reports page (would-vs-did, go-live checks).
+  def scoreboard
+    days = (params[:days].presence || 30).to_i.clamp(1, 90)
+    render json: get_from_brain("/scoreboard?account_id=#{account_scope_id}&days=#{days}")
+  end
+
   private
 
   def account_scope_id

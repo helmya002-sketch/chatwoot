@@ -68,6 +68,7 @@ Rails.application.routes.draw do
           post   'tolzar/agents',         to: 'tolzar#agent_save'
           post   'tolzar/agents/delete',  to: 'tolzar#agent_delete'
           post   'tolzar/agents/default', to: 'tolzar#agent_default'
+          get    'tolzar/scoreboard',     to: 'tolzar#scoreboard'
           if ChatwootApp.enterprise?
             resources :monitors, only: [:index, :show, :create, :update, :destroy] do
               collection do
