@@ -85,11 +85,21 @@ const countOf = async query => {
   return data?.meta?.count || 0;
 };
 
+// Contacts with no stage yet count as New Lead, as everywhere else in the app.
 export const stageCounts = async () => {
-  const entries = await Promise.all(
-    STAGES.map(async s => [s.key, await countOf(stageFilter(s.key))])
+  const [entries, all] = await Promise.all([
+    Promise.all(
+      STAGES.map(async s => [s.key, await countOf(stageFilter(s.key))])
+    ),
+    ContactAPI.get(1).then(({ data }) => data?.meta?.count || 0),
+  ]);
+  const out = Object.fromEntries(entries);
+  const staged = STAGES.filter(s => s.key !== 'New Lead').reduce(
+    (sum, s) => sum + (out[s.key] || 0),
+    0
   );
-  return Object.fromEntries(entries);
+  out['New Lead'] = Math.max(out['New Lead'] || 0, all - staged);
+  return out;
 };
 
 export const newContacts = (sinceUnix, untilUnix) =>

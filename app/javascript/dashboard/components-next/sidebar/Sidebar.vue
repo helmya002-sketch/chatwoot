@@ -723,7 +723,7 @@ const menuItems = computed(() => {
         // Tolzar: leads, bookings, team speed + the AI scoreboard in one page.
         {
           name: 'Tolzar Reports',
-          label: t('TOLZAR_REPORTS.TITLE'),
+          label: t('TOLZAR_REPORTS.NAV'),
           to: accountScopedRoute('tolzar_reports'),
         },
         {

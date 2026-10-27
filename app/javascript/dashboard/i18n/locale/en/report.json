@@ -922,6 +922,14 @@
     "WOULD_ASK": "asked for location",
     "WOULD_HUMAN": "handed to people",
     "GUARDS": "Guards: {price} price replaced · {policy} blocked by the reply policy · {llm} model errors",
-    "BRAIN_DOWN": "The scoreboard is not reachable right now."
+    "BRAIN_DOWN": "The scoreboard is not reachable right now.",
+    "NAV": "Tolzar overview",
+    "BY_MODEL": "By model",
+    "BY_MODEL_SUB": "The same numbers for each model that served in the period (a switch must not blur them)",
+    "COL_MODEL": "Model",
+    "COL_SCORED": "Scored",
+    "COL_P95": "Slowest 5% over",
+    "COL_PERIOD": "Period",
+    "FEW": "too few to judge yet"
   }
 }

@@ -244,7 +244,11 @@ const ready = computed(
     sb.value.measured > 0 &&
     sb.value.passing === sb.value.checks.length
 );
-const modelName = computed(() => Object.keys(sb.value?.models || {})[0] || '—');
+const modelName = computed(
+  () => sb.value?.model_latest || Object.keys(sb.value?.models || {})[0] || '—'
+);
+const byModel = computed(() => sb.value?.by_model || []);
+const FEW = 30;
 const wouldLabel = w => {
   if (w === 'ask') return t('TOLZAR_REPORTS.WOULD_ASK');
   if (w === 'human') return t('TOLZAR_REPORTS.WOULD_HUMAN');
@@ -771,6 +775,69 @@ const updatedLabel = computed(() =>
             })
           }}
         </p>
+
+        <div
+          v-if="byModel.length > 1"
+          class="p-4 mt-3 border rounded-xl border-n-weak bg-n-solid-1"
+        >
+          <h3 class="m-0 text-sm font-semibold text-n-slate-12">
+            {{ t('TOLZAR_REPORTS.BY_MODEL') }}
+          </h3>
+          <p class="mt-0.5 mb-3 text-xs text-n-slate-11">
+            {{ t('TOLZAR_REPORTS.BY_MODEL_SUB') }}
+          </p>
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-xs text-n-slate-10">
+                <th class="py-1.5 font-normal text-start">
+                  {{ t('TOLZAR_REPORTS.COL_MODEL') }}
+                </th>
+                <th class="py-1.5 font-normal text-end">
+                  {{ t('TOLZAR_REPORTS.COL_SCORED') }}
+                </th>
+                <th class="py-1.5 font-normal text-end">
+                  {{ t('TOLZAR_REPORTS.COL.AGREES') }}
+                </th>
+                <th class="py-1.5 font-normal text-end">
+                  {{ t('TOLZAR_REPORTS.COL.ASKS') }}
+                </th>
+                <th class="py-1.5 font-normal text-end">
+                  {{ t('TOLZAR_REPORTS.COL_P95') }}
+                </th>
+                <th class="py-1.5 font-normal text-end">
+                  {{ t('TOLZAR_REPORTS.COL_PERIOD') }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="m in byModel"
+                :key="m.model"
+                class="border-t border-n-weak"
+              >
+                <td class="py-1.5 text-n-slate-12">
+                  {{ m.model }}
+                  <span v-if="m.scored < FEW" class="text-xs text-n-amber-11">
+                    {{ `· ${t('TOLZAR_REPORTS.FEW')}` }}
+                  </span>
+                </td>
+                <td class="py-1.5 text-end tabular-nums">{{ m.scored }}</td>
+                <td class="py-1.5 text-end tabular-nums">
+                  {{ pct(m.agreement) }}
+                </td>
+                <td class="py-1.5 text-end tabular-nums">
+                  {{ pct(m.ask_share) }}
+                </td>
+                <td class="py-1.5 text-end tabular-nums">
+                  {{ duration(m.latency_p95_ms / 1000) }}
+                </td>
+                <td class="py-1.5 text-end tabular-nums text-n-slate-11">
+                  {{ m.first.slice(5, 10) }} – {{ m.last.slice(5, 10) }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
         <div class="grid gap-3 mt-3 xl:grid-cols-[1.25fr_1fr]">
           <div class="p-4 border rounded-xl border-n-weak bg-n-solid-1">
