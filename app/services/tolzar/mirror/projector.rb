@@ -68,7 +68,7 @@ class Tolzar::Mirror::Projector
 
     contact = find_or_create_contact(rio_id, c)
     contact.name = contact_name(c, rio_id)
-    contact.additional_attributes = (contact.additional_attributes || {}).merge(rio_attrs(c))
+    contact.additional_attributes = (contact.additional_attributes || {}).merge(rio_attrs(c)).merge(rio_channel_attrs)
     phone = c['phone'].to_s.strip
     contact.phone_number = phone if phone.start_with?('+')
     persist_contact(contact, phone)
@@ -107,6 +107,16 @@ class Tolzar::Mirror::Projector
       'language' => c['language'],
       'rio_lifecycle' => c['status']
     }
+  end
+
+  # The respond.io channel the guest last wrote on (whatsapp_business, instagram, facebook,
+  # other_email, ...). All mirror traffic shares one API inbox, so the Contacts page reads this
+  # to show the real channel. Only set when the event carries a channel.
+  def rio_channel_attrs
+    source = payload.dig('channel', 'source').presence
+    return {} if source.nil?
+
+    { 'rio_channel_source' => source, 'rio_channel_name' => payload.dig('channel', 'name') }.compact
   end
 
   def persist_contact(contact, phone)

@@ -23,6 +23,7 @@ import {
   stageClass,
   stageOf,
 } from './tolzarStages';
+import { contactChannel, conversationChannel } from './tolzarChannel';
 
 const props = defineProps({
   contactId: { type: Number, required: true },
@@ -39,10 +40,7 @@ const raw = computed(
   () => store.getters['contacts/getContact'](props.contactId) || {}
 );
 const attrs = computed(() => raw.value.custom_attributes || {});
-const inbox = computed(() => {
-  const list = raw.value.contact_inboxes || [];
-  return list.length ? list[list.length - 1].inbox : null;
-});
+const inbox = computed(() => contactChannel(raw.value));
 const stage = computed(() => attrs.value.lifecycle_stage || DEFAULT_STAGE);
 const stageIndex = computed(() => STAGES.findIndex(s => s.key === stage.value));
 const isLost = computed(() => stage.value === 'Customer Lost');
@@ -323,8 +321,8 @@ const openConversation = conv => {
         @click="openConversation(conv)"
       >
         <ChannelIcon
-          v-if="conv.meta?.channel || conv.inbox_id"
-          :inbox="{ channel_type: conv.meta?.channel, name: '' }"
+          v-if="conversationChannel(conv)"
+          :inbox="conversationChannel(conv)"
           class="flex-shrink-0 size-4 text-n-slate-11"
         />
         <span class="flex-1 truncate text-n-slate-12">#{{ conv.id }}</span>

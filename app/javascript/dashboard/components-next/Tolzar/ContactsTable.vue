@@ -17,6 +17,7 @@ import {
   stageClass,
   stageOf,
 } from './tolzarStages';
+import { contactChannel } from './tolzarChannel';
 
 const props = defineProps({
   contacts: { type: Array, required: true },
@@ -43,8 +44,7 @@ const rows = computed(() =>
   props.contacts.map(contact => {
     const raw = store.getters['contacts/getContact'](contact.id) || {};
     const attrs = raw.custom_attributes || {};
-    const inboxes = raw.contact_inboxes || [];
-    const inbox = inboxes.length ? inboxes[inboxes.length - 1].inbox : null;
+    const inbox = contactChannel(raw);
     const score = leadScore(attrs);
     const add = raw.additional_attributes || {};
     return {
