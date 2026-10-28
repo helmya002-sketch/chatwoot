@@ -18,6 +18,8 @@ Rails.application.routes.draw do
   get  'tolzar/meta/callback',      to: 'tolzar/meta#callback'
   post 'tolzar/meta/data_deletion', to: 'tolzar/meta#data_deletion'
   get  'tolzar/meta/deletion',      to: 'tolzar/meta#deletion'
+  # Tolzar MCP server (F1): public, read-only, per-workspace Bearer token checked by the brain.
+  match 'tolzar/mcp', to: 'tolzar/mcp#forward', via: [:get, :post, :delete]
 
   ## renders the frontend paths only if its not an api only server
   if ActiveModel::Type::Boolean.new.cast(ENV.fetch('CW_API_ONLY_SERVER', false))
@@ -83,6 +85,8 @@ Rails.application.routes.draw do
           # Tolzar: per-workspace Meta connection (status never includes tokens).
           get    'tolzar/meta/status',      to: 'tolzar#meta_status'
           get    'tolzar/audit',            to: 'tolzar#audit'
+          get    'tolzar/brain/:feature',   to: 'tolzar#brain_get'
+          post   'tolzar/brain/:feature',   to: 'tolzar#brain_post'
           post   'tolzar/export',           to: 'tolzar#export_start'
           get    'tolzar/export',           to: 'tolzar#export_status'
           get    'tolzar/export/download',  to: 'tolzar#export_download'

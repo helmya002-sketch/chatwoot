@@ -82,6 +82,30 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
     render json: post_to_brain('/meta/disconnect', { account_id: account_scope_id })
   end
 
+  # Batch 2-3 brain features, admin-only, shadow only. GET reads pass through; POST settings
+  # carry the account id and the signed-in user (audited in the brain).
+  BRAIN_GETS = { 'usage' => '/usage', 'sla' => '/sla', 'media' => '/media', 'dedupe' => '/dedupe',
+                 'channels' => '/channels', 'attribution' => '/attribution', 'broadcasts' => '/broadcasts' }.freeze
+  BRAIN_POSTS = { 'sla' => '/sla', 'media' => '/media', 'dedupe_refresh' => '/dedupe/refresh', 'channels' => '/channels',
+                  'links' => '/links', 'broadcasts' => '/broadcasts', 'broadcasts_preview' => '/broadcasts/preview',
+                  'broadcasts_run' => '/broadcasts/run', 'mcp_token' => '/mcp-token' }.freeze
+
+  def brain_get
+    path = BRAIN_GETS[params[:feature].to_s]
+    return head(:not_found) if path.nil?
+
+    extra = params[:days].present? ? "&days=#{params[:days].to_i}" : ''
+    render json: get_from_brain("#{path}?account_id=#{account_scope_id}#{extra}")
+  end
+
+  def brain_post
+    path = BRAIN_POSTS[params[:feature].to_s]
+    return head(:not_found) if path.nil?
+
+    body = unsafe(params.except(:controller, :action, :account_id, :feature, :tolzar)).to_h
+    render json: post_to_brain(path, body.merge('account_id' => account_scope_id))
+  end
+
   # Export workspace (A5): a background job writes a .tar.gz, downloadable for 7 days.
   def export_start
     Tolzar::WorkspaceExportJob.perform_later(account_scope_id)
