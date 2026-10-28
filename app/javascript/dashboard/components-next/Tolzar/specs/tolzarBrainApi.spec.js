@@ -4,7 +4,6 @@ import {
   brainPost,
   brainErrors,
   isOwnerOnly,
-  envRows,
 } from '../tolzarBrainApi';
 
 describe('tolzarBrainApi', () => {
@@ -50,15 +49,5 @@ describe('tolzarBrainApi', () => {
       'set up SMS first',
     ]);
     expect(brainErrors({ detail: ['a', { msg: 'b' }] })).toEqual(['a', 'b']);
-  });
-
-  it('lists the env var names with presence, never values', () => {
-    expect(
-      envRows({ key_env: 'ACME_KEY', secret_env: '' }, { key_env: true }, [
-        'key_env',
-        'secret_env',
-      ])
-    ).toEqual([{ field: 'key_env', name: 'ACME_KEY', present: true }]);
-    expect(envRows(null, null, ['key_env'])).toEqual([]);
   });
 });

@@ -3,24 +3,22 @@ import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMapGetter } from 'dashboard/composables/store';
 import BrainNotice from './BrainNotice.vue';
-import EnvStatus from './EnvStatus.vue';
+import CredentialInput from './CredentialInput.vue';
 import { BTN, BTN_GHOST, INPUT, LABEL, CHECK, SHADOW_BADGE } from './tzClasses';
 import {
   SMS_PROVIDERS,
-  SMS_ENV,
   CRM_PROVIDERS,
   CRM_DIRECTIONS,
   SHOP_PROVIDERS,
-  SHOP_ENV,
+  credentialFields,
+  credentialLabelKey,
   getSms,
   saveSms,
   previewSms,
-  smsEnvRows,
   getCrm,
   saveCrm,
   crmRuns,
   previewCrm,
-  crmEnvRows,
   crmMapRows,
   mapFromRows,
   runSummary,
@@ -29,18 +27,20 @@ import {
   syncCatalogue,
   orderStatus,
   commerceTemplates,
-  commerceEnvRows,
 } from '../tolzarChannels';
+import { credentialStatus } from '../tolzarCredentials';
 
 // Settings hub → Channels: SMS fallback, CRM sync, Commerce. Shadow / dry run only: Tolzar
-// shows the exact request it WOULD send; keys stay in the server's environment.
+// shows the exact request it WOULD send. Keys are write-only: typed here, sent once, stored
+// encrypted by the brain; the page only ever shows "Saved ••••1234".
 const props = defineProps({
   section: { type: String, required: true }, // sms | crm | commerce
 });
 const { t } = useI18n();
 const accountId = useMapGetter('getCurrentAccountId');
 
-const raw = ref(null); // the brain's GET answer (for env presence)
+const raw = ref(null); // the brain's GET answer (settings + credentials status)
+const keys = ref({}); // typed keys only; never filled from a GET
 const form = ref(null);
 const result = ref(null);
 const saved = ref('');
@@ -53,26 +53,24 @@ const mapRows = ref([]);
 const agents = ref([]);
 const templates = ref([]);
 
-const envRowsNow = computed(() => {
-  if (!raw.value) return [];
-  if (props.section === 'sms') return smsEnvRows(raw.value);
-  if (props.section === 'crm') return crmEnvRows(raw.value);
-  return commerceEnvRows(raw.value);
-});
-const smsFields = computed(() => SMS_ENV[form.value?.provider] || ['key_env']);
-const shopFields = computed(() => SHOP_ENV[form.value?.provider] || ['key_env']);
+const credFields = computed(() => credentialFields(props.section, form.value?.provider));
+const credLabel = f => t(credentialLabelKey(props.section, form.value?.provider, f));
+// A saved key belongs to the saved provider: after switching provider the brain drops it on save.
+const credStatus = f =>
+  (raw.value?.settings || {}).provider === form.value?.provider ? credentialStatus(raw.value, f) : {};
 
 async function load() {
   result.value = null;
   saved.value = '';
   preview.value = null;
+  keys.value = {};
   if (props.section === 'sms') {
     raw.value = await getSms(accountId.value);
-    form.value = { provider: 'twilio', from: '', key_env: '', account_sid_env: '', enabled: false, ...(raw.value.settings || {}) };
+    form.value = { provider: 'twilio', from: '', enabled: false, ...(raw.value.settings || {}) };
   } else if (props.section === 'crm') {
     const [c, r] = await Promise.all([getCrm(accountId.value), crmRuns(accountId.value)]);
     raw.value = c;
-    form.value = { provider: 'hubspot', key_env: '', direction: 'to_crm', read_crm: false, enabled: false, stage_map: {}, ...(c.settings || {}) };
+    form.value = { provider: 'hubspot', direction: 'to_crm', read_crm: false, enabled: false, stage_map: {}, ...(c.settings || {}) };
     runs.value = r.runs || [];
     fillMap();
   } else {
@@ -82,7 +80,7 @@ async function load() {
       commerceTemplates(accountId.value),
     ]);
     raw.value = c;
-    form.value = { provider: 'shopify', shop_domain: '', currency: '', key_env: '', secret_env: '', agent_id: '', catalogue_auto: false, ...(c.settings || {}) };
+    form.value = { provider: 'shopify', shop_domain: '', currency: '', agent_id: '', catalogue_auto: false, ...(c.settings || {}) };
     agents.value = a.agents || [];
     templates.value = tp.templates || [];
   }
@@ -107,18 +105,31 @@ async function run(fn) {
   }
 }
 
+const send = (settings, typed, clear) => {
+  if (props.section === 'sms') return saveSms(accountId.value, settings, typed, clear);
+  if (props.section === 'crm') return saveCrm(accountId.value, settings, typed, clear);
+  return saveCommerce(accountId.value, settings, typed, clear);
+};
 const save = () =>
   run(async () => {
-    let r;
-    if (props.section === 'sms') r = await saveSms(accountId.value, form.value);
+    let settings = form.value;
     if (props.section === 'crm') {
       const rows = mapFromRows(mapRows.value);
-      r = await saveCrm(accountId.value, { ...form.value, field_map: Object.keys(rows).length ? rows : undefined });
+      settings = { ...form.value, field_map: Object.keys(rows).length ? rows : undefined };
     }
-    if (props.section === 'commerce') r = await saveCommerce(accountId.value, form.value);
+    const r = await send(settings, keys.value, []);
     if (r && r.ok) await load();
     after(r, t('TOLZAR_SETTINGS.R1.SAVED'));
   });
+// Remove one saved key: re-sends the SAVED settings (not unsaved edits) with clear_credentials.
+const removeKey = f =>
+  run(async () => {
+    const r = await send(raw.value?.settings || form.value, {}, [f]);
+    if (r && r.ok) await load();
+    after(r, t('TOLZAR_SETTINGS.CHANNELS.CRED.REMOVED'));
+  });
+const missingNames = p =>
+  (p.missing_credentials || []).map(f => t(credentialLabelKey('sms', form.value?.provider, f))).join(', ');
 
 const smsPreview = () =>
   run(async () => {
@@ -168,12 +179,9 @@ onMounted(load);
         </select>
         <label :class="LABEL">{{ t('TOLZAR_SETTINGS.CHANNELS.SMS_FROM') }}</label>
         <input v-model="form.from" :class="INPUT" placeholder="+4917012345678" />
-        <template v-for="f in smsFields" :key="f">
-          <label :class="LABEL">{{ t(`TOLZAR_SETTINGS.CHANNELS.ENV.${form.provider}_${f}`) }}</label>
-          <input v-model="form[f]" :class="INPUT" placeholder="ACME_SMS_KEY" spellcheck="false" />
-        </template>
+        <CredentialInput v-for="f in credFields" :key="f" v-model="keys[f]" :label="credLabel(f)" :status="credStatus(f)" :busy="busy" @remove="removeKey(f)" />
         <label :class="CHECK"><input v-model="form.enabled" type="checkbox" /> {{ t('TOLZAR_SETTINGS.ON_SHADOW') }}</label>
-        <EnvStatus :rows="envRowsNow" />
+        <p class="mt-2 mb-0 text-xs text-n-slate-10">{{ t('TOLZAR_SETTINGS.CHANNELS.CRED.HINT') }}</p>
         <button type="button" :class="BTN" :disabled="busy" @click="save">{{ t('TOLZAR_SETTINGS.SAVE') }}</button>
       </div>
       <div>
@@ -185,7 +193,7 @@ onMounted(load);
         <button type="button" :class="BTN_GHOST" :disabled="busy" @click="smsPreview">{{ t('TOLZAR_SETTINGS.CHANNELS.PREVIEW') }}</button>
         <div v-if="preview" class="mt-3 text-[13px]">
           <p class="m-0">{{ t('TOLZAR_SETTINGS.CHANNELS.WOULD_SEND') }} · {{ t('TOLZAR_SETTINGS.CHANNELS.SEGMENTS', { n: preview.segments.parts, enc: preview.segments.encoding, chars: preview.segments.characters }) }}</p>
-          <p v-if="(preview.missing_env || []).length" class="m-0 mt-1 text-amber-700">{{ t('TOLZAR_SETTINGS.CHANNELS.MISSING', { names: preview.missing_env.join(', ') }) }}</p>
+          <p v-if="(preview.missing_credentials || []).length" class="m-0 mt-1 text-amber-700">{{ t('TOLZAR_SETTINGS.CHANNELS.MISSING', { names: missingNames(preview) }) }}</p>
           <pre class="overflow-auto p-2 mt-2 max-h-[260px] text-xs rounded bg-n-alpha-1">{{ pretty(preview.request) }}</pre>
         </div>
       </div>
@@ -199,8 +207,7 @@ onMounted(load);
           <select v-model="form.provider" :class="INPUT" @change="fillMap">
             <option v-for="p in CRM_PROVIDERS" :key="p" :value="p">{{ t(`TOLZAR_SETTINGS.CHANNELS.P.${p}`) }}</option>
           </select>
-          <label :class="LABEL">{{ t('TOLZAR_SETTINGS.CHANNELS.ENV.crm_key_env') }}</label>
-          <input v-model="form.key_env" :class="INPUT" placeholder="HUBSPOT_TOKEN" spellcheck="false" />
+          <CredentialInput v-for="f in credFields" :key="f" v-model="keys[f]" :label="credLabel(f)" :status="credStatus(f)" :busy="busy" @remove="removeKey(f)" />
           <template v-if="form.provider === 'zoho'">
             <label :class="LABEL">{{ t('TOLZAR_SETTINGS.CHANNELS.ZOHO_DOMAIN') }}</label>
             <input v-model="form.api_domain" :class="INPUT" placeholder="https://www.zohoapis.eu" />
@@ -212,7 +219,7 @@ onMounted(load);
           <p class="mt-1 text-xs text-n-slate-10">{{ t('TOLZAR_SETTINGS.CHANNELS.CONFLICT_RULE') }}</p>
           <label :class="CHECK"><input v-model="form.read_crm" type="checkbox" /> {{ t('TOLZAR_SETTINGS.CHANNELS.READ_CRM') }}</label>
           <label :class="CHECK"><input v-model="form.enabled" type="checkbox" /> {{ t('TOLZAR_SETTINGS.CHANNELS.HOURLY_DRY_RUN') }}</label>
-          <EnvStatus :rows="envRowsNow" />
+          <p class="mt-2 mb-0 text-xs text-n-slate-10">{{ t('TOLZAR_SETTINGS.CHANNELS.CRED.HINT') }}</p>
         </div>
         <div>
           <h3 class="m-0 text-sm font-semibold text-n-slate-12">{{ t('TOLZAR_SETTINGS.CHANNELS.MAPPING') }}</h3>
@@ -267,17 +274,14 @@ onMounted(load);
           <input v-model="form.shop_domain" :class="INPUT" placeholder="myshop.myshopify.com" />
           <label :class="LABEL">{{ t('TOLZAR_SETTINGS.CHANNELS.CURRENCY') }}</label>
           <input v-model="form.currency" maxlength="3" :class="INPUT" placeholder="EUR" />
-          <template v-for="f in shopFields" :key="f">
-            <label :class="LABEL">{{ t(`TOLZAR_SETTINGS.CHANNELS.ENV.shop_${f}`) }}</label>
-            <input v-model="form[f]" :class="INPUT" placeholder="SHOP_API_KEY" spellcheck="false" />
-          </template>
+          <CredentialInput v-for="f in credFields" :key="f" v-model="keys[f]" :label="credLabel(f)" :status="credStatus(f)" :busy="busy" @remove="removeKey(f)" />
           <label :class="LABEL">{{ t('TOLZAR_SETTINGS.CHANNELS.PRICE_AGENT') }}</label>
           <select v-model="form.agent_id" :class="INPUT">
             <option value="">—</option>
             <option v-for="a in agents" :key="a.id" :value="a.id">{{ a.name }}</option>
           </select>
           <label :class="CHECK"><input v-model="form.catalogue_auto" type="checkbox" /> {{ t('TOLZAR_SETTINGS.CHANNELS.CATALOGUE_DAILY') }}</label>
-          <EnvStatus :rows="envRowsNow" />
+          <p class="mt-2 mb-0 text-xs text-n-slate-10">{{ t('TOLZAR_SETTINGS.CHANNELS.CRED.HINT') }}</p>
           <div class="flex flex-wrap gap-2">
             <button type="button" :class="BTN" :disabled="busy" @click="save">{{ t('TOLZAR_SETTINGS.SAVE') }}</button>
             <button type="button" :class="BTN_GHOST" :disabled="busy || !form.agent_id" @click="catalogue">{{ t('TOLZAR_SETTINGS.CHANNELS.SYNC_NOW') }}</button>

@@ -1,17 +1,16 @@
 import {
   saveSms,
   previewSms,
-  smsEnvRows,
   saveCrm,
   previewCrm,
-  crmEnvRows,
+  credentialFields,
+  credentialLabelKey,
   crmMapRows,
   mapFromRows,
   runSummary,
   saveCommerce,
   syncCatalogue,
   orderStatus,
-  commerceEnvRows,
 } from '../tolzarChannels';
 
 const url = f => `/api/v1/accounts/2/tolzar/brain/${f}`;
@@ -28,7 +27,6 @@ describe('tolzarChannels', () => {
     await saveSms(2, {
       provider: 'twilio',
       from: '+4917',
-      key_env: 'TW_KEY',
       mode: 'live',
     });
     expect(window.axios.post.mock.calls[0][0]).toBe(url('sms'));
@@ -40,26 +38,85 @@ describe('tolzarChannels', () => {
     });
   });
 
-  it('shows env names and presence for SMS, CRM and the shop', () => {
-    expect(
-      smsEnvRows({
-        settings: { key_env: 'TW_KEY', account_sid_env: 'TW_SID' },
-        env_present: { key_env: true },
-      })
-    ).toEqual([
-      { field: 'account_sid_env', name: 'TW_SID', present: false },
-      { field: 'key_env', name: 'TW_KEY', present: true },
+  it('sends only typed keys of the provider, never env var names', async () => {
+    await saveSms(
+      2,
+      {
+        provider: 'twilio',
+        from: '+4917',
+        key_env: 'OLD',
+        account_sid_env: 'OLD',
+      },
+      { api_key: ' tok ', account_sid: '', api_secret: 'nope' }
+    );
+    const body = window.axios.post.mock.calls[0][1];
+    expect(body.api_key).toBe('tok');
+    expect(body).not.toHaveProperty('account_sid');
+    expect(body).not.toHaveProperty('api_secret');
+    expect(body).not.toHaveProperty('key_env');
+    expect(body).not.toHaveProperty('account_sid_env');
+    expect(body).not.toHaveProperty('clear_credentials');
+
+    await saveSms(
+      2,
+      { provider: 'unifonic', from: 'ACME' },
+      { account_sid: 'x' }
+    );
+    expect(window.axios.post.mock.calls[1][1]).not.toHaveProperty(
+      'account_sid'
+    );
+  });
+
+  it('removes one key with clear_credentials', async () => {
+    await saveCrm(2, { provider: 'hubspot', key_env: 'HS' }, {}, ['api_key']);
+    const crm = window.axios.post.mock.calls[0][1];
+    expect(crm.clear_credentials).toEqual(['api_key']);
+    expect(crm).not.toHaveProperty('key_env');
+    expect(crm).not.toHaveProperty('api_key');
+
+    await saveCommerce(
+      2,
+      {
+        provider: 'woocommerce',
+        shop_domain: 'shop.example.com',
+        key_env: 'K',
+        secret_env: 'S',
+      },
+      { api_key: 'ck_1' },
+      ['api_secret']
+    );
+    const shop = window.axios.post.mock.calls[1][1];
+    expect(shop).toMatchObject({
+      api_key: 'ck_1',
+      clear_credentials: ['api_secret'],
+    });
+    expect(shop).not.toHaveProperty('key_env');
+    expect(shop).not.toHaveProperty('secret_env');
+  });
+
+  it('asks for the credential fields of each provider, with provider labels', () => {
+    expect(credentialFields('sms', 'twilio')).toEqual([
+      'account_sid',
+      'api_key',
     ]);
-    expect(
-      crmEnvRows({ settings: { key_env: 'HS' }, key_present: true })
-    ).toEqual([{ field: 'key_env', name: 'HS', present: true }]);
-    expect(commerceEnvRows({ settings: {}, env_present: {} })).toEqual([]);
+    expect(credentialFields('sms', 'unifonic')).toEqual(['api_key']);
+    expect(credentialFields('crm', 'zoho')).toEqual(['api_key']);
+    expect(credentialFields('commerce', 'zid')).toEqual([
+      'api_key',
+      'api_secret',
+    ]);
+    expect(credentialFields('commerce', 'shopify')).toEqual(['api_key']);
+    expect(credentialLabelKey('commerce', 'woocommerce', 'api_secret')).toBe(
+      'TOLZAR_SETTINGS.CHANNELS.CRED.woocommerce_api_secret'
+    );
+    expect(credentialLabelKey('crm', 'hubspot', 'api_key')).toBe(
+      'TOLZAR_SETTINGS.CHANNELS.CRED.crm_api_key'
+    );
   });
 
   it('saves the CRM mapping (api_domain only for Zoho) and previews a contact', async () => {
     await saveCrm(2, {
       provider: 'hubspot',
-      key_env: 'HS',
       direction: 'both',
       field_map: { email: 'email' },
       api_domain: 'x',

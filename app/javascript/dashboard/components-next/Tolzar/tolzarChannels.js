@@ -1,51 +1,50 @@
 // Tolzar "Channels": SMS fallback, CRM sync, Commerce (plugins/sms.py, crm_sync.py, commerce.py).
 // Everything is Shadow / dry run: Tolzar shows what it WOULD send and never sends.
-import { brainGet, brainPost, envRows } from './tolzarBrainApi';
+import { brainGet, brainPost } from './tolzarBrainApi';
+import { credentialBody } from './tolzarCredentials';
 
 export const SMS_PROVIDERS = ['twilio', 'unifonic', 'vonage'];
 export const CRM_PROVIDERS = ['hubspot', 'zoho', 'pipedrive'];
 export const CRM_DIRECTIONS = ['to_crm', 'from_crm', 'both'];
 export const SHOP_PROVIDERS = ['shopify', 'woocommerce', 'salla', 'zid'];
 
-// Which env-name fields a provider uses (mirrors NEEDS in the brain plugins).
-export const SMS_ENV = {
-  twilio: ['account_sid_env', 'key_env'],
-  unifonic: ['key_env'],
-  vonage: ['account_sid_env', 'key_env'],
+// Which credential fields a provider uses (mirrors NEEDS / CRED_FIELDS in the brain plugins).
+// The keys are write-only: typed here, stored encrypted by the brain, never shown again.
+export const SMS_CREDS = {
+  twilio: ['account_sid', 'api_key'],
+  unifonic: ['api_key'],
+  vonage: ['account_sid', 'api_key'],
 };
-export const SHOP_ENV = {
-  shopify: ['key_env'],
-  woocommerce: ['key_env', 'secret_env'],
-  salla: ['key_env'],
-  zid: ['key_env', 'secret_env'],
+export const SHOP_CREDS = {
+  shopify: ['api_key'],
+  woocommerce: ['api_key', 'api_secret'],
+  salla: ['api_key'],
+  zid: ['api_key', 'api_secret'],
 };
+export const CRM_CREDS = ['api_key'];
+const smsFieldsOf = p => SMS_CREDS[p] || ['api_key'];
+const shopFieldsOf = p => SHOP_CREDS[p] || ['api_key'];
 
 // ---- SMS --------------------------------------------------------------------------------
 export const getSms = accountId => brainGet(accountId, 'sms');
-// Shadow is the only mode the UI ever sends.
-export const saveSms = (accountId, s) =>
+// Shadow is the only mode the UI ever sends. `keys` holds what the user typed, `clear` the
+// fields to remove; only the provider's own fields are sent.
+export const saveSms = (accountId, s, keys = {}, clear = []) =>
   brainPost(accountId, 'sms', {
     provider: s.provider,
     from: s.from,
-    key_env: s.key_env,
-    account_sid_env: s.account_sid_env,
     enabled: !!s.enabled,
     mode: 'shadow',
+    ...credentialBody(keys, smsFieldsOf(s.provider), clear),
   });
 export const previewSms = (accountId, to, text) =>
   brainPost(accountId, 'sms_preview', { to, text });
-export const smsEnvRows = data =>
-  envRows(data && data.settings, data && data.env_present, [
-    'account_sid_env',
-    'key_env',
-  ]);
 
 // ---- CRM sync ---------------------------------------------------------------------------
 export const getCrm = accountId => brainGet(accountId, 'crm_sync');
-export const saveCrm = (accountId, s) =>
+export const saveCrm = (accountId, s, keys = {}, clear = []) =>
   brainPost(accountId, 'crm_sync', {
     provider: s.provider,
-    key_env: s.key_env,
     direction: s.direction,
     field_map: s.field_map,
     stage_map: s.stage_map || {},
@@ -54,14 +53,21 @@ export const saveCrm = (accountId, s) =>
     ...(s.provider === 'zoho' && s.api_domain
       ? { api_domain: s.api_domain }
       : {}),
+    ...credentialBody(keys, CRM_CREDS, clear),
   });
 export const crmRuns = accountId => brainGet(accountId, 'crm_sync_runs');
 export const previewCrm = (accountId, contactId) =>
   brainPost(accountId, 'crm_sync_preview', { contact_id: Number(contactId) });
-export const crmEnvRows = data =>
-  envRows(data && data.settings, { key_env: !!(data && data.key_present) }, [
-    'key_env',
-  ]);
+
+// The fields each section asks for, for the current provider.
+export const credentialFields = (section, provider) => {
+  if (section === 'sms') return smsFieldsOf(provider);
+  if (section === 'crm') return CRM_CREDS;
+  return shopFieldsOf(provider);
+};
+// The i18n key of a field's label: per provider (Twilio auth token, Woo consumer secret, ...).
+export const credentialLabelKey = (section, provider, field) =>
+  `TOLZAR_SETTINGS.CHANNELS.CRED.${section === 'crm' ? 'crm' : provider}_${field}`;
 
 // The mapping table: every Tolzar field, with the saved CRM field (placeholder: the default).
 export const crmMapRows = (fields, fieldMap, defaults) =>
@@ -89,15 +95,14 @@ export const runSummary = run => ({
 
 // ---- Commerce ---------------------------------------------------------------------------
 export const getCommerce = accountId => brainGet(accountId, 'commerce');
-export const saveCommerce = (accountId, s) =>
+export const saveCommerce = (accountId, s, keys = {}, clear = []) =>
   brainPost(accountId, 'commerce', {
     provider: s.provider,
     shop_domain: s.shop_domain,
     currency: s.currency,
-    key_env: s.key_env,
-    secret_env: s.secret_env,
     agent_id: s.agent_id,
     catalogue_auto: !!s.catalogue_auto,
+    ...credentialBody(keys, shopFieldsOf(s.provider), clear),
   });
 export const syncCatalogue = (accountId, agentId) =>
   brainPost(
@@ -109,8 +114,3 @@ export const orderStatus = (accountId, orderNumber) =>
   brainPost(accountId, 'commerce_order_status', { order_number: orderNumber });
 export const commerceTemplates = accountId =>
   brainGet(accountId, 'commerce_templates');
-export const commerceEnvRows = data =>
-  envRows(data && data.settings, data && data.env_present, [
-    'key_env',
-    'secret_env',
-  ]);

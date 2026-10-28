@@ -1,8 +1,19 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useMapGetter } from 'dashboard/composables/store';
+import CredentialInput from 'dashboard/components-next/Tolzar/settings/CredentialInput.vue';
+import BrainNotice from 'dashboard/components-next/Tolzar/settings/BrainNotice.vue';
+import { BTN } from 'dashboard/components-next/Tolzar/settings/tzClasses';
+import {
+  getPriceKey,
+  savePriceKey,
+  clearPriceKey,
+  credentialStatus,
+} from 'dashboard/components-next/Tolzar/tolzarCredentials';
 
 const accountId = useMapGetter('getCurrentAccountId');
+const { t } = useI18n();
 
 // --- AI Agents pillar (respond.io clone). Configs are stored SERVER-SIDE by the brain
 // (CRUD proxied through Chatwoot at /tolzar/agents); the brain reads the active agent and
@@ -77,7 +88,56 @@ function openAgent(id) {
   selectedId.value = id;
   draft.value = JSON.parse(JSON.stringify(agents.value.find(a => a.id === id)));
   testMsgs.value = [];
+  loadPriceKey(id);
 }
+
+// Price-feed key (brain plugins/price_credentials.py): write-only, stored encrypted per agent,
+// never part of the agent's settings. Only its status ("Saved ••••1234") comes back.
+const priceKey = ref('');
+const priceStatus = ref({});
+const priceResult = ref(null);
+const priceSaved = ref('');
+const priceBusy = ref(false);
+const priceSource = computed(() => (draft.value?.generic || {}).prices || null);
+async function loadPriceKey(id) {
+  priceKey.value = '';
+  priceStatus.value = {};
+  priceResult.value = null;
+  priceSaved.value = '';
+  try {
+    const r = await getPriceKey(accountId.value, id);
+    if (r && r.ok && r.agent_id === id) priceStatus.value = credentialStatus(r, 'api_key');
+  } catch (e) {
+    /* non-fatal: the section shows "Not set" */
+  }
+}
+async function priceKeyAction(fn, okText) {
+  priceBusy.value = true;
+  priceSaved.value = '';
+  try {
+    const r = await fn();
+    priceResult.value = r;
+    if (r && r.ok) {
+      priceStatus.value = credentialStatus(r, 'api_key');
+      priceKey.value = '';
+      priceSaved.value = okText;
+    }
+  } catch (e) {
+    priceResult.value = { ok: false, error: 'brain_unreachable' };
+  } finally {
+    priceBusy.value = false;
+  }
+}
+const savePrice = () =>
+  priceKeyAction(
+    () => savePriceKey(accountId.value, draft.value.id, priceKey.value),
+    t('TOLZAR_SETTINGS.CHANNELS.CRED.KEY_SAVED')
+  );
+const removePrice = () =>
+  priceKeyAction(
+    () => clearPriceKey(accountId.value, draft.value.id),
+    t('TOLZAR_SETTINGS.CHANNELS.CRED.REMOVED')
+  );
 
 // Ready-made, editable prompt templates from the brain (owner, 28 Oct: agents are configurable;
 // behaviour comes from the instructions). A new agent starts inactive.
@@ -382,6 +442,30 @@ onMounted(() => {
               <input v-model="k.value" placeholder="URL / file / text" class="flex-1 tz-in" />
               <button type="button" class="grid place-content-center rounded-lg transition-colors size-7 text-n-slate-10 hover:text-rose-500 hover:bg-n-alpha-2" @click="removeKnowledge(i)"><span class="i-lucide-x size-4" /></button>
             </div>
+          </section>
+
+          <!-- Price feed key -->
+          <section class="p-[18px] rounded-2xl border shadow-sm bg-n-solid-1 border-n-weak" data-tz-price-key>
+            <h3 class="m-0 text-[15px] font-semibold text-n-slate-12">{{ t('TOLZAR_SETTINGS.CHANNELS.CRED.PRICES_TITLE') }}</h3>
+            <p class="mt-1.5 mb-0 text-xs text-n-slate-11">{{ t('TOLZAR_SETTINGS.CHANNELS.CRED.PRICES_HINT') }}</p>
+            <p class="mt-1.5 mb-0 text-xs break-all text-n-slate-10">
+              {{ priceSource && (priceSource.type || priceSource.value)
+                ? t('TOLZAR_SETTINGS.CHANNELS.CRED.PRICES_SOURCE', { type: priceSource.type || '', value: priceSource.value || '' })
+                : t('TOLZAR_SETTINGS.CHANNELS.CRED.PRICES_NO_SOURCE') }}
+            </p>
+            <div class="max-w-[420px]">
+              <CredentialInput
+                v-model="priceKey"
+                :label="t('TOLZAR_SETTINGS.CHANNELS.CRED.prices_api_key')"
+                :status="priceStatus"
+                :busy="priceBusy"
+                @remove="removePrice"
+              />
+              <button type="button" :class="BTN" :disabled="priceBusy || !priceKey.trim()" @click="savePrice">
+                {{ t('TOLZAR_SETTINGS.CHANNELS.CRED.SAVE_KEY') }}
+              </button>
+            </div>
+            <BrainNotice :result="priceResult" :saved="priceSaved" />
           </section>
 
           <!-- AI skills -->

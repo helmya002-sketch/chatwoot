@@ -100,7 +100,9 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
                  'negotiation' => '/negotiation', 'agent_teams' => '/agent-teams', 'tuning' => '/tuning',
                  'roi' => '/roi', 'quotas' => '/quotas',
                  # Round 2: reading customers' attachments (PDFs), Off / Shadow.
-                 'documents' => '/documents' }.freeze
+                 'documents' => '/documents',
+                 # An AI agent's price-feed key: status only ({set, last4}), never the value.
+                 'credentials_prices' => '/credentials/prices' }.freeze
   BRAIN_POSTS = { 'sla' => '/sla', 'media' => '/media', 'dedupe_refresh' => '/dedupe/refresh', 'channels' => '/channels',
                   'links' => '/links', 'broadcasts' => '/broadcasts', 'broadcasts_preview' => '/broadcasts/preview',
                   'broadcasts_run' => '/broadcasts/run', 'mcp_token' => '/mcp-token',
@@ -113,7 +115,9 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
                   'crm_sync_preview' => '/crm-sync/preview', 'commerce' => '/commerce',
                   'commerce_catalogue_sync' => '/commerce/catalogue-sync', 'commerce_order_status' => '/commerce/order-status',
                   'negotiation' => '/negotiation', 'agent_teams' => '/agent-teams', 'tuning_run' => '/tuning/run',
-                  'tuning_decide' => '/tuning/decide', 'quotas' => '/quotas', 'documents' => '/documents' }.freeze
+                  'tuning_decide' => '/tuning/decide', 'quotas' => '/quotas', 'documents' => '/documents',
+                  # Write-only key, stored encrypted by the brain (Owner-only: not in ADMIN_POSTS).
+                  'credentials_prices' => '/credentials/prices' }.freeze
   # Roles (E2, H3): every POST that changes settings or data is Owner-only. Only these previews, drafts,
   # reads and recomputed caches stay open to every administrator (a Manager). A new BRAIN_POSTS entry is
   # Owner-only unless it is added here.
@@ -132,6 +136,7 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
     extra << "&days=#{params[:days].to_i}" if params[:days].present?
     extra << "&conversation_id=#{params[:conversation_id].to_i}" if params[:conversation_id].present?
     extra << "&contact_id=#{params[:contact_id].to_i}" if params[:contact_id].present?
+    extra << "&agent_id=#{CGI.escape(params[:agent_id].to_s.first(80))}" if params[:agent_id].present?
     res = get_from_brain("#{path}?account_id=#{account_scope_id}#{extra}")
     # The account owner (H3) is always an Owner; the Roles page shows it as fixed.
     res = res.merge('owner_user_id' => Tolzar::AccountOwner.user_id(Current.account)) if params[:feature].to_s == 'roles'
@@ -181,7 +186,7 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
   end
 
   # Audit log (A6): Chatwoot's own audits for this workspace plus the brain's settings log.
-  AUDIT_HIDDEN = /token|secret|password|otp/i
+  AUDIT_HIDDEN = /token|secret|password|otp|api_key|account_sid|credential/i
 
   def audit
     limit = (params[:limit].presence || 200).to_i.clamp(1, 1000)
@@ -277,7 +282,8 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
     res = http.request(req)
     JSON.parse(res.body)
   rescue StandardError => e
-    Rails.logger.warn("tolzar agent_test brain error: #{e.class} #{e.message}")
+    # The class only: never the request body (it may carry api_key / api_secret / account_sid).
+    Rails.logger.warn("tolzar brain POST #{path} error: #{e.class}")
     { ok: false, error: 'brain_unreachable', reply: "The brain is not reachable right now (#{e.class})." }
   end
 
@@ -291,7 +297,7 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
     req['X-Tolzar-Actor'] = actor_label
     JSON.parse(http.request(req).body)
   rescue StandardError => e
-    Rails.logger.warn("tolzar agents brain error: #{e.class} #{e.message}")
+    Rails.logger.warn("tolzar brain GET #{path.split('?').first} error: #{e.class}")
     { ok: false, error: 'brain_unreachable', agents: [], default_id: nil }
   end
 end

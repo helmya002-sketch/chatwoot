@@ -33,14 +33,3 @@ export const brainErrors = data => {
 };
 
 export const isOwnerOnly = data => !!data && data.error === 'owner_only';
-
-// Secrets are never typed into Tolzar: settings hold env var NAMES. One row per named
-// field: which variable the server should have, and whether the brain sees it.
-export const envRows = (settings, present, fields) =>
-  fields
-    .filter(f => settings && settings[f])
-    .map(f => ({
-      field: f,
-      name: settings[f],
-      present: !!(present && present[f]),
-    }));
