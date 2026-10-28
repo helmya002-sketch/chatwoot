@@ -19,7 +19,11 @@ Rails.application.routes.draw do
   post 'tolzar/meta/data_deletion', to: 'tolzar/meta#data_deletion'
   get  'tolzar/meta/deletion',      to: 'tolzar/meta#deletion'
   # Tolzar MCP server (F1): public, read-only, per-workspace Bearer token checked by the brain.
-  match 'tolzar/mcp', to: 'tolzar/mcp#forward', via: [:get, :post, :delete]
+  # Held back from the internet until Server ops has reviewed the hardening (28 Oct): enable with
+  # TOLZAR_MCP_PUBLIC=true once rate limits + fail2ban logging are confirmed on the box.
+  if ENV['TOLZAR_MCP_PUBLIC'] == 'true'
+    match 'tolzar/mcp', to: 'tolzar/mcp#forward', via: [:get, :post, :delete]
+  end
 
   ## renders the frontend paths only if its not an api only server
   if ActiveModel::Type::Boolean.new.cast(ENV.fetch('CW_API_ONLY_SERVER', false))
