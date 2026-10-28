@@ -31,6 +31,12 @@ class Channel::Telegram < ApplicationRecord
     'Telegram'
   end
 
+  # M5 (full-sec): registered as setWebhook's secret_token; Telegram echoes it in
+  # X-Telegram-Bot-Api-Secret-Token on every update (A-Z a-z 0-9 _ - only, 1-256 chars).
+  def webhook_secret_token
+    Tolzar::WebhookToken.derive('telegram', bot_token)
+  end
+
   def telegram_api_url
     "https://api.telegram.org/bot#{bot_token}"
   end
@@ -96,7 +102,8 @@ class Channel::Telegram < ApplicationRecord
     HTTParty.post("#{telegram_api_url}/deleteWebhook")
     response = HTTParty.post("#{telegram_api_url}/setWebhook",
                              body: {
-                               url: "#{ENV.fetch('FRONTEND_URL', nil)}/webhooks/telegram/#{bot_token}"
+                               url: "#{ENV.fetch('FRONTEND_URL', nil)}/webhooks/telegram/#{bot_token}",
+                               secret_token: webhook_secret_token
                              })
     errors.add(:bot_token, 'error setting up the webook') unless response.success?
   end

@@ -28,6 +28,17 @@ class Channel::Sms < ApplicationRecord
     'Sms'
   end
 
+  # M5 (full-sec): Bandwidth Messaging callbacks are not signed; they can carry HTTP Basic
+  # credentials set on the Bandwidth application (callbackUser / callbackPassword). Set the
+  # callback password to this token (any user name), or add ?token=<this> to the callback URL.
+  def webhook_token
+    Tolzar::WebhookToken.derive('sms', id)
+  end
+
+  def webhook_url
+    "#{ENV.fetch('FRONTEND_URL', '').to_s.chomp('/')}/webhooks/sms/#{CGI.escape(phone_number)}?token=#{webhook_token}"
+  end
+
   # all this should happen in provider service . but hack mode on
   def api_base_path
     'https://messaging.bandwidth.com/api/v2'

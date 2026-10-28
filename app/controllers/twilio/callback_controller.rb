@@ -1,4 +1,7 @@
 class Twilio::CallbackController < ApplicationController
+  include TwilioSignatureVerification
+  before_action :verify_twilio_signature!
+
   def create
     Webhooks::TwilioEventsJob.perform_later(permitted_params.to_unsafe_hash)
 
@@ -6,6 +9,9 @@ class Twilio::CallbackController < ApplicationController
   end
 
   private
+
+  # The channel Twilio::IncomingMessageService will use.
+  def twilio_signature_channel = twilio_channel_for(:To)
 
   def permitted_params # rubocop:disable Metrics/MethodLength
     params.permit(
