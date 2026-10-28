@@ -6,6 +6,8 @@ import BrainNotice from './BrainNotice.vue';
 import { BTN, BTN_GHOST, INPUT, LABEL, CHECK, SHADOW_BADGE } from './tzClasses';
 import {
   allowedDiscount,
+  MAX_POLICIES,
+  MAX_POLICY_CHARS,
   getNegotiation,
   saveNegotiation,
   getAgentTeams,
@@ -38,7 +40,7 @@ async function load() {
   if (props.section === 'negotiation') {
     const r = await getNegotiation(accountId.value);
     const s = r.settings || {};
-    data.value = { form: { ...s, perks: (s.perks || []).join('\n') }, instructions: r.instructions || '' };
+    data.value = { form: { ...s, perks: (s.perks || []).join('\n'), policies: [...(s.policies || [])] }, instructions: r.instructions || '' };
   } else if (props.section === 'agent_teams') {
     const [m, teams] = await Promise.all([
       getAgentTeams(accountId.value),
@@ -63,6 +65,12 @@ async function run(fn) {
     busy.value = false;
   }
 }
+
+// Standing policies: one editable row each (the brain cleans and caps them again on save).
+const addPolicy = () => {
+  if (data.value.form.policies.length < MAX_POLICIES) data.value.form.policies.push('');
+};
+const removePolicy = i => data.value.form.policies.splice(i, 1);
 
 const saveLimits = () =>
   run(async () => {
@@ -103,6 +111,17 @@ onMounted(load);
         <input v-model.number="data.form.max_discount_pct" type="number" min="0" max="100" step="0.5" :class="INPUT" />
         <label :class="LABEL">{{ t('TOLZAR_SETTINGS.AI.PERKS') }}</label>
         <textarea v-model="data.form.perks" rows="4" :class="INPUT" :placeholder="t('TOLZAR_SETTINGS.AI.PERKS_PLACEHOLDER')" />
+        <div class="flex justify-between items-baseline">
+          <label :class="LABEL">{{ t('TOLZAR_SETTINGS.AI.POLICIES') }}</label>
+          <span class="text-xs text-n-slate-10">{{ data.form.policies.length }}/{{ MAX_POLICIES }}</span>
+        </div>
+        <p class="mt-0 mb-1 text-xs text-n-slate-10">{{ t('TOLZAR_SETTINGS.AI.POLICIES_HINT') }}</p>
+        <div v-for="(p, i) in data.form.policies" :key="i" class="flex gap-2 items-center mt-1">
+          <input v-model="data.form.policies[i]" type="text" :maxlength="MAX_POLICY_CHARS" :class="INPUT" :placeholder="t('TOLZAR_SETTINGS.AI.POLICY_PLACEHOLDER')" />
+          <span class="text-[11px] text-n-slate-10 shrink-0">{{ (p || '').length }}/{{ MAX_POLICY_CHARS }}</span>
+          <button type="button" class="text-xs text-n-ruby-11 shrink-0" :aria-label="t('TOLZAR_SETTINGS.AI.POLICY_REMOVE')" @click="removePolicy(i)">{{ t('TOLZAR_SETTINGS.AI.POLICY_REMOVE') }}</button>
+        </div>
+        <button type="button" :class="BTN_GHOST" class="!h-7 !mt-2" :disabled="data.form.policies.length >= MAX_POLICIES" @click="addPolicy">{{ t('TOLZAR_SETTINGS.AI.POLICY_ADD') }}</button>
         <p class="p-2 mt-3 text-[13px] rounded-lg bg-n-alpha-1">{{ t('TOLZAR_SETTINGS.AI.ALLOWED', { n: allowed }) }}</p>
         <button type="button" :class="BTN" :disabled="busy" @click="saveLimits">{{ t('TOLZAR_SETTINGS.SAVE') }}</button>
       </div>
