@@ -18,6 +18,7 @@ Rails.application.routes.draw do
   get  'tolzar/meta/callback',      to: 'tolzar/meta#callback'
   post 'tolzar/meta/data_deletion', to: 'tolzar/meta#data_deletion'
   get  'tolzar/meta/deletion',      to: 'tolzar/meta#deletion'
+  get  'tolzar/meta/error',         to: 'tolzar/meta#failed'
   # Tolzar MCP server (F1): public, read-only, per-workspace Bearer token checked by the brain.
   # Held back from the internet until Server ops has reviewed the hardening (28 Oct): enable with
   # TOLZAR_MCP_PUBLIC=true once rate limits + fail2ban logging are confirmed on the box.
