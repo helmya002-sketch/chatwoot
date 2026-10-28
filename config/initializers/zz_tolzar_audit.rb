@@ -5,7 +5,9 @@
 # models' audit declarations and the audit class live in enterprise/, which the Tolzar image
 # no longer ships (A4). So when enterprise/ is absent, audit the same core models here with
 # the gem's own Audited::Audit class. Secrets are filtered out of what is recorded.
-unless ChatwootApp.enterprise?
+# Same test as ChatwootApp.enterprise? (the folder exists), without loading lib/ this early:
+# at initializer time ChatwootApp isn't loaded yet (fork specs, 28 Oct: NameError at db:create).
+unless Rails.root.join('enterprise').exist?
   Audited.config { |config| config.audit_class = 'Audited::Audit' }
 
   Rails.application.config.to_prepare do
