@@ -179,7 +179,7 @@ class Tolzar::Mirror::Projector
       content: content,
       sender: outgoing ? bootstrap.agent : contact,
       source_id: src,
-      content_attributes: m['timestamp'].present? ? { external_created_at: m['timestamp'] } : {}
+      content_attributes: message_attributes(m, inner)
     )
     # Hand each customer turn to the Tolzar brain for read-only shadow evaluation.
     # Direct internal call (see BrainNotifyJob) — not a Chatwoot webhook, so it is
@@ -187,6 +187,22 @@ class Tolzar::Mirror::Projector
     # is set. Agent/outgoing turns are not sent: the brain reads the full thread at
     # triage time and only acts on a customer turn.
     Tolzar::Mirror::BrainNotifyJob.perform_later(msg.id) unless outgoing
+  end
+
+  ATTACHMENT_LABELS = { 'audio' => '[voice note]', 'image' => '[photo]', 'video' => '[video]', 'file' => '[file]' }.freeze
+
+  # Voice notes / photos (roadmap: voice + image understanding): keep only the link and its
+  # metadata, never the file. The brain fetches it into memory when that workspace turned the
+  # feature on, keeps the transcript or the fields it read, and drops the bytes.
+  def message_attributes(m, inner)
+    attrs = m['timestamp'].present? ? { external_created_at: m['timestamp'] } : {}
+    a = inner['attachment']
+    return attrs unless inner['type'].to_s == 'attachment' && a.is_a?(Hash) && a['url'].present?
+
+    attrs.merge(tolzar_attachment: {
+                  type: a['type'].to_s, url: a['url'].to_s, mime: (a['mimeType'] || a['mime']).to_s,
+                  size: a['size'].to_i, file_name: a['fileName'].to_s
+                })
   end
 
   EMAIL_MAX_CHARS = 4000
@@ -198,6 +214,11 @@ class Tolzar::Mirror::Projector
   # "[email]" and the brain could only ask "which centre?" (28 Oct: 22 of 23 emails).
   def message_content(inner)
     return inner['text'] if inner['text'].present?
+    if inner['type'].to_s == 'attachment'
+      label = ATTACHMENT_LABELS[inner.dig('attachment', 'type').to_s] || '[attachment]'
+      caption = inner.dig('attachment', 'description').presence
+      return caption ? "#{label} #{caption}" : label
+    end
     return "[#{inner['type'].presence || 'message'}]" unless inner['type'].to_s == 'email'
 
     body = inner['message'].to_s.gsub("\r\n", "\n")

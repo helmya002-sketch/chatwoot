@@ -82,6 +82,47 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
     render json: post_to_brain('/meta/disconnect', { account_id: account_scope_id })
   end
 
+  # Export workspace (A5): a background job writes a .tar.gz, downloadable for 7 days.
+  def export_start
+    Tolzar::WorkspaceExportJob.perform_later(account_scope_id)
+    post_to_brain('/audit/record', { account_id: account_scope_id, action: 'workspace.export_requested', target: 'chatwoot' })
+    render json: { ok: true, queued: true }
+  end
+
+  def export_status
+    blobs = Tolzar::WorkspaceExportJob.blobs(account_scope_id).where('created_at >= ?', Tolzar::WorkspaceExportJob::KEEP.ago).limit(5)
+    render json: { ok: true, exports: blobs.map { |b| { id: b.id, filename: b.filename.to_s, size: b.byte_size, created_at: b.created_at } } }
+  end
+
+  def export_download
+    blob = Tolzar::WorkspaceExportJob.blobs(account_scope_id).where('created_at >= ?', Tolzar::WorkspaceExportJob::KEEP.ago)
+                                     .find_by(id: params[:id])
+    return head(:not_found) if blob.nil?
+
+    send_data blob.download, filename: blob.filename.to_s, type: 'application/gzip'
+  end
+
+  # Audit log (A6): Chatwoot's own audits for this workspace plus the brain's settings log.
+  AUDIT_HIDDEN = /token|secret|password|otp/i
+
+  def audit
+    limit = (params[:limit].presence || 200).to_i.clamp(1, 1000)
+    rows = Audited::Audit.where(associated_type: 'Account', associated_id: account_scope_id)
+                         .or(Audited::Audit.where(auditable_type: 'Account', auditable_id: account_scope_id))
+                         .order(created_at: :desc).limit(limit)
+    users = User.where(id: rows.map(&:user_id).compact.uniq).index_by(&:id)
+    chatwoot = rows.map do |a|
+      changes = (a.audited_changes || {}).reject { |k, _| k.to_s.match?(AUDIT_HIDDEN) }
+      { source: 'chatwoot', at: a.created_at, action: "#{a.auditable_type.underscore}.#{a.action}",
+        target: "#{a.auditable_type} #{a.auditable_id}",
+        actor: users[a.user_id]&.email || a.username || 'system', changes: changes }
+    end
+    brain = (get_from_brain("/audit?account_id=#{account_scope_id}&limit=#{limit}")['entries'] || []).map do |e|
+      { source: 'brain', at: e['at'], action: e['action'], target: e['target'], actor: e['actor'], changes: e['changes'] }
+    end
+    render json: { ok: true, entries: (chatwoot + brain).sort_by { |e| e[:at].to_s }.reverse.first(limit) }
+  end
+
   # Shadow-eval scoreboard for the Reports page (would-vs-did, go-live checks).
   def scoreboard
     days = (params[:days].presence || 30).to_i.clamp(1, 90)
@@ -89,6 +130,11 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
   end
 
   private
+
+  # Who made the change, for the brain's audit log (A6).
+  def actor_label
+    "#{Current.user&.id}:#{Current.user&.email}"
+  end
 
   def unsafe(value)
     value.respond_to?(:to_unsafe_h) ? value.to_unsafe_h : value
@@ -115,6 +161,7 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
     # Harmless until the brain is configured to require it (TOLZAR_BRAIN_SECRET).
     secret = ENV['TOLZAR_BRAIN_SECRET'].to_s
     req['X-Tolzar-Brain-Secret'] = secret unless secret.empty?
+    req['X-Tolzar-Actor'] = actor_label
     req.body = body.to_json
     res = http.request(req)
     JSON.parse(res.body)
@@ -132,6 +179,7 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
     req = Net::HTTP::Get.new(uri.request_uri)
     secret = ENV['TOLZAR_BRAIN_SECRET'].to_s
     req['X-Tolzar-Brain-Secret'] = secret unless secret.empty?
+    req['X-Tolzar-Actor'] = actor_label
     JSON.parse(http.request(req).body)
   rescue StandardError => e
     Rails.logger.warn("tolzar agents brain error: #{e.class} #{e.message}")

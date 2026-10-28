@@ -671,5 +671,45 @@
         "SEND": "Envoyer ({keyCode})"
       }
     }
+  },
+  "TOLZAR_CONTACTS": {
+    "TABLE": {
+      "CONTACT": "Contact",
+      "STAGE": "Étape",
+      "LEAD_SCORE": "Score du lead",
+      "PLACE": "Hôtel / lieu",
+      "LAST_INTERACTION": "Dernier échange",
+      "SUMMARY_MARK": "✦"
+    },
+    "STAGES": {
+      "ALL": "Toutes les étapes",
+      "SET": "Définir l'étape",
+      "SAVING": "Enregistrement…",
+      "SET_SUCCESS": "Étape définie sur {stage}",
+      "SET_FAILED": "Impossible de modifier l'étape",
+      "BULK_SUCCESS": "Étape définie sur {stage} pour {count} contacts",
+      "BULK_PARTIAL": "Étape définie sur {stage} pour {done} contacts sur {count}"
+    },
+    "PANE": {
+      "FULL_PROFILE": "Profil complet",
+      "STAGE": "Étape",
+      "LOST": "Perdu",
+      "SUMMARY": "Résumé Tolzar",
+      "NO_SUMMARY": "Pas encore de résumé. Tolzar en écrit un après avoir lu une conversation.",
+      "LEAD_SCORE": "Score du lead",
+      "DETAILS": "Détails",
+      "TAGS": "Étiquettes",
+      "RECENT": "Conversations récentes",
+      "NONE_YET": "Aucune pour l'instant.",
+      "HOTEL": "Hôtel",
+      "PLACE": "Lieu",
+      "TRIP_STARTS": "Début du séjour",
+      "CERTIFICATION": "Niveau de plongée",
+      "GROUP_SIZE": "Taille du groupe",
+      "BOOKING_VALUE": "Valeur de la réservation",
+      "LANGUAGE": "Langue",
+      "PHONE": "Téléphone",
+      "EMAIL": "E-mail"
+    }
   }
 }

@@ -671,5 +671,45 @@
         "SEND": "Senden ({keyCode})"
       }
     }
+  },
+  "TOLZAR_CONTACTS": {
+    "TABLE": {
+      "CONTACT": "Kontakt",
+      "STAGE": "Phase",
+      "LEAD_SCORE": "Lead-Score",
+      "PLACE": "Hotel / Ort",
+      "LAST_INTERACTION": "Letzter Kontakt",
+      "SUMMARY_MARK": "✦"
+    },
+    "STAGES": {
+      "ALL": "Alle Phasen",
+      "SET": "Phase setzen",
+      "SAVING": "Wird gespeichert…",
+      "SET_SUCCESS": "Phase auf {stage} gesetzt",
+      "SET_FAILED": "Die Phase konnte nicht geändert werden",
+      "BULK_SUCCESS": "Phase für {count} Kontakte auf {stage} gesetzt",
+      "BULK_PARTIAL": "Phase für {done} von {count} Kontakten auf {stage} gesetzt"
+    },
+    "PANE": {
+      "FULL_PROFILE": "Vollständiges Profil",
+      "STAGE": "Phase",
+      "LOST": "Verloren",
+      "SUMMARY": "Tolzar-Zusammenfassung",
+      "NO_SUMMARY": "Noch keine Zusammenfassung. Tolzar schreibt eine, sobald es ein Gespräch gelesen hat.",
+      "LEAD_SCORE": "Lead-Score",
+      "DETAILS": "Details",
+      "TAGS": "Tags",
+      "RECENT": "Letzte Gespräche",
+      "NONE_YET": "Noch keine.",
+      "HOTEL": "Hotel",
+      "PLACE": "Ort",
+      "TRIP_STARTS": "Reisebeginn",
+      "CERTIFICATION": "Brevet",
+      "GROUP_SIZE": "Gruppengröße",
+      "BOOKING_VALUE": "Buchungswert",
+      "LANGUAGE": "Sprache",
+      "PHONE": "Telefon",
+      "EMAIL": "E-Mail"
+    }
   }
 }

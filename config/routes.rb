@@ -82,6 +82,10 @@ Rails.application.routes.draw do
           get    'tolzar/workflows/templates', to: 'tolzar#workflow_templates'
           # Tolzar: per-workspace Meta connection (status never includes tokens).
           get    'tolzar/meta/status',      to: 'tolzar#meta_status'
+          get    'tolzar/audit',            to: 'tolzar#audit'
+          post   'tolzar/export',           to: 'tolzar#export_start'
+          get    'tolzar/export',           to: 'tolzar#export_status'
+          get    'tolzar/export/download',  to: 'tolzar#export_download'
           post   'tolzar/meta/connect_url', to: 'tolzar#meta_connect_url'
           post   'tolzar/meta/select',      to: 'tolzar#meta_select'
           post   'tolzar/meta/disconnect',  to: 'tolzar#meta_disconnect'

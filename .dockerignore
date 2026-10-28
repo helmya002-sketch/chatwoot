@@ -15,3 +15,8 @@ vendor/bundle
 .DS_Store
 *.swp
 *~
+
+# Tolzar (roadmap A4): never ship the enterprise/ folder (its own licence). Same as
+# Chatwoot's FOSS image build (publish_foss_docker.yml strips it); DISABLE_ENTERPRISE stays on.
+enterprise
+spec/enterprise

@@ -1,0 +1,61 @@
+name: Tolzar specs
+
+# Roadmap A2: the Tolzar code in this fork is tested on every push, on the same tree the image
+# ships (enterprise/ removed, exactly as Chatwoot's own CE spec workflow does).
+permissions:
+  contents: read
+on:
+  push:
+    branches: [tolzar]
+  workflow_dispatch:
+
+jobs:
+  tolzar-specs:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ''
+          POSTGRES_DB: postgres
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --mount type=tmpfs,destination=/var/lib/postgresql/data
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:alpine
+        ports:
+          - 6379:6379
+        options: --entrypoint redis-server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'pnpm'
+      - name: Install pnpm dependencies
+        run: pnpm i
+      - name: Strip enterprise code (as in the image)
+        run: |
+          rm -rf enterprise
+          rm -rf spec/enterprise
+      - name: Create database
+        run: bundle exec rake db:create
+      - name: Load schema
+        run: bundle exec rake db:schema:load
+      - name: Tolzar backend specs
+        run: bundle exec rspec spec/tolzar --format progress
+        env:
+          NODE_OPTIONS: --openssl-legacy-provider
+      - name: Tolzar frontend specs
+        run: pnpm exec vitest run app/javascript/dashboard/components-next/Tolzar
