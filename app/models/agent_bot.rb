@@ -67,6 +67,20 @@ class AgentBot < ApplicationRecord
   def system_bot?
     account.nil?
   end
+
+  # Tolzar: this bot is the Tolzar brain running in shadow. It only writes private "Tolzar would..."
+  # notes and never replies, so conversations in its inboxes must not wait in Pending for a bot hand-off
+  # that never comes. Detected by the bot's outgoing_url host being the brain's host
+  # (Tolzar::BrainClient.brain_host, from TOLZAR_BRAIN_URL), or explicitly by bot_config['tolzar_shadow'].
+  def tolzar_shadow?
+    config = bot_config.is_a?(Hash) ? bot_config : {}
+    return true if ActiveModel::Type::Boolean.new.cast(config['tolzar_shadow'])
+
+    host = URI.parse(outgoing_url.to_s.strip).host
+    host.present? && host.casecmp?(Tolzar::BrainClient.brain_host.to_s)
+  rescue URI::InvalidURIError
+    false
+  end
 end
 
 AgentBot.include_mod_with('Audit::AgentBot')

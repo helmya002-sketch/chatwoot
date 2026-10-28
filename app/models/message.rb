@@ -434,7 +434,8 @@ class Message < ApplicationRecord
 
   def reopen_resolved_conversation
     # mark resolved bot conversation as pending to be reopened by bot processor service
-    if conversation.inbox.active_bot?
+    # (Tolzar: not for a shadow brain, which never hands off: its conversations reopen as open)
+    if conversation.inbox.active_bot? && !conversation.inbox.tolzar_shadow_bot?
       conversation.pending!
     elsif conversation.inbox.api?
       Current.executed_by = sender if reopened_by_contact?

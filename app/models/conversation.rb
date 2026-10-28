@@ -326,6 +326,10 @@ class Conversation < ApplicationRecord
   end
 
   def set_active_bot_conversation
+    # Tolzar: a shadow brain only writes private notes, so its conversations stay open for the team
+    # (no pending status, no bot owner): they would otherwise sit hidden in the Pending tab.
+    return if inbox.tolzar_shadow_bot?
+
     # TODO: make this an inbox config instead of assuming bot conversations should start as pending
     self.status = :pending
     return unless inbox.agent_bot_inbox&.active? && assignee_id.blank?
