@@ -95,7 +95,9 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
                  'sms' => '/sms', 'crm_sync' => '/crm-sync', 'crm_sync_runs' => '/crm-sync/runs',
                  'commerce' => '/commerce', 'commerce_templates' => '/commerce/templates',
                  'negotiation' => '/negotiation', 'agent_teams' => '/agent-teams', 'tuning' => '/tuning',
-                 'roi' => '/roi', 'quotas' => '/quotas' }.freeze
+                 'roi' => '/roi', 'quotas' => '/quotas',
+                 # Round 2: reading customers' attachments (PDFs), Off / Shadow.
+                 'documents' => '/documents' }.freeze
   BRAIN_POSTS = { 'sla' => '/sla', 'media' => '/media', 'dedupe_refresh' => '/dedupe/refresh', 'channels' => '/channels',
                   'links' => '/links', 'broadcasts' => '/broadcasts', 'broadcasts_preview' => '/broadcasts/preview',
                   'broadcasts_run' => '/broadcasts/run', 'mcp_token' => '/mcp-token',
@@ -108,11 +110,11 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
                   'crm_sync_preview' => '/crm-sync/preview', 'commerce' => '/commerce',
                   'commerce_catalogue_sync' => '/commerce/catalogue-sync', 'commerce_order_status' => '/commerce/order-status',
                   'negotiation' => '/negotiation', 'agent_teams' => '/agent-teams', 'tuning_run' => '/tuning/run',
-                  'tuning_decide' => '/tuning/decide', 'quotas' => '/quotas' }.freeze
+                  'tuning_decide' => '/tuning/decide', 'quotas' => '/quotas', 'documents' => '/documents' }.freeze
   # Roles (E2): only an Owner may do these (Chatwoot administrators are Owners unless made Managers).
   # Round 1: every settings write, a contact's data erasure and export are Owner-only too.
   OWNER_POSTS = %w[mcp_token roles compliance retention dsar_delete sms crm_sync commerce commerce_catalogue_sync
-                   negotiation agent_teams tuning_decide quotas].freeze
+                   negotiation agent_teams tuning_decide quotas documents].freeze
   OWNER_GETS = %w[dsar_export].freeze
 
   def brain_get

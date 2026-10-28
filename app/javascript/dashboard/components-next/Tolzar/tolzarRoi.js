@@ -5,6 +5,31 @@ import { brainGet } from './tolzarBrainApi';
 export const getRoi = (accountId, days = 30) =>
   brainGet(accountId, 'roi', { days });
 
+// The brain sends working hours as "09:00:00-19:00:00": show "09:00–19:00" in the member's
+// locale (24-hour clock, the locale's own digits). Anything unexpected is shown as sent.
+export const workingHoursLabel = (hours, locale = 'en') => {
+  const m =
+    /^\s*(\d{1,2}):(\d{2})(?::\d{2})?\s*-\s*(\d{1,2}):(\d{2})(?::\d{2})?\s*$/.exec(
+      String(hours ?? '')
+    );
+  if (!m) return String(hours ?? '');
+  const opts = {
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+    timeZone: 'UTC',
+  };
+  let fmt;
+  try {
+    // Chatwoot locales are like "pt_BR"; Intl wants "pt-BR".
+    fmt = new Intl.DateTimeFormat(String(locale).replace('_', '-'), opts);
+  } catch (e) {
+    fmt = new Intl.DateTimeFormat('en', opts);
+  }
+  const at = (h, min) => fmt.format(new Date(Date.UTC(2000, 0, 1, +h, +min)));
+  return `${at(m[1], m[2])}–${at(m[3], m[4])}`;
+};
+
 // Stat tiles: key, raw value, kind (seconds | share | count), and whether it is a would-be value.
 export const roiTiles = r => {
   if (!r || !r.first_reply) return [];

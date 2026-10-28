@@ -1043,6 +1043,7 @@
       "sla": "Response times",
       "qa": "Quality & coaching",
       "media": "Voice notes & photos",
+      "documents": "Attachments (PDFs)",
       "recovery": "Lead recovery",
       "learned": "Learned from your team",
       "brief": "Monday brief",
@@ -1070,6 +1071,7 @@
       "sla": "Flag conversations where a customer waited too long for a person. A label and a private note; customers see nothing.",
       "qa": "Every conversation scored against your rubric; a card per team member for the last 7 days.",
       "media": "Read customers' voice notes and photos on Tolzar's own server. Files are never stored.",
+      "documents": "Read attachments customers send (PDFs) in Shadow, to help triage.",
       "recovery": "For leads that went quiet, the AI drafts 3 follow-ups from their own conversation (shadow: notes only).",
       "learned": "Questions your team answers the same way again and again. Approve one and the AI learns it, in Shadow first.",
       "brief": "Last week's top questions, lost-deal reasons, objections, competitors and knowledge gaps.",
@@ -1093,6 +1095,14 @@
     "SAVE": "Save",
     "NONE_YET": "Nothing yet.",
     "ON_SHADOW": "On (Shadow)",
+    "MODES": {
+      "off": "Off",
+      "shadow": "Shadow"
+    },
+    "DOCUMENTS": {
+      "MODE": "Read attachments (PDFs) in Shadow",
+      "EXPLAIN": "The text is read for triage only and is never stored."
+    },
     "USAGE": {
       "conversations": "Conversations",
       "decisions": "AI decisions",
@@ -1119,7 +1129,10 @@
       "IMAGES": "Photos",
       "FIELDS": "Details to read from photos",
       "RETENTION": "Keep transcripts and read details for (days)",
-      "PRIVACY": "ID documents: only 'received' and the expiry month. Nothing is sent to any outside service."
+      "PRIVACY": "ID documents: only 'received' and the expiry month. Nothing is sent to any outside service.",
+      "VIDEO": "Videos",
+      "VIDEO_FRAMES": "Still frames read per video (1–4)",
+      "VIDEO_NOTE": "Videos stay off until the photo measurement passes."
     },
     "RECOVERY": {
       "QUIET": "A lead is quiet after (hours)",

@@ -1043,6 +1043,7 @@
       "sla": "Antwortzeiten",
       "qa": "Qualität & Coaching",
       "media": "Sprachnachrichten & Fotos",
+      "documents": "Anhänge (PDFs)",
       "recovery": "Lead-Rückgewinnung",
       "learned": "Vom Team gelernt",
       "brief": "Montags-Bericht",
@@ -1070,6 +1071,7 @@
       "sla": "Flag conversations where a customer waited too long for a person. A label and a private note; customers see nothing.",
       "qa": "Every conversation scored against your rubric; a card per team member for the last 7 days.",
       "media": "Read customers' voice notes and photos on Tolzar's own server. Files are never stored.",
+      "documents": "Anhänge, die Kunden senden (PDFs), im Schattenmodus lesen, als Hilfe bei der Einordnung.",
       "recovery": "For leads that went quiet, the AI drafts 3 follow-ups from their own conversation (shadow: notes only).",
       "learned": "Questions your team answers the same way again and again. Approve one and the AI learns it, in Shadow first.",
       "brief": "Last week's top questions, lost-deal reasons, objections, competitors and knowledge gaps.",
@@ -1093,6 +1095,14 @@
     "SAVE": "Speichern",
     "NONE_YET": "Noch nichts.",
     "ON_SHADOW": "An (Schatten)",
+    "MODES": {
+      "off": "Aus",
+      "shadow": "Schatten"
+    },
+    "DOCUMENTS": {
+      "MODE": "Anhänge (PDFs) im Schattenmodus lesen",
+      "EXPLAIN": "Der Text wird nur zur Einordnung gelesen und nie gespeichert."
+    },
     "USAGE": {
       "conversations": "Conversations",
       "decisions": "AI decisions",
@@ -1119,7 +1129,10 @@
       "IMAGES": "Photos",
       "FIELDS": "Details to read from photos",
       "RETENTION": "Keep transcripts and read details for (days)",
-      "PRIVACY": "ID documents: only 'received' and the expiry month. Nothing is sent to any outside service."
+      "PRIVACY": "ID documents: only 'received' and the expiry month. Nothing is sent to any outside service.",
+      "VIDEO": "Videos",
+      "VIDEO_FRAMES": "Standbilder pro Video (1–4)",
+      "VIDEO_NOTE": "Videos bleiben aus, bis die Foto-Messung bestanden ist."
     },
     "RECOVERY": {
       "QUIET": "A lead is quiet after (hours)",

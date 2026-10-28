@@ -6,6 +6,9 @@ import TrustPanel from 'dashboard/components-next/Tolzar/settings/TrustPanel.vue
 import ChannelsPanel from 'dashboard/components-next/Tolzar/settings/ChannelsPanel.vue';
 import AiLimitsPanel from 'dashboard/components-next/Tolzar/settings/AiLimitsPanel.vue';
 import QuotasPanel from 'dashboard/components-next/Tolzar/settings/QuotasPanel.vue';
+import DocumentsPanel from 'dashboard/components-next/Tolzar/settings/DocumentsPanel.vue';
+import { MEDIA_MODES, VIDEO_FRAMES, getMedia, saveMedia as saveMediaConfig, mediaConfig } from 'dashboard/components-next/Tolzar/tolzarMedia';
+import { brainErrors } from 'dashboard/components-next/Tolzar/tolzarBrainApi';
 
 // Tolzar Settings hub (approved mock settings-hub-v1): one home for what Tolzar does for this
 // workspace. Every section reads/writes the brain through the admin proxy; AI features run in
@@ -23,7 +26,7 @@ const SECTIONS = [
   ['trust', ['disclosure', 'retention', 'privacy']],
   ['channels', ['sms', 'crm', 'commerce']],
   ['team', ['sla', 'qa']],
-  ['ai', ['media', 'recovery', 'learned', 'brief', 'ask', 'negotiation', 'agent_teams', 'tuning']],
+  ['ai', ['media', 'documents', 'recovery', 'learned', 'brief', 'ask', 'negotiation', 'agent_teams', 'tuning']],
   ['contacts', ['dedupe']],
   ['growth', ['links', 'broadcasts']],
   ['developers', ['connections', 'mcp']],
@@ -47,7 +50,10 @@ async function open(key) {
     if (key === 'export') data.value = (await window.axios.get(`${base.value}/export`)).data;
     if (key === 'sla') data.value = await get('sla');
     if (key === 'qa') data.value = await get('qa');
-    if (key === 'media') data.value = await get('media');
+    if (key === 'media') {
+      const m = await getMedia(accountId.value);
+      data.value = { ...m, config: mediaConfig(m.config) };
+    }
     if (key === 'recovery') data.value = await get('recovery');
     if (key === 'learned') data.value = await get('learned');
     if (key === 'brief') data.value = await get('brief');
@@ -91,8 +97,9 @@ async function saveSla() {
   done('Saved');
 }
 async function saveMedia() {
-  await post('media', data.value.config);
-  done('Saved');
+  const r = await saveMediaConfig(accountId.value, data.value.config);
+  const errors = brainErrors(r);
+  done(errors.length ? errors.join(' · ') : $t('TOLZAR_SETTINGS.R1.SAVED'));
 }
 async function saveRecovery() {
   await post('recovery', data.value.config);
@@ -217,6 +224,7 @@ onMounted(() => open('usage'));
           <TrustPanel v-if="TRUST.includes(current)" :key="current" :section="current" />
           <ChannelsPanel v-if="CHANNELS.includes(current)" :key="current" :section="current" />
           <AiLimitsPanel v-if="AI_LIMITS.includes(current)" :key="current" :section="current" />
+          <DocumentsPanel v-if="current === 'documents'" />
 
           <!-- roles -->
           <div v-if="current === 'roles'">
@@ -283,9 +291,9 @@ onMounted(() => open('usage'));
           <!-- media -->
           <div v-if="current === 'media' && data.config" class="max-w-[520px]">
             <label class="tz-lab">{{ $t('TOLZAR_SETTINGS.MEDIA.VOICE') }}</label>
-            <select v-model="data.config.voice" class="tz-in"><option value="off">Off</option><option value="shadow">Shadow</option></select>
+            <select v-model="data.config.voice" class="tz-in"><option v-for="m in MEDIA_MODES" :key="m" :value="m">{{ $t(`TOLZAR_SETTINGS.MODES.${m}`) }}</option></select>
             <label class="tz-lab">{{ $t('TOLZAR_SETTINGS.MEDIA.IMAGES') }}</label>
-            <select v-model="data.config.images" class="tz-in"><option value="off">Off</option><option value="shadow">Shadow</option></select>
+            <select v-model="data.config.images" class="tz-in"><option v-for="m in MEDIA_MODES" :key="m" :value="m">{{ $t(`TOLZAR_SETTINGS.MODES.${m}`) }}</option></select>
             <label class="tz-lab">{{ $t('TOLZAR_SETTINGS.MEDIA.FIELDS') }}</label>
             <div v-for="(f, i) in data.config.image_fields || []" :key="i" class="flex gap-1 mb-1">
               <input v-model="f.key" class="tz-in !w-[140px]" placeholder="order_number" />
@@ -293,6 +301,11 @@ onMounted(() => open('usage'));
               <button type="button" class="px-1 text-n-slate-9" @click="data.config.image_fields.splice(i, 1)">×</button>
             </div>
             <button type="button" class="text-xs text-n-brand" @click="(data.config.image_fields = data.config.image_fields || []).push({ key: '', description: '' })">+</button>
+            <label class="tz-lab">{{ $t('TOLZAR_SETTINGS.MEDIA.VIDEO') }}</label>
+            <select v-model="data.config.video" class="tz-in"><option v-for="m in MEDIA_MODES" :key="m" :value="m">{{ $t(`TOLZAR_SETTINGS.MODES.${m}`) }}</option></select>
+            <label class="tz-lab">{{ $t('TOLZAR_SETTINGS.MEDIA.VIDEO_FRAMES') }}</label>
+            <input v-model.number="data.config.video_frames" type="number" :min="VIDEO_FRAMES.min" :max="VIDEO_FRAMES.max" class="tz-in !w-[100px]" />
+            <p class="text-xs text-amber-700">{{ $t('TOLZAR_SETTINGS.MEDIA.VIDEO_NOTE') }}</p>
             <label class="tz-lab">{{ $t('TOLZAR_SETTINGS.MEDIA.RETENTION') }}</label>
             <input v-model.number="data.config.retention_days" type="number" min="1" class="tz-in" />
             <p class="text-xs text-n-slate-10">{{ $t('TOLZAR_SETTINGS.MEDIA.PRIVACY') }}</p>

@@ -1043,6 +1043,7 @@
       "sla": "Délais de réponse",
       "qa": "Qualité & coaching",
       "media": "Messages vocaux & photos",
+      "documents": "Pièces jointes (PDF)",
       "recovery": "Relance des prospects",
       "learned": "Appris de l'équipe",
       "brief": "Bilan du lundi",
@@ -1070,6 +1071,7 @@
       "sla": "Flag conversations where a customer waited too long for a person. A label and a private note; customers see nothing.",
       "qa": "Every conversation scored against your rubric; a card per team member for the last 7 days.",
       "media": "Read customers' voice notes and photos on Tolzar's own server. Files are never stored.",
+      "documents": "Lire en mode Ombre les pièces jointes envoyées par les clients (PDF), pour aider au tri.",
       "recovery": "For leads that went quiet, the AI drafts 3 follow-ups from their own conversation (shadow: notes only).",
       "learned": "Questions your team answers the same way again and again. Approve one and the AI learns it, in Shadow first.",
       "brief": "Last week's top questions, lost-deal reasons, objections, competitors and knowledge gaps.",
@@ -1093,6 +1095,14 @@
     "SAVE": "Enregistrer",
     "NONE_YET": "Rien pour l'instant.",
     "ON_SHADOW": "Activé (fantôme)",
+    "MODES": {
+      "off": "Désactivé",
+      "shadow": "Ombre"
+    },
+    "DOCUMENTS": {
+      "MODE": "Lire les pièces jointes (PDF) en mode Ombre",
+      "EXPLAIN": "Le texte est lu uniquement pour le tri et n’est jamais conservé."
+    },
     "USAGE": {
       "conversations": "Conversations",
       "decisions": "AI decisions",
@@ -1119,7 +1129,10 @@
       "IMAGES": "Photos",
       "FIELDS": "Details to read from photos",
       "RETENTION": "Keep transcripts and read details for (days)",
-      "PRIVACY": "ID documents: only 'received' and the expiry month. Nothing is sent to any outside service."
+      "PRIVACY": "ID documents: only 'received' and the expiry month. Nothing is sent to any outside service.",
+      "VIDEO": "Vidéos",
+      "VIDEO_FRAMES": "Images fixes lues par vidéo (1–4)",
+      "VIDEO_NOTE": "Les vidéos restent désactivées tant que la mesure des photos n’est pas validée."
     },
     "RECOVERY": {
       "QUIET": "A lead is quiet after (hours)",

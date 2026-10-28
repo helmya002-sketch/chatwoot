@@ -6,13 +6,14 @@ import {
   getRoi,
   roiTiles,
   roiFacts,
+  workingHoursLabel,
 } from 'dashboard/components-next/Tolzar/tolzarRoi';
 import { brainErrors } from 'dashboard/components-next/Tolzar/tolzarBrainApi';
 import { duration, pct } from './tolzarReportsData';
 
 // Reports → Results (ROI): what Tolzar is worth for this workspace, from the brain's /roi.
 // Values Tolzar would have produced in Shadow are labelled "would-be": nothing was sent.
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const accountId = useMapGetter('getCurrentAccountId');
 const RANGES = [7, 30, 90];
 const WOULD_BE_BADGE =
@@ -148,7 +149,10 @@ onMounted(load);
             <p class="mt-3 mb-0 text-xs text-n-slate-10">
               {{
                 t('TOLZAR_RESULTS.HOURS', {
-                  hours: data.off_hours.working_hours,
+                  hours: workingHoursLabel(
+                    data.off_hours.working_hours,
+                    locale
+                  ),
                   tz: data.off_hours.timezone,
                 })
               }}

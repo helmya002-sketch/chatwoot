@@ -1,4 +1,4 @@
-import { getRoi, roiTiles, roiFacts } from '../tolzarRoi';
+import { getRoi, roiTiles, roiFacts, workingHoursLabel } from '../tolzarRoi';
 
 const shadow = {
   first_reply: {
@@ -45,6 +45,18 @@ describe('tolzarRoi', () => {
     });
     expect(live.some(t => t.wouldBe)).toBe(false);
     expect(roiTiles({})).toEqual([]);
+  });
+
+  it('shows working hours as HH:MM without seconds', () => {
+    expect(workingHoursLabel('09:00:00-19:00:00', 'en')).toBe('09:00–19:00');
+    expect(workingHoursLabel('9:30-17:05', 'de')).toBe('09:30–17:05');
+    expect(workingHoursLabel('08:00:00-18:00:00', 'fr')).toBe('08:00–18:00');
+    expect(workingHoursLabel('08:00:00-18:00:00', 'pt_BR')).toBe('08:00–18:00');
+    expect(workingHoursLabel('08:00:00-18:00:00', 'not a locale!')).toBe(
+      '08:00–18:00'
+    );
+    expect(workingHoursLabel('always', 'en')).toBe('always');
+    expect(workingHoursLabel(undefined)).toBe('');
   });
 
   it('builds the plain-language summary in the brain order', () => {
