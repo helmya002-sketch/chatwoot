@@ -6,9 +6,13 @@
 #   X-Tolzar-Account       the account the member was authorised for (0 = no member account:
 #                          the public Meta/MCP doors, where the brain checks its own proof)
 #   X-Tolzar-Ts            unix seconds
-#   X-Tolzar-Sig           hex(HMAC-SHA256(TOLZAR_BRAIN_SECRET, "v1\n<account>\n<ts>\n<METHOD>\n<path>"))
-# <path> is the request path the brain sees, without the query string.
+#   X-Tolzar-Body-Sha256   lowercase hex sha256 of the EXACT body bytes sent (of "" when there is none)
+#   X-Tolzar-Sig           hex(HMAC-SHA256(TOLZAR_BRAIN_SECRET,
+#                              "v2\n<account>\n<ts>\n<METHOD>\n<path>\n<body sha256 hex>"))
+# <path> is the request path the brain sees, without the query string. v2 (2026-10-28) also covers
+# the body: callers set req.body BEFORE .sign (the hash is of req.body exactly as it is sent).
 require 'openssl'
+require 'digest'
 
 module Tolzar::BrainClient
   module_function
@@ -44,25 +48,32 @@ module Tolzar::BrainClient
     ENV['TOLZAR_BRAIN_SECRET'].to_s
   end
 
-  # The signed string and its HMAC. Pure: the spec pins a test vector the brain cross-checks.
-  def signing_string(account_id, ts, method, path)
-    "v1\n#{account_id.to_i}\n#{ts.to_i}\n#{method.to_s.upcase}\n#{path.to_s.split('?', 2).first}"
+  def body_sha256(body)
+    Digest::SHA256.hexdigest(body.to_s)
   end
 
-  def signature(key, account_id, ts, method, path)
-    OpenSSL::HMAC.hexdigest('SHA256', key.to_s, signing_string(account_id, ts, method, path))
+  # The signed string (v2) and its HMAC. Pure: the spec pins the brain's own test vector.
+  def signing_string(account_id, ts, method, path, body_hex)
+    "v2\n#{account_id.to_i}\n#{ts.to_i}\n#{method.to_s.upcase}\n#{path.to_s.split('?', 2).first}\n#{body_hex.to_s.downcase}"
   end
 
-  # Adds the shared-secret and signed-account headers to a Net::HTTP request. The one place
-  # that signs: every caller of the brain uses it.
+  def signature(key, account_id, ts, method, path, body_hex)
+    OpenSSL::HMAC.hexdigest('SHA256', key.to_s, signing_string(account_id, ts, method, path, body_hex))
+  end
+
+  # Adds the shared-secret, signed-account and body-hash headers to a Net::HTTP request. The one
+  # place that signs: every caller of the brain uses it, AFTER setting req.body.
   def sign(req, account_id, ts: Time.now.to_i)
     key = secret
     return req if key.empty?
+    raise ArgumentError, 'Tolzar::BrainClient.sign: a body stream cannot be signed' if req.body_stream
 
+    body_hex = body_sha256(req.body)
     req['X-Tolzar-Brain-Secret'] = key
     req['X-Tolzar-Account'] = account_id.to_i.to_s
     req['X-Tolzar-Ts'] = ts.to_i.to_s
-    req['X-Tolzar-Sig'] = signature(key, account_id, ts, req.method, req.path)
+    req['X-Tolzar-Body-Sha256'] = body_hex
+    req['X-Tolzar-Sig'] = signature(key, account_id, ts, req.method, req.path, body_hex)
     req
   end
 

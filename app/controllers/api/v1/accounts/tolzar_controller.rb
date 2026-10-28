@@ -73,8 +73,18 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
     render json: get_from_brain("/meta/status?account_id=#{account_scope_id}")
   end
 
+  # Login-CSRF binding: the link only completes in THIS browser. A random 32-byte value goes into
+  # an HttpOnly cookie scoped to the public callback (/tolzar/meta; SameSite=Lax so it survives
+  # Meta's top-level GET redirect back); the brain keeps only its sha256 with the state.
+  META_BIND_COOKIE = :tolzar_meta_bind
+  META_BIND_TTL = 15.minutes
+
   def meta_connect_url
-    render json: post_to_brain('/meta/connect_url', { account_id: account_scope_id })
+    bind = SecureRandom.urlsafe_base64(32)
+    cookies[META_BIND_COOKIE] = { value: bind, httponly: true, secure: true, same_site: :lax,
+                                  path: '/tolzar/meta', max_age: META_BIND_TTL.to_i, expires: META_BIND_TTL.from_now }
+    render json: post_to_brain('/meta/connect_url', { account_id: account_scope_id,
+                                                      bind_hash: Digest::SHA256.hexdigest(bind) })
   end
 
   def meta_select
@@ -282,9 +292,9 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
     http.read_timeout = 130
     http.open_timeout = 5
     req = Net::HTTP::Post.new(uri.path, 'Content-Type' => 'application/json')
+    req.body = body.to_json                              # before sign: v2 signs the exact body
     Tolzar::BrainClient.sign(req, account_scope_id)
     req['X-Tolzar-Actor'] = actor_label
-    req.body = body.to_json
     res = http.request(req)
     JSON.parse(res.body)
   rescue StandardError => e

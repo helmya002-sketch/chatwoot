@@ -8,11 +8,22 @@
 # Nothing here writes to Meta; read scopes only. Brain calls are signed (H1) with no member account (0):
 # the brain trusts only its own proof here (the HMAC state, Meta's signed_request, the deletion code).
 class Tolzar::MetaController < ActionController::API
-  # The brain verifies the state by itself (signed, one-time, 15 min; the account and the user
-  # were bound when the link was made) and answers with the account it verified. That answer is
-  # the only source of the account here: never the state string or any request param.
+  include ActionController::Cookies
+
+  BIND_COOKIE = 'tolzar_meta_bind'
+
+  # The brain verifies the state (signed, one-time, 15 min; the account and the user were bound
+  # when the link was made) AND that this browser started it: we send sha256 of the
+  # tolzar_meta_bind cookie set at connect-start and the brain compares it with the one it stored.
+  # No cookie: refused here, the brain is not called. The cookie is cleared either way. The brain's
+  # answer is the only source of the account: never the state string or any request param.
   def callback
+    bind = cookies[BIND_COOKIE].to_s
+    cookies.delete(BIND_COOKIE, path: '/tolzar/meta', secure: true, httponly: true, same_site: :lax)
+    return redirect_to('/tolzar/meta/error', allow_other_host: false) if bind.empty?
+
     res = Tolzar::BrainClient.post('/meta/callback', { code: params[:code].to_s, state: params[:state].to_s,
+                                                       bind_hash: Digest::SHA256.hexdigest(bind),
                                                        error: params[:error].presence,
                                                        error_description: params[:error_description].presence }.compact)
     acct = res['ok'] == true ? res['account_id'].to_i : 0
