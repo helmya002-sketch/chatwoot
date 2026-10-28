@@ -8,7 +8,7 @@
 #
 # respond.io payload shape (from respond.io's own webhook samples):
 #   contact:  { id, firstName, lastName, phone, email, countryCode, language,
-#               status, assignee:{id,firstName,lastName,email}, created_at }
+#               lifecycle, status, assignee:{id,firstName,lastName,email}, created_at }
 #   message:  { messageId, channelMessageId, contactId, channelId,
 #               traffic:"incoming"|"outgoing", message:{type,text,...}, timestamp }
 #   channel:  { id, name, source:"whatsapp"|"email"|... }
@@ -69,6 +69,10 @@ class Tolzar::Mirror::Projector
     contact = find_or_create_contact(rio_id, c)
     contact.name = contact_name(c, rio_id)
     contact.additional_attributes = (contact.additional_attributes || {}).merge(rio_attrs(c)).merge(rio_channel_attrs)
+    # The lifecycle also goes in custom_attributes: the contact filter (workflow triggers,
+    # saved views) can query those, not additional_attributes.
+    lifecycle = c['lifecycle'].presence
+    contact.custom_attributes = (contact.custom_attributes || {}).merge('rio_lifecycle' => lifecycle) if lifecycle
     phone = c['phone'].to_s.strip
     contact.phone_number = phone if phone.start_with?('+')
     persist_contact(contact, phone)
@@ -105,8 +109,11 @@ class Tolzar::Mirror::Projector
       'rio_email' => c['email'],        # kept here, NEVER on contact.email (leak guard)
       'country_code' => c['countryCode'],
       'language' => c['language'],
-      'rio_lifecycle' => c['status']
-    }
+      # respond.io's lifecycle ("New Lead", "Customer Won", ...) is contact.lifecycle;
+      # contact.status is the conversation state (open/closed). Until 28 Oct this read status.
+      'rio_lifecycle' => c['lifecycle'].presence,
+      'rio_status' => c['status']
+    }.compact
   end
 
   # The respond.io channel the guest last wrote on (whatsapp_business, instagram, facebook,

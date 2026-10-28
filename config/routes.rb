@@ -69,6 +69,13 @@ Rails.application.routes.draw do
           post   'tolzar/agents/delete',  to: 'tolzar#agent_delete'
           post   'tolzar/agents/default', to: 'tolzar#agent_default'
           get    'tolzar/scoreboard',     to: 'tolzar#scoreboard'
+          # Tolzar: real Workflows (roadmap B1), stored and run by the brain, shadow only.
+          get    'tolzar/workflows',           to: 'tolzar#workflows'
+          post   'tolzar/workflows',           to: 'tolzar#workflow_save'
+          post   'tolzar/workflows/delete',    to: 'tolzar#workflow_delete'
+          get    'tolzar/workflows/runs',      to: 'tolzar#workflow_runs'
+          post   'tolzar/workflows/test',      to: 'tolzar#workflow_test'
+          get    'tolzar/workflows/templates', to: 'tolzar#workflow_templates'
           if ChatwootApp.enterprise?
             resources :monitors, only: [:index, :show, :create, :update, :destroy] do
               collection do

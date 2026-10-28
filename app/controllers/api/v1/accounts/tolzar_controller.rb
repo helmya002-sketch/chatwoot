@@ -33,6 +33,37 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
     render json: post_to_brain('/agents/default', { account_id: account_scope_id, id: params[:id].to_s })
   end
 
+  # Real Workflows (B1): the brain stores, validates and runs them (shadow only).
+  def workflows
+    render json: get_from_brain("/workflows?account_id=#{account_scope_id}")
+  end
+
+  def workflow_save
+    render json: post_to_brain('/workflows', { account_id: account_scope_id, workflow: unsafe(params[:workflow]) })
+  end
+
+  def workflow_delete
+    render json: post_to_brain('/workflows/delete', { account_id: account_scope_id, id: params[:id].to_s })
+  end
+
+  def workflow_runs
+    query = { account_id: account_scope_id, workflow_id: params[:workflow_id].presence,
+              limit: (params[:limit].presence || 100).to_i.clamp(1, 500) }.compact.to_query
+    render json: get_from_brain("/workflows/runs?#{query}")
+  end
+
+  def workflow_test
+    body = { account_id: account_scope_id, id: params[:id].to_s, workflow: unsafe(params[:workflow]),
+             contact_id: params[:contact_id].presence&.to_i, conversation_id: params[:conversation_id].presence&.to_i,
+             replied: params[:replied] == true || params[:replied].to_s == 'true' }
+    render json: post_to_brain('/workflows/test', body.compact)
+  end
+
+  def workflow_templates
+    query = { won_field: params[:won_field].presence, won_value: params[:won_value].presence }.compact.to_query
+    render json: get_from_brain("/workflows/templates?#{query}")
+  end
+
   # Shadow-eval scoreboard for the Reports page (would-vs-did, go-live checks).
   def scoreboard
     days = (params[:days].presence || 30).to_i.clamp(1, 90)
@@ -40,6 +71,10 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
   end
 
   private
+
+  def unsafe(value)
+    value.respond_to?(:to_unsafe_h) ? value.to_unsafe_h : value
+  end
 
   def account_scope_id
     Current.account&.id || params[:account_id]
