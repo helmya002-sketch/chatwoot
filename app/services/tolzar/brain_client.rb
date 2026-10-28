@@ -2,7 +2,7 @@
 #
 # Signed account protocol (H1, TOLZAR-SECURITY-FIXES-2026-10-28): every Rails -> brain request
 # goes through .sign, which adds
-#   X-Tolzar-Brain-Secret  the shared secret (unchanged)
+#   X-Tolzar-Brain-Secret  the shared secret, unless TOLZAR_SEND_BRAIN_SECRET=false (M1, full-sec)
 #   X-Tolzar-Account       the account the member was authorised for (0 = no member account:
 #                          the public Meta/MCP doors, where the brain checks its own proof)
 #   X-Tolzar-Ts            unix seconds
@@ -52,6 +52,13 @@ module Tolzar::BrainClient
     ENV['TOLZAR_BRAIN_SECRET'].to_s
   end
 
+  # M1 (full-sec): the shared secret travels next to the signature only while the brain still
+  # requires it. TOLZAR_SEND_BRAIN_SECRET=false (after the brain accepts signed requests without it)
+  # stops sending it; anything else (default "true") keeps sending it.
+  def send_brain_secret?
+    ENV.fetch('TOLZAR_SEND_BRAIN_SECRET', 'true').to_s.strip.downcase != 'false'
+  end
+
   def body_sha256(body)
     Digest::SHA256.hexdigest(body.to_s)
   end
@@ -76,7 +83,7 @@ module Tolzar::BrainClient
     raise ArgumentError, 'Tolzar::BrainClient.sign: a body stream cannot be signed' if req.body_stream
 
     body_hex = body_sha256(req.body)
-    req['X-Tolzar-Brain-Secret'] = key
+    req['X-Tolzar-Brain-Secret'] = key if send_brain_secret?
     req['X-Tolzar-Account'] = account_id.to_i.to_s
     req['X-Tolzar-Ts'] = ts.to_i.to_s
     req['X-Tolzar-Body-Sha256'] = body_hex

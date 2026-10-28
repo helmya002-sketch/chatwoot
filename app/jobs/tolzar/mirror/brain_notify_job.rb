@@ -40,7 +40,7 @@ class Tolzar::Mirror::BrainNotifyJob < ApplicationJob
 
   retry_on RetryableDelivery, wait: BACKOFF, attempts: ATTEMPTS do |job, error|
     Rails.logger.warn("[tolzar-mirror] brain notify gave up message=#{job.arguments.first} after #{ATTEMPTS} attempts " \
-                      "delivery=#{job.job_id}: #{error.message}")
+                      "delivery=#{job.job_id}: #{error.message}") # RetryableDelivery's own message: class / status only
   end
 
   def perform(message_id)
@@ -52,17 +52,17 @@ class Tolzar::Mirror::BrainNotifyJob < ApplicationJob
     return unless message.incoming? # only a customer turn arms the brain
     return unless Tolzar::MirrorConfig.mirror_inbox?(message.inbox)
 
-    handle_response(post(url, message.webhook_data.merge(event: 'message_created')), message_id)
+    handle_response(post(url, message.webhook_data.merge(event: 'message_created'), message.account_id), message_id)
   rescue RetryableDelivery
     raise
   rescue StandardError => e
     # Anything unexpected (not a brain outage) is logged once, never retried.
-    Rails.logger.warn("[tolzar-mirror] brain notify failed message=#{message_id} #{e.class}: #{e.message}")
+    Rails.logger.warn("[tolzar-mirror] brain notify failed message=#{message_id} #{Tolzar::Mirror::LogSafe.describe(e)}")
   end
 
   private
 
-  def post(url, payload)
+  def post(url, payload, account_id)
     uri = URI.parse(url)
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = (uri.scheme == 'https')
@@ -71,10 +71,10 @@ class Tolzar::Mirror::BrainNotifyJob < ApplicationJob
     req = Net::HTTP::Post.new(uri.request_uri, 'Content-Type' => 'application/json')
     req.body = payload.to_json
     req['X-Chatwoot-Delivery'] = delivery_id
-    sign_for_brain(req, uri) # a fresh timestamp + signature on every attempt, the same delivery id
+    sign_for_brain(req, uri, account_id) # a fresh timestamp + signature on every attempt, the same delivery id
     http.request(req)
   rescue *CONNECTION_ERRORS => e
-    raise RetryableDelivery, "#{e.class}: #{e.message}"
+    raise RetryableDelivery, Tolzar::Mirror::LogSafe.describe(e)
   end
 
   def handle_response(res, message_id)
@@ -94,12 +94,27 @@ class Tolzar::Mirror::BrainNotifyJob < ApplicationJob
     @delivery_id ||= job_id.presence || SecureRandom.uuid
   end
 
-  def sign_for_brain(req, uri)
-    secret = ENV['BRAIN_WEBHOOK_SECRET'].to_s
-    return if secret.empty? || uri.host != Tolzar::BrainClient.brain_host
+  def sign_for_brain(req, uri, account_id)
+    master = ENV['BRAIN_WEBHOOK_SECRET'].to_s
+    return if master.empty? || uri.host != Tolzar::BrainClient.brain_host
 
+    key = self.class.hook_key(master, account_id)
     ts = Time.now.to_i.to_s
     req['X-Chatwoot-Timestamp'] = ts
-    req['X-Chatwoot-Signature'] = "sha256=#{OpenSSL::HMAC.hexdigest('SHA256', secret, "#{ts}.#{req.body}")}"
+    req['X-Chatwoot-Signature'] = "sha256=#{OpenSSL::HMAC.hexdigest('SHA256', key, "#{ts}.#{req.body}")}"
+  end
+
+  # H2 (full-sec): per-account hook keys. TOLZAR_HOOK_KEY_MODE=derived signs with
+  #   HKDF-SHA256(ikm = BRAIN_WEBHOOK_SECRET, salt = "", info = "tolzar-hook-v1:<account_id>", length 32)
+  # (the raw 32 bytes are the HMAC key), so a leaked key forges one account's deliveries only.
+  # Any other value (default "master", until the brain verifies derived keys) signs with the master.
+  def self.hook_key(master, account_id)
+    return master unless ENV.fetch('TOLZAR_HOOK_KEY_MODE', 'master').to_s.strip.downcase == 'derived'
+
+    derive_hook_key(master, account_id)
+  end
+
+  def self.derive_hook_key(master, account_id)
+    OpenSSL::KDF.hkdf(master.to_s, salt: '', info: "tolzar-hook-v1:#{account_id.to_i}", length: 32, hash: 'SHA256')
   end
 end

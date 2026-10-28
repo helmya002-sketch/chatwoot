@@ -36,7 +36,7 @@ class Tolzar::Mirror::RespondioController < ActionController::API
   rescue StandardError => e
     # Never 500 at respond.io (that counts toward deactivation). Log + 200; the row,
     # if stored, will be retried by a later event or a sweeper.
-    Rails.logger.error("[tolzar-mirror] ingest error tenant=#{params[:tenant]}: #{e.class} #{e.message}")
+    Rails.logger.error("[tolzar-mirror] ingest error tenant=#{params[:tenant]}: #{Tolzar::Mirror::LogSafe.describe(e)}")
     head :ok
   end
 

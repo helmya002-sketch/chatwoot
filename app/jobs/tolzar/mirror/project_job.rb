@@ -18,8 +18,8 @@ class Tolzar::Mirror::ProjectJob < ApplicationJob
       # the job -> Sidekiq retry loop).
       event.update_columns(processed_at: Time.current, error: nil)
     rescue StandardError => e
-      Rails.logger.error("[tolzar-mirror] projection error event=#{event.id} #{e.class}: #{e.message}")
-      event.update_columns(processed_at: Time.current, error: "#{e.class}: #{e.message}".to_s.first(250))
+      Rails.logger.error("[tolzar-mirror] projection error event=#{event.id} #{Tolzar::Mirror::LogSafe.describe(e)}")
+      event.update_columns(processed_at: Time.current, error: Tolzar::Mirror::LogSafe.describe(e).first(250))
     end
   end
 end
