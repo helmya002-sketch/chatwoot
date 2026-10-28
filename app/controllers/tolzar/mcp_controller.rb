@@ -9,6 +9,8 @@ class Tolzar::McpController < ActionController::API
     %w[Authorization Accept Content-Type Mcp-Session-Id Mcp-Protocol-Version].each do |h|
       req[h] = request.headers[h] if request.headers[h].present?
     end
+    # The brain rate-limits and locks out per client address: pass the real one (set, not appended).
+    req['X-Forwarded-For'] = request.remote_ip.to_s
     req.body = request.raw_post if request.post?
     http = Net::HTTP.new(uri.host, uri.port)
     http.read_timeout = 120
