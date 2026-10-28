@@ -777,6 +777,12 @@ const menuItems = computed(() => {
           to: accountScopedRoute('tolzar_settings'),
         },
         {
+          name: 'Settings Tolzar Agency',
+          label: t('TOLZAR_AGENCY.NAV'),
+          icon: 'i-lucide-building-2',
+          to: accountScopedRoute('tolzar_agency'),
+        },
+        {
           name: 'Settings Account Settings',
           label: t('SIDEBAR.ACCOUNT_SETTINGS'),
           icon: 'i-lucide-briefcase',

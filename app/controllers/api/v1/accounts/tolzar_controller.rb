@@ -89,13 +89,14 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
                  'channels' => '/channels', 'attribution' => '/attribution', 'broadcasts' => '/broadcasts',
                  'learned' => '/learned', 'explain' => '/explain', 'recovery' => '/recovery',
                  'qa' => '/qa', 'brief' => '/brief', 'memory' => '/memory', 'scores' => '/scores',
-                 'agent_templates' => '/agents/templates', 'roles' => '/roles' }.freeze
+                 'agent_templates' => '/agents/templates', 'roles' => '/roles', 'branding' => '/branding' }.freeze
   BRAIN_POSTS = { 'sla' => '/sla', 'media' => '/media', 'dedupe_refresh' => '/dedupe/refresh', 'channels' => '/channels',
                   'links' => '/links', 'broadcasts' => '/broadcasts', 'broadcasts_preview' => '/broadcasts/preview',
                   'broadcasts_run' => '/broadcasts/run', 'mcp_token' => '/mcp-token',
                   'learned_status' => '/learned/status', 'translate' => '/translate', 'recovery' => '/recovery',
                   'qa_rubric' => '/qa/rubric', 'brief_build' => '/brief/build', 'reviews_draft' => '/reviews/draft',
-                  'ask' => '/ask', 'roles' => '/roles', 'knowledge_refresh' => '/agents/knowledge/refresh' }.freeze
+                  'ask' => '/ask', 'roles' => '/roles', 'knowledge_refresh' => '/agents/knowledge/refresh',
+                  'branding' => '/branding' }.freeze
   # Roles (E2): only an Owner may do these (Chatwoot administrators are Owners unless made Managers).
   OWNER_POSTS = %w[mcp_token roles].freeze
 

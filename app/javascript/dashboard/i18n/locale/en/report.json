@@ -1049,7 +1049,8 @@
       "links": "Click-to-chat & QR",
       "broadcasts": "Broadcasts",
       "mcp": "AI tools (MCP)",
-      "roles": "Roles"
+      "roles": "Roles",
+      "connections": "Facebook & Instagram"
     },
     "HINT": {
       "usage": "What this workspace used in the last 30 days.",
@@ -1066,7 +1067,8 @@
       "links": "Links and QR codes per campaign; the first message tells Reports which campaign brought it.",
       "broadcasts": "Pick an audience and see exactly who would receive it. Shadow: nothing is sent.",
       "mcp": "Let your own AI tools read this workspace's Tolzar data. Read-only.",
-      "roles": "Who may do what in this workspace."
+      "roles": "Who may do what in this workspace.",
+      "connections": "Read comments on your pages (read-only); replies are drafted in Shadow."
     },
     "SAVE": "Save",
     "NONE_YET": "Nothing yet.",
@@ -1086,7 +1088,8 @@
     "SLA": {
       "MINUTES": "Reply within (minutes)",
       "WORKING_HOURS": "Count only during working hours",
-      "COUNTS": "{late} late · {ok} in time"
+      "COUNTS": "{late} late · {ok} in time",
+      "MENTION": "Also alert the assigned person (a mention: Chatwoot notification + phone push)"
     },
     "QA": {
       "RUBRIC": "Rubric"
@@ -1147,6 +1150,13 @@
       "RULE_OWNER": "Owner: everything, including export, connections, AI-tool tokens and roles.",
       "RULE_MANAGER": "Manager: AI agents, workflows, reports and settings; not export, connections or roles.",
       "RULE_AGENT": "Agent: replies to conversations (set by the Chatwoot agent role)."
+    },
+    "CONNECTIONS": {
+      "PARKED": "Facebook & Instagram connections open once the Tolzar Meta app exists (parked until the company papers are done).",
+      "CONNECT": "Connect Facebook & Instagram",
+      "CONNECTED": "Connected by {who} ({status})",
+      "TEAM": "team",
+      "DISCONNECT": "Disconnect"
     }
   },
   "TOLZAR_ONBOARDING": {
@@ -1196,5 +1206,23 @@
       "HINT": "Your agent starts in Shadow: it handles every conversation inside Tolzar and you see what it would have done next to what your team did. Switch it on when the scoreboard says it's ready.",
       "OPEN": "Open the scoreboard"
     }
+  },
+  "TOLZAR_AGENCY": {
+    "NAV": "Agency",
+    "TITLE": "Agency console",
+    "LEAD": "Every workspace you manage, with usage and AI quality side by side. Each client sees only its own workspace.",
+    "WORKSPACE": "Workspace",
+    "CONVERSATIONS": "Conversations (30 d)",
+    "AGREEMENT": "AI agreement",
+    "TOKENS": "AI tokens (30 d)",
+    "OPEN": "Open",
+    "BRANDING": "Branding",
+    "NEW_HINT": "New client workspaces are created from the account switcher (Create new account).",
+    "PRODUCT_NAME": "Product name this client's team sees",
+    "COLOR": "Brand colour",
+    "LOGO": "Logo URL (https)",
+    "SUPPORT": "Support e-mail shown in the app",
+    "PREVIEW": "Preview",
+    "APPLY_HINT": "Saved per workspace. Applying it to the whole app (logo, colours, custom domain) comes with the white-label theme."
   }
 }

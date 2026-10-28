@@ -20,7 +20,7 @@ const SECTIONS = [
   ['ai', ['media', 'recovery', 'learned', 'brief', 'ask']],
   ['contacts', ['dedupe']],
   ['growth', ['links', 'broadcasts']],
-  ['developers', ['mcp']],
+  ['developers', ['connections', 'mcp']],
 ];
 const current = ref('usage');
 const data = ref({});
@@ -52,6 +52,7 @@ async function open(key) {
       data.value = { list: b.broadcasts || [], draft: { name: '', audience: { field: 'lifecycle_stage', value: '' }, text: { en: '' } }, preview: null };
     }
     if (key === 'mcp') data.value = { token: '' };
+    if (key === 'connections') data.value = (await window.axios.get(`${base.value}/meta/status`)).data;
     if (key === 'roles') {
       const [members, r] = await Promise.all([
         window.axios.get(`/api/v1/accounts/${accountId.value}/agents`).then(x => x.data),
@@ -140,6 +141,18 @@ async function askInbox() {
 async function setRole(m) {
   const r = await post('roles', { user_id: m.id, role: m.tolzar });
   done(r.ok === false ? $t('TOLZAR_SETTINGS.ROLES.OWNER_ONLY') : $t('TOLZAR_SETTINGS.SAVE'));
+}
+async function metaConnect() {
+  const r = (await window.axios.post(`${base.value}/meta/connect_url`)).data;
+  if (r.url) window.location.href = r.url;
+  else done(r.error || 'error');
+}
+async function metaSave() {
+  data.value = (await window.axios.post(`${base.value}/meta/select`, { pages: data.value.pages })).data;
+  done($t('TOLZAR_SETTINGS.SAVE'));
+}
+async function metaDisconnect() {
+  data.value = (await window.axios.post(`${base.value}/meta/disconnect`)).data;
 }
 async function newToken(revoke = false) {
   const r = await post('mcp_token', revoke ? { revoke: true } : {});
@@ -235,6 +248,7 @@ onMounted(() => open('usage'));
             <label class="tz-lab">{{ $t('TOLZAR_SETTINGS.SLA.MINUTES') }}</label>
             <input v-model.number="data.config.first_reply_minutes" type="number" min="1" class="tz-in" />
             <label class="flex gap-2 items-center mt-3 text-sm"><input v-model="data.config.working_hours_only" type="checkbox" /> {{ $t('TOLZAR_SETTINGS.SLA.WORKING_HOURS') }}</label>
+            <label class="flex gap-2 items-center mt-2 text-sm"><input v-model="data.config.mention_assignee" type="checkbox" /> {{ $t('TOLZAR_SETTINGS.SLA.MENTION') }}</label>
             <p class="text-xs text-n-slate-10">{{ $t('TOLZAR_SETTINGS.SLA.COUNTS', { late: (data.counts || {}).sla_breach || 0, ok: (data.counts || {}).sla_ok || 0 }) }}</p>
             <button type="button" class="tz-btn" @click="saveSla">{{ $t('TOLZAR_SETTINGS.SAVE') }}</button>
           </div>
@@ -371,6 +385,23 @@ onMounted(() => open('usage'));
               <span>{{ b.name }} <span class="text-n-slate-10">({{ (b.runs[0] || {}).would_send ?? '—' }})</span></span>
               <button type="button" class="tz-btn !h-7" @click="runBroadcast(b.id)">{{ $t('TOLZAR_SETTINGS.BROADCASTS.RUN') }}</button>
             </div>
+          </div>
+
+          <!-- connections (Facebook & Instagram; hidden until the Tolzar Meta app exists) -->
+          <div v-if="current === 'connections'" class="max-w-[640px]">
+            <p v-if="!data.app_configured" class="p-2 text-xs rounded-lg text-amber-700 bg-amber-500/10">{{ $t('TOLZAR_SETTINGS.CONNECTIONS.PARKED') }}</p>
+            <template v-else>
+              <button v-if="!data.connected" type="button" class="tz-btn" @click="metaConnect">{{ $t('TOLZAR_SETTINGS.CONNECTIONS.CONNECT') }}</button>
+              <template v-else>
+                <p class="text-sm">{{ $t('TOLZAR_SETTINGS.CONNECTIONS.CONNECTED', { who: data.user_name, status: data.status }) }}</p>
+                <div v-for="p in data.pages || []" :key="p.id" class="flex flex-wrap gap-2 items-center py-2 border-t border-n-weak text-[13px]">
+                  <input v-model="p.selected" type="checkbox" />
+                  <span class="flex-1">{{ p.name }}<span v-if="p.ig_username" class="text-n-slate-10"> · @{{ p.ig_username }}</span></span>
+                  <input v-model="p.team" class="tz-in !w-[140px]" :placeholder="$t('TOLZAR_SETTINGS.CONNECTIONS.TEAM')" />
+                </div>
+                <div class="flex gap-2"><button type="button" class="tz-btn" @click="metaSave">{{ $t('TOLZAR_SETTINGS.SAVE') }}</button><button type="button" class="tz-btn-ghost" @click="metaDisconnect">{{ $t('TOLZAR_SETTINGS.CONNECTIONS.DISCONNECT') }}</button></div>
+              </template>
+            </template>
           </div>
 
           <!-- mcp -->

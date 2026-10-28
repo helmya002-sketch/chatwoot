@@ -1049,7 +1049,8 @@
       "links": "Click-to-Chat & QR",
       "broadcasts": "Rundsendungen",
       "mcp": "KI-Werkzeuge (MCP)",
-      "roles": "Rollen"
+      "roles": "Rollen",
+      "connections": "Facebook & Instagram"
     },
     "HINT": {
       "usage": "What this workspace used in the last 30 days.",
@@ -1066,7 +1067,8 @@
       "links": "Links and QR codes per campaign; the first message tells Reports which campaign brought it.",
       "broadcasts": "Pick an audience and see exactly who would receive it. Shadow: nothing is sent.",
       "mcp": "Let your own AI tools read this workspace's Tolzar data. Read-only.",
-      "roles": "Wer in diesem Arbeitsbereich was darf."
+      "roles": "Wer in diesem Arbeitsbereich was darf.",
+      "connections": "Kommentare auf deinen Seiten lesen (nur lesen); Antworten als Entwurf im Schattenbetrieb."
     },
     "SAVE": "Speichern",
     "NONE_YET": "Noch nichts.",
@@ -1086,7 +1088,8 @@
     "SLA": {
       "MINUTES": "Reply within (minutes)",
       "WORKING_HOURS": "Count only during working hours",
-      "COUNTS": "{late} late · {ok} in time"
+      "COUNTS": "{late} late · {ok} in time",
+      "MENTION": "Auch die zugewiesene Person benachrichtigen (Erwähnung: Chatwoot-Benachrichtigung + Push aufs Handy)"
     },
     "QA": {
       "RUBRIC": "Rubric"
@@ -1147,6 +1150,13 @@
       "RULE_OWNER": "Inhaber: alles, auch Export, Verbindungen, KI-Werkzeug-Tokens und Rollen.",
       "RULE_MANAGER": "Manager: KI-Agenten, Workflows, Berichte und Einstellungen; nicht Export, Verbindungen oder Rollen.",
       "RULE_AGENT": "Agent: beantwortet Gespräche (über die Agenten-Rolle)."
+    },
+    "CONNECTIONS": {
+      "PARKED": "Facebook- & Instagram-Verbindungen öffnen, sobald die Tolzar-Meta-App existiert (wartet auf die Firmenunterlagen).",
+      "CONNECT": "Facebook & Instagram verbinden",
+      "CONNECTED": "Verbunden von {who} ({status})",
+      "TEAM": "Team",
+      "DISCONNECT": "Trennen"
     }
   },
   "TOLZAR_ONBOARDING": {
@@ -1196,5 +1206,23 @@
       "HINT": "Dein Agent startet im Schattenbetrieb: Er bearbeitet jedes Gespräch in Tolzar, und du siehst neben der Arbeit deines Teams, was er getan hätte. Schalte ihn ein, wenn die Anzeigetafel sagt, dass er bereit ist.",
       "OPEN": "Anzeigetafel öffnen"
     }
+  },
+  "TOLZAR_AGENCY": {
+    "NAV": "Agentur",
+    "TITLE": "Agentur-Konsole",
+    "LEAD": "Alle Arbeitsbereiche, die du betreust, mit Nutzung und KI-Qualität nebeneinander. Jeder Kunde sieht nur seinen eigenen Arbeitsbereich.",
+    "WORKSPACE": "Arbeitsbereich",
+    "CONVERSATIONS": "Gespräche (30 T)",
+    "AGREEMENT": "KI-Übereinstimmung",
+    "TOKENS": "KI-Tokens (30 T)",
+    "OPEN": "Öffnen",
+    "BRANDING": "Branding",
+    "NEW_HINT": "Neue Kunden-Arbeitsbereiche legst du über den Konto-Umschalter an (Neues Konto erstellen).",
+    "PRODUCT_NAME": "Produktname für das Team dieses Kunden",
+    "COLOR": "Markenfarbe",
+    "LOGO": "Logo-URL (https)",
+    "SUPPORT": "Support-E-Mail in der App",
+    "PREVIEW": "Vorschau",
+    "APPLY_HINT": "Pro Arbeitsbereich gespeichert. Die Anwendung auf die ganze App (Logo, Farben, eigene Domain) kommt mit dem White-Label-Theme."
   }
 }

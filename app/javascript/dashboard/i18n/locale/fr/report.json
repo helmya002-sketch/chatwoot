@@ -1049,7 +1049,8 @@
       "links": "Click-to-chat & QR",
       "broadcasts": "Diffusions",
       "mcp": "Outils IA (MCP)",
-      "roles": "Rôles"
+      "roles": "Rôles",
+      "connections": "Facebook & Instagram"
     },
     "HINT": {
       "usage": "What this workspace used in the last 30 days.",
@@ -1066,7 +1067,8 @@
       "links": "Links and QR codes per campaign; the first message tells Reports which campaign brought it.",
       "broadcasts": "Pick an audience and see exactly who would receive it. Shadow: nothing is sent.",
       "mcp": "Let your own AI tools read this workspace's Tolzar data. Read-only.",
-      "roles": "Qui peut faire quoi dans cet espace de travail."
+      "roles": "Qui peut faire quoi dans cet espace de travail.",
+      "connections": "Lire les commentaires de vos pages (lecture seule) ; réponses préparées en mode fantôme."
     },
     "SAVE": "Enregistrer",
     "NONE_YET": "Rien pour l'instant.",
@@ -1086,7 +1088,8 @@
     "SLA": {
       "MINUTES": "Reply within (minutes)",
       "WORKING_HOURS": "Count only during working hours",
-      "COUNTS": "{late} late · {ok} in time"
+      "COUNTS": "{late} late · {ok} in time",
+      "MENTION": "Alerter aussi la personne assignée (mention : notification Chatwoot + push sur le téléphone)"
     },
     "QA": {
       "RUBRIC": "Rubric"
@@ -1147,6 +1150,13 @@
       "RULE_OWNER": "Propriétaire : tout, y compris export, connexions, jetons d'outils IA et rôles.",
       "RULE_MANAGER": "Manager : agents IA, workflows, rapports et réglages ; pas l'export, les connexions ni les rôles.",
       "RULE_AGENT": "Agent : répond aux conversations (rôle agent)."
+    },
+    "CONNECTIONS": {
+      "PARKED": "Les connexions Facebook & Instagram s'ouvrent quand l'appli Meta de Tolzar existe (en attente des documents de l'entreprise).",
+      "CONNECT": "Connecter Facebook & Instagram",
+      "CONNECTED": "Connecté par {who} ({status})",
+      "TEAM": "équipe",
+      "DISCONNECT": "Déconnecter"
     }
   },
   "TOLZAR_ONBOARDING": {
@@ -1196,5 +1206,23 @@
       "HINT": "Votre agent démarre en mode fantôme : il traite chaque conversation dans Tolzar et vous voyez ce qu'il aurait fait à côté de ce qu'a fait l'équipe. Activez-le quand le tableau de bord indique qu'il est prêt.",
       "OPEN": "Ouvrir le tableau de bord"
     }
+  },
+  "TOLZAR_AGENCY": {
+    "NAV": "Agence",
+    "TITLE": "Console agence",
+    "LEAD": "Tous les espaces de travail que vous gérez, avec l'utilisation et la qualité de l'IA côte à côte. Chaque client ne voit que le sien.",
+    "WORKSPACE": "Espace de travail",
+    "CONVERSATIONS": "Conversations (30 j)",
+    "AGREEMENT": "Accord de l'IA",
+    "TOKENS": "Jetons IA (30 j)",
+    "OPEN": "Ouvrir",
+    "BRANDING": "Image de marque",
+    "NEW_HINT": "Les nouveaux espaces clients se créent depuis le sélecteur de compte (Créer un compte).",
+    "PRODUCT_NAME": "Nom du produit vu par l'équipe du client",
+    "COLOR": "Couleur de marque",
+    "LOGO": "URL du logo (https)",
+    "SUPPORT": "E-mail du support affiché",
+    "PREVIEW": "Aperçu",
+    "APPLY_HINT": "Enregistré par espace. L'application à toute l'appli (logo, couleurs, domaine) arrive avec le thème marque blanche."
   }
 }
