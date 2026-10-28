@@ -54,4 +54,13 @@ RSpec.describe 'Tolzar API', type: :request do
     expect(response).to have_http_status(:success)
     expect(response.parsed_body['branding']).to eq('product_name' => 'Bright Inbox')
   end
+
+  it 'lets every member read the pack labels (and only those)' do
+    allow_any_instance_of(Api::V1::Accounts::TolzarController).to receive(:get_from_brain)
+      .and_return({ 'ok' => true, 'pack' => 'tourism-dive',
+                    'fields' => [{ 'key' => 'hotel', 'field' => 'place_detail', 'kind' => 'place', 'label' => { 'en' => 'Hotel' } }] })
+    get "/api/v1/accounts/#{account.id}/tolzar/pack", headers: agent.create_new_auth_token
+    expect(response).to have_http_status(:success)
+    expect(response.parsed_body['fields']).to eq([{ 'key' => 'hotel', 'kind' => 'place', 'label' => { 'en' => 'Hotel' } }])
+  end
 end

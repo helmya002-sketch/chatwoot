@@ -1,7 +1,7 @@
 <script setup>
 // Tolzar Contacts pass 1: preview pane next to the table. Stage (with a writer that re-reads the
 // contact first, so a stale copy never overwrites someone else's edit), the brain's summary and
-// lead-score reason, trip details, tags and recent conversations. "Full profile" opens
+// lead-score reason, contact details (the workspace pack's fields included), tags and recent conversations. "Full profile" opens
 // Chatwoot's own contact page for everything else.
 import { useI18n } from 'vue-i18n';
 import { computed, ref, watch } from 'vue';
@@ -24,6 +24,7 @@ import {
   stageOf,
 } from './tolzarStages';
 import { contactChannel, conversationChannel } from './tolzarChannel';
+import { EMPTY_PACK, fetchPack, packRows } from './tolzarPack';
 
 const props = defineProps({
   contactId: { type: Number, required: true },
@@ -31,7 +32,7 @@ const props = defineProps({
 const emit = defineEmits(['close']);
 
 const store = useStore();
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const router = useRouter();
 const route = useRoute();
 const accountId = useMapGetter('getCurrentAccountId');
@@ -64,15 +65,27 @@ const subline = computed(() =>
     .join(' · ')
 );
 
+// Generic core rows plus the workspace pack's own fields (labels from the brain).
+const pack = ref(EMPTY_PACK);
+watch(
+  accountId,
+  async id => {
+    pack.value = await fetchPack(id);
+  },
+  { immediate: true }
+);
+const packed = computed(() =>
+  packRows(pack.value, attrs.value, locale.value, t)
+);
+
 const details = computed(() =>
   [
-    [t('TOLZAR_CONTACTS.PANE.HOTEL'), attrs.value.hotel],
+    ...packed.value.places,
     [
       t('TOLZAR_CONTACTS.PANE.PLACE'),
       attrs.value.location || raw.value.additional_attributes?.city,
     ],
-    [t('TOLZAR_CONTACTS.PANE.TRIP_STARTS'), attrs.value.trip_start_date],
-    [t('TOLZAR_CONTACTS.PANE.CERTIFICATION'), attrs.value.certification_level],
+    ...packed.value.others,
     [t('TOLZAR_CONTACTS.PANE.GROUP_SIZE'), attrs.value.group_size],
     [
       t('TOLZAR_CONTACTS.PANE.BOOKING_VALUE'),

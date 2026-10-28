@@ -3,8 +3,8 @@
 // list. Each row: channel badge, name, the brain's one-line summary, stage, lead score, place
 // and last interaction. Clicking a row opens the preview pane; the checkbox drives bulk actions.
 import { useI18n } from 'vue-i18n';
-import { computed } from 'vue';
-import { useStore } from 'dashboard/composables/store';
+import { computed, ref, watch } from 'vue';
+import { useStore, useMapGetter } from 'dashboard/composables/store';
 import { dynamicTime } from 'shared/helpers/timeHelper';
 import Avatar from 'dashboard/components-next/avatar/Avatar.vue';
 import ChannelIcon from 'dashboard/components-next/icon/ChannelIcon.vue';
@@ -18,6 +18,7 @@ import {
   stageOf,
 } from './tolzarStages';
 import { contactChannel } from './tolzarChannel';
+import { EMPTY_PACK, contactPlace, fetchPack } from './tolzarPack';
 
 const props = defineProps({
   contacts: { type: Array, required: true },
@@ -29,6 +30,16 @@ const emit = defineEmits(['toggleContact', 'toggleAll', 'open']);
 
 const store = useStore();
 const { t } = useI18n();
+// The place column: the workspace pack's own place field first, then the core place.
+const accountId = useMapGetter('getCurrentAccountId');
+const pack = ref(EMPTY_PACK);
+watch(
+  accountId,
+  async id => {
+    pack.value = await fetchPack(id);
+  },
+  { immediate: true }
+);
 const selected = computed(() => new Set(props.selectedContactIds));
 const allSelected = computed(
   () =>
@@ -58,7 +69,7 @@ const rows = computed(() =>
         [contact.phoneNumber, contact.email].filter(Boolean)[0] || '',
       stage: attrs.lifecycle_stage || DEFAULT_STAGE,
       score,
-      place: attrs.hotel || attrs.location || add.city || '',
+      place: contactPlace(pack.value, attrs, add),
       lastAt: raw.last_activity_at,
     };
   })

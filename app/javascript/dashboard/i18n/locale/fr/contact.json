@@ -677,7 +677,7 @@
       "CONTACT": "Contact",
       "STAGE": "Étape",
       "LEAD_SCORE": "Score du lead",
-      "PLACE": "Hôtel / lieu",
+      "PLACE": "Lieu",
       "LAST_INTERACTION": "Dernier échange",
       "SUMMARY_MARK": "✦"
     },
@@ -701,10 +701,14 @@
       "TAGS": "Étiquettes",
       "RECENT": "Conversations récentes",
       "NONE_YET": "Aucune pour l'instant.",
-      "HOTEL": "Hôtel",
       "PLACE": "Lieu",
-      "TRIP_STARTS": "Début du séjour",
-      "CERTIFICATION": "Certification",
+      "KIND": {
+        "PLACE": "Lieu",
+        "DATE": "Date",
+        "LEVEL": "Niveau",
+        "NUMBER": "Nombre",
+        "TEXT": "Détails"
+      },
       "GROUP_SIZE": "Taille du groupe",
       "BOOKING_VALUE": "Valeur de la réservation",
       "LANGUAGE": "Langue",

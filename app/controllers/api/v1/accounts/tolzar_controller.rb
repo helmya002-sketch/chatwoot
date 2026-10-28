@@ -3,7 +3,7 @@
 # The brain is internal-network only (no published port); this proxy is the single,
 # authenticated door to it. Nothing here touches a live conversation.
 class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
-  before_action :ensure_admin, except: %i[branding_view]
+  before_action :ensure_admin, except: %i[branding_view pack_view]
   # Owner-only (H3): every write that changes the workspace's settings or data. Tests, previews and
   # reads stay open to every administrator.
   before_action :ensure_owner, only: %i[export_start export_download meta_connect_url meta_disconnect meta_select
@@ -176,6 +176,14 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
   def branding_view
     b = get_from_brain("/branding?account_id=#{account_scope_id}")['branding'] || {}
     render json: { ok: true, branding: b.slice('product_name', 'color', 'logo_url', 'support_email') }
+  end
+
+  # The workspace's industry pack (generic SaaS): which extra contact attributes the contact pane
+  # shows, under which label. Read-only labels, nothing secret: every member reads it.
+  def pack_view
+    res = get_from_brain("/workspace/pack?account_id=#{account_scope_id}")
+    fields = Array(res['fields']).map { |f| f.slice('key', 'kind', 'label') }
+    render json: { ok: true, pack: res['pack'], fields: fields }
   end
 
   # Export workspace (A5): a background job writes a .tar.gz, downloadable for 7 days. Only the

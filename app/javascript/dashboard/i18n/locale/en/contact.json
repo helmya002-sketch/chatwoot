@@ -679,7 +679,7 @@
       "CONTACT": "Contact",
       "STAGE": "Stage",
       "LEAD_SCORE": "Lead score",
-      "PLACE": "Hotel / place",
+      "PLACE": "Place",
       "LAST_INTERACTION": "Last interaction",
       "SUMMARY_MARK": "✦"
     },
@@ -703,10 +703,14 @@
       "TAGS": "Tags",
       "RECENT": "Recent conversations",
       "NONE_YET": "None yet.",
-      "HOTEL": "Hotel",
       "PLACE": "Place",
-      "TRIP_STARTS": "Trip starts",
-      "CERTIFICATION": "Certification",
+      "KIND": {
+        "PLACE": "Place",
+        "DATE": "Date",
+        "LEVEL": "Level",
+        "NUMBER": "Number",
+        "TEXT": "Details"
+      },
       "GROUP_SIZE": "Group size",
       "BOOKING_VALUE": "Booking value",
       "LANGUAGE": "Language",
