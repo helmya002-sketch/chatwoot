@@ -54,7 +54,8 @@ jobs:
       - name: Load schema
         run: bundle exec rake db:schema:load
       - name: Tolzar backend specs
-        run: bundle exec rspec spec/tolzar --format progress
+        # Every Tolzar spec: spec/tolzar, spec/requests/tolzar (the mirror) and any other spec/**/*tolzar* path.
+        run: bundle exec rspec $(find spec -path '*tolzar*' -name '*_spec.rb' | sort) --format progress
         env:
           NODE_OPTIONS: --openssl-legacy-provider
       - name: Tolzar frontend specs
