@@ -85,10 +85,12 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
   # Batch 2-3 brain features, admin-only, shadow only. GET reads pass through; POST settings
   # carry the account id and the signed-in user (audited in the brain).
   BRAIN_GETS = { 'usage' => '/usage', 'sla' => '/sla', 'media' => '/media', 'dedupe' => '/dedupe',
-                 'channels' => '/channels', 'attribution' => '/attribution', 'broadcasts' => '/broadcasts' }.freeze
+                 'channels' => '/channels', 'attribution' => '/attribution', 'broadcasts' => '/broadcasts',
+                 'learned' => '/learned' }.freeze
   BRAIN_POSTS = { 'sla' => '/sla', 'media' => '/media', 'dedupe_refresh' => '/dedupe/refresh', 'channels' => '/channels',
                   'links' => '/links', 'broadcasts' => '/broadcasts', 'broadcasts_preview' => '/broadcasts/preview',
-                  'broadcasts_run' => '/broadcasts/run', 'mcp_token' => '/mcp-token' }.freeze
+                  'broadcasts_run' => '/broadcasts/run', 'mcp_token' => '/mcp-token',
+                  'learned_status' => '/learned/status' }.freeze
 
   def brain_get
     path = BRAIN_GETS[params[:feature].to_s]
