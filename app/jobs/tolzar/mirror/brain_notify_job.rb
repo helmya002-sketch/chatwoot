@@ -18,8 +18,30 @@
 # accepts each delivery id once, so a captured signed delivery cannot be replayed inside the 300 s
 # window. The id is the job's ActiveJob job_id (a UUID, kept across retries of the same job), so a
 # retry of a delivery the brain already accepted is refused instead of evaluated twice.
+#
+# Retries (HIGH 2, full-rel review 2026-10-29): a brain that is restarting or overloaded must not lose the
+# delivery. A connection error (refused, reset, timed out) and a 408/429/5xx answer raise RetryableDelivery,
+# retried by ActiveJob up to ATTEMPTS times with exponential backoff (10 s, 20 s, 40 s ... capped at 5 min),
+# with the same delivery id. 2xx is done; so is 401 "replayed delivery" (the brain already accepted this id
+# on an earlier attempt whose answer we lost). Any other 4xx is a permanent failure: logged, not retried.
+# Projection never waits on any of this (the job runs after it).
 class Tolzar::Mirror::BrainNotifyJob < ApplicationJob
+  class RetryableDelivery < StandardError; end
+
+  ATTEMPTS = 8
+  BACKOFF = ->(executions) { [10 * (2**(executions - 1)), 300].min }
+  CONNECTION_ERRORS = [
+    Net::OpenTimeout, Net::ReadTimeout, SocketError, IOError, OpenSSL::SSL::SSLError, EOFError,
+    Errno::ECONNREFUSED, Errno::ECONNRESET, Errno::ECONNABORTED, Errno::EHOSTUNREACH, Errno::ENETUNREACH,
+    Errno::EPIPE, Errno::ETIMEDOUT
+  ].freeze
+
   queue_as :medium
+
+  retry_on RetryableDelivery, wait: BACKOFF, attempts: ATTEMPTS do |job, error|
+    Rails.logger.warn("[tolzar-mirror] brain notify gave up message=#{job.arguments.first} after #{ATTEMPTS} attempts " \
+                      "delivery=#{job.job_id}: #{error.message}")
+  end
 
   def perform(message_id)
     url = ENV['TOLZAR_BRAIN_HOOK_URL'].to_s
@@ -30,7 +52,17 @@ class Tolzar::Mirror::BrainNotifyJob < ApplicationJob
     return unless message.incoming? # only a customer turn arms the brain
     return unless Tolzar::MirrorConfig.mirror_inbox?(message.inbox)
 
-    payload = message.webhook_data.merge(event: 'message_created')
+    handle_response(post(url, message.webhook_data.merge(event: 'message_created')), message_id)
+  rescue RetryableDelivery
+    raise
+  rescue StandardError => e
+    # Anything unexpected (not a brain outage) is logged once, never retried.
+    Rails.logger.warn("[tolzar-mirror] brain notify failed message=#{message_id} #{e.class}: #{e.message}")
+  end
+
+  private
+
+  def post(url, payload)
     uri = URI.parse(url)
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = (uri.scheme == 'https')
@@ -39,17 +71,24 @@ class Tolzar::Mirror::BrainNotifyJob < ApplicationJob
     req = Net::HTTP::Post.new(uri.request_uri, 'Content-Type' => 'application/json')
     req.body = payload.to_json
     req['X-Chatwoot-Delivery'] = delivery_id
-    sign_for_brain(req, uri)
-    res = http.request(req)
-    return if res.is_a?(Net::HTTPSuccess)
-
-    Rails.logger.warn("[tolzar-mirror] brain notify non-2xx message=#{message_id} status=#{res.code}")
-  rescue StandardError => e
-    # A brain outage must never break projection; swallow and log.
-    Rails.logger.warn("[tolzar-mirror] brain notify failed message=#{message_id} #{e.class}: #{e.message}")
+    sign_for_brain(req, uri) # a fresh timestamp + signature on every attempt, the same delivery id
+    http.request(req)
+  rescue *CONNECTION_ERRORS => e
+    raise RetryableDelivery, "#{e.class}: #{e.message}"
   end
 
-  private
+  def handle_response(res, message_id)
+    status = res.code.to_i
+    return if res.is_a?(Net::HTTPSuccess) || replayed_delivery?(res)
+    raise RetryableDelivery, "status #{status}" if status == 408 || status == 429 || status >= 500
+
+    Rails.logger.warn("[tolzar-mirror] brain notify refused message=#{message_id} status=#{status} (not retried)")
+  end
+
+  # The brain answers 401 {"detail":"replayed delivery"} to an id it already accepted.
+  def replayed_delivery?(res)
+    res.code.to_i == 401 && res.body.to_s.include?('replayed delivery')
+  end
 
   def delivery_id
     @delivery_id ||= job_id.presence || SecureRandom.uuid

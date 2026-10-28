@@ -1,6 +1,10 @@
 class Webhooks::Trigger
   SUPPORTED_ERROR_HANDLE_EVENTS = %w[message_created message_updated].freeze
   RETRYABLE_AGENT_BOT_STATUSES = [429, 500].freeze
+  # Tolzar: a delivery to the Tolzar brain (the agent-bot URL on TOLZAR_BRAIN_URL's host) is also retried
+  # on a gateway error and when the brain cannot be reached (refused, reset, timed out: a brain restart
+  # or redeploy). The delivery id stays the same across retries; the brain accepts each id once.
+  RETRYABLE_TOLZAR_BRAIN_STATUSES = [429, 500, 502, 503, 504].freeze
 
   class RetryableError < StandardError
     attr_reader :status
@@ -10,6 +14,9 @@ class Webhooks::Trigger
       super(message)
     end
   end
+
+  # Tolzar: retried with a longer, exponential backoff by AgentBots::WebhookJob.
+  class TolzarBrainRetryableError < RetryableError; end
 
   def initialize(url, payload, webhook_type, secret: nil, delivery_id: nil)
     @url = url
@@ -26,6 +33,7 @@ class Webhooks::Trigger
   def execute
     perform_request
   rescue StandardError => e
+    raise TolzarBrainRetryableError.new(status: http_status(e), message: e.message) if retryable_tolzar_brain_error?(e)
     raise RetryableError.new(status: http_status(e), message: e.message) if retryable_agent_bot_error?(e)
 
     handle_failure(e)
@@ -124,6 +132,20 @@ class Webhooks::Trigger
 
   def retryable_agent_bot_error?(error)
     @webhook_type == :agent_bot_webhook && RETRYABLE_AGENT_BOT_STATUSES.include?(http_status(error))
+  end
+
+  def retryable_tolzar_brain_error?(error)
+    return false unless @webhook_type == :agent_bot_webhook && tolzar_brain_url?
+
+    status = http_status(error)
+    status ? RETRYABLE_TOLZAR_BRAIN_STATUSES.include?(status) : error.is_a?(SafeFetch::FetchError)
+  end
+
+  def tolzar_brain_url?
+    host = URI.parse(@url.to_s).host
+    host.present? && host.casecmp?(Tolzar::BrainClient.brain_host.to_s)
+  rescue URI::InvalidURIError
+    false
   end
 
   def http_status(error)
