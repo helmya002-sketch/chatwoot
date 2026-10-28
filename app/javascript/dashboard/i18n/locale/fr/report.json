@@ -931,5 +931,211 @@
     "COL_P95": "5 % les plus lents au-delà de",
     "COL_PERIOD": "Période",
     "FEW": "trop peu pour juger"
+  },
+  "TOLZAR_WORKFLOWS": {
+    "TITLE": "Workflows",
+    "LEAD": "Des automatisations qui tournent sur le serveur. Mode fantôme : les envois deviennent des notes privées « enverrait ».",
+    "FROM_TEMPLATE": "À partir d'un modèle",
+    "NEW": "Nouveau workflow",
+    "EMPTY": "Aucun workflow. Commencez par un modèle.",
+    "RUN_COUNTS": "{running} en cours · {done} terminés",
+    "BACK": "Retour",
+    "SAVE": "Enregistrer",
+    "DELETE": "Supprimer ce workflow",
+    "STATUS": {
+      "draft": "Brouillon : arrêté",
+      "shadow": "Fantôme : tourne, n'envoie rien",
+      "live": "Direct : à approuver",
+      "off": "Arrêté"
+    },
+    "TRIGGER": {
+      "first_message": "Une nouvelle conversation commence",
+      "guest_message": "Le client écrit",
+      "field_equals": "Un champ du contact prend une valeur",
+      "field_date": "Une date sur le contact"
+    },
+    "TRIGGER_TITLE": "Déclencheur",
+    "TRIGGER_HINT": "Quand un contact entre dans ce workflow. Chaque contact une seule fois.",
+    "STARTS_WHEN": "Démarre quand",
+    "FIELD": "Champ",
+    "VALUE": "Valeur",
+    "DELAY_MIN": "Délai (minutes)",
+    "OFFSET_MIN": "Décalage en minutes (négatif = avant la date)",
+    "SETTINGS": "Réglages",
+    "SETTINGS_HINT": "Valeurs utilisables dans les messages, comme {'{'}review_link{'}'}.",
+    "ADD": "Ajouter",
+    "TAB": {
+      "flow": "Parcours",
+      "runs": "Exécutions",
+      "test": "Test"
+    },
+    "END": "Fin",
+    "ADD_STEP": "Ajouter une étape",
+    "ADD_HERE": "Ajouter une étape ici",
+    "YES": "Oui",
+    "NO": "Non",
+    "SHADOW_NOTE": "note seulement",
+    "SEND_HINT": "Envoyé dans la langue du client, sinon en anglais. {'{'}first_name{'}'} et les réglages sont remplis.",
+    "SHADOW_HINT": "Fantôme : écrit comme note privée « enverrait : … ». Rien n'arrive au client.",
+    "UNTIL_REPLY": "Continuer plus tôt si le client répond",
+    "MATCH": "Aller vers « Oui » quand",
+    "MATCH_ALL": "Toutes les conditions",
+    "MATCH_ANY": "Une condition",
+    "WORDS": "mots, séparés par des virgules",
+    "MIRROR_TAG_HINT": "Sur un miroir respond.io, l'étiquette est écrite tolzar-<étiquette>.",
+    "AI_TAG_HINT": "L'IA choisit les étiquettes qui conviennent (ou aucune). Elle ne peut pas en inventer.",
+    "WHEN": "quand elle convient",
+    "SCORE_HINT": "Enregistre le premier nombre de la réponse du client (NPS 0-10, CSAT…).",
+    "PICK_HINT": "Choisissez le déclencheur ou une étape pour la modifier, ou + pour en ajouter.",
+    "RUN": {
+      "CONTACT": "Contact",
+      "STARTED": "Démarré",
+      "STATUS": "Statut",
+      "LAST": "Dernière étape"
+    },
+    "NO_RUNS": "Aucune exécution.",
+    "TEST_HINT": "Parcourt tout le workflow une fois pour une conversation. Les attentes sont sautées, rien n'est écrit.",
+    "CONVERSATION_ID": "ID de conversation (facultatif)",
+    "PRETEND_REPLY": "Faire comme si le client avait répondu",
+    "RUN_TEST": "Lancer le test",
+    "COND": {
+      "replied": "Le client a répondu",
+      "reply_matches": "La réponse contient",
+      "reply_number": "Le nombre de la réponse est entre",
+      "field_equals": "Le champ vaut",
+      "field_empty": "Le champ est vide",
+      "has_tag": "A l'étiquette",
+      "channel_is": "Le canal est"
+    },
+    "STEP": {
+      "send_message": "Envoyer un message",
+      "wait": "Attendre",
+      "branch": "Condition",
+      "add_tag": "Ajouter une étiquette",
+      "ai_tag": "Étiquette IA",
+      "update_field": "Modifier un champ",
+      "update_stage": "Changer l'étape",
+      "assign_team": "Attribuer à une équipe",
+      "comment": "Note pour l'équipe",
+      "record_score": "Enregistrer une note",
+      "close": "Fermer la conversation",
+      "-": "Workflow"
+    }
+  },
+  "TOLZAR_SETTINGS": {
+    "TITLE": "Réglages Tolzar",
+    "NAV_LABEL": "Tolzar",
+    "LEAD": "Tout ce que Tolzar fait pour cet espace de travail. Les fonctions IA tournent en mode fantôme et n'envoient jamais rien aux clients.",
+    "GROUP": {
+      "workspace": "Espace de travail",
+      "team": "Équipe",
+      "ai": "IA",
+      "contacts": "Contacts",
+      "growth": "Croissance",
+      "developers": "Développeurs"
+    },
+    "NAV": {
+      "usage": "Utilisation",
+      "audit": "Journal",
+      "export": "Export",
+      "sla": "Délais de réponse",
+      "qa": "Qualité & coaching",
+      "media": "Messages vocaux & photos",
+      "recovery": "Relance des prospects",
+      "learned": "Appris de l'équipe",
+      "brief": "Bilan du lundi",
+      "ask": "Interrogez votre boîte",
+      "dedupe": "Doublons",
+      "links": "Click-to-chat & QR",
+      "broadcasts": "Diffusions",
+      "mcp": "Outils IA (MCP)"
+    },
+    "HINT": {
+      "usage": "What this workspace used in the last 30 days.",
+      "audit": "Who changed what, and when. Secret values are never shown.",
+      "export": "Everything this workspace holds in one file. The link works for 7 days.",
+      "sla": "Flag conversations where a customer waited too long for a person. A label and a private note; customers see nothing.",
+      "qa": "Every conversation scored against your rubric; a card per team member for the last 7 days.",
+      "media": "Read customers' voice notes and photos on Tolzar's own server. Files are never stored.",
+      "recovery": "For leads that went quiet, the AI drafts 3 follow-ups from their own conversation (shadow: notes only).",
+      "learned": "Questions your team answers the same way again and again. Approve one and the AI learns it, in Shadow first.",
+      "brief": "Last week's top questions, lost-deal reasons, objections, competitors and knowledge gaps.",
+      "ask": "Ask a question in plain words; get the numbers and a chart.",
+      "dedupe": "The same person, written to you from several places. Review and merge; Tolzar never merges on its own.",
+      "links": "Links and QR codes per campaign; the first message tells Reports which campaign brought it.",
+      "broadcasts": "Pick an audience and see exactly who would receive it. Shadow: nothing is sent.",
+      "mcp": "Let your own AI tools read this workspace's Tolzar data. Read-only."
+    },
+    "SAVE": "Enregistrer",
+    "NONE_YET": "Rien pour l'instant.",
+    "ON_SHADOW": "Activé (fantôme)",
+    "USAGE": {
+      "conversations": "Conversations",
+      "decisions": "AI decisions",
+      "model_calls": "Model calls",
+      "input_tokens": "Tokens in",
+      "output_tokens": "Tokens out",
+      "workflow_runs": "Workflow runs"
+    },
+    "EXPORT": {
+      "PREPARE": "Prepare export",
+      "DOWNLOAD": "Download"
+    },
+    "SLA": {
+      "MINUTES": "Reply within (minutes)",
+      "WORKING_HOURS": "Count only during working hours",
+      "COUNTS": "{late} late · {ok} in time"
+    },
+    "QA": {
+      "RUBRIC": "Rubric"
+    },
+    "MEDIA": {
+      "VOICE": "Voice notes",
+      "IMAGES": "Photos",
+      "FIELDS": "Details to read from photos",
+      "RETENTION": "Keep transcripts and read details for (days)",
+      "PRIVACY": "ID documents: only 'received' and the expiry month. Nothing is sent to any outside service."
+    },
+    "RECOVERY": {
+      "QUIET": "A lead is quiet after (hours)",
+      "PLANNED": "{n} leads planned so far"
+    },
+    "LEARNED": {
+      "APPROVE": "Approve (Shadow)",
+      "REJECT": "Reject"
+    },
+    "BRIEF": {
+      "BUILD": "Build now",
+      "top_questions": "Top questions",
+      "lost_reasons": "Lost-deal reasons",
+      "objections": "Objections",
+      "competitors": "Competitors mentioned",
+      "knowledge_gaps": "Knowledge gaps"
+    },
+    "ASK": {
+      "PLACEHOLDER": "e.g. How many conversations did we get per day this month?",
+      "GO": "Ask"
+    },
+    "DEDUPE": {
+      "REFRESH": "Check now",
+      "REVIEW": "Review & merge"
+    },
+    "LINKS": {
+      "CAMPAIGN": "Campaign",
+      "GREETING": "Greeting the customer sends",
+      "CREATE": "Create links"
+    },
+    "BROADCASTS": {
+      "NAME": "Name",
+      "MESSAGE": "Message (EN)",
+      "PREVIEW": "Preview",
+      "RUN": "Run in Shadow",
+      "WOULD": "Would reach {n} contacts"
+    },
+    "MCP": {
+      "NOT_PUBLIC": "The public address for AI tools is not open yet (security review first). Tokens can be prepared.",
+      "CREATE": "Create a token",
+      "REVOKE": "Revoke"
+    }
   }
 }

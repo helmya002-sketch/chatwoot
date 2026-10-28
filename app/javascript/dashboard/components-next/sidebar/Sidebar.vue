@@ -769,6 +769,13 @@ const menuItems = computed(() => {
       label: t('SIDEBAR.SETTINGS'),
       icon: 'i-lucide-bolt',
       children: [
+        // Tolzar: usage, audit, export, AI features, growth tools in one hub (admins).
+        {
+          name: 'Settings Tolzar',
+          label: t('TOLZAR_SETTINGS.NAV_LABEL'),
+          icon: 'i-lucide-sliders-horizontal',
+          to: accountScopedRoute('tolzar_settings'),
+        },
         {
           name: 'Settings Account Settings',
           label: t('SIDEBAR.ACCOUNT_SETTINGS'),
