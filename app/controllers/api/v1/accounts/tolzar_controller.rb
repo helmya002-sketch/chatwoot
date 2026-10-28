@@ -4,6 +4,7 @@
 # authenticated door to it. Nothing here touches a live conversation.
 class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
   before_action :ensure_admin
+  before_action :ensure_owner, only: %i[export_start export_download meta_connect_url meta_disconnect meta_select]
 
   def agent_test
     body = {
@@ -87,13 +88,16 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
   BRAIN_GETS = { 'usage' => '/usage', 'sla' => '/sla', 'media' => '/media', 'dedupe' => '/dedupe',
                  'channels' => '/channels', 'attribution' => '/attribution', 'broadcasts' => '/broadcasts',
                  'learned' => '/learned', 'explain' => '/explain', 'recovery' => '/recovery',
-                 'qa' => '/qa', 'brief' => '/brief', 'memory' => '/memory', 'scores' => '/scores' }.freeze
+                 'qa' => '/qa', 'brief' => '/brief', 'memory' => '/memory', 'scores' => '/scores',
+                 'agent_templates' => '/agents/templates', 'roles' => '/roles' }.freeze
   BRAIN_POSTS = { 'sla' => '/sla', 'media' => '/media', 'dedupe_refresh' => '/dedupe/refresh', 'channels' => '/channels',
                   'links' => '/links', 'broadcasts' => '/broadcasts', 'broadcasts_preview' => '/broadcasts/preview',
                   'broadcasts_run' => '/broadcasts/run', 'mcp_token' => '/mcp-token',
                   'learned_status' => '/learned/status', 'translate' => '/translate', 'recovery' => '/recovery',
                   'qa_rubric' => '/qa/rubric', 'brief_build' => '/brief/build', 'reviews_draft' => '/reviews/draft',
-                  'ask' => '/ask' }.freeze
+                  'ask' => '/ask', 'roles' => '/roles', 'knowledge_refresh' => '/agents/knowledge/refresh' }.freeze
+  # Roles (E2): only an Owner may do these (Chatwoot administrators are Owners unless made Managers).
+  OWNER_POSTS = %w[mcp_token roles].freeze
 
   def brain_get
     path = BRAIN_GETS[params[:feature].to_s]
@@ -109,6 +113,7 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
   def brain_post
     path = BRAIN_POSTS[params[:feature].to_s]
     return head(:not_found) if path.nil?
+    return render(json: { ok: false, error: 'owner_only' }, status: :forbidden) if OWNER_POSTS.include?(params[:feature].to_s) && !owner?
 
     body = unsafe(params.except(:controller, :action, :account_id, :feature, :tolzar)).to_h
     render json: post_to_brain(path, body.merge('account_id' => account_scope_id))
@@ -164,6 +169,21 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
   private
 
   # Who made the change, for the brain's audit log (A6).
+  # The signed-in member's Tolzar role, from the brain's role table.
+  def tolzar_role
+    @tolzar_role ||= get_from_brain(
+      "/roles?account_id=#{account_scope_id}&user_id=#{Current.user&.id}&chatwoot_role=#{Current.account_user&.role}"
+    )['role'] || 'agent'
+  end
+
+  def owner?
+    tolzar_role == 'owner'
+  end
+
+  def ensure_owner
+    render json: { ok: false, error: 'owner_only' }, status: :forbidden unless owner?
+  end
+
   def actor_label
     "#{Current.user&.id}:#{Current.user&.email}"
   end

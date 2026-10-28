@@ -1,11 +1,13 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useMapGetter } from 'dashboard/composables/store';
+import { useI18n } from 'vue-i18n';
 
 // Tolzar Settings hub (approved mock settings-hub-v1): one home for what Tolzar does for this
 // workspace. Every section reads/writes the brain through the admin proxy; AI features run in
 // Shadow. Generic for any business.
 const accountId = useMapGetter('getCurrentAccountId');
+const { t: $t } = useI18n();
 const base = computed(() => `/api/v1/accounts/${accountId.value}/tolzar`);
 const get = (feature, params = {}) =>
   window.axios.get(`${base.value}/brain/${feature}`, { params }).then(r => r.data);
@@ -13,7 +15,7 @@ const post = (feature, body = {}) =>
   window.axios.post(`${base.value}/brain/${feature}`, body).then(r => r.data);
 
 const SECTIONS = [
-  ['workspace', ['usage', 'audit', 'export']],
+  ['workspace', ['usage', 'roles', 'audit', 'export']],
   ['team', ['sla', 'qa']],
   ['ai', ['media', 'recovery', 'learned', 'brief', 'ask']],
   ['contacts', ['dedupe']],
@@ -50,6 +52,19 @@ async function open(key) {
       data.value = { list: b.broadcasts || [], draft: { name: '', audience: { field: 'lifecycle_stage', value: '' }, text: { en: '' } }, preview: null };
     }
     if (key === 'mcp') data.value = { token: '' };
+    if (key === 'roles') {
+      const [members, r] = await Promise.all([
+        window.axios.get(`/api/v1/accounts/${accountId.value}/agents`).then(x => x.data),
+        get('roles'),
+      ]);
+      const table = r.roles || {};
+      data.value = {
+        members: (members || []).map(m => ({
+          ...m,
+          tolzar: m.role === 'administrator' ? table[String(m.id)] || 'owner' : 'agent',
+        })),
+      };
+    }
   } catch (e) {
     note.value = String(e);
   } finally {
@@ -122,6 +137,10 @@ async function askInbox() {
   data.value.answer = await post('ask', { question: data.value.question });
   busy.value = false;
 }
+async function setRole(m) {
+  const r = await post('roles', { user_id: m.id, role: m.tolzar });
+  done(r.ok === false ? $t('TOLZAR_SETTINGS.ROLES.OWNER_ONLY') : $t('TOLZAR_SETTINGS.SAVE'));
+}
 async function newToken(revoke = false) {
   const r = await post('mcp_token', revoke ? { revoke: true } : {});
   data.value.token = revoke ? '' : r.token;
@@ -135,7 +154,10 @@ onMounted(() => open('usage'));
 <template>
   <div class="overflow-auto flex-1 bg-n-background" data-tz-build="settings-hub-1">
     <div class="mx-auto max-w-[1180px] px-5 pb-16 pt-7 md:px-6">
-      <h1 class="m-0 text-[22px] font-extrabold tracking-tight text-n-slate-12">{{ $t('TOLZAR_SETTINGS.TITLE') }}</h1>
+      <div class="flex flex-wrap gap-3 justify-between items-center">
+        <h1 class="m-0 text-[22px] font-extrabold tracking-tight text-n-slate-12">{{ $t('TOLZAR_SETTINGS.TITLE') }}</h1>
+        <router-link :to="{ name: 'tolzar_onboarding' }" class="tz-btn !mt-0 no-underline">{{ $t('TOLZAR_ONBOARDING.OPEN') }}</router-link>
+      </div>
       <p class="mt-1 text-sm text-n-slate-11">{{ $t('TOLZAR_SETTINGS.LEAD') }}</p>
       <div class="grid gap-4 mt-5 md:grid-cols-[220px_minmax(0,1fr)]">
         <nav class="p-1.5 rounded-xl border bg-n-solid-1 border-n-weak h-fit">
@@ -166,6 +188,23 @@ onMounted(() => open('usage'));
               <div class="text-xl font-bold text-n-slate-12">{{ v.toLocaleString() }}</div>
               <div class="text-xs text-n-slate-10">{{ $t(`TOLZAR_SETTINGS.USAGE.${k}`) }}</div>
             </div>
+          </div>
+
+          <!-- roles -->
+          <div v-if="current === 'roles'">
+            <table class="w-full text-[13px]">
+              <tr v-for="m in data.members || []" :key="m.id" class="border-t border-n-weak">
+                <td class="py-2">{{ m.name }}<div class="text-xs text-n-slate-10">{{ m.email }}</div></td>
+                <td class="w-[180px]">
+                  <select v-if="m.role === 'administrator'" v-model="m.tolzar" class="tz-in" @change="setRole(m)">
+                    <option value="owner">{{ $t('TOLZAR_SETTINGS.ROLES.owner') }}</option>
+                    <option value="manager">{{ $t('TOLZAR_SETTINGS.ROLES.manager') }}</option>
+                  </select>
+                  <span v-else class="text-n-slate-11">{{ $t('TOLZAR_SETTINGS.ROLES.agent') }}</span>
+                </td>
+              </tr>
+            </table>
+            <ul class="mt-4 text-xs text-n-slate-10"><li>{{ $t('TOLZAR_SETTINGS.ROLES.RULE_OWNER') }}</li><li>{{ $t('TOLZAR_SETTINGS.ROLES.RULE_MANAGER') }}</li><li>{{ $t('TOLZAR_SETTINGS.ROLES.RULE_AGENT') }}</li></ul>
           </div>
 
           <!-- audit -->

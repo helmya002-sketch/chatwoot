@@ -1048,7 +1048,8 @@
       "dedupe": "Doublons",
       "links": "Click-to-chat & QR",
       "broadcasts": "Diffusions",
-      "mcp": "Outils IA (MCP)"
+      "mcp": "Outils IA (MCP)",
+      "roles": "Rôles"
     },
     "HINT": {
       "usage": "What this workspace used in the last 30 days.",
@@ -1064,7 +1065,8 @@
       "dedupe": "The same person, written to you from several places. Review and merge; Tolzar never merges on its own.",
       "links": "Links and QR codes per campaign; the first message tells Reports which campaign brought it.",
       "broadcasts": "Pick an audience and see exactly who would receive it. Shadow: nothing is sent.",
-      "mcp": "Let your own AI tools read this workspace's Tolzar data. Read-only."
+      "mcp": "Let your own AI tools read this workspace's Tolzar data. Read-only.",
+      "roles": "Qui peut faire quoi dans cet espace de travail."
     },
     "SAVE": "Enregistrer",
     "NONE_YET": "Rien pour l'instant.",
@@ -1136,6 +1138,63 @@
       "NOT_PUBLIC": "The public address for AI tools is not open yet (security review first). Tokens can be prepared.",
       "CREATE": "Create a token",
       "REVOKE": "Revoke"
+    },
+    "ROLES": {
+      "owner": "Propriétaire",
+      "manager": "Manager",
+      "agent": "Agent",
+      "OWNER_ONLY": "Seul un propriétaire peut changer les rôles.",
+      "RULE_OWNER": "Propriétaire : tout, y compris export, connexions, jetons d'outils IA et rôles.",
+      "RULE_MANAGER": "Manager : agents IA, workflows, rapports et réglages ; pas l'export, les connexions ni les rôles.",
+      "RULE_AGENT": "Agent : répond aux conversations (rôle agent)."
+    }
+  },
+  "TOLZAR_ONBOARDING": {
+    "OPEN": "Configurer Tolzar",
+    "NEXT": "Suivant",
+    "STEP": {
+      "1": "Espace de travail",
+      "2": "Votre agent IA",
+      "3": "Connecter un canal",
+      "4": "Inviter l'équipe",
+      "5": "Le voir travailler"
+    },
+    "WORKSPACE": {
+      "TITLE": "Votre espace de travail",
+      "NAME": "Nom de l'entreprise"
+    },
+    "AGENT": {
+      "TITLE": "Laissez votre agent IA apprendre votre activité",
+      "HINT": "Collez votre site : Tolzar le lit (prix, horaires, FAQ) pour que l'agent réponde à partir de vos propres pages. Choisissez un modèle de départ ; tout reste modifiable dans Agents IA.",
+      "WEBSITE": "Votre site (ou son sitemap)",
+      "PACK": "Partir de",
+      "NAME": "Nom de l'agent",
+      "LANGUAGES": "Langues de vos clients",
+      "CREATE": "Créer mon agent"
+    },
+    "PACK": {
+      "general": "Toute entreprise",
+      "retail": "Commerce & e-commerce",
+      "services": "Cliniques & services",
+      "sales": "Immobilier & ventes à forte valeur",
+      "support": "Service client",
+      "travel": "Voyages & loisirs"
+    },
+    "CHANNEL": {
+      "TITLE": "Connecter un canal",
+      "READY": "{name} est prêt : {chunks} passages lus sur votre site, {workflows} workflows ajoutés en brouillon.",
+      "HINT": "Commencez par le chat du site ou l'e-mail ; WhatsApp et Instagram arrivent avec la connexion Meta.",
+      "ADD": "Ajouter un canal"
+    },
+    "TEAM": {
+      "TITLE": "Inviter l'équipe",
+      "HINT": "Ajoutez les personnes qui répondent aux clients. Les rôles (Propriétaire / Manager) se règlent dans les réglages Tolzar.",
+      "INVITE": "Inviter des personnes"
+    },
+    "WATCH": {
+      "TITLE": "Le voir travailler",
+      "HINT": "Votre agent démarre en mode fantôme : il traite chaque conversation dans Tolzar et vous voyez ce qu'il aurait fait à côté de ce qu'a fait l'équipe. Activez-le quand le tableau de bord indique qu'il est prêt.",
+      "OPEN": "Ouvrir le tableau de bord"
     }
   }
 }

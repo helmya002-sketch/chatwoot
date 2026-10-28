@@ -1048,7 +1048,8 @@
       "dedupe": "Duplikate",
       "links": "Click-to-Chat & QR",
       "broadcasts": "Rundsendungen",
-      "mcp": "KI-Werkzeuge (MCP)"
+      "mcp": "KI-Werkzeuge (MCP)",
+      "roles": "Rollen"
     },
     "HINT": {
       "usage": "What this workspace used in the last 30 days.",
@@ -1064,7 +1065,8 @@
       "dedupe": "The same person, written to you from several places. Review and merge; Tolzar never merges on its own.",
       "links": "Links and QR codes per campaign; the first message tells Reports which campaign brought it.",
       "broadcasts": "Pick an audience and see exactly who would receive it. Shadow: nothing is sent.",
-      "mcp": "Let your own AI tools read this workspace's Tolzar data. Read-only."
+      "mcp": "Let your own AI tools read this workspace's Tolzar data. Read-only.",
+      "roles": "Wer in diesem Arbeitsbereich was darf."
     },
     "SAVE": "Speichern",
     "NONE_YET": "Noch nichts.",
@@ -1136,6 +1138,63 @@
       "NOT_PUBLIC": "The public address for AI tools is not open yet (security review first). Tokens can be prepared.",
       "CREATE": "Create a token",
       "REVOKE": "Revoke"
+    },
+    "ROLES": {
+      "owner": "Inhaber",
+      "manager": "Manager",
+      "agent": "Agent",
+      "OWNER_ONLY": "Nur ein Inhaber kann Rollen ändern.",
+      "RULE_OWNER": "Inhaber: alles, auch Export, Verbindungen, KI-Werkzeug-Tokens und Rollen.",
+      "RULE_MANAGER": "Manager: KI-Agenten, Workflows, Berichte und Einstellungen; nicht Export, Verbindungen oder Rollen.",
+      "RULE_AGENT": "Agent: beantwortet Gespräche (über die Agenten-Rolle)."
+    }
+  },
+  "TOLZAR_ONBOARDING": {
+    "OPEN": "Tolzar einrichten",
+    "NEXT": "Weiter",
+    "STEP": {
+      "1": "Arbeitsbereich",
+      "2": "Dein KI-Agent",
+      "3": "Kanal verbinden",
+      "4": "Team einladen",
+      "5": "Zusehen"
+    },
+    "WORKSPACE": {
+      "TITLE": "Dein Arbeitsbereich",
+      "NAME": "Name des Unternehmens"
+    },
+    "AGENT": {
+      "TITLE": "Lass deinen KI-Agenten dein Geschäft lernen",
+      "HINT": "Füge deine Website ein: Tolzar liest sie (Preise, Öffnungszeiten, FAQs), damit der Agent aus deinen eigenen Seiten antwortet. Wähle eine Vorlage; alles ist später unter KI-Agenten änderbar.",
+      "WEBSITE": "Deine Website (oder ihre Sitemap)",
+      "PACK": "Starten mit",
+      "NAME": "Name des Agenten",
+      "LANGUAGES": "Sprachen deiner Kunden",
+      "CREATE": "Agenten erstellen"
+    },
+    "PACK": {
+      "general": "Jedes Unternehmen",
+      "retail": "Handel & E-Commerce",
+      "services": "Praxen & Dienstleistungen",
+      "sales": "Immobilien & hochwertige Verkäufe",
+      "support": "Kundendienst",
+      "travel": "Reisen & Freizeit"
+    },
+    "CHANNEL": {
+      "TITLE": "Kanal verbinden",
+      "READY": "{name} ist bereit: {chunks} Abschnitte von deiner Website gelesen, {workflows} Workflows als Entwurf angelegt.",
+      "HINT": "Starte mit dem Website-Chat oder E-Mail; WhatsApp und Instagram kommen mit der Meta-Verbindung.",
+      "ADD": "Kanal hinzufügen"
+    },
+    "TEAM": {
+      "TITLE": "Team einladen",
+      "HINT": "Füge die Personen hinzu, die Kunden antworten. Rollen (Inhaber / Manager) stellst du in den Tolzar-Einstellungen ein.",
+      "INVITE": "Personen einladen"
+    },
+    "WATCH": {
+      "TITLE": "Zusehen",
+      "HINT": "Dein Agent startet im Schattenbetrieb: Er bearbeitet jedes Gespräch in Tolzar, und du siehst neben der Arbeit deines Teams, was er getan hätte. Schalte ihn ein, wenn die Anzeigetafel sagt, dass er bereit ist.",
+      "OPEN": "Anzeigetafel öffnen"
     }
   }
 }

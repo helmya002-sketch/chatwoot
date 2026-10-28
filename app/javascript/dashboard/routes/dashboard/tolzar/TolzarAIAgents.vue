@@ -79,6 +79,35 @@ function openAgent(id) {
   testMsgs.value = [];
 }
 
+// Ready-made, editable prompt templates from the brain (owner, 28 Oct: agents are configurable;
+// behaviour comes from the instructions). A new agent starts inactive.
+const templates = ref([]);
+async function loadTemplates() {
+  try {
+    const { data } = await window.axios.get(`${apiBase.value}/brain/agent_templates`);
+    templates.value = data.templates || [];
+  } catch (e) {
+    templates.value = [];
+  }
+}
+async function createFromTemplate(t) {
+  const a = {
+    id: uid(),
+    name: t.name,
+    emoji: '🤖',
+    status: 'inactive',
+    description: t.description,
+    instructions: t.generic.instructions,
+    knowledge: [],
+    skills: [],
+    template: t.id,
+    generic: { enabled: true, ...JSON.parse(JSON.stringify(t.generic)), teams: {} },
+  };
+  agents.value.push(a);
+  await saveToServer(a);
+  openAgent(a.id);
+}
+
 async function createAgent() {
   const a = {
     id: uid(),
@@ -108,6 +137,8 @@ async function saveAgent() {
   const i = agents.value.findIndex(a => a.id === draft.value.id);
   if (i >= 0) agents.value[i] = JSON.parse(JSON.stringify(draft.value));
   const payload = JSON.parse(JSON.stringify(draft.value));
+  // The instructions edited here are the generic agent's instructions too.
+  if (payload.generic) payload.generic.instructions = payload.instructions;
   try {
     await saveToServer(payload);
   } catch (e) {
@@ -194,7 +225,10 @@ function tint(hex) {
   return { color: hex, background: `${hex}1f` };
 }
 
-onMounted(load);
+onMounted(() => {
+  load();
+  loadTemplates();
+});
 </script>
 
 <template>
@@ -211,9 +245,26 @@ onMounted(load);
             <p class="m-0 text-sm text-n-slate-11">Handle more conversations with less effort — your AI team.</p>
           </div>
         </div>
-        <button type="button" class="tz-btn-primary" @click="createAgent">
-          <span class="i-lucide-plus size-4" /> Create AI Agent
-        </button>
+        <div class="flex gap-2">
+          <details class="relative">
+            <summary class="tz-btn-ghost list-none"><span class="i-lucide-layout-template size-4" /> From a template</summary>
+            <div class="absolute right-0 z-20 p-1.5 mt-1 w-[340px] rounded-xl border shadow-lg bg-n-solid-1 border-n-weak">
+              <button
+                v-for="t in templates"
+                :key="t.id"
+                type="button"
+                class="block px-3 py-2 w-full text-left rounded-lg hover:bg-n-alpha-1"
+                @click="createFromTemplate(t)"
+              >
+                <div class="text-[13px] font-semibold text-n-slate-12">{{ t.name }}</div>
+                <div class="text-xs text-n-slate-10">{{ t.description }}</div>
+              </button>
+            </div>
+          </details>
+          <button type="button" class="tz-btn-primary" @click="createAgent">
+            <span class="i-lucide-plus size-4" /> Create AI Agent
+          </button>
+        </div>
       </div>
 
       <div class="tz-rise flex gap-2.5 items-center mt-4 px-3.5 py-2.5 text-xs rounded-xl border border-n-weak bg-n-alpha-1 text-n-slate-11" style="animation-delay: 60ms">

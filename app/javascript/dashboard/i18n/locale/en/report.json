@@ -1048,7 +1048,8 @@
       "dedupe": "Duplicates",
       "links": "Click-to-chat & QR",
       "broadcasts": "Broadcasts",
-      "mcp": "AI tools (MCP)"
+      "mcp": "AI tools (MCP)",
+      "roles": "Roles"
     },
     "HINT": {
       "usage": "What this workspace used in the last 30 days.",
@@ -1064,7 +1065,8 @@
       "dedupe": "The same person, written to you from several places. Review and merge; Tolzar never merges on its own.",
       "links": "Links and QR codes per campaign; the first message tells Reports which campaign brought it.",
       "broadcasts": "Pick an audience and see exactly who would receive it. Shadow: nothing is sent.",
-      "mcp": "Let your own AI tools read this workspace's Tolzar data. Read-only."
+      "mcp": "Let your own AI tools read this workspace's Tolzar data. Read-only.",
+      "roles": "Who may do what in this workspace."
     },
     "SAVE": "Save",
     "NONE_YET": "Nothing yet.",
@@ -1136,6 +1138,63 @@
       "NOT_PUBLIC": "The public address for AI tools is not open yet (security review first). Tokens can be prepared.",
       "CREATE": "Create a token",
       "REVOKE": "Revoke"
+    },
+    "ROLES": {
+      "owner": "Owner",
+      "manager": "Manager",
+      "agent": "Agent",
+      "OWNER_ONLY": "Only an Owner can change roles.",
+      "RULE_OWNER": "Owner: everything, including export, connections, AI-tool tokens and roles.",
+      "RULE_MANAGER": "Manager: AI agents, workflows, reports and settings; not export, connections or roles.",
+      "RULE_AGENT": "Agent: replies to conversations (set by the Chatwoot agent role)."
+    }
+  },
+  "TOLZAR_ONBOARDING": {
+    "OPEN": "Set up Tolzar",
+    "NEXT": "Next",
+    "STEP": {
+      "1": "Workspace",
+      "2": "Your AI agent",
+      "3": "Connect a channel",
+      "4": "Invite your team",
+      "5": "Watch it work"
+    },
+    "WORKSPACE": {
+      "TITLE": "Your workspace",
+      "NAME": "Business name"
+    },
+    "AGENT": {
+      "TITLE": "Let your AI agent learn your business",
+      "HINT": "Paste your website: Tolzar reads it (prices, opening hours, FAQs) so the agent answers from your own pages. Pick a starting template; you can edit everything later in AI Agents.",
+      "WEBSITE": "Your website (or its sitemap)",
+      "PACK": "Start from",
+      "NAME": "Agent name",
+      "LANGUAGES": "Languages your customers write in",
+      "CREATE": "Create my agent"
+    },
+    "PACK": {
+      "general": "Any business",
+      "retail": "Retail & e-commerce",
+      "services": "Clinics & services",
+      "sales": "Real estate & high-value sales",
+      "support": "Customer support",
+      "travel": "Travel & leisure"
+    },
+    "CHANNEL": {
+      "TITLE": "Connect a channel",
+      "READY": "{name} is ready: {chunks} passages read from your site, {workflows} workflows added as drafts.",
+      "HINT": "Start with the website chat or email; WhatsApp and Instagram come with the Meta connection.",
+      "ADD": "Add a channel"
+    },
+    "TEAM": {
+      "TITLE": "Invite your team",
+      "HINT": "Add the people who answer customers. You can set Owner / Manager roles in Tolzar settings.",
+      "INVITE": "Invite people"
+    },
+    "WATCH": {
+      "TITLE": "Watch it work",
+      "HINT": "Your agent starts in Shadow: it handles every conversation inside Tolzar and you see what it would have done next to what your team did. Switch it on when the scoreboard says it's ready.",
+      "OPEN": "Open the scoreboard"
     }
   }
 }
