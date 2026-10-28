@@ -1324,7 +1324,12 @@
       "LOOK_UP": "Nachsehen",
       "TEMPLATES": "Workflow-Vorlagen",
       "ADD_DRAFT": "Zu Workflows hinzufügen (Entwurf)",
-      "TEMPLATE_ADDED": "Als Entwurf zu Workflows hinzugefügt."
+      "TEMPLATE_ADDED": "Als Entwurf zu Workflows hinzugefügt.",
+      "ORDER_CHAT": "\"Wo ist meine Bestellung?\" im Chat beantworten",
+      "ORDER_CHAT_HINT": "Erlaubt der KI, den Status einer Bestellung zu lesen, wenn der Shop bestätigt, dass sie zur E-Mail oder Telefonnummer dieses Kontakts gehört. Im Web-Chat tippt der Besucher seine E-Mail selbst ein, also nur dort einschalten, wo die Kontaktdaten aus einem vertrauenswürdigen Kanal stammen.",
+      "ORDER_PATTERN": "Muster der Bestellnummer (optional, regulärer Ausdruck)",
+      "ORDER_PATTERN_HINT": "Leer lassen für den Standard. Bis zu 200 Zeichen; Tolzar prüft es beim Speichern.",
+      "ORDER_LOOKUPS": "Bestellabfragen pro Tag"
     },
     "AI": {
       "NEGOTIATE": "Die KI darf innerhalb dieser Grenzen verhandeln",
@@ -1475,5 +1480,16 @@
     "CAMPAIGNS": "Gespräche pro Kampagne",
     "CAMPAIGN_ROW": "{n} Gespräche · {codes} Links",
     "NO_CAMPAIGNS": "Noch keine Kampagnen-Links genutzt."
+  },
+  "TOLZAR_AGENT_TEST": {
+    "REPLACED": "Shadow würde dies statt des Entwurfs des Modells senden",
+    "MODEL_DRAFT": "Entwurf des Modells",
+    "REASON": {
+      "SEMANTIC_OFFER": "Angebotsprüfung: sieht nach Rabatt aus",
+      "CHECK_UNAVAILABLE": "Angebotsprüfung nicht verfügbar (sichere Vorgabe)",
+      "LINK": "Link nicht erlaubt",
+      "COMMITMENT": "Versprechen/Rabatt-Formulierung",
+      "PRICE": "Preis nicht in der Preistabelle"
+    }
   }
 }

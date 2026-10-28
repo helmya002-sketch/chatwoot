@@ -1324,7 +1324,12 @@
       "LOOK_UP": "Look up",
       "TEMPLATES": "Workflow templates",
       "ADD_DRAFT": "Add to Workflows (draft)",
-      "TEMPLATE_ADDED": "Added to Workflows as a draft."
+      "TEMPLATE_ADDED": "Added to Workflows as a draft.",
+      "ORDER_CHAT": "Answer \"Where is my order?\" in chat",
+      "ORDER_CHAT_HINT": "Lets the AI read an order's status when the shop confirms it belongs to this contact's email or phone. A web-chat visitor types their own email, so only turn this on where your contacts' details come from a trusted channel.",
+      "ORDER_PATTERN": "Order number pattern (optional regular expression)",
+      "ORDER_PATTERN_HINT": "Leave empty for the default. Up to 200 characters; Tolzar checks it when you save.",
+      "ORDER_LOOKUPS": "Order lookups per day"
     },
     "AI": {
       "NEGOTIATE": "The AI may negotiate within these limits",
@@ -1475,5 +1480,16 @@
     "CAMPAIGNS": "Conversations per campaign",
     "CAMPAIGN_ROW": "{n} conversations · {codes} links",
     "NO_CAMPAIGNS": "No campaign links used yet."
+  },
+  "TOLZAR_AGENT_TEST": {
+    "REPLACED": "Shadow would send this instead of the model's draft",
+    "MODEL_DRAFT": "Model's draft",
+    "REASON": {
+      "SEMANTIC_OFFER": "offer check: looks like a discount",
+      "CHECK_UNAVAILABLE": "offer check unavailable (safe default)",
+      "LINK": "link not allowed",
+      "COMMITMENT": "promise/discount wording",
+      "PRICE": "price not in the price table"
+    }
   }
 }

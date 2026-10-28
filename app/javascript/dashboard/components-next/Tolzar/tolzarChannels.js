@@ -7,6 +7,8 @@ export const SMS_PROVIDERS = ['twilio', 'unifonic', 'vonage'];
 export const CRM_PROVIDERS = ['hubspot', 'zoho', 'pipedrive'];
 export const CRM_DIRECTIONS = ['to_crm', 'from_crm', 'both'];
 export const SHOP_PROVIDERS = ['shopify', 'woocommerce', 'salla', 'zid'];
+export const ORDER_LOOKUPS_DEFAULT = 200;
+export const ORDER_PATTERN_MAX = 200; // MAX_PATTERN in plugins/commerce.py
 
 // Which credential fields a provider uses (mirrors NEEDS / CRED_FIELDS in the brain plugins).
 // The keys are write-only: typed here, stored encrypted by the brain, never shown again.
@@ -102,6 +104,13 @@ export const saveCommerce = (accountId, s, keys = {}, clear = []) =>
     currency: s.currency,
     agent_id: s.agent_id,
     catalogue_auto: !!s.catalogue_auto,
+    // "Where is my order?" in chat: opt-in (a contact's email/phone is only as trustworthy as
+    // its channel). The brain validates the pattern and the daily cap and says what is wrong.
+    order_chat: !!s.order_chat,
+    order_pattern: String(s.order_pattern || '').trim(),
+    ...(String(s.order_lookups_per_day ?? '').trim() === ''
+      ? {}
+      : { order_lookups_per_day: Number(s.order_lookups_per_day) }),
     ...credentialBody(keys, shopFieldsOf(s.provider), clear),
   });
 export const syncCatalogue = (accountId, agentId) =>

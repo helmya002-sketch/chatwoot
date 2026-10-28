@@ -94,6 +94,33 @@ describe('tolzarChannels', () => {
     expect(shop).not.toHaveProperty('secret_env');
   });
 
+  it('saves the order-in-chat settings: opt-in, trimmed pattern, numeric daily cap', async () => {
+    await saveCommerce(2, {
+      provider: 'shopify',
+      shop_domain: 'a.myshopify.com',
+    });
+    expect(window.axios.post.mock.calls[0][1]).toMatchObject({
+      order_chat: false,
+      order_pattern: '',
+    });
+    expect(window.axios.post.mock.calls[0][1]).not.toHaveProperty(
+      'order_lookups_per_day'
+    );
+    await saveCommerce(2, {
+      provider: 'shopify',
+      order_chat: true,
+      order_pattern: ' #?\\d{4,8} ',
+      order_lookups_per_day: '50',
+    });
+    expect(window.axios.post.mock.calls[1][1]).toMatchObject({
+      order_chat: true,
+      order_pattern: '#?\\d{4,8}',
+      order_lookups_per_day: 50,
+    });
+    await saveCommerce(2, { provider: 'shopify', order_lookups_per_day: 0 });
+    expect(window.axios.post.mock.calls[2][1].order_lookups_per_day).toBe(0);
+  });
+
   it('asks for the credential fields of each provider, with provider labels', () => {
     expect(credentialFields('sms', 'twilio')).toEqual([
       'account_sid',

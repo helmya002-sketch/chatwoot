@@ -1324,7 +1324,12 @@
       "LOOK_UP": "Rechercher",
       "TEMPLATES": "Modèles de workflow",
       "ADD_DRAFT": "Ajouter aux Workflows (brouillon)",
-      "TEMPLATE_ADDED": "Ajouté aux Workflows comme brouillon."
+      "TEMPLATE_ADDED": "Ajouté aux Workflows comme brouillon.",
+      "ORDER_CHAT": "Répondre à « Où est ma commande ? » dans le chat",
+      "ORDER_CHAT_HINT": "Permet à l'IA de lire le statut d'une commande quand la boutique confirme qu'elle appartient à l'e-mail ou au téléphone de ce contact. Un visiteur du chat web saisit lui-même son e-mail : n'activez cette option que si les coordonnées de vos contacts viennent d'un canal de confiance.",
+      "ORDER_PATTERN": "Format du numéro de commande (expression régulière, facultatif)",
+      "ORDER_PATTERN_HINT": "Laissez vide pour le format par défaut. 200 caractères maximum ; Tolzar le vérifie à l'enregistrement.",
+      "ORDER_LOOKUPS": "Recherches de commandes par jour"
     },
     "AI": {
       "NEGOTIATE": "L'IA peut négocier dans ces limites",
@@ -1475,5 +1480,16 @@
     "CAMPAIGNS": "Conversations par campagne",
     "CAMPAIGN_ROW": "{n} conversations · {codes} liens",
     "NO_CAMPAIGNS": "Aucun lien de campagne utilisé pour l'instant."
+  },
+  "TOLZAR_AGENT_TEST": {
+    "REPLACED": "Shadow enverrait ceci à la place du brouillon du modèle",
+    "MODEL_DRAFT": "Brouillon du modèle",
+    "REASON": {
+      "SEMANTIC_OFFER": "contrôle des offres : ressemble à une remise",
+      "CHECK_UNAVAILABLE": "contrôle des offres indisponible (choix prudent)",
+      "LINK": "lien non autorisé",
+      "COMMITMENT": "formulation de promesse/remise",
+      "PRICE": "prix absent de la grille tarifaire"
+    }
   }
 }

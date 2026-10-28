@@ -11,6 +11,10 @@ import {
   clearPriceKey,
   credentialStatus,
 } from 'dashboard/components-next/Tolzar/tolzarCredentials';
+import {
+  parseAgentTest,
+  reasonLabels,
+} from 'dashboard/components-next/Tolzar/tolzarAgentTest';
 
 const accountId = useMapGetter('getCurrentAccountId');
 const { t } = useI18n();
@@ -244,9 +248,9 @@ const availableSkills = computed(() =>
 
 const testBusy = ref(false);
 async function sendTest() {
-  const t = testInput.value.trim();
-  if (!t || testBusy.value) return;
-  testMsgs.value.push({ who: 'user', text: t });
+  const text = testInput.value.trim();
+  if (!text || testBusy.value) return;
+  testMsgs.value.push({ who: 'user', text });
   testInput.value = '';
   testBusy.value = true;
   const thinking = { who: 'agent', text: 'Thinking…', pending: true };
@@ -262,16 +266,12 @@ async function sendTest() {
   try {
     const { data } = await window.axios.post(
       `/api/v1/accounts/${accountId.value}/tolzar/agent_test`,
-      { message: t, instructions: draft.value?.instructions || '', history }
+      { message: text, instructions: draft.value?.instructions || '', history }
     );
     drop();
-    testMsgs.value.push({
-      who: 'agent',
-      text: data.reply || 'No reply.',
-      meta: data.ok && data.model
-        ? `${data.model}${data.latency_ms ? ' · ' + (Math.round(data.latency_ms / 100) / 10) + 's' : ''}`
-        : '',
-    });
+    // The bubble is the final reply (what Shadow would send); a replaced draft rides along.
+    const msg = parseAgentTest(data);
+    testMsgs.value.push({ ...msg, text: msg.text || 'No reply.' });
   } catch (e) {
     drop();
     testMsgs.value.push({ who: 'agent', text: 'The model did not answer (network error). Try again.' });
@@ -518,6 +518,16 @@ onMounted(() => {
                 :class="m.who === 'user' ? 'bg-n-brand text-white' : 'bg-n-alpha-2 text-n-slate-12'"
                 :style="{ opacity: m.pending ? 0.7 : 1, fontStyle: m.pending ? 'italic' : 'normal' }"
               >{{ m.text }}</div>
+              <div v-if="m.replaced" class="mt-1 text-[11px] text-n-slate-11">
+                <p class="m-0">{{ t('TOLZAR_AGENT_TEST.REPLACED') }}</p>
+                <details class="mt-0.5">
+                  <summary class="cursor-pointer text-n-slate-10">{{ t('TOLZAR_AGENT_TEST.MODEL_DRAFT') }}</summary>
+                  <div class="px-2 py-1.5 mt-1 whitespace-pre-wrap rounded-lg bg-n-alpha-1 text-n-slate-11">{{ m.draft }}</div>
+                  <ul v-if="m.reasons.length" class="pl-4 mt-1 mb-0 list-disc text-n-slate-10">
+                    <li v-for="r in reasonLabels(m.reasons, t)" :key="r">{{ r }}</li>
+                  </ul>
+                </details>
+              </div>
               <div v-if="m.meta" class="mt-0.5 text-[10px] text-n-slate-10">{{ m.meta }}</div>
             </div>
           </div>

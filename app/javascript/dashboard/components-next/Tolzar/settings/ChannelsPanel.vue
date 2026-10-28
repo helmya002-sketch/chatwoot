@@ -10,6 +10,8 @@ import {
   CRM_PROVIDERS,
   CRM_DIRECTIONS,
   SHOP_PROVIDERS,
+  ORDER_LOOKUPS_DEFAULT,
+  ORDER_PATTERN_MAX,
   credentialFields,
   credentialLabelKey,
   getSms,
@@ -80,7 +82,7 @@ async function load() {
       commerceTemplates(accountId.value),
     ]);
     raw.value = c;
-    form.value = { provider: 'shopify', shop_domain: '', currency: '', agent_id: '', catalogue_auto: false, ...(c.settings || {}) };
+    form.value = { provider: 'shopify', shop_domain: '', currency: '', agent_id: '', catalogue_auto: false, order_chat: false, order_pattern: '', order_lookups_per_day: ORDER_LOOKUPS_DEFAULT, ...(c.settings || {}) };
     agents.value = a.agents || [];
     templates.value = tp.templates || [];
   }
@@ -281,6 +283,13 @@ onMounted(load);
             <option v-for="a in agents" :key="a.id" :value="a.id">{{ a.name }}</option>
           </select>
           <label :class="CHECK"><input v-model="form.catalogue_auto" type="checkbox" /> {{ t('TOLZAR_SETTINGS.CHANNELS.CATALOGUE_DAILY') }}</label>
+          <label :class="CHECK"><input v-model="form.order_chat" type="checkbox" /> {{ t('TOLZAR_SETTINGS.CHANNELS.ORDER_CHAT') }}</label>
+          <p class="mt-1 mb-0 text-xs text-n-slate-10">{{ t('TOLZAR_SETTINGS.CHANNELS.ORDER_CHAT_HINT') }}</p>
+          <label :class="LABEL">{{ t('TOLZAR_SETTINGS.CHANNELS.ORDER_PATTERN') }}</label>
+          <input v-model="form.order_pattern" :maxlength="ORDER_PATTERN_MAX" :class="INPUT" placeholder="#?\d{4,8}" spellcheck="false" />
+          <p class="mt-1 mb-0 text-xs text-n-slate-10">{{ t('TOLZAR_SETTINGS.CHANNELS.ORDER_PATTERN_HINT') }}</p>
+          <label :class="LABEL">{{ t('TOLZAR_SETTINGS.CHANNELS.ORDER_LOOKUPS') }}</label>
+          <input v-model.number="form.order_lookups_per_day" type="number" min="0" max="100000" step="1" :class="INPUT" />
           <p class="mt-2 mb-0 text-xs text-n-slate-10">{{ t('TOLZAR_SETTINGS.CHANNELS.CRED.HINT') }}</p>
           <div class="flex flex-wrap gap-2">
             <button type="button" :class="BTN" :disabled="busy" @click="save">{{ t('TOLZAR_SETTINGS.SAVE') }}</button>
