@@ -14,6 +14,10 @@ Rails.application.routes.draw do
   post 'tolzar/mirror/respondio/:tenant', to: 'tolzar/mirror/respondio#create', as: :tolzar_mirror_respondio
   get  'tolzar/mirror/status/:tenant',    to: 'tolzar/mirror/respondio#status', as: :tolzar_mirror_status
   post 'tolzar/mirror/reprocess/:tenant', to: 'tolzar/mirror/respondio#reprocess', as: :tolzar_mirror_reprocess
+  # Tolzar: Connect Facebook & Instagram (public endpoints Meta calls; read scopes only).
+  get  'tolzar/meta/callback',      to: 'tolzar/meta#callback'
+  post 'tolzar/meta/data_deletion', to: 'tolzar/meta#data_deletion'
+  get  'tolzar/meta/deletion',      to: 'tolzar/meta#deletion'
 
   ## renders the frontend paths only if its not an api only server
   if ActiveModel::Type::Boolean.new.cast(ENV.fetch('CW_API_ONLY_SERVER', false))
@@ -76,6 +80,11 @@ Rails.application.routes.draw do
           get    'tolzar/workflows/runs',      to: 'tolzar#workflow_runs'
           post   'tolzar/workflows/test',      to: 'tolzar#workflow_test'
           get    'tolzar/workflows/templates', to: 'tolzar#workflow_templates'
+          # Tolzar: per-workspace Meta connection (status never includes tokens).
+          get    'tolzar/meta/status',      to: 'tolzar#meta_status'
+          post   'tolzar/meta/connect_url', to: 'tolzar#meta_connect_url'
+          post   'tolzar/meta/select',      to: 'tolzar#meta_select'
+          post   'tolzar/meta/disconnect',  to: 'tolzar#meta_disconnect'
           if ChatwootApp.enterprise?
             resources :monitors, only: [:index, :show, :create, :update, :destroy] do
               collection do

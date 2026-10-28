@@ -64,6 +64,24 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
     render json: get_from_brain("/workflows/templates?#{query}")
   end
 
+  # Connect Facebook & Instagram (per workspace; the brain keeps the tokens encrypted).
+  def meta_status
+    render json: get_from_brain("/meta/status?account_id=#{account_scope_id}")
+  end
+
+  def meta_connect_url
+    render json: post_to_brain('/meta/connect_url', { account_id: account_scope_id })
+  end
+
+  def meta_select
+    render json: post_to_brain('/meta/select', { account_id: account_scope_id, pages: Array(params[:pages]).map { |p| unsafe(p) },
+                                                 comments: params.key?(:comments) ? unsafe(params[:comments]) : nil }.compact)
+  end
+
+  def meta_disconnect
+    render json: post_to_brain('/meta/disconnect', { account_id: account_scope_id })
+  end
+
   # Shadow-eval scoreboard for the Reports page (would-vs-did, go-live checks).
   def scoreboard
     days = (params[:days].presence || 30).to_i.clamp(1, 90)
