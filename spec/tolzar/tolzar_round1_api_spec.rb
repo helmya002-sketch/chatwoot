@@ -71,6 +71,8 @@ RSpec.describe 'Tolzar API round 1', type: :request do
 
   describe 'owner-only' do
     let(:role) { 'manager' }
+    # The account owner (H3) is always an Owner: `admin` is a second administrator here.
+    let!(:account_owner) { create(:user, account: account, role: :administrator) }
 
     it 'refuses every settings write and the contact delete for a Manager' do
       %w[compliance retention dsar_delete sms crm_sync commerce commerce_catalogue_sync negotiation agent_teams

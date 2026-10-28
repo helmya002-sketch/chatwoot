@@ -2,7 +2,7 @@
 #
 # respond.io requires a 200 within 5s (and deactivates the endpoint after >30 errors
 # /30 min), so this does the minimum synchronously — verify the HMAC signature over
-# the raw body, store the raw event (idempotent on event_id), enqueue the projector,
+# the raw body, store the raw event (idempotent on tenant + event_id), enqueue the projector,
 # return 200. No reply is ever sent back to respond.io from anywhere in the mirror.
 class Tolzar::Mirror::RespondioController < ActionController::API
   def create
@@ -22,8 +22,8 @@ class Tolzar::Mirror::RespondioController < ActionController::API
         return head(:bad_request)
       end
 
-    event = Tolzar::MirrorEvent.create_or_find_by!(event_id: (body['event_id'].presence || SecureRandom.uuid)) do |e|
-      e.tenant         = tenant
+    # Idempotent per tenant (account): respond.io event ids are only unique within one workspace.
+    event = Tolzar::MirrorEvent.create_or_find_by!(tenant: tenant, event_id: (body['event_id'].presence || SecureRandom.uuid)) do |e|
       e.event_type     = body['event_type']
       e.rio_contact_id = body.dig('contact', 'id')
       e.rio_message_id = body.dig('message', 'messageId')

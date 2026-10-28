@@ -41,4 +41,18 @@ RSpec.describe 'Tolzar::Mirror::Respondio', type: :request do
     2.times { post '/tolzar/mirror/respondio/aquarius', params: body, headers: json_headers }
     expect(Tolzar::MirrorEvent.where(event_id: 'evt-1').count).to eq(1)
   end
+
+  it 'scopes the dedup to the tenant: the same event_id on two accounts is processed for both' do
+    xkey = 'test-signing-key-xplorer'
+    xsig = Base64.strict_encode64(OpenSSL::HMAC.digest('sha256', xkey, body))
+    with_modified_env(TOLZAR_MIRROR_KEYS_XPLORER: xkey) do
+      expect do
+        post '/tolzar/mirror/respondio/aquarius', params: body, headers: json_headers
+        post '/tolzar/mirror/respondio/xplorer', params: body,
+                                                 headers: { 'X-Webhook-Signature' => xsig, 'CONTENT_TYPE' => 'application/json' }
+      end.to have_enqueued_job(Tolzar::Mirror::ProjectJob).twice
+    end
+
+    expect(Tolzar::MirrorEvent.where(event_id: 'evt-1').pluck(:tenant)).to contain_exactly('aquarius', 'xplorer')
+  end
 end

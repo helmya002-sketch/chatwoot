@@ -48,6 +48,8 @@ RSpec.describe 'Tolzar API round 2', type: :request do
 
     context 'when the member is a Manager' do
       let(:role) { 'manager' }
+      # The account owner (H3) is always an Owner: `admin` is a second administrator here.
+      let!(:account_owner) { create(:user, account: account, role: :administrator) }
 
       it 'lets them read but not change the switch' do
         get brain_url('documents'), headers: admin.create_new_auth_token

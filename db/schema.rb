@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_10_27_120000) do
+ActiveRecord::Schema[7.1].define(version: 2026_10_28_143217) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1766,8 +1766,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_27_120000) do
     t.string "error"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["event_id"], name: "index_tolzar_mirror_events_on_event_id", unique: true
     t.index ["processed_at"], name: "index_tolzar_mirror_events_on_processed_at"
+    t.index ["tenant", "event_id"], name: "index_tolzar_mirror_events_on_tenant_and_event_id", unique: true
     t.index ["tenant", "received_at"], name: "index_tolzar_mirror_events_on_tenant_and_received_at"
   end
 

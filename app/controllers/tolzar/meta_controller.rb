@@ -4,7 +4,8 @@
 #                                    the workspace's page tokens encrypted; then back to Settings.
 #   POST /tolzar/meta/data_deletion  Meta's data-deletion callback (signed_request).
 #   GET  /tolzar/meta/deletion       the status page Meta links the user to.
-# Nothing here writes to Meta; read scopes only.
+# Nothing here writes to Meta; read scopes only. Brain calls are signed (H1) with no member account (0):
+# the brain trusts only its own proof here (the HMAC state, Meta's signed_request, the deletion code).
 class Tolzar::MetaController < ActionController::API
   def callback
     res = Tolzar::BrainClient.post('/meta/callback', { code: params[:code].to_s, state: params[:state].to_s,

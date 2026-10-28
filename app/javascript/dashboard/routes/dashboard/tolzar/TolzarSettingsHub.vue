@@ -74,12 +74,18 @@ async function open(key) {
         window.axios.get(`/api/v1/accounts/${accountId.value}/agents`).then(x => x.data),
         get('roles'),
       ]);
+      // H3: the account owner is always an Owner; other admins are Managers unless promoted.
       const table = r.roles || {};
+      const ownerId = r.owner_user_id;
       data.value = {
-        members: (members || []).map(m => ({
-          ...m,
-          tolzar: m.role === 'administrator' ? table[String(m.id)] || 'owner' : 'agent',
-        })),
+        ownerId,
+        members: (members || []).map(m => {
+          let tolzar = 'agent';
+          if (m.role === 'administrator') {
+            tolzar = m.id === ownerId ? 'owner' : table[String(m.id)] || 'manager';
+          }
+          return { ...m, tolzar };
+        }),
       };
     }
   } catch (e) {
@@ -232,7 +238,7 @@ onMounted(() => open('usage'));
               <tr v-for="m in data.members || []" :key="m.id" class="border-t border-n-weak">
                 <td class="py-2">{{ m.name }}<div class="text-xs text-n-slate-10">{{ m.email }}</div></td>
                 <td class="w-[180px]">
-                  <select v-if="m.role === 'administrator'" v-model="m.tolzar" class="tz-in" @change="setRole(m)">
+                  <select v-if="m.role === 'administrator'" v-model="m.tolzar" class="tz-in" :disabled="m.id === data.ownerId" @change="setRole(m)">
                     <option value="owner">{{ $t('TOLZAR_SETTINGS.ROLES.owner') }}</option>
                     <option value="manager">{{ $t('TOLZAR_SETTINGS.ROLES.manager') }}</option>
                   </select>

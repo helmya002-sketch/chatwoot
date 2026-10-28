@@ -1,6 +1,7 @@
 class Api::V1::Accounts::AgentsController < Api::V1::Accounts::BaseController
   before_action :fetch_agent, except: [:create, :index, :bulk_create]
   before_action :check_authorization
+  before_action :protect_tolzar_account_owner, only: [:update, :destroy]
 
   def index
     @agents = agents
@@ -49,6 +50,14 @@ class Api::V1::Accounts::AgentsController < Api::V1::Accounts::BaseController
 
   def check_authorization
     super(User)
+  end
+
+  # Tolzar (H3): the account owner stays an administrator and a member; no one can demote or remove them.
+  def protect_tolzar_account_owner
+    return unless Tolzar::AccountOwner.owner?(Current.account, @agent)
+    return if action_name == 'update' && [nil, 'administrator'].include?(agent_params[:role])
+
+    render json: { error: 'account_owner_fixed' }, status: :forbidden
   end
 
   def fetch_agent

@@ -21,4 +21,75 @@ RSpec.describe Tolzar::WorkspaceExportJob do
     expect(files['contacts.csv']).to include('Mia')
     expect(files['conversations.jsonl']).to include('Hello reef')
   end
+
+  it 'records the export on the account with server-set metadata' do
+    allow(Tolzar::BrainClient).to receive(:get).and_return({ 'ok' => true })
+    described_class.perform_now(account.id)
+
+    blob = described_class.blobs(account.id).first
+    expect(account.reload.internal_attributes['tolzar_export_blob_ids']).to eq([blob.id])
+    expect(blob.reload.metadata).to include('tolzar_export' => true, 'account_id' => account.id)
+  end
+
+  it 'purges expired exports and drops them from the account list' do
+    allow(Tolzar::BrainClient).to receive(:get).and_return({ 'ok' => true })
+    described_class.perform_now(account.id)
+    old_id = described_class.blobs(account.id).first.id
+    ActiveStorage::Blob.where(id: old_id).update_all(created_at: 8.days.ago)
+
+    described_class.perform_now(account.id)
+    expect(account.reload.internal_attributes['tolzar_export_blob_ids']).not_to include(old_id)
+    expect(account.internal_attributes['tolzar_export_blob_ids'].size).to eq(1)
+  end
+end
+
+# H4: an export is never found by filename. Anyone who can upload a file (a widget visitor) picks its
+# name, so a planted "tolzar-export-<account>-..." blob must not be listed or served.
+RSpec.describe 'Tolzar workspace export lookup (H4)', type: :request do
+  let(:account) { create(:account) }
+  let(:admin) { create(:user, account: account, role: :administrator) }
+
+  before do
+    allow_any_instance_of(Api::V1::Accounts::TolzarController).to receive(:get_from_brain).and_return({ 'ok' => true })
+    allow_any_instance_of(Api::V1::Accounts::TolzarController).to receive(:post_to_brain).and_return({ 'ok' => true })
+    allow(Tolzar::BrainClient).to receive(:get).and_return({ 'ok' => true })
+  end
+
+  def plant(metadata = {})
+    ActiveStorage::Blob.create_and_upload!(io: StringIO.new('planted'), content_type: 'application/gzip',
+                                           filename: "#{Tolzar::WorkspaceExportJob.prefix(account.id)}20261028T000000Z.tar.gz",
+                                           metadata: metadata)
+  end
+
+  it 'does not list or serve a planted blob with a matching filename' do
+    planted = plant
+    get "/api/v1/accounts/#{account.id}/tolzar/export", headers: admin.create_new_auth_token
+    expect(response.parsed_body['exports']).to eq([])
+
+    get "/api/v1/accounts/#{account.id}/tolzar/export/download", params: { id: planted.id }, headers: admin.create_new_auth_token
+    expect(response).to have_http_status(:not_found)
+  end
+
+  it "does not serve a blob recorded for the account whose metadata isn't a server-set export" do
+    planted = plant('tolzar_export' => 'true', 'account_id' => account.id.to_s)
+    account.update!(internal_attributes: account.internal_attributes.merge('tolzar_export_blob_ids' => [planted.id]))
+    get "/api/v1/accounts/#{account.id}/tolzar/export/download", params: { id: planted.id }, headers: admin.create_new_auth_token
+    expect(response).to have_http_status(:not_found)
+  end
+
+  it "lists and serves the job's own export, and not another account's" do
+    Tolzar::WorkspaceExportJob.perform_now(account.id)
+    other = create(:account)
+    Tolzar::WorkspaceExportJob.perform_now(other.id)
+    own = Tolzar::WorkspaceExportJob.blobs(account.id).first
+    others = Tolzar::WorkspaceExportJob.blobs(other.id).first
+
+    get "/api/v1/accounts/#{account.id}/tolzar/export", headers: admin.create_new_auth_token
+    expect(response.parsed_body['exports'].map { |e| e['id'] }).to eq([own.id])
+
+    get "/api/v1/accounts/#{account.id}/tolzar/export/download", params: { id: own.id }, headers: admin.create_new_auth_token
+    expect(response).to have_http_status(:success)
+    get "/api/v1/accounts/#{account.id}/tolzar/export/download", params: { id: others.id }, headers: admin.create_new_auth_token
+    expect(response).to have_http_status(:not_found)
+  end
 end

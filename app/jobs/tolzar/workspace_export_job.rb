@@ -3,6 +3,9 @@
 #   contacts.csv, conversations.jsonl (with messages), inboxes/teams/labels/attributes.json,
 #   brain.json (the AI brain's export: agents, workflows, decisions, audit; never tokens).
 # Kept 7 days as an ActiveStorage blob, then purged.
+# H4: an export is found only through the blob ids this job recorded on the account
+# (internal_attributes['tolzar_export_blob_ids']) and its server-set metadata, never by filename:
+# anyone who can upload a file (e.g. a widget visitor) chooses its filename.
 require 'csv'
 require 'rubygems/package'
 require 'zlib'
@@ -11,10 +14,17 @@ class Tolzar::WorkspaceExportJob < ApplicationJob
   queue_as :low
   KEEP = 7.days
 
+  IDS_KEY = 'tolzar_export_blob_ids'.freeze
+
   def self.prefix(account_id) = "tolzar-export-#{account_id}-"
 
   def self.blobs(account_id)
-    ActiveStorage::Blob.where('filename LIKE ?', "#{prefix(account_id)}%").order(created_at: :desc)
+    ids = Array(Account.find(account_id).internal_attributes[IDS_KEY])
+    ActiveStorage::Blob.where(id: ids).order(created_at: :desc)
+  end
+
+  def self.export_blob?(blob, account_id)
+    blob.present? && blob.metadata['tolzar_export'] == true && blob.metadata['account_id'] == account_id
   end
 
   def perform(account_id)
@@ -28,13 +38,21 @@ class Tolzar::WorkspaceExportJob < ApplicationJob
       add(tar, 'teams.json', account.teams.map { |t| { id: t.id, name: t.name, members: t.members.map(&:email) } }.to_json)
       add(tar, 'labels.json', account.labels.map { |l| { title: l.title, description: l.description, color: l.color } }.to_json)
       add(tar, 'custom_attribute_definitions.json', account.custom_attribute_definitions.to_json)
-      add(tar, 'brain.json', Tolzar::BrainClient.get("/export?account_id=#{account.id}").to_json)
+      add(tar, 'brain.json', Tolzar::BrainClient.get("/export?account_id=#{account.id}", account_id: account.id).to_json)
       add(tar, 'README.txt', "Tolzar workspace export of account #{account.id} (#{account.name}), #{Time.current.utc.iso8601}.\n")
     end
     gz.close
-    ActiveStorage::Blob.create_and_upload!(io: StringIO.new(io.string), content_type: 'application/gzip',
-                                           filename: "#{self.class.prefix(account.id)}#{Time.current.utc.strftime('%Y%m%dT%H%M%SZ')}.tar.gz")
-    self.class.blobs(account.id).where('created_at < ?', KEEP.ago).find_each(&:purge_later)
+    blob = ActiveStorage::Blob.create_and_upload!(
+      io: StringIO.new(io.string), content_type: 'application/gzip',
+      filename: "#{self.class.prefix(account.id)}#{Time.current.utc.strftime('%Y%m%dT%H%M%SZ')}.tar.gz",
+      metadata: { tolzar_export: true, account_id: account.id }
+    )
+    expired = self.class.blobs(account.id).where('created_at < ?', KEEP.ago).to_a
+    account.with_lock do
+      ids = Array(account.internal_attributes[IDS_KEY]) + [blob.id] - expired.map(&:id)
+      account.update!(internal_attributes: account.internal_attributes.merge(IDS_KEY => ids))
+    end
+    expired.each(&:purge_later)
   end
 
   private

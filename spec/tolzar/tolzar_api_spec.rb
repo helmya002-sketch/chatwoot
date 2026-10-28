@@ -39,6 +39,7 @@ RSpec.describe 'Tolzar API', type: :request do
   end
 
   it 'lets only an Owner export the workspace (a Manager is refused)' do
+    create(:user, account: account, role: :administrator) # the account owner (H3); `admin` is a second admin
     allow_any_instance_of(Api::V1::Accounts::TolzarController).to receive(:get_from_brain).and_return({ 'ok' => true, 'role' => 'manager' })
     post "/api/v1/accounts/#{account.id}/tolzar/export", headers: admin.create_new_auth_token
     expect(response).to have_http_status(:forbidden)

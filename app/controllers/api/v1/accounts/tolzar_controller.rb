@@ -4,7 +4,10 @@
 # authenticated door to it. Nothing here touches a live conversation.
 class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
   before_action :ensure_admin, except: %i[branding_view]
-  before_action :ensure_owner, only: %i[export_start export_download meta_connect_url meta_disconnect meta_select]
+  # Owner-only (H3): every write that changes the workspace's settings or data. Tests, previews and
+  # reads stay open to every administrator.
+  before_action :ensure_owner, only: %i[export_start export_download meta_connect_url meta_disconnect meta_select
+                                        agent_save agent_delete agent_default workflow_save workflow_delete]
 
   def agent_test
     body = {
@@ -111,11 +114,14 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
                   'commerce_catalogue_sync' => '/commerce/catalogue-sync', 'commerce_order_status' => '/commerce/order-status',
                   'negotiation' => '/negotiation', 'agent_teams' => '/agent-teams', 'tuning_run' => '/tuning/run',
                   'tuning_decide' => '/tuning/decide', 'quotas' => '/quotas', 'documents' => '/documents' }.freeze
-  # Roles (E2): only an Owner may do these (Chatwoot administrators are Owners unless made Managers).
-  # Round 1: every settings write, a contact's data erasure and export are Owner-only too.
-  OWNER_POSTS = %w[mcp_token roles compliance retention dsar_delete sms crm_sync commerce commerce_catalogue_sync
-                   negotiation agent_teams tuning_decide quotas documents].freeze
+  # Roles (E2, H3): every POST that changes settings or data is Owner-only. Only these previews, drafts,
+  # reads and recomputed caches stay open to every administrator (a Manager). A new BRAIN_POSTS entry is
+  # Owner-only unless it is added here.
+  ADMIN_POSTS = %w[broadcasts_preview sms_preview crm_sync_preview commerce_order_status translate ask
+                   reviews_draft brief_build dedupe_refresh tuning_run].freeze
+  OWNER_POSTS = (BRAIN_POSTS.keys - ADMIN_POSTS).freeze
   OWNER_GETS = %w[dsar_export].freeze
+  ROLES = %w[owner manager agent].freeze
 
   def brain_get
     path = BRAIN_GETS[params[:feature].to_s]
@@ -126,7 +132,10 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
     extra << "&days=#{params[:days].to_i}" if params[:days].present?
     extra << "&conversation_id=#{params[:conversation_id].to_i}" if params[:conversation_id].present?
     extra << "&contact_id=#{params[:contact_id].to_i}" if params[:contact_id].present?
-    render json: get_from_brain("#{path}?account_id=#{account_scope_id}#{extra}")
+    res = get_from_brain("#{path}?account_id=#{account_scope_id}#{extra}")
+    # The account owner (H3) is always an Owner; the Roles page shows it as fixed.
+    res = res.merge('owner_user_id' => Tolzar::AccountOwner.user_id(Current.account)) if params[:feature].to_s == 'roles'
+    render json: res
   end
 
   def brain_post
@@ -136,6 +145,10 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
 
     # Rails route params (controller, action, the .json `format`) are not part of the brain request.
     body = unsafe(params.except(:controller, :action, :format, :account_id, :feature, :tolzar)).to_h
+    if params[:feature].to_s == 'roles'
+      refused = role_change_refusal(body)
+      return render(json: { ok: false, error: refused[0] }, status: refused[1]) if refused
+    end
     render json: post_to_brain(path, body.merge('account_id' => account_scope_id))
   end
 
@@ -146,7 +159,8 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
     render json: { ok: true, branding: b.slice('product_name', 'color', 'logo_url', 'support_email') }
   end
 
-  # Export workspace (A5): a background job writes a .tar.gz, downloadable for 7 days.
+  # Export workspace (A5): a background job writes a .tar.gz, downloadable for 7 days. Only the
+  # blobs the job recorded for this account are listed or served (H4), never a lookup by filename.
   def export_start
     Tolzar::WorkspaceExportJob.perform_later(account_scope_id)
     post_to_brain('/audit/record', { account_id: account_scope_id, action: 'workspace.export_requested', target: 'chatwoot' })
@@ -161,7 +175,7 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
   def export_download
     blob = Tolzar::WorkspaceExportJob.blobs(account_scope_id).where('created_at >= ?', Tolzar::WorkspaceExportJob::KEEP.ago)
                                      .find_by(id: params[:id])
-    return head(:not_found) if blob.nil?
+    return head(:not_found) unless Tolzar::WorkspaceExportJob.export_blob?(blob, account_scope_id)
 
     send_data blob.download, filename: blob.filename.to_s, type: 'application/gzip'
   end
@@ -195,22 +209,42 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
 
   private
 
-  # Who made the change, for the brain's audit log (A6).
-  # The signed-in member's Tolzar role, from the brain's role table.
-  def tolzar_role
-    @tolzar_role ||= get_from_brain(
-      "/roles?account_id=#{account_scope_id}&user_id=#{Current.user&.id}&chatwoot_role=#{Current.account_user&.role}"
-    )['role'] || 'agent'
+  # A member's Tolzar role (H3), decided here, not by the brain's default: Chatwoot agents are agents;
+  # the account owner is always an Owner; any other administrator is a Manager unless the brain's role
+  # table explicitly says 'owner' (an Owner promoted them).
+  def tolzar_role_of(account_user)
+    return 'agent' unless account_user&.administrator?
+    return 'owner' if account_user.user_id == Tolzar::AccountOwner.user_id(Current.account)
+
+    role_table[account_user.user_id.to_s] == 'owner' ? 'owner' : 'manager'
+  end
+
+  def role_table
+    @role_table ||= get_from_brain("/roles?account_id=#{account_scope_id}")['roles'] || {}
   end
 
   def owner?
-    tolzar_role == 'owner'
+    tolzar_role_of(Current.account_user) == 'owner'
+  end
+
+  # Only an Owner reaches this (OWNER_POSTS). The account owner can't be demoted, and the last
+  # Owner can't be demoted either. Returns [error, status] or nil.
+  def role_change_refusal(body)
+    role = body['role'].to_s
+    member = Current.account.account_users.find_by(user_id: body['user_id'].to_i)
+    return ['invalid_role', :unprocessable_entity] if member.nil? || ROLES.exclude?(role)
+    return if role == 'owner'
+    return ['account_owner_fixed', :forbidden] if member.user_id == Tolzar::AccountOwner.user_id(Current.account)
+
+    owners = Current.account.account_users.administrator.select { |au| tolzar_role_of(au) == 'owner' }
+    ['last_owner', :forbidden] if owners.map(&:user_id) == [member.user_id]
   end
 
   def ensure_owner
     render json: { ok: false, error: 'owner_only' }, status: :forbidden unless owner?
   end
 
+  # Who made the change, for the brain's audit log (A6).
   def actor_label
     "#{Current.user&.id}:#{Current.user&.email}"
   end
@@ -230,17 +264,14 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
     render json: { ok: false, error: 'unauthorized' }, status: :unauthorized
   end
 
+  # Every request is signed for the URL account (H1); see Tolzar::BrainClient.sign.
   def post_to_brain(path, body)
-    base = ENV.fetch('TOLZAR_BRAIN_URL', 'http://tolzar-brain:8080')
-    uri = URI.join(base, path)
+    uri = Tolzar::BrainClient.uri(path)
     http = Net::HTTP.new(uri.host, uri.port)
     http.read_timeout = 130
     http.open_timeout = 5
     req = Net::HTTP::Post.new(uri.path, 'Content-Type' => 'application/json')
-    # Shared secret so only this proxy can reach the brain's internal endpoints.
-    # Harmless until the brain is configured to require it (TOLZAR_BRAIN_SECRET).
-    secret = ENV['TOLZAR_BRAIN_SECRET'].to_s
-    req['X-Tolzar-Brain-Secret'] = secret unless secret.empty?
+    Tolzar::BrainClient.sign(req, account_scope_id)
     req['X-Tolzar-Actor'] = actor_label
     req.body = body.to_json
     res = http.request(req)
@@ -251,14 +282,12 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
   end
 
   def get_from_brain(path)
-    base = ENV.fetch('TOLZAR_BRAIN_URL', 'http://tolzar-brain:8080')
-    uri = URI.join(base, path)
+    uri = Tolzar::BrainClient.uri(path)
     http = Net::HTTP.new(uri.host, uri.port)
     http.read_timeout = 30
     http.open_timeout = 5
     req = Net::HTTP::Get.new(uri.request_uri)
-    secret = ENV['TOLZAR_BRAIN_SECRET'].to_s
-    req['X-Tolzar-Brain-Secret'] = secret unless secret.empty?
+    Tolzar::BrainClient.sign(req, account_scope_id)
     req['X-Tolzar-Actor'] = actor_label
     JSON.parse(http.request(req).body)
   rescue StandardError => e

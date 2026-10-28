@@ -11,7 +11,9 @@
 #
 # The payload is byte-identical to what a Chatwoot account webhook would have sent
 # (message.webhook_data + event), so the brain's existing /hooks/chatwoot parser
-# handles it unchanged.
+# handles it unchanged. It is signed like Chatwoot signs an agent-bot delivery (Webhooks::Trigger:
+# X-Chatwoot-Timestamp + X-Chatwoot-Signature = "sha256=" + hex HMAC-SHA256(secret, "<ts>.<body>")),
+# with BRAIN_WEBHOOK_SECRET, and only when the URL's host is the brain's (never to another host).
 class Tolzar::Mirror::BrainNotifyJob < ApplicationJob
   queue_as :medium
 
@@ -32,6 +34,7 @@ class Tolzar::Mirror::BrainNotifyJob < ApplicationJob
     http.read_timeout = 8
     req = Net::HTTP::Post.new(uri.request_uri, 'Content-Type' => 'application/json')
     req.body = payload.to_json
+    sign_for_brain(req, uri)
     res = http.request(req)
     return if res.is_a?(Net::HTTPSuccess)
 
@@ -39,5 +42,16 @@ class Tolzar::Mirror::BrainNotifyJob < ApplicationJob
   rescue StandardError => e
     # A brain outage must never break projection; swallow and log.
     Rails.logger.warn("[tolzar-mirror] brain notify failed message=#{message_id} #{e.class}: #{e.message}")
+  end
+
+  private
+
+  def sign_for_brain(req, uri)
+    secret = ENV['BRAIN_WEBHOOK_SECRET'].to_s
+    return if secret.empty? || uri.host != Tolzar::BrainClient.brain_host
+
+    ts = Time.now.to_i.to_s
+    req['X-Chatwoot-Timestamp'] = ts
+    req['X-Chatwoot-Signature'] = "sha256=#{OpenSSL::HMAC.hexdigest('SHA256', secret, "#{ts}.#{req.body}")}"
   end
 end
