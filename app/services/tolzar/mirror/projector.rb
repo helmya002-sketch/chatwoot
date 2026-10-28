@@ -163,7 +163,7 @@ class Tolzar::Mirror::Projector
 
     outgoing = m['traffic'].to_s == 'outgoing'
     inner = m['message'] || {}
-    content = inner['text'].presence || "[#{inner['type'].presence || 'message'}]"
+    content = message_content(inner)
 
     msg = conv.messages.create!(
       account_id: account.id,
@@ -180,6 +180,24 @@ class Tolzar::Mirror::Projector
     # is set. Agent/outgoing turns are not sent: the brain reads the full thread at
     # triage time and only acts on a customer turn.
     Tolzar::Mirror::BrainNotifyJob.perform_later(msg.id) unless outgoing
+  end
+
+  EMAIL_MAX_CHARS = 4000
+  # The start of the quoted thread under a reply ("On Mon, X wrote:", "-----Original Message-----", "> ...").
+  EMAIL_QUOTE = /^\s*(On .{0,200}wrote:|Am .{0,200}schrieb .{0,80}:|Le .{0,200}a écrit\s*:|-{2,}\s*Original Message\s*-{2,}|From:\s.+|>)/i
+
+  # respond.io puts a WhatsApp/IG text in message.text, but an email's body in
+  # message.message (plus message.subject): without them every email arrived as
+  # "[email]" and the brain could only ask "which centre?" (28 Oct: 22 of 23 emails).
+  def message_content(inner)
+    return inner['text'] if inner['text'].present?
+    return "[#{inner['type'].presence || 'message'}]" unless inner['type'].to_s == 'email'
+
+    body = inner['message'].to_s.gsub("\r\n", "\n")
+    cut = body.index(EMAIL_QUOTE)
+    body = body[0...cut] if cut&.positive?
+    text = [inner['subject'].to_s.strip.presence&.then { |s| "Subject: #{s}" }, body.strip.presence].compact.join("\n\n")
+    text.presence ? text[0, EMAIL_MAX_CHARS] : '[email]'
   end
 
   def project_assignee
