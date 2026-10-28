@@ -19,9 +19,10 @@ RSpec.describe 'Tolzar Meta endpoints', type: :request do
 
   before { https! }   # the bind cookie is Secure: Rails writes it only on an https request
 
-  def expected_sig(account_id, ts, method, path, body)
+  # v3: the nonce comes from the captured X-Tolzar-Nonce header.
+  def expected_sig(account_id, ts, method, path, body, nonce)
     OpenSSL::HMAC.hexdigest('SHA256', secret,
-                            "v2\n#{account_id}\n#{ts}\n#{method}\n#{path}\n#{Digest::SHA256.hexdigest(body.to_s)}")
+                            "v3\n#{account_id}\n#{ts}\n#{method}\n#{path}\n#{Digest::SHA256.hexdigest(body.to_s)}\n#{nonce}")
   end
 
   def set_cookies
@@ -58,7 +59,8 @@ RSpec.describe 'Tolzar Meta endpoints', type: :request do
       headers = seen[:headers]
       expect(headers['X-Tolzar-Account']).to eq(account.id.to_s)
       expect(headers['X-Tolzar-Body-Sha256']).to eq(Digest::SHA256.hexdigest(seen[:raw]))
-      expect(headers['X-Tolzar-Sig']).to eq(expected_sig(account.id, headers['X-Tolzar-Ts'], 'POST', '/meta/connect_url', seen[:raw]))
+      expect(headers['X-Tolzar-Sig']).to eq(expected_sig(account.id, headers['X-Tolzar-Ts'], 'POST', '/meta/connect_url', seen[:raw],
+                                                   headers['X-Tolzar-Nonce']))
       expect(headers['X-Tolzar-Actor']).to eq("#{owner.id}:#{owner.email}")
 
       # the cookie: random 32 bytes, HttpOnly, Secure, SameSite=Lax, scoped to the callback, 15 min
@@ -98,7 +100,7 @@ RSpec.describe 'Tolzar Meta endpoints', type: :request do
       expect(headers['X-Tolzar-Account']).to eq('0')
       expect(headers['X-Tolzar-Ts'].to_i).to be_within(60).of(Time.now.to_i)
       expect(headers['X-Tolzar-Body-Sha256']).to eq(Digest::SHA256.hexdigest(seen[:raw]))
-      expect(headers['X-Tolzar-Sig']).to eq(expected_sig(0, headers['X-Tolzar-Ts'], 'POST', '/meta/callback', seen[:raw]))
+      expect(headers['X-Tolzar-Sig']).to eq(expected_sig(0, headers['X-Tolzar-Ts'], 'POST', '/meta/callback', seen[:raw], headers['X-Tolzar-Nonce']))
       expect(headers.keys.map(&:downcase)).not_to include('x-tolzar-actor')
       expect(response).to redirect_to('/app/accounts/9/dashboard?tolzar_meta=connected')
       # the bind cookie is cleared (one connect per cookie)
@@ -159,7 +161,7 @@ RSpec.describe 'Tolzar Meta endpoints', type: :request do
     post '/tolzar/meta/data_deletion', params: { signed_request: 'sig.payload' }
     expect(response.parsed_body).to eq('url' => 'https://x/d?code=ab', 'confirmation_code' => 'ab')
     expect(seen['X-Tolzar-Account']).to eq('0')
-    expect(seen['X-Tolzar-Sig']).to eq(expected_sig(0, seen['X-Tolzar-Ts'], 'POST', '/meta/data_deletion', raw))
+    expect(seen['X-Tolzar-Sig']).to eq(expected_sig(0, seen['X-Tolzar-Ts'], 'POST', '/meta/data_deletion', raw, seen['X-Tolzar-Nonce']))
 
     stub_request(:post, "#{brain}/meta/data_deletion").to_return(status: 400, body: { detail: 'bad signed_request' }.to_json)
     post '/tolzar/meta/data_deletion', params: { signed_request: 'bad' }

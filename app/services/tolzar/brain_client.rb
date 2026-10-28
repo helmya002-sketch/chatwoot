@@ -7,12 +7,16 @@
 #                          the public Meta/MCP doors, where the brain checks its own proof)
 #   X-Tolzar-Ts            unix seconds
 #   X-Tolzar-Body-Sha256   lowercase hex sha256 of the EXACT body bytes sent (of "" when there is none)
+#   X-Tolzar-Nonce         a fresh random nonce per request (SecureRandom.hex(16)); the brain accepts
+#                          each nonce only once inside the signing window (replay protection)
 #   X-Tolzar-Sig           hex(HMAC-SHA256(TOLZAR_BRAIN_SECRET,
-#                              "v2\n<account>\n<ts>\n<METHOD>\n<path>\n<body sha256 hex>"))
+#                              "v3\n<account>\n<ts>\n<METHOD>\n<path>\n<body sha256 hex>\n<nonce>"))
 # <path> is the request path the brain sees, without the query string. v2 (2026-10-28) also covers
 # the body: callers set req.body BEFORE .sign (the hash is of req.body exactly as it is sent).
+# v3 (2026-10-28) = v2 + the nonce; .signing_string/.signature still build v2 when given no nonce.
 require 'openssl'
 require 'digest'
+require 'securerandom'
 
 module Tolzar::BrainClient
   module_function
@@ -52,18 +56,21 @@ module Tolzar::BrainClient
     Digest::SHA256.hexdigest(body.to_s)
   end
 
-  # The signed string (v2) and its HMAC. Pure: the spec pins the brain's own test vector.
-  def signing_string(account_id, ts, method, path, body_hex)
-    "v2\n#{account_id.to_i}\n#{ts.to_i}\n#{method.to_s.upcase}\n#{path.to_s.split('?', 2).first}\n#{body_hex.to_s.downcase}"
+  # The signed string (v3 with a nonce, v2 without) and its HMAC. Pure: the spec pins the brain's
+  # own test vectors.
+  def signing_string(account_id, ts, method, path, body_hex, nonce = nil)
+    base = "#{account_id.to_i}\n#{ts.to_i}\n#{method.to_s.upcase}\n#{path.to_s.split('?', 2).first}\n#{body_hex.to_s.downcase}"
+    nonce.nil? ? "v2\n#{base}" : "v3\n#{base}\n#{nonce}"
   end
 
-  def signature(key, account_id, ts, method, path, body_hex)
-    OpenSSL::HMAC.hexdigest('SHA256', key.to_s, signing_string(account_id, ts, method, path, body_hex))
+  def signature(key, account_id, ts, method, path, body_hex, nonce = nil)
+    OpenSSL::HMAC.hexdigest('SHA256', key.to_s, signing_string(account_id, ts, method, path, body_hex, nonce))
   end
 
-  # Adds the shared-secret, signed-account and body-hash headers to a Net::HTTP request. The one
-  # place that signs: every caller of the brain uses it, AFTER setting req.body.
-  def sign(req, account_id, ts: Time.now.to_i)
+  # Adds the shared-secret, signed-account, body-hash and nonce headers (v3) to a Net::HTTP request.
+  # The one place that signs: every caller of the brain uses it, AFTER setting req.body. Each call
+  # gets a fresh nonce (the brain refuses a nonce it has already seen).
+  def sign(req, account_id, ts: Time.now.to_i, nonce: SecureRandom.hex(16))
     key = secret
     return req if key.empty?
     raise ArgumentError, 'Tolzar::BrainClient.sign: a body stream cannot be signed' if req.body_stream
@@ -73,7 +80,8 @@ module Tolzar::BrainClient
     req['X-Tolzar-Account'] = account_id.to_i.to_s
     req['X-Tolzar-Ts'] = ts.to_i.to_s
     req['X-Tolzar-Body-Sha256'] = body_hex
-    req['X-Tolzar-Sig'] = signature(key, account_id, ts, req.method, req.path, body_hex)
+    req['X-Tolzar-Nonce'] = nonce.to_s
+    req['X-Tolzar-Sig'] = signature(key, account_id, ts, req.method, req.path, body_hex, nonce.to_s)
     req
   end
 
