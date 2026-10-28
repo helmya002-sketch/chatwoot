@@ -13,6 +13,7 @@ import vueActionCable from './helper/actionCable';
 import { useRouter } from 'vue-router';
 import { useStore } from 'dashboard/composables/store';
 import WootSnackbarBox from './components/SnackbarContainer.vue';
+import TolzarBranding from './components-next/Tolzar/TolzarBranding.vue';
 import { setColorTheme } from './helper/themeHelper';
 import { isOnOnboardingView } from 'v3/helpers/RouteHelper';
 import { useAccount } from 'dashboard/composables/useAccount';
@@ -28,6 +29,7 @@ export default {
   name: 'App',
 
   components: {
+    TolzarBranding,
     LoadingState,
     NetworkNotification,
     ImpersonationBanner,
@@ -148,6 +150,7 @@ export default {
     <UpdateBanner :latest-chatwoot-version="latestChatwootVersion" />
     <StatusBanner />
     <template v-if="currentAccountId">
+      <TolzarBranding :account-id="currentAccountId" />
       <PendingEmailVerificationBanner v-if="hideOnOnboardingView" />
       <PaymentPendingBanner v-if="hideOnOnboardingView" />
       <LowBackupCodesBanner v-if="hideOnOnboardingView" />

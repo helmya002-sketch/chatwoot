@@ -3,7 +3,7 @@
 # The brain is internal-network only (no published port); this proxy is the single,
 # authenticated door to it. Nothing here touches a live conversation.
 class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
-  before_action :ensure_admin
+  before_action :ensure_admin, except: %i[branding_view]
   before_action :ensure_owner, only: %i[export_start export_download meta_connect_url meta_disconnect meta_select]
 
   def agent_test
@@ -118,6 +118,13 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
 
     body = unsafe(params.except(:controller, :action, :account_id, :feature, :tolzar)).to_h
     render json: post_to_brain(path, body.merge('account_id' => account_scope_id))
+  end
+
+  # White-label (R11): every member of the workspace reads its branding (name, colour, logo,
+  # support e-mail; nothing else) so the app looks like the agency's product for them too.
+  def branding_view
+    b = get_from_brain("/branding?account_id=#{account_scope_id}")['branding'] || {}
+    render json: { ok: true, branding: b.slice('product_name', 'color', 'logo_url', 'support_email') }
   end
 
   # Export workspace (A5): a background job writes a .tar.gz, downloadable for 7 days.

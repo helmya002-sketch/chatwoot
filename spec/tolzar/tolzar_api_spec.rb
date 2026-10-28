@@ -45,4 +45,12 @@ RSpec.describe 'Tolzar API', type: :request do
     post "/api/v1/accounts/#{account.id}/tolzar/brain/mcp_token", headers: admin.create_new_auth_token
     expect(response).to have_http_status(:forbidden)
   end
+
+  it 'lets every member read the branding (and only the branding)' do
+    allow_any_instance_of(Api::V1::Accounts::TolzarController).to receive(:get_from_brain)
+      .and_return({ 'ok' => true, 'branding' => { 'product_name' => 'Bright Inbox', 'secret' => 'x' } })
+    get "/api/v1/accounts/#{account.id}/tolzar/branding", headers: agent.create_new_auth_token
+    expect(response).to have_http_status(:success)
+    expect(response.parsed_body['branding']).to eq('product_name' => 'Bright Inbox')
+  end
 end

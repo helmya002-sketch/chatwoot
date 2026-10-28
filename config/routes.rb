@@ -90,6 +90,7 @@ Rails.application.routes.draw do
           get    'tolzar/meta/status',      to: 'tolzar#meta_status'
           get    'tolzar/audit',            to: 'tolzar#audit'
           get    'tolzar/brain/:feature',   to: 'tolzar#brain_get'
+          get    'tolzar/branding',         to: 'tolzar#branding_view'
           post   'tolzar/brain/:feature',   to: 'tolzar#brain_post'
           post   'tolzar/export',           to: 'tolzar#export_start'
           get    'tolzar/export',           to: 'tolzar#export_status'
