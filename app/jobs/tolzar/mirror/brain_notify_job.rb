@@ -14,6 +14,10 @@
 # handles it unchanged. It is signed like Chatwoot signs an agent-bot delivery (Webhooks::Trigger:
 # X-Chatwoot-Timestamp + X-Chatwoot-Signature = "sha256=" + hex HMAC-SHA256(secret, "<ts>.<body>")),
 # with BRAIN_WEBHOOK_SECRET, and only when the URL's host is the brain's (never to another host).
+# Every request also carries X-Chatwoot-Delivery: <uuid>, like Chatwoot's own deliveries; the brain
+# accepts each delivery id once, so a captured signed delivery cannot be replayed inside the 300 s
+# window. The id is the job's ActiveJob job_id (a UUID, kept across retries of the same job), so a
+# retry of a delivery the brain already accepted is refused instead of evaluated twice.
 class Tolzar::Mirror::BrainNotifyJob < ApplicationJob
   queue_as :medium
 
@@ -34,6 +38,7 @@ class Tolzar::Mirror::BrainNotifyJob < ApplicationJob
     http.read_timeout = 8
     req = Net::HTTP::Post.new(uri.request_uri, 'Content-Type' => 'application/json')
     req.body = payload.to_json
+    req['X-Chatwoot-Delivery'] = delivery_id
     sign_for_brain(req, uri)
     res = http.request(req)
     return if res.is_a?(Net::HTTPSuccess)
@@ -45,6 +50,10 @@ class Tolzar::Mirror::BrainNotifyJob < ApplicationJob
   end
 
   private
+
+  def delivery_id
+    @delivery_id ||= job_id.presence || SecureRandom.uuid
+  end
 
   def sign_for_brain(req, uri)
     secret = ENV['BRAIN_WEBHOOK_SECRET'].to_s

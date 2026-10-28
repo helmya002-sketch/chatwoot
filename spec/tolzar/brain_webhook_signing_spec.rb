@@ -31,6 +31,28 @@ RSpec.describe 'Tolzar brain webhook signing' do
         ts = seen.headers['X-Chatwoot-Timestamp']
         expect(seen.headers['X-Chatwoot-Signature']).to eq("sha256=#{OpenSSL::HMAC.hexdigest('SHA256', secret, "#{ts}.#{seen.body}")}")
       end
+
+      it 'sends a delivery id (a UUID), the brain accepts each id once' do
+        seen = nil
+        stub_request(:post, hook_url).with { |req| seen = req }.to_return(status: 200)
+        with_modified_env(env) { described_class.perform_now(message.id) }
+
+        expect(seen.headers['X-Chatwoot-Delivery']).to match(/\A\h{8}-\h{4}-\h{4}-\h{4}-\h{12}\z/)
+      end
+
+      it 'keeps the delivery id stable per job (a retry reuses it), and new per job' do
+        ids = []
+        stub_request(:post, hook_url).with { |req| ids << req.headers['X-Chatwoot-Delivery'] }.to_return(status: 200)
+        job = described_class.new(message.id)
+        with_modified_env(env) do
+          2.times { job.perform_now }
+          described_class.perform_now(message.id)
+        end
+
+        expect(ids[0]).to eq(job.job_id)
+        expect(ids[1]).to eq(ids[0])
+        expect(ids[2]).not_to eq(ids[0])
+      end
     end
 
     context 'when the hook URL is on any other host' do
