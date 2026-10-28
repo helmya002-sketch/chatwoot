@@ -165,12 +165,19 @@ const addTemplate = tpl =>
 
 const pretty = v => JSON.stringify(v, null, 2);
 
+// What each section really does today (no live writes anywhere): one honest label per section.
+const HONEST_LABEL = {
+  sms: 'TOLZAR_HONEST.SMS',
+  crm: 'TOLZAR_HONEST.CRM',
+  commerce: 'TOLZAR_HONEST.SHOP',
+};
+
 onMounted(load);
 </script>
 
 <template>
   <div v-if="form">
-    <span :class="SHADOW_BADGE">{{ t('TOLZAR_SETTINGS.R1.SHADOW_ONLY') }}</span>
+    <span :class="SHADOW_BADGE">{{ t(HONEST_LABEL[section] || 'TOLZAR_SETTINGS.R1.SHADOW_ONLY') }}</span>
 
     <!-- SMS -->
     <div v-if="section === 'sms'" class="grid gap-5 mt-2 lg:grid-cols-2">

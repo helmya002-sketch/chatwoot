@@ -1491,5 +1491,13 @@
       "COMMITMENT": "promise/discount wording",
       "PRICE": "price not in the price table"
     }
+  },
+  "TOLZAR_HONEST": {
+    "COMING_SOON": "Coming soon",
+    "SKILLS_SOON": "Saved with the agent, but not used yet: replies don't run these skills today. What you saved is kept.",
+    "SMS": "Preview only — nothing is sent",
+    "CRM": "Dry run — nothing is written to your CRM",
+    "SHOP": "Read-only",
+    "BROADCASTS": "Would-send only (Shadow)"
   }
 }

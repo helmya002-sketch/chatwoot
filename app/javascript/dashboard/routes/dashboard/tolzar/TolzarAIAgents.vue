@@ -19,13 +19,14 @@ import {
 const accountId = useMapGetter('getCurrentAccountId');
 const { t } = useI18n();
 
-// --- AI Agents pillar (respond.io clone). Configs are stored SERVER-SIDE by the brain
+// --- AI Agents pillar. Configs are stored SERVER-SIDE by the brain
 // (CRUD proxied through Chatwoot at /tolzar/agents); the brain reads the active agent and
 // uses its instructions when it replies. No localStorage — shared across users + devices.
-const EMOJIS = ['😇', '😎', '🤖', '🐬', '💬', '⚓', '🧭', '🌊'];
+const EMOJIS = ['😇', '😎', '🤖', '✨', '💬', '📅', '🧭', '🛍️'];
 const apiBase = computed(() => `/api/v1/accounts/${accountId.value}/tolzar`);
 
-// Skill catalog — mirrors respond.io AI Skills; each maps to a Chatwoot action we already script.
+// Skill catalog. Saved with the agent, but the brain does not read `skills` yet: the section is
+// shown disabled ("Coming soon") and whatever was saved is kept as it is.
 const SKILL_CATALOG = [
   { type: 'assign', label: 'Assign to agent or team', hint: 'Route the conversation to a human agent, a team, or another AI Agent.' },
   { type: 'update_fields', label: 'Update Contact fields', hint: 'Save data from the conversation to contact fields (hotel, location, country…).' },
@@ -231,6 +232,7 @@ function removeKnowledge(i) {
   draft.value.knowledge.splice(i, 1);
 }
 
+const SKILLS_LIVE = false; // flip when the brain reads an agent's `skills`
 const addSkillOpen = ref(false);
 function addSkill(type) {
   draft.value.skills.push({ type, config: '' });
@@ -468,12 +470,15 @@ onMounted(() => {
             <BrainNotice :result="priceResult" :saved="priceSaved" />
           </section>
 
-          <!-- AI skills -->
-          <section class="p-[18px] rounded-2xl border shadow-sm bg-n-solid-1 border-n-weak">
+          <!-- AI skills: not read by the brain yet -> shown disabled, saved data untouched -->
+          <section class="p-[18px] rounded-2xl border shadow-sm bg-n-solid-1 border-n-weak" :aria-disabled="!SKILLS_LIVE">
             <div class="flex relative justify-between items-center">
-              <h3 class="m-0 text-[15px] font-semibold text-n-slate-12">AI skills</h3>
-              <button type="button" class="tz-btn-soft" @click="addSkillOpen = !addSkillOpen"><span class="i-lucide-plus size-3.5" /> Add skill</button>
-              <div v-if="addSkillOpen" class="overflow-hidden absolute top-9 z-10 w-[300px] rounded-xl border shadow-lg ltr:right-0 rtl:left-0 bg-n-solid-1 border-n-weak">
+              <h3 class="inline-flex gap-2 items-center m-0 text-[15px] font-semibold text-n-slate-12">
+                AI skills
+                <span v-if="!SKILLS_LIVE" class="inline-flex items-center px-2 py-0.5 text-[11px] font-semibold rounded-full text-n-slate-11 bg-n-alpha-2">{{ t('TOLZAR_HONEST.COMING_SOON') }}</span>
+              </h3>
+              <button type="button" class="tz-btn-soft disabled:opacity-50 disabled:cursor-not-allowed" :disabled="!SKILLS_LIVE" @click="addSkillOpen = !addSkillOpen"><span class="i-lucide-plus size-3.5" /> Add skill</button>
+              <div v-if="SKILLS_LIVE && addSkillOpen" class="overflow-hidden absolute top-9 z-10 w-[300px] rounded-xl border shadow-lg ltr:right-0 rtl:left-0 bg-n-solid-1 border-n-weak">
                 <div v-if="!availableSkills.length" class="p-3 text-[13px] text-n-slate-10">All skills added.</div>
                 <button v-for="s in availableSkills" :key="s.type" type="button" class="block px-3 py-2.5 w-full text-left border-b transition-colors border-n-weak last:border-0 hover:bg-n-alpha-1" @click="addSkill(s.type)">
                   <div class="text-[13px] font-semibold text-n-slate-12">{{ s.label }}</div>
@@ -481,17 +486,18 @@ onMounted(() => {
                 </button>
               </div>
             </div>
-            <p class="mt-1.5 mb-3 text-xs text-n-slate-11">Set clear rules so your agent behaves as expected.</p>
-            <div v-if="!draft.skills.length" class="text-[13px] text-n-slate-10">No skills yet — add one.</div>
-            <div v-for="(sk, i) in draft.skills" :key="i" class="p-3 mb-2.5 rounded-xl border border-n-weak bg-n-alpha-1">
+            <p v-if="!SKILLS_LIVE" class="mt-1.5 mb-3 text-xs text-n-slate-11">{{ t('TOLZAR_HONEST.SKILLS_SOON') }}</p>
+            <p v-else class="mt-1.5 mb-3 text-xs text-n-slate-11">Set clear rules so your agent behaves as expected.</p>
+            <div v-if="SKILLS_LIVE && !draft.skills.length" class="text-[13px] text-n-slate-10">No skills yet — add one.</div>
+            <div v-for="(sk, i) in draft.skills" :key="i" class="p-3 mb-2.5 rounded-xl border border-n-weak bg-n-alpha-1" :class="{ 'opacity-60': !SKILLS_LIVE }">
               <div class="flex justify-between items-center mb-1.5">
                 <div class="inline-flex gap-1.5 items-center text-[13px] font-bold">
                   <span class="inline-block rounded-full size-2" :style="{ background: skillAccent[sk.type] || '#64748b' }" />
                   <span class="text-n-slate-12">{{ skillLabel(sk.type) }}</span>
                 </div>
-                <button type="button" class="grid place-content-center rounded-lg transition-colors size-6 text-n-slate-10 hover:text-rose-500 hover:bg-n-alpha-2" @click="removeSkill(i)"><span class="i-lucide-x size-4" /></button>
+                <button type="button" class="grid place-content-center rounded-lg transition-colors size-6 text-n-slate-10 hover:text-rose-500 hover:bg-n-alpha-2 disabled:pointer-events-none" :disabled="!SKILLS_LIVE" @click="removeSkill(i)"><span class="i-lucide-x size-4" /></button>
               </div>
-              <textarea v-model="sk.config" rows="2" placeholder="When and how should this skill be performed?" class="box-border p-2 w-full text-[12.5px] rounded-lg border outline-none resize-y border-n-weak bg-n-solid-1 text-n-slate-12 focus:border-n-brand"></textarea>
+              <textarea v-model="sk.config" :readonly="!SKILLS_LIVE" rows="2" placeholder="When and how should this skill be performed?" class="box-border p-2 w-full text-[12.5px] rounded-lg border outline-none resize-y border-n-weak bg-n-solid-1 text-n-slate-12 focus:border-n-brand"></textarea>
             </div>
           </section>
         </div>

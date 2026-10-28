@@ -404,6 +404,7 @@ onMounted(() => open('usage'));
 
           <!-- broadcasts -->
           <div v-if="current === 'broadcasts' && data.draft" class="max-w-[620px]">
+            <span class="inline-flex items-center px-2 py-0.5 mb-2 text-[11px] font-semibold rounded-full text-amber-700 bg-amber-500/10">{{ $t('TOLZAR_HONEST.BROADCASTS') }}</span>
             <input v-model="data.draft.name" class="tz-in" :placeholder="$t('TOLZAR_SETTINGS.BROADCASTS.NAME')" />
             <div class="flex gap-2 mt-2">
               <input v-model="data.draft.audience.field" class="tz-in" placeholder="lifecycle_stage" />

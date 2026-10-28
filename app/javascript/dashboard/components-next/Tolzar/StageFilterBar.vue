@@ -2,14 +2,23 @@
 // Tolzar Contacts pass 1: one-click stage views above the table. Applies a normal Chatwoot
 // contact filter (lifecycle_stage = X), so pagination, the filter pill and "Save as segment"
 // keep working.
+import { watchEffect } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { STAGES, stageClass } from './tolzarStages';
+import { useMapGetter } from 'dashboard/composables/store';
+import { STAGES, stageClass, applyPipelineStages } from './tolzarStages';
 
 defineProps({
   activeStage: { type: String, default: '' },
 });
 const emit = defineEmits(['select']);
 const { t } = useI18n();
+
+// The workspace's own stage list (account setting `pipeline_stages`), else the defaults.
+const accountId = useMapGetter('getCurrentAccountId');
+const getAccount = useMapGetter('accounts/getAccount');
+watchEffect(() =>
+  applyPipelineStages(getAccount.value(accountId.value)?.settings)
+);
 </script>
 
 <template>

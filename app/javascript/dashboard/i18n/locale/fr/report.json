@@ -1491,5 +1491,13 @@
       "COMMITMENT": "formulation de promesse/remise",
       "PRICE": "prix absent de la grille tarifaire"
     }
+  },
+  "TOLZAR_HONEST": {
+    "COMING_SOON": "Bientôt disponible",
+    "SKILLS_SOON": "Enregistrées avec l’agent, mais pas encore utilisées : les réponses n’exécutent pas ces compétences aujourd’hui. Ce que vous avez enregistré est conservé.",
+    "SMS": "Aperçu uniquement — rien n’est envoyé",
+    "CRM": "Simulation — rien n’est écrit dans votre CRM",
+    "SHOP": "Lecture seule",
+    "BROADCASTS": "Envoi simulé uniquement (Shadow)"
   }
 }

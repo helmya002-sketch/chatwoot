@@ -1491,5 +1491,13 @@
       "COMMITMENT": "Versprechen/Rabatt-Formulierung",
       "PRICE": "Preis nicht in der Preistabelle"
     }
+  },
+  "TOLZAR_HONEST": {
+    "COMING_SOON": "Demnächst",
+    "SKILLS_SOON": "Wird mit dem Agenten gespeichert, aber noch nicht genutzt: Antworten führen diese Skills heute nicht aus. Was du gespeichert hast, bleibt erhalten.",
+    "SMS": "Nur Vorschau — es wird nichts gesendet",
+    "CRM": "Probelauf — in dein CRM wird nichts geschrieben",
+    "SHOP": "Nur lesen",
+    "BROADCASTS": "Nur „würde senden“ (Shadow)"
   }
 }
