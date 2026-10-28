@@ -87,12 +87,13 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
   BRAIN_GETS = { 'usage' => '/usage', 'sla' => '/sla', 'media' => '/media', 'dedupe' => '/dedupe',
                  'channels' => '/channels', 'attribution' => '/attribution', 'broadcasts' => '/broadcasts',
                  'learned' => '/learned', 'explain' => '/explain', 'recovery' => '/recovery',
-                 'qa' => '/qa', 'brief' => '/brief', 'memory' => '/memory' }.freeze
+                 'qa' => '/qa', 'brief' => '/brief', 'memory' => '/memory', 'scores' => '/scores' }.freeze
   BRAIN_POSTS = { 'sla' => '/sla', 'media' => '/media', 'dedupe_refresh' => '/dedupe/refresh', 'channels' => '/channels',
                   'links' => '/links', 'broadcasts' => '/broadcasts', 'broadcasts_preview' => '/broadcasts/preview',
                   'broadcasts_run' => '/broadcasts/run', 'mcp_token' => '/mcp-token',
                   'learned_status' => '/learned/status', 'translate' => '/translate', 'recovery' => '/recovery',
-                  'qa_rubric' => '/qa/rubric', 'brief_build' => '/brief/build' }.freeze
+                  'qa_rubric' => '/qa/rubric', 'brief_build' => '/brief/build', 'reviews_draft' => '/reviews/draft',
+                  'ask' => '/ask' }.freeze
 
   def brain_get
     path = BRAIN_GETS[params[:feature].to_s]
