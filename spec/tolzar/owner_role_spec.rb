@@ -58,6 +58,12 @@ RSpec.describe 'Tolzar account owner (H3)', type: :request do
     expect(response).to have_http_status(:success)
   end
 
+  it 'never takes the owner id from the browser' do
+    post brain_url('roles'), params: { user_id: second_admin.id, role: 'owner', owner_user_id: second_admin.id },
+                             headers: owner.create_new_auth_token, as: :json
+    expect(posts.last[1]['owner_user_id']).to eq(owner.id)
+  end
+
   it 'refuses demoting the account owner, even by the owner' do
     post brain_url('roles'), params: { user_id: owner.id, role: 'manager' }, headers: owner.create_new_auth_token, as: :json
     expect(response).to have_http_status(:forbidden)
@@ -71,6 +77,8 @@ RSpec.describe 'Tolzar account owner (H3)', type: :request do
     post brain_url('roles'), params: { user_id: second_admin.id, role: 'manager' }, headers: owner.create_new_auth_token, as: :json
     expect(response).to have_http_status(:success)
     expect(posts.map(&:first)).to eq(%w[/roles /roles])
+    # The owner id reaches the brain from the server, even if the browser sends another one.
+    expect(posts.map { |_p, b| b['owner_user_id'] }).to eq([owner.id, owner.id])
 
     post brain_url('roles'), params: { user_id: create(:user).id, role: 'manager' }, headers: owner.create_new_auth_token, as: :json
     expect(response).to have_http_status(:unprocessable_entity)

@@ -154,7 +154,11 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
       refused = role_change_refusal(body)
       return render(json: { ok: false, error: refused[0] }, status: refused[1]) if refused
     end
-    render json: post_to_brain(path, body.merge('account_id' => account_scope_id))
+    body = body.merge('account_id' => account_scope_id)
+    # The brain refuses to demote the account owner / the last Owner too; it learns the owner
+    # from the server side only (never from the browser).
+    body = body.merge('owner_user_id' => Tolzar::AccountOwner.user_id(Current.account)) if params[:feature].to_s == 'roles'
+    render json: post_to_brain(path, body)
   end
 
   # White-label (R11): every member of the workspace reads its branding (name, colour, logo,
@@ -225,7 +229,9 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
   end
 
   def role_table
-    @role_table ||= get_from_brain("/roles?account_id=#{account_scope_id}")['roles'] || {}
+    @role_table ||= get_from_brain(
+      "/roles?account_id=#{account_scope_id}&owner_user_id=#{Tolzar::AccountOwner.user_id(Current.account)}"
+    )['roles'] || {}
   end
 
   def owner?
