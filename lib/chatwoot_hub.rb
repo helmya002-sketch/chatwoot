@@ -82,7 +82,15 @@ class ChatwootHub
     model.last&.id || 0
   end
 
+  # Tolzar: DISABLE_TELEMETRY means no call home at all (not just fewer metrics): no version
+  # ping and no instance registration. Mobile push still relays through the hub (send_push).
+  def self.telemetry_disabled?
+    ActiveModel::Type::Boolean.new.cast(ENV.fetch('DISABLE_TELEMETRY', false))
+  end
+
   def self.sync_with_hub
+    return nil if telemetry_disabled?
+
     begin
       info = instance_config
       info = info.merge(instance_metrics) unless ENV['DISABLE_TELEMETRY']
@@ -97,6 +105,8 @@ class ChatwootHub
   end
 
   def self.register_instance(company_name, owner_name, owner_email)
+    return if telemetry_disabled?
+
     info = { company_name: company_name, owner_name: owner_name, owner_email: owner_email, subscribed_to_mailers: true }
     RestClient.post(registration_url, info.merge(instance_config).to_json, { content_type: :json, accept: :json })
   rescue *ExceptionList::REST_CLIENT_EXCEPTIONS => e
