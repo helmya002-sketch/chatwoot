@@ -132,7 +132,8 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
     return head(:not_found) if path.nil?
     return render(json: { ok: false, error: 'owner_only' }, status: :forbidden) if OWNER_POSTS.include?(params[:feature].to_s) && !owner?
 
-    body = unsafe(params.except(:controller, :action, :account_id, :feature, :tolzar)).to_h
+    # Rails route params (controller, action, the .json `format`) are not part of the brain request.
+    body = unsafe(params.except(:controller, :action, :format, :account_id, :feature, :tolzar)).to_h
     render json: post_to_brain(path, body.merge('account_id' => account_scope_id))
   end
 
