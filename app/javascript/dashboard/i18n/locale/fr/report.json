@@ -1032,7 +1032,9 @@
       "ai": "IA",
       "contacts": "Contacts",
       "growth": "Croissance",
-      "developers": "Développeurs"
+      "developers": "Développeurs",
+      "trust": "Confiance et confidentialité",
+      "channels": "Canaux"
     },
     "NAV": {
       "usage": "Utilisation",
@@ -1050,7 +1052,16 @@
       "broadcasts": "Diffusions",
       "mcp": "Outils IA (MCP)",
       "roles": "Rôles",
-      "connections": "Facebook & Instagram"
+      "connections": "Facebook & Instagram",
+      "disclosure": "Mention IA",
+      "retention": "Conservation des données",
+      "privacy": "Données d'un contact",
+      "sms": "SMS de secours",
+      "crm": "Synchronisation CRM",
+      "commerce": "Boutique",
+      "negotiation": "Limites de négociation",
+      "agent_teams": "Agents par équipe",
+      "tuning": "Propositions d'amélioration"
     },
     "HINT": {
       "usage": "What this workspace used in the last 30 days.",
@@ -1068,7 +1079,16 @@
       "broadcasts": "Pick an audience and see exactly who would receive it. Shadow: nothing is sent.",
       "mcp": "Let your own AI tools read this workspace's Tolzar data. Read-only.",
       "roles": "Qui peut faire quoi dans cet espace de travail.",
-      "connections": "Lire les commentaires de vos pages (lecture seule) ; réponses préparées en mode fantôme."
+      "connections": "Lire les commentaires de vos pages (lecture seule) ; réponses préparées en mode fantôme.",
+      "disclosure": "Informer les personnes qu'elles parlent à une IA (AI Act de l'UE). La mention est ajoutée à la première réponse IA d'une conversation, jamais deux fois.",
+      "retention": "Combien de temps Tolzar garde ses propres données. Les lignes plus anciennes sont supprimées chaque jour. Les conversations Chatwoot suivent les réglages de Chatwoot.",
+      "privacy": "Exporter ou effacer ce que Tolzar détient sur une personne (RGPD : accès et effacement).",
+      "sms": "Joindre les clients par SMS via votre propre compte fournisseur. Shadow : Tolzar montre exactement le SMS qu'il enverrait.",
+      "crm": "Garder les contacts alignés avec HubSpot, Zoho CRM ou Pipedrive. Essai à blanc : Tolzar liste ce qu'il changerait et ne change rien.",
+      "commerce": "Connecter votre boutique : prix du catalogue, statut de commande sur demande (lecture seule), un workflow de panier abandonné.",
+      "negotiation": "Jusqu'où l'IA peut aller sur le prix. Un garde-fou vérifie chaque réponse ; tout ce qui dépasse les limites passe à un collègue.",
+      "agent_teams": "Quel agent IA parle pour quelle équipe (ventes, support...). Vide = agent par défaut de l'espace.",
+      "tuning": "Une fois par jour, Tolzar propose jusqu'à 3 modifications des instructions de votre agent, à partir des notes QA, des arrêts des garde-fous et des réponses de votre équipe."
     },
     "SAVE": "Enregistrer",
     "NONE_YET": "Rien pour l'instant.",
@@ -1157,6 +1177,167 @@
       "CONNECTED": "Connecté par {who} ({status})",
       "TEAM": "équipe",
       "DISCONNECT": "Déconnecter"
+    },
+    "R1": {
+      "OWNER_ONLY": "Seul un Owner de cet espace peut faire cela.",
+      "SAVED": "Enregistré",
+      "ENV_TITLE": "Clés sur le serveur",
+      "ENV_HINT": "Les clés ne sont jamais saisies dans Tolzar. Demandez à votre admin serveur de définir ces variables d'environnement ; Tolzar ne garde que leurs noms.",
+      "ENV_PRESENT": "présente",
+      "ENV_MISSING": "absente",
+      "ENV_NONE": "Aucun nom de variable enregistré.",
+      "SHADOW_ONLY": "Shadow uniquement : rien n'est envoyé"
+    },
+    "TRUST": {
+      "MODE": "Mention",
+      "MODES": {
+        "auto": "Automatique (contacts UE / EEE)",
+        "on": "Toujours",
+        "off": "Jamais"
+      },
+      "MODE_HINT": {
+        "auto": "Affichée quand le pays du contact est dans l'UE ou l'EEE. Une entreprise établie dans l'UE devrait choisir Toujours.",
+        "on": "Affichée dans la première réponse IA de chaque conversation.",
+        "off": "Jamais affichée. À choisir seulement là où aucune obligation ne s'applique."
+      },
+      "TEXTS": "Votre propre formulation par langue (facultatif)",
+      "TEXTS_HINT": "Laissez une langue vide pour utiliser la phrase générique en gris.",
+      "DECISIONS_DAYS": "Garder les décisions de l'IA pendant (jours)",
+      "KV_DAYS": "Garder mémoire client, notes QA, transcriptions et plans pendant (jours)",
+      "RETENTION_SCOPE": "Entre 1 et 3650 jours. Les lignes sans date sont conservées.",
+      "NEXT_PURGE": "Le nettoyage de cette nuit supprimerait",
+      "COUNT": {
+        "decisions": "Décisions",
+        "kv_rows": "Lignes stockées",
+        "kv_trimmed": "Lignes raccourcies",
+        "conversations": "Conversations concernées"
+      },
+      "OWNER_NOTE": "Réservé aux Owners. À faire avant de supprimer le contact dans Chatwoot : ensuite Tolzar ne retrouve plus ses conversations.",
+      "CONTACT_ID": "ID du contact",
+      "CONTACT_ID_HINT": "Le numéro dans l'adresse du contact sous Contacts (…/contacts/1234).",
+      "EXPORT": "Exporter (JSON)",
+      "ERASE": "Effacer les données Tolzar",
+      "EXPORTED": "Export téléchargé.",
+      "ERASED": "Les données Tolzar de ce contact sont effacées.",
+      "NEXT_STEP": "Étape suivante : supprimer le contact lui-même dans Chatwoot (Contacts → contact → Supprimer).",
+      "OPEN_CONTACT": "Ouvrir le contact",
+      "CONFIRM_TITLE": "Effacer les données de ce contact ?",
+      "CONFIRM_TEXT": "La mémoire, les décisions IA, les notes et les transcriptions de Tolzar pour le contact {id} sont supprimées définitivement. C'est irréversible.",
+      "CONFIRM_TYPE": "Saisissez {id} pour confirmer",
+      "CONFIRM_BUTTON": "Effacer définitivement"
+    },
+    "CHANNELS": {
+      "PROVIDER": "Fournisseur",
+      "P": {
+        "twilio": "Twilio",
+        "unifonic": "Unifonic",
+        "vonage": "Vonage",
+        "hubspot": "HubSpot",
+        "zoho": "Zoho CRM",
+        "pipedrive": "Pipedrive",
+        "shopify": "Shopify",
+        "woocommerce": "WooCommerce",
+        "salla": "Salla",
+        "zid": "Zid"
+      },
+      "SMS_FROM": "Expéditeur (votre numéro, ou un nom approuvé de 11 caractères maximum)",
+      "ENV": {
+        "twilio_account_sid_env": "Variable d'environnement avec votre Account SID Twilio",
+        "twilio_key_env": "Variable d'environnement avec votre auth token Twilio",
+        "unifonic_key_env": "Variable d'environnement avec votre AppSid Unifonic",
+        "vonage_account_sid_env": "Variable d'environnement avec votre clé API Vonage",
+        "vonage_key_env": "Variable d'environnement avec votre secret API Vonage",
+        "crm_key_env": "Variable d'environnement avec votre jeton d'accès CRM",
+        "shop_key_env": "Variable d'environnement avec la clé ou le jeton API de votre boutique",
+        "shop_secret_env": "Variable d'environnement avec le secret API de votre boutique"
+      },
+      "SMS_PREVIEW": "Aperçu d'un SMS",
+      "SMS_TO": "À (format international)",
+      "SMS_TEXT": "Texte",
+      "PREVIEW": "Aperçu",
+      "WOULD_SEND": "Enverrait (Shadow)",
+      "SEGMENTS": "{n} partie(s), {enc}, {chars} caractères",
+      "MISSING": "Pas encore sur le serveur : {names}",
+      "ZOHO_DOMAIN": "Centre de données Zoho",
+      "DIRECTION": "Sens",
+      "DIR": {
+        "to_crm": "Tolzar → CRM",
+        "from_crm": "CRM → Tolzar",
+        "both": "Dans les deux sens"
+      },
+      "CONFLICT_RULE": "Dans les deux sens : Tolzar gère score et résumé ; le CRM gère nom, e-mail, téléphone et étape dès qu'il les a.",
+      "READ_CRM": "Autoriser les consultations en lecture seule dans le CRM (pour comparer)",
+      "HOURLY_DRY_RUN": "Essai à blanc toutes les heures",
+      "MAPPING": "Correspondance des champs",
+      "FIELD": {
+        "name": "Nom",
+        "email": "E-mail",
+        "phone": "Téléphone",
+        "lifecycle_stage": "Étape",
+        "tolzar_lead_score": "Score du lead",
+        "tolzar_summary": "Résumé IA"
+      },
+      "MAPPING_HINT": "Le nom du champ dans le CRM. 'prenom+nom' répartit le nom sur deux champs. Vide = valeur par défaut en gris.",
+      "CRM_PREVIEW": "Essai à blanc pour un contact",
+      "WOULD_PUSH": "Écrirait dans le CRM",
+      "WOULD_PULL": "Reprendrait du CRM",
+      "NOT_READ": "CRM non lu (consultations désactivées ou clé absente)",
+      "RUNS": "Essais à blanc",
+      "RUN_LINE": "{checked} contacts vérifiés · {changes} changeraient",
+      "CRM_READ": "CRM lu",
+      "CRM_NOT_READ": "CRM non lu",
+      "SHOP_DOMAIN": "Adresse de la boutique",
+      "CURRENCY": "Devise (3 lettres)",
+      "PRICE_AGENT": "Agent IA dont le catalogue remplit la liste de prix",
+      "CATALOGUE_DAILY": "Actualiser le catalogue chaque jour",
+      "SYNC_NOW": "Synchroniser le catalogue",
+      "SYNCED": "{n} prix chargés dans la liste de prix de l'agent.",
+      "ORDER_STATUS": "Statut de commande",
+      "ORDER_HINT": "Lecture seule. La réponse ne montre jamais l'adresse, l'e-mail ou le téléphone du client.",
+      "LOOK_UP": "Rechercher",
+      "TEMPLATES": "Modèles de workflow",
+      "ADD_DRAFT": "Ajouter aux Workflows (brouillon)",
+      "TEMPLATE_ADDED": "Ajouté aux Workflows comme brouillon."
+    },
+    "AI": {
+      "NEGOTIATE": "L'IA peut négocier dans ces limites",
+      "FLOOR": "Prix le plus bas (% du prix affiché)",
+      "MAX_DISCOUNT": "Remise maximale (%)",
+      "PERKS": "Avantages que l'IA peut proposer au lieu d'argent (un par ligne)",
+      "PERKS_PLACEHOLDER": "Retrait gratuit\nPhotos offertes",
+      "ALLOWED": "L'IA peut proposer au plus {n}% de remise. Au-delà, un collègue prend le relais.",
+      "SNIPPET": "Texte pour les instructions de votre agent",
+      "SNIPPET_HINT": "La façon de négocier vient des instructions de l'agent. Collez ceci dedans ; les limites ci-dessus s'appliquent dans tous les cas.",
+      "COPY": "Copier",
+      "DEFAULT_AGENT": "Agent par défaut",
+      "NO_TEAMS": "Pas encore d'équipes dans cet espace (Paramètres → Équipes).",
+      "MISSING_AGENT": "Ces équipes pointent vers un agent qui n'existe plus : {teams}",
+      "TEAMS_NOTE": "Quand une conversation est confiée à une équipe, l'agent de cette équipe prend le relais (Shadow, comme toute réponse).",
+      "PROPOSALS_ONLY": "Propositions uniquement : rien ne change tout seul",
+      "SUGGEST_NOW": "Proposer des améliorations maintenant",
+      "SIGNALS": "{n} signaux",
+      "STATUS": {
+        "proposed": "proposée",
+        "approved": "approuvée",
+        "rejected": "refusée"
+      },
+      "APPROVE": "Approuver",
+      "REJECT": "Refuser",
+      "APPROVE_NOTE": "Approuver ne modifie pas l'agent : copiez la modification approuvée dans ses instructions (Agents IA).",
+      "NOTHING_TO_SUGGEST": "Rien à proposer pour l'instant.",
+      "SUGGESTED": "Nouvelle proposition prête.",
+      "DECIDED": "Enregistré"
+    },
+    "QUOTAS": {
+      "TITLE": "Quotas IA",
+      "HINT": "Plafonds pour cet espace (jour {day}, mois {month}, {tz}). Au-delà, l'IA utilise votre modèle de réponse sûr.",
+      "daily_calls": "Appels au modèle aujourd'hui",
+      "monthly_tokens": "Tokens ce mois-ci",
+      "UNLIMITED": "Sans limite",
+      "REACHED": "Limite atteinte",
+      "REMAINING": "{n} restants",
+      "LIMIT": "Limite",
+      "EMPTY_UNLIMITED": "vide = sans limite"
     }
   },
   "TOLZAR_ONBOARDING": {
@@ -1224,5 +1405,43 @@
     "SUPPORT": "E-mail du support affiché",
     "PREVIEW": "Aperçu",
     "APPLY_HINT": "Enregistré par espace. L'application à toute l'appli (logo, couleurs, domaine) arrive avec le thème marque blanche."
+  },
+  "TOLZAR_RESULTS": {
+    "NAV": "Résultats",
+    "TITLE": "Résultats",
+    "SUBTITLE": "Ce que Tolzar apporte à cet espace, en chiffres simples",
+    "WOULD_BE_NOTE": "Tolzar tourne ici en Shadow : ses réponses sont des brouillons. Les valeurs marquées 'potentiel' sont ce que les clients auraient vu.",
+    "WOULD_BE": "potentiel",
+    "TILE": {
+      "staff_first_reply": "Première réponse de l'équipe",
+      "tolzar_first_reply": "Première réponse de Tolzar",
+      "ai_share": "Réponses écrites seule par l'IA",
+      "guard_replaced": "Arrêts des garde-fous",
+      "off_hours": "Leads hors heures de travail",
+      "won": "Contacts gagnés"
+    },
+    "SUB": {
+      "seconds": "typique · 90% en moins de {p90} · {n} comparées",
+      "ai_share": "sur {n} réponses",
+      "guard_replaced": "sur {n} réponses",
+      "off_hours": "{n} sur {of} nouveaux leads",
+      "won": "depuis le champ CRM"
+    },
+    "SUMMARY": "En bref",
+    "FACT": {
+      "FIRST_REPLY": "La première réponse de votre équipe prenait en général {staff} ; Tolzar répond en {tolzar} ({n} conversations comparées).",
+      "FIRST_REPLY_WOULD": "La première réponse de votre équipe prenait en général {staff} ; Tolzar répondrait en {tolzar} ({n} conversations comparées).",
+      "NO_FIRST_REPLY": "Pas encore de premières réponses à comparer.",
+      "AI_SHARE": "L'IA a écrit seule {share}% de {n} réponses ; les garde-fous sont intervenus {guards} fois.",
+      "OFF_HOURS": "{n} sur {of} nouveaux leads sont arrivés hors des heures de travail.",
+      "TOP_CAMPAIGN": "Meilleure campagne : {name} avec {n} conversations.",
+      "WON": "{n} contacts sont marqués gagnés.",
+      "SHADOW_NOTE": "Tolzar tourne ici en Shadow : ses réponses sont des brouillons, ses temps sont donc ceux que les clients auraient vus."
+    },
+    "HOURS": "Heures de travail {hours} ({tz})",
+    "WON_RULE": "gagné = {field} contient '{value}'",
+    "CAMPAIGNS": "Conversations par campagne",
+    "CAMPAIGN_ROW": "{n} conversations · {codes} liens",
+    "NO_CAMPAIGNS": "Aucun lien de campagne utilisé pour l'instant."
   }
 }

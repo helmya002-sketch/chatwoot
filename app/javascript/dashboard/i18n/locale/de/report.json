@@ -1032,7 +1032,9 @@
       "ai": "KI",
       "contacts": "Kontakte",
       "growth": "Wachstum",
-      "developers": "Entwickler"
+      "developers": "Entwickler",
+      "trust": "Vertrauen & Datenschutz",
+      "channels": "Kanäle"
     },
     "NAV": {
       "usage": "Nutzung",
@@ -1050,7 +1052,16 @@
       "broadcasts": "Rundsendungen",
       "mcp": "KI-Werkzeuge (MCP)",
       "roles": "Rollen",
-      "connections": "Facebook & Instagram"
+      "connections": "Facebook & Instagram",
+      "disclosure": "KI-Hinweis",
+      "retention": "Aufbewahrung",
+      "privacy": "Daten eines Kontakts",
+      "sms": "SMS-Ausweichkanal",
+      "crm": "CRM-Abgleich",
+      "commerce": "Shop",
+      "negotiation": "Verhandlungsgrenzen",
+      "agent_teams": "Agenten pro Team",
+      "tuning": "Verbesserungsvorschläge"
     },
     "HINT": {
       "usage": "What this workspace used in the last 30 days.",
@@ -1068,7 +1079,16 @@
       "broadcasts": "Pick an audience and see exactly who would receive it. Shadow: nothing is sent.",
       "mcp": "Let your own AI tools read this workspace's Tolzar data. Read-only.",
       "roles": "Wer in diesem Arbeitsbereich was darf.",
-      "connections": "Kommentare auf deinen Seiten lesen (nur lesen); Antworten als Entwurf im Schattenbetrieb."
+      "connections": "Kommentare auf deinen Seiten lesen (nur lesen); Antworten als Entwurf im Schattenbetrieb.",
+      "disclosure": "Menschen erfahren, dass sie mit einer KI sprechen (EU AI Act). Der Hinweis steht in der ersten KI-Antwort eines Gesprächs, nie zweimal.",
+      "retention": "Wie lange Tolzar seine eigenen Daten aufbewahrt. Ältere Einträge werden täglich gelöscht. Chatwoot-Gespräche folgen den Chatwoot-Einstellungen.",
+      "privacy": "Exportieren oder löschen, was Tolzar über eine Person speichert (DSGVO Auskunft und Löschung).",
+      "sms": "Kunden per SMS über Ihr eigenes Anbieterkonto erreichen. Shadow: Tolzar zeigt genau die SMS, die es senden würde.",
+      "crm": "Kontakte mit HubSpot, Zoho CRM oder Pipedrive abgleichen. Probelauf: Tolzar listet, was es ändern würde, und ändert nichts.",
+      "commerce": "Shop verbinden: Preise aus dem Katalog, Bestellstatus auf Anfrage (nur lesend), ein Warenkorb-Workflow.",
+      "negotiation": "Wie weit die KI beim Preis nachgeben darf. Ein Wächter prüft jede Antwort; alles außerhalb der Grenzen geht an einen Kollegen.",
+      "agent_teams": "Welcher KI-Agent für welches Team spricht (Vertrieb, Support...). Leer = Standard-Agent des Workspace.",
+      "tuning": "Einmal täglich schlägt Tolzar bis zu 3 Änderungen an den Anweisungen Ihres Agenten vor, aus QA-Notizen, Wächter-Stopps und Antworten Ihres Teams."
     },
     "SAVE": "Speichern",
     "NONE_YET": "Noch nichts.",
@@ -1157,6 +1177,167 @@
       "CONNECTED": "Verbunden von {who} ({status})",
       "TEAM": "Team",
       "DISCONNECT": "Trennen"
+    },
+    "R1": {
+      "OWNER_ONLY": "Das kann nur ein Owner dieses Workspace.",
+      "SAVED": "Gespeichert",
+      "ENV_TITLE": "Schlüssel auf dem Server",
+      "ENV_HINT": "Schlüssel werden nie in Tolzar eingegeben. Bitten Sie Ihren Server-Admin, diese Umgebungsvariablen zu setzen; Tolzar speichert nur ihre Namen.",
+      "ENV_PRESENT": "vorhanden",
+      "ENV_MISSING": "fehlt",
+      "ENV_NONE": "Noch keine Variablennamen gespeichert.",
+      "SHADOW_ONLY": "Nur Shadow: nichts wird gesendet"
+    },
+    "TRUST": {
+      "MODE": "KI-Hinweis",
+      "MODES": {
+        "auto": "Automatisch (Kontakte aus EU / EWR)",
+        "on": "Immer",
+        "off": "Nie"
+      },
+      "MODE_HINT": {
+        "auto": "Erscheint, wenn das Land des Kontakts in der EU oder im EWR liegt. Ein Unternehmen mit Sitz in der EU sollte Immer wählen.",
+        "on": "Erscheint in der ersten KI-Antwort jedes Gesprächs.",
+        "off": "Erscheint nicht. Nur wählen, wo keine Hinweispflicht gilt."
+      },
+      "TEXTS": "Eigener Wortlaut pro Sprache (optional)",
+      "TEXTS_HINT": "Eine Sprache leer lassen, um den grau angezeigten Standardtext zu verwenden.",
+      "DECISIONS_DAYS": "KI-Entscheidungen aufbewahren (Tage)",
+      "KV_DAYS": "Kundengedächtnis, QA-Bewertungen, Transkripte und Pläne aufbewahren (Tage)",
+      "RETENTION_SCOPE": "Zwischen 1 und 3650 Tagen. Einträge ohne Datum bleiben erhalten.",
+      "NEXT_PURGE": "Die Bereinigung heute Nacht würde entfernen",
+      "COUNT": {
+        "decisions": "Entscheidungen",
+        "kv_rows": "Gespeicherte Einträge",
+        "kv_trimmed": "Gekürzte Einträge",
+        "conversations": "Betroffene Gespräche"
+      },
+      "OWNER_NOTE": "Nur für Owner. Vor dem Löschen des Kontakts in Chatwoot ausführen: danach findet Tolzar die Gespräche des Kontakts nicht mehr.",
+      "CONTACT_ID": "Kontakt-ID",
+      "CONTACT_ID_HINT": "Die Zahl in der Adresse des Kontakts unter Kontakte (…/contacts/1234).",
+      "EXPORT": "Exportieren (JSON)",
+      "ERASE": "Tolzar-Daten löschen",
+      "EXPORTED": "Export heruntergeladen.",
+      "ERASED": "Tolzars Daten zu diesem Kontakt sind gelöscht.",
+      "NEXT_STEP": "Nächster Schritt: den Kontakt selbst in Chatwoot löschen (Kontakte → Kontakt → Löschen).",
+      "OPEN_CONTACT": "Kontakt öffnen",
+      "CONFIRM_TITLE": "Daten dieses Kontakts löschen?",
+      "CONFIRM_TEXT": "Tolzars Gedächtnis, KI-Entscheidungen, Bewertungen und Transkripte zu Kontakt {id} werden endgültig entfernt. Das lässt sich nicht rückgängig machen.",
+      "CONFIRM_TYPE": "Zur Bestätigung {id} eingeben",
+      "CONFIRM_BUTTON": "Endgültig löschen"
+    },
+    "CHANNELS": {
+      "PROVIDER": "Anbieter",
+      "P": {
+        "twilio": "Twilio",
+        "unifonic": "Unifonic",
+        "vonage": "Vonage",
+        "hubspot": "HubSpot",
+        "zoho": "Zoho CRM",
+        "pipedrive": "Pipedrive",
+        "shopify": "Shopify",
+        "woocommerce": "WooCommerce",
+        "salla": "Salla",
+        "zid": "Zid"
+      },
+      "SMS_FROM": "Absender (Ihre Nummer oder ein freigegebener Name mit bis zu 11 Zeichen)",
+      "ENV": {
+        "twilio_account_sid_env": "Umgebungsvariable mit Ihrer Twilio Account SID",
+        "twilio_key_env": "Umgebungsvariable mit Ihrem Twilio Auth Token",
+        "unifonic_key_env": "Umgebungsvariable mit Ihrer Unifonic AppSid",
+        "vonage_account_sid_env": "Umgebungsvariable mit Ihrem Vonage API-Key",
+        "vonage_key_env": "Umgebungsvariable mit Ihrem Vonage API-Secret",
+        "crm_key_env": "Umgebungsvariable mit Ihrem CRM-Zugriffstoken",
+        "shop_key_env": "Umgebungsvariable mit dem API-Key oder Token Ihres Shops",
+        "shop_secret_env": "Umgebungsvariable mit dem API-Secret Ihres Shops"
+      },
+      "SMS_PREVIEW": "SMS-Vorschau",
+      "SMS_TO": "An (internationales Format)",
+      "SMS_TEXT": "Text",
+      "PREVIEW": "Vorschau",
+      "WOULD_SEND": "Würde senden (Shadow)",
+      "SEGMENTS": "{n} Teil(e), {enc}, {chars} Zeichen",
+      "MISSING": "Noch nicht auf dem Server: {names}",
+      "ZOHO_DOMAIN": "Zoho-Rechenzentrum",
+      "DIRECTION": "Richtung",
+      "DIR": {
+        "to_crm": "Tolzar → CRM",
+        "from_crm": "CRM → Tolzar",
+        "both": "Beide Richtungen"
+      },
+      "CONFLICT_RULE": "Beide Richtungen: Lead-Score und Zusammenfassung gehören Tolzar; Name, E-Mail, Telefon und Phase gehören dem CRM, sobald es sie hat.",
+      "READ_CRM": "Lesende Abfragen im CRM erlauben (zum Vergleichen)",
+      "HOURLY_DRY_RUN": "Stündlicher Probelauf",
+      "MAPPING": "Feldzuordnung",
+      "FIELD": {
+        "name": "Name",
+        "email": "E-Mail",
+        "phone": "Telefon",
+        "lifecycle_stage": "Phase",
+        "tolzar_lead_score": "Lead-Score",
+        "tolzar_summary": "KI-Zusammenfassung"
+      },
+      "MAPPING_HINT": "Der Feldname im CRM. 'vorname+nachname' teilt den Namen auf zwei Felder. Leer = grau angezeigter Standard.",
+      "CRM_PREVIEW": "Probelauf für einen Kontakt",
+      "WOULD_PUSH": "Würde ins CRM schreiben",
+      "WOULD_PULL": "Würde aus dem CRM übernehmen",
+      "NOT_READ": "CRM nicht gelesen (Abfragen aus oder Schlüssel fehlt)",
+      "RUNS": "Probeläufe",
+      "RUN_LINE": "{checked} Kontakte geprüft · {changes} würden sich ändern",
+      "CRM_READ": "CRM gelesen",
+      "CRM_NOT_READ": "CRM nicht gelesen",
+      "SHOP_DOMAIN": "Shop-Adresse",
+      "CURRENCY": "Währung (3 Buchstaben)",
+      "PRICE_AGENT": "KI-Agent, dessen Preisliste der Katalog füllt",
+      "CATALOGUE_DAILY": "Katalog täglich aktualisieren",
+      "SYNC_NOW": "Katalog jetzt abgleichen",
+      "SYNCED": "{n} Preise in die Preisliste des Agenten geladen.",
+      "ORDER_STATUS": "Bestellstatus",
+      "ORDER_HINT": "Nur lesend. Die Antwort zeigt nie Adresse, E-Mail oder Telefon des Kunden.",
+      "LOOK_UP": "Nachsehen",
+      "TEMPLATES": "Workflow-Vorlagen",
+      "ADD_DRAFT": "Zu Workflows hinzufügen (Entwurf)",
+      "TEMPLATE_ADDED": "Als Entwurf zu Workflows hinzugefügt."
+    },
+    "AI": {
+      "NEGOTIATE": "Die KI darf innerhalb dieser Grenzen verhandeln",
+      "FLOOR": "Niedrigster Preis (% des Listenpreises)",
+      "MAX_DISCOUNT": "Größter Rabatt (%)",
+      "PERKS": "Extras, die die KI statt Geld anbieten darf (eins pro Zeile)",
+      "PERKS_PLACEHOLDER": "Kostenlose Abholung\nKostenlose Fotos",
+      "ALLOWED": "Die KI darf höchstens {n}% Rabatt anbieten. Alles darüber geht an einen Kollegen.",
+      "SNIPPET": "Text für die Anweisungen Ihres Agenten",
+      "SNIPPET_HINT": "Wie die KI verhandelt, steht in den Anweisungen des Agenten. Fügen Sie dies dort ein; die Grenzen oben gelten in jedem Fall.",
+      "COPY": "Kopieren",
+      "DEFAULT_AGENT": "Standard-Agent",
+      "NO_TEAMS": "Noch keine Teams in diesem Workspace (Einstellungen → Teams).",
+      "MISSING_AGENT": "Diese Teams verweisen auf einen Agenten, den es nicht mehr gibt: {teams}",
+      "TEAMS_NOTE": "Wird ein Gespräch einem Team zugewiesen, übernimmt der Agent dieses Teams (Shadow, wie jede Antwort).",
+      "PROPOSALS_ONLY": "Nur Vorschläge: nichts ändert sich von selbst",
+      "SUGGEST_NOW": "Jetzt Verbesserungen vorschlagen",
+      "SIGNALS": "{n} Signale",
+      "STATUS": {
+        "proposed": "vorgeschlagen",
+        "approved": "angenommen",
+        "rejected": "abgelehnt"
+      },
+      "APPROVE": "Annehmen",
+      "REJECT": "Ablehnen",
+      "APPROVE_NOTE": "Annehmen ändert den Agenten nicht: kopieren Sie die angenommene Änderung in seine Anweisungen (KI-Agenten).",
+      "NOTHING_TO_SUGGEST": "Gerade nichts vorzuschlagen.",
+      "SUGGESTED": "Neuer Vorschlag bereit.",
+      "DECIDED": "Gespeichert"
+    },
+    "QUOTAS": {
+      "TITLE": "KI-Kontingente",
+      "HINT": "Obergrenzen für diesen Workspace (Tag {day}, Monat {month}, {tz}). Über einer Grenze nutzt die KI Ihre sichere Vorlage.",
+      "daily_calls": "Modellaufrufe heute",
+      "monthly_tokens": "Tokens diesen Monat",
+      "UNLIMITED": "Keine Grenze",
+      "REACHED": "Grenze erreicht",
+      "REMAINING": "{n} übrig",
+      "LIMIT": "Grenze",
+      "EMPTY_UNLIMITED": "leer = keine Grenze"
     }
   },
   "TOLZAR_ONBOARDING": {
@@ -1224,5 +1405,43 @@
     "SUPPORT": "Support-E-Mail in der App",
     "PREVIEW": "Vorschau",
     "APPLY_HINT": "Pro Arbeitsbereich gespeichert. Die Anwendung auf die ganze App (Logo, Farben, eigene Domain) kommt mit dem White-Label-Theme."
+  },
+  "TOLZAR_RESULTS": {
+    "NAV": "Ergebnisse",
+    "TITLE": "Ergebnisse",
+    "SUBTITLE": "Was Tolzar diesem Workspace bringt, in einfachen Zahlen",
+    "WOULD_BE_NOTE": "Tolzar läuft hier in Shadow: seine Antworten sind Entwürfe. Mit 'wäre' markierte Werte hätten Kunden gesehen.",
+    "WOULD_BE": "wäre",
+    "TILE": {
+      "staff_first_reply": "Erste Antwort des Teams",
+      "tolzar_first_reply": "Erste Antwort von Tolzar",
+      "ai_share": "Antworten allein von der KI",
+      "guard_replaced": "Wächter-Stopps",
+      "off_hours": "Leads außerhalb der Arbeitszeit",
+      "won": "Gewonnene Kontakte"
+    },
+    "SUB": {
+      "seconds": "typisch · 90% innerhalb {p90} · {n} verglichen",
+      "ai_share": "von {n} Antworten",
+      "guard_replaced": "von {n} Antworten",
+      "off_hours": "{n} von {of} neuen Leads",
+      "won": "aus dem CRM-Feld"
+    },
+    "SUMMARY": "Kurz gesagt",
+    "FACT": {
+      "FIRST_REPLY": "Die erste Antwort Ihres Teams dauerte typisch {staff}; Tolzar antwortet in {tolzar} ({n} Gespräche verglichen).",
+      "FIRST_REPLY_WOULD": "Die erste Antwort Ihres Teams dauerte typisch {staff}; Tolzar würde in {tolzar} antworten ({n} Gespräche verglichen).",
+      "NO_FIRST_REPLY": "Noch keine ersten Antworten zum Vergleichen.",
+      "AI_SHARE": "Die KI schrieb {share}% von {n} Antworten allein; Wächter griffen {guards}-mal ein.",
+      "OFF_HOURS": "{n} von {of} neuen Leads kamen außerhalb der Arbeitszeit.",
+      "TOP_CAMPAIGN": "Stärkste Kampagne: {name} mit {n} Gesprächen.",
+      "WON": "{n} Kontakte sind als gewonnen markiert.",
+      "SHADOW_NOTE": "Tolzar läuft hier in Shadow: seine Antworten sind Entwürfe, seine Zeiten sind also die, die Kunden gesehen hätten."
+    },
+    "HOURS": "Arbeitszeit {hours} ({tz})",
+    "WON_RULE": "gewonnen = {field} enthält '{value}'",
+    "CAMPAIGNS": "Gespräche pro Kampagne",
+    "CAMPAIGN_ROW": "{n} Gespräche · {codes} Links",
+    "NO_CAMPAIGNS": "Noch keine Kampagnen-Links genutzt."
   }
 }

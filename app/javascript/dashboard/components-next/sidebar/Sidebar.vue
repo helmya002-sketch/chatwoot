@@ -726,6 +726,12 @@ const menuItems = computed(() => {
           label: t('TOLZAR_REPORTS.NAV'),
           to: accountScopedRoute('tolzar_reports'),
         },
+        // Tolzar: what Tolzar is worth (ROI), would-be values marked in Shadow.
+        {
+          name: 'Tolzar Results',
+          label: t('TOLZAR_RESULTS.NAV'),
+          to: accountScopedRoute('tolzar_results'),
+        },
         {
           name: 'Report Overview',
           label: t('SIDEBAR.REPORTS_OVERVIEW'),

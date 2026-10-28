@@ -7,6 +7,7 @@ import TolzarReports from './TolzarReports.vue';
 import TolzarSettingsHub from './TolzarSettingsHub.vue';
 import TolzarOnboarding from './TolzarOnboarding.vue';
 import TolzarAgency from './TolzarAgency.vue';
+import TolzarResults from './TolzarResults.vue';
 
 const PERMS = { permissions: ['administrator', 'agent', 'custom_role'] };
 
@@ -33,6 +34,12 @@ export const routes = [
     path: frontendURL('accounts/:accountId/tolzar-reports'),
     name: 'tolzar_reports',
     component: TolzarReports,
+    meta: { permissions: ['administrator'] },
+  },
+  {
+    path: frontendURL('accounts/:accountId/tolzar-results'),
+    name: 'tolzar_results',
+    component: TolzarResults,
     meta: { permissions: ['administrator'] },
   },
   {

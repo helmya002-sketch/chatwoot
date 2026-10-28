@@ -2,6 +2,10 @@
 import { ref, computed, onMounted } from 'vue';
 import { useMapGetter } from 'dashboard/composables/store';
 import { useI18n } from 'vue-i18n';
+import TrustPanel from 'dashboard/components-next/Tolzar/settings/TrustPanel.vue';
+import ChannelsPanel from 'dashboard/components-next/Tolzar/settings/ChannelsPanel.vue';
+import AiLimitsPanel from 'dashboard/components-next/Tolzar/settings/AiLimitsPanel.vue';
+import QuotasPanel from 'dashboard/components-next/Tolzar/settings/QuotasPanel.vue';
 
 // Tolzar Settings hub (approved mock settings-hub-v1): one home for what Tolzar does for this
 // workspace. Every section reads/writes the brain through the admin proxy; AI features run in
@@ -16,12 +20,18 @@ const post = (feature, body = {}) =>
 
 const SECTIONS = [
   ['workspace', ['usage', 'roles', 'audit', 'export']],
+  ['trust', ['disclosure', 'retention', 'privacy']],
+  ['channels', ['sms', 'crm', 'commerce']],
   ['team', ['sla', 'qa']],
-  ['ai', ['media', 'recovery', 'learned', 'brief', 'ask']],
+  ['ai', ['media', 'recovery', 'learned', 'brief', 'ask', 'negotiation', 'agent_teams', 'tuning']],
   ['contacts', ['dedupe']],
   ['growth', ['links', 'broadcasts']],
   ['developers', ['connections', 'mcp']],
 ];
+// Round 1 panels load their own data (one component per group).
+const TRUST = ['disclosure', 'retention', 'privacy'];
+const CHANNELS = ['sms', 'crm', 'commerce'];
+const AI_LIMITS = ['negotiation', 'agent_teams', 'tuning'];
 const current = ref('usage');
 const data = ref({});
 const busy = ref(false);
@@ -202,6 +212,11 @@ onMounted(() => open('usage'));
               <div class="text-xs text-n-slate-10">{{ $t(`TOLZAR_SETTINGS.USAGE.${k}`) }}</div>
             </div>
           </div>
+
+          <QuotasPanel v-if="current === 'usage'" />
+          <TrustPanel v-if="TRUST.includes(current)" :key="current" :section="current" />
+          <ChannelsPanel v-if="CHANNELS.includes(current)" :key="current" :section="current" />
+          <AiLimitsPanel v-if="AI_LIMITS.includes(current)" :key="current" :section="current" />
 
           <!-- roles -->
           <div v-if="current === 'roles'">

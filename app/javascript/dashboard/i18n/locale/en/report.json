@@ -1032,7 +1032,9 @@
       "ai": "AI",
       "contacts": "Contacts",
       "growth": "Growth",
-      "developers": "Developers"
+      "developers": "Developers",
+      "trust": "Trust & privacy",
+      "channels": "Channels"
     },
     "NAV": {
       "usage": "Usage",
@@ -1050,7 +1052,16 @@
       "broadcasts": "Broadcasts",
       "mcp": "AI tools (MCP)",
       "roles": "Roles",
-      "connections": "Facebook & Instagram"
+      "connections": "Facebook & Instagram",
+      "disclosure": "AI disclosure",
+      "retention": "Data retention",
+      "privacy": "A contact's data",
+      "sms": "SMS fallback",
+      "crm": "CRM sync",
+      "commerce": "Shop",
+      "negotiation": "Negotiation limits",
+      "agent_teams": "Agents per team",
+      "tuning": "Improvement proposals"
     },
     "HINT": {
       "usage": "What this workspace used in the last 30 days.",
@@ -1068,7 +1079,16 @@
       "broadcasts": "Pick an audience and see exactly who would receive it. Shadow: nothing is sent.",
       "mcp": "Let your own AI tools read this workspace's Tolzar data. Read-only.",
       "roles": "Who may do what in this workspace.",
-      "connections": "Read comments on your pages (read-only); replies are drafted in Shadow."
+      "connections": "Read comments on your pages (read-only); replies are drafted in Shadow.",
+      "disclosure": "Tell people they are talking to an AI (EU AI Act). The line is added to the first AI reply of a conversation, never twice.",
+      "retention": "How long Tolzar keeps its own records. Older rows are removed once a day. Chatwoot's conversations follow Chatwoot's settings.",
+      "privacy": "Export or erase what Tolzar holds about one person (GDPR access and erasure).",
+      "sms": "Reach customers by SMS through your own provider account. Shadow: Tolzar shows the exact SMS it would send.",
+      "crm": "Keep contacts in step with HubSpot, Zoho CRM or Pipedrive. Dry run: Tolzar lists what it would change and changes nothing.",
+      "commerce": "Connect your shop: prices from the catalogue, order status on request (read-only), a cart-recovery workflow.",
+      "negotiation": "How far the AI may move on price. A guard checks every reply; anything outside the limits goes to a colleague.",
+      "agent_teams": "Which AI agent speaks for which team (sales, support...). Empty uses the workspace's default agent.",
+      "tuning": "Once a day Tolzar suggests up to 3 edits to your agent's instructions, from QA notes, guard stops and your team's answers."
     },
     "SAVE": "Save",
     "NONE_YET": "Nothing yet.",
@@ -1157,6 +1177,167 @@
       "CONNECTED": "Connected by {who} ({status})",
       "TEAM": "team",
       "DISCONNECT": "Disconnect"
+    },
+    "R1": {
+      "OWNER_ONLY": "Only an Owner of this workspace can do this.",
+      "SAVED": "Saved",
+      "ENV_TITLE": "Keys on the server",
+      "ENV_HINT": "Keys are never typed into Tolzar. Ask your server admin to set these environment variables; Tolzar only stores their names.",
+      "ENV_PRESENT": "present",
+      "ENV_MISSING": "missing",
+      "ENV_NONE": "No variable names saved yet.",
+      "SHADOW_ONLY": "Shadow only: nothing is sent"
+    },
+    "TRUST": {
+      "MODE": "Disclosure",
+      "MODES": {
+        "auto": "Automatic (EU / EEA contacts)",
+        "on": "Always",
+        "off": "Never"
+      },
+      "MODE_HINT": {
+        "auto": "Shown when the contact's country is in the EU or EEA. A business based in the EU should choose Always.",
+        "on": "Shown in the first AI reply of every conversation.",
+        "off": "Not shown. Only choose this where no disclosure duty applies."
+      },
+      "TEXTS": "Your own wording per language (optional)",
+      "TEXTS_HINT": "Leave a language empty to use the generic line shown in grey.",
+      "DECISIONS_DAYS": "Keep AI decision records for (days)",
+      "KV_DAYS": "Keep customer memory, QA scores, transcripts and plans for (days)",
+      "RETENTION_SCOPE": "Between 1 and 3650 days. Rows without a date are kept.",
+      "NEXT_PURGE": "Tonight's clean-up would remove",
+      "COUNT": {
+        "decisions": "Decision records",
+        "kv_rows": "Stored rows",
+        "kv_trimmed": "Rows trimmed",
+        "conversations": "Conversations covered"
+      },
+      "OWNER_NOTE": "Owner only. Run this before deleting the contact in Chatwoot: afterwards Tolzar can no longer find the contact's conversations.",
+      "CONTACT_ID": "Contact ID",
+      "CONTACT_ID_HINT": "The number in the contact's address in Contacts (…/contacts/1234).",
+      "EXPORT": "Export (JSON)",
+      "ERASE": "Erase Tolzar's data",
+      "EXPORTED": "Export downloaded.",
+      "ERASED": "Tolzar's data about this contact is erased.",
+      "NEXT_STEP": "Next: delete the contact itself in Chatwoot (Contacts → contact → Delete).",
+      "OPEN_CONTACT": "Open the contact",
+      "CONFIRM_TITLE": "Erase this contact's data?",
+      "CONFIRM_TEXT": "Tolzar's memory, AI decisions, scores and transcripts for contact {id} are removed for good. This cannot be undone.",
+      "CONFIRM_TYPE": "Type {id} to confirm",
+      "CONFIRM_BUTTON": "Erase for good"
+    },
+    "CHANNELS": {
+      "PROVIDER": "Provider",
+      "P": {
+        "twilio": "Twilio",
+        "unifonic": "Unifonic",
+        "vonage": "Vonage",
+        "hubspot": "HubSpot",
+        "zoho": "Zoho CRM",
+        "pipedrive": "Pipedrive",
+        "shopify": "Shopify",
+        "woocommerce": "WooCommerce",
+        "salla": "Salla",
+        "zid": "Zid"
+      },
+      "SMS_FROM": "Sender (your number, or an approved name of up to 11 characters)",
+      "ENV": {
+        "twilio_account_sid_env": "Env variable with your Twilio Account SID",
+        "twilio_key_env": "Env variable with your Twilio auth token",
+        "unifonic_key_env": "Env variable with your Unifonic AppSid",
+        "vonage_account_sid_env": "Env variable with your Vonage API key",
+        "vonage_key_env": "Env variable with your Vonage API secret",
+        "crm_key_env": "Env variable with your CRM access token",
+        "shop_key_env": "Env variable with your shop API key or token",
+        "shop_secret_env": "Env variable with your shop API secret"
+      },
+      "SMS_PREVIEW": "Preview an SMS",
+      "SMS_TO": "To (international format)",
+      "SMS_TEXT": "Text",
+      "PREVIEW": "Preview",
+      "WOULD_SEND": "Would send (Shadow)",
+      "SEGMENTS": "{n} part(s), {enc}, {chars} characters",
+      "MISSING": "Not on the server yet: {names}",
+      "ZOHO_DOMAIN": "Zoho data centre",
+      "DIRECTION": "Direction",
+      "DIR": {
+        "to_crm": "Tolzar → CRM",
+        "from_crm": "CRM → Tolzar",
+        "both": "Both ways"
+      },
+      "CONFLICT_RULE": "Both ways: Tolzar owns lead score and summary; the CRM owns name, e-mail, phone and stage once it has them.",
+      "READ_CRM": "Allow read-only lookups in the CRM (to compare records)",
+      "HOURLY_DRY_RUN": "Dry run every hour",
+      "MAPPING": "Field mapping",
+      "FIELD": {
+        "name": "Name",
+        "email": "E-mail",
+        "phone": "Phone",
+        "lifecycle_stage": "Lifecycle stage",
+        "tolzar_lead_score": "Lead score",
+        "tolzar_summary": "AI summary"
+      },
+      "MAPPING_HINT": "The CRM's field name. 'first+last' splits the name into two fields. Empty uses the default in grey.",
+      "CRM_PREVIEW": "Dry run for one contact",
+      "WOULD_PUSH": "Would write to the CRM",
+      "WOULD_PULL": "Would take from the CRM",
+      "NOT_READ": "CRM not read (lookups are off or the key is missing)",
+      "RUNS": "Dry runs",
+      "RUN_LINE": "{checked} contacts checked · {changes} would change",
+      "CRM_READ": "CRM read",
+      "CRM_NOT_READ": "CRM not read",
+      "SHOP_DOMAIN": "Shop address",
+      "CURRENCY": "Currency (3 letters)",
+      "PRICE_AGENT": "AI agent whose price list the catalogue fills",
+      "CATALOGUE_DAILY": "Refresh the catalogue daily",
+      "SYNC_NOW": "Sync catalogue now",
+      "SYNCED": "{n} prices loaded into the agent's price list.",
+      "ORDER_STATUS": "Order status",
+      "ORDER_HINT": "Read-only. The answer never shows the customer's address, e-mail or phone.",
+      "LOOK_UP": "Look up",
+      "TEMPLATES": "Workflow templates",
+      "ADD_DRAFT": "Add to Workflows (draft)",
+      "TEMPLATE_ADDED": "Added to Workflows as a draft."
+    },
+    "AI": {
+      "NEGOTIATE": "The AI may negotiate within these limits",
+      "FLOOR": "Lowest price (% of the listed price)",
+      "MAX_DISCOUNT": "Largest discount (%)",
+      "PERKS": "Extras the AI may offer instead of money (one per line)",
+      "PERKS_PLACEHOLDER": "Free pickup\nFree photos",
+      "ALLOWED": "The AI may offer at most {n}% off. Anything more goes to a colleague.",
+      "SNIPPET": "Text for your agent's instructions",
+      "SNIPPET_HINT": "How the AI negotiates comes from the agent's instructions. Paste this into them; the limits above are enforced either way.",
+      "COPY": "Copy",
+      "DEFAULT_AGENT": "Default agent",
+      "NO_TEAMS": "No teams in this workspace yet (Settings → Teams).",
+      "MISSING_AGENT": "These teams point to an agent that no longer exists: {teams}",
+      "TEAMS_NOTE": "When a conversation is routed to a team, that team's agent takes it over (Shadow, like every reply).",
+      "PROPOSALS_ONLY": "Proposals only: nothing changes by itself",
+      "SUGGEST_NOW": "Suggest improvements now",
+      "SIGNALS": "{n} signals",
+      "STATUS": {
+        "proposed": "proposed",
+        "approved": "approved",
+        "rejected": "rejected"
+      },
+      "APPROVE": "Approve",
+      "REJECT": "Reject",
+      "APPROVE_NOTE": "Approving does not change the agent: copy the approved edit into its instructions (AI Agents).",
+      "NOTHING_TO_SUGGEST": "Nothing to suggest right now.",
+      "SUGGESTED": "New proposal ready.",
+      "DECIDED": "Saved"
+    },
+    "QUOTAS": {
+      "TITLE": "AI quotas",
+      "HINT": "Ceilings for this workspace (day {day}, month {month}, {tz}). Over a limit the AI uses your safe template.",
+      "daily_calls": "Model calls today",
+      "monthly_tokens": "Tokens this month",
+      "UNLIMITED": "No limit",
+      "REACHED": "Limit reached",
+      "REMAINING": "{n} left",
+      "LIMIT": "Limit",
+      "EMPTY_UNLIMITED": "empty = no limit"
     }
   },
   "TOLZAR_ONBOARDING": {
@@ -1224,5 +1405,43 @@
     "SUPPORT": "Support e-mail shown in the app",
     "PREVIEW": "Preview",
     "APPLY_HINT": "Saved per workspace. Applying it to the whole app (logo, colours, custom domain) comes with the white-label theme."
+  },
+  "TOLZAR_RESULTS": {
+    "NAV": "Results",
+    "TITLE": "Results",
+    "SUBTITLE": "What Tolzar is worth for this workspace, in plain numbers",
+    "WOULD_BE_NOTE": "Tolzar runs in Shadow here: its replies are drafts. Values marked would-be are what customers would have seen.",
+    "WOULD_BE": "would-be",
+    "TILE": {
+      "staff_first_reply": "Team's first reply",
+      "tolzar_first_reply": "Tolzar's first reply",
+      "ai_share": "Replies the AI wrote alone",
+      "guard_replaced": "Guard stops",
+      "off_hours": "Leads outside working hours",
+      "won": "Contacts won"
+    },
+    "SUB": {
+      "seconds": "typical · 90% within {p90} · {n} compared",
+      "ai_share": "of {n} replies",
+      "guard_replaced": "of {n} replies",
+      "off_hours": "{n} of {of} new leads",
+      "won": "from the CRM field"
+    },
+    "SUMMARY": "In short",
+    "FACT": {
+      "FIRST_REPLY": "Your team's typical first reply took {staff}; Tolzar answers in {tolzar} ({n} conversations compared).",
+      "FIRST_REPLY_WOULD": "Your team's typical first reply took {staff}; Tolzar would answer in {tolzar} ({n} conversations compared).",
+      "NO_FIRST_REPLY": "No first replies to compare yet.",
+      "AI_SHARE": "The AI wrote {share}% of {n} replies on its own; guards stepped in {guards} times.",
+      "OFF_HOURS": "{n} of {of} new leads came in outside working hours.",
+      "TOP_CAMPAIGN": "Top campaign: {name} with {n} conversations.",
+      "WON": "{n} contacts are marked won.",
+      "SHADOW_NOTE": "Tolzar is in Shadow here: its replies are drafts, so its times are what customers would have seen."
+    },
+    "HOURS": "Working hours {hours} ({tz})",
+    "WON_RULE": "won = {field} contains '{value}'",
+    "CAMPAIGNS": "Conversations per campaign",
+    "CAMPAIGN_ROW": "{n} conversations · {codes} links",
+    "NO_CAMPAIGNS": "No campaign links used yet."
   }
 }

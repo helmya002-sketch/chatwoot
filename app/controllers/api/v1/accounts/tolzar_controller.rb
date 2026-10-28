@@ -89,20 +89,36 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
                  'channels' => '/channels', 'attribution' => '/attribution', 'broadcasts' => '/broadcasts',
                  'learned' => '/learned', 'explain' => '/explain', 'recovery' => '/recovery',
                  'qa' => '/qa', 'brief' => '/brief', 'memory' => '/memory', 'scores' => '/scores',
-                 'agent_templates' => '/agents/templates', 'roles' => '/roles', 'branding' => '/branding' }.freeze
+                 'agent_templates' => '/agents/templates', 'roles' => '/roles', 'branding' => '/branding',
+                 # Round 1: trust & privacy, channels, AI limits, usage, results.
+                 'compliance' => '/compliance', 'retention' => '/retention', 'dsar_export' => '/dsar/export',
+                 'sms' => '/sms', 'crm_sync' => '/crm-sync', 'crm_sync_runs' => '/crm-sync/runs',
+                 'commerce' => '/commerce', 'commerce_templates' => '/commerce/templates',
+                 'negotiation' => '/negotiation', 'agent_teams' => '/agent-teams', 'tuning' => '/tuning',
+                 'roi' => '/roi', 'quotas' => '/quotas' }.freeze
   BRAIN_POSTS = { 'sla' => '/sla', 'media' => '/media', 'dedupe_refresh' => '/dedupe/refresh', 'channels' => '/channels',
                   'links' => '/links', 'broadcasts' => '/broadcasts', 'broadcasts_preview' => '/broadcasts/preview',
                   'broadcasts_run' => '/broadcasts/run', 'mcp_token' => '/mcp-token',
                   'learned_status' => '/learned/status', 'translate' => '/translate', 'recovery' => '/recovery',
                   'qa_rubric' => '/qa/rubric', 'brief_build' => '/brief/build', 'reviews_draft' => '/reviews/draft',
                   'ask' => '/ask', 'roles' => '/roles', 'knowledge_refresh' => '/agents/knowledge/refresh',
-                  'branding' => '/branding' }.freeze
+                  'branding' => '/branding',
+                  'compliance' => '/compliance', 'retention' => '/retention', 'dsar_delete' => '/dsar/delete',
+                  'sms' => '/sms', 'sms_preview' => '/sms/preview', 'crm_sync' => '/crm-sync',
+                  'crm_sync_preview' => '/crm-sync/preview', 'commerce' => '/commerce',
+                  'commerce_catalogue_sync' => '/commerce/catalogue-sync', 'commerce_order_status' => '/commerce/order-status',
+                  'negotiation' => '/negotiation', 'agent_teams' => '/agent-teams', 'tuning_run' => '/tuning/run',
+                  'tuning_decide' => '/tuning/decide', 'quotas' => '/quotas' }.freeze
   # Roles (E2): only an Owner may do these (Chatwoot administrators are Owners unless made Managers).
-  OWNER_POSTS = %w[mcp_token roles].freeze
+  # Round 1: every settings write, a contact's data erasure and export are Owner-only too.
+  OWNER_POSTS = %w[mcp_token roles compliance retention dsar_delete sms crm_sync commerce commerce_catalogue_sync
+                   negotiation agent_teams tuning_decide quotas].freeze
+  OWNER_GETS = %w[dsar_export].freeze
 
   def brain_get
     path = BRAIN_GETS[params[:feature].to_s]
     return head(:not_found) if path.nil?
+    return render(json: { ok: false, error: 'owner_only' }, status: :forbidden) if OWNER_GETS.include?(params[:feature].to_s) && !owner?
 
     extra = +''
     extra << "&days=#{params[:days].to_i}" if params[:days].present?
@@ -200,8 +216,9 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
     value.respond_to?(:to_unsafe_h) ? value.to_unsafe_h : value
   end
 
+  # Always the workspace of the URL the member was authorised for, never a value from the body.
   def account_scope_id
-    Current.account&.id || params[:account_id]
+    Current.account.id
   end
 
   def ensure_admin
