@@ -39,15 +39,18 @@ class Telegram::SendAttachmentsService
   end
 
   def send_attachments(type, attachments)
-    if [:media, :audio].include?(type)
+    case type
+    when :media, :audio
       media_group_request(channel.chat_id(message), attachments, channel.reply_to_message_id(message))
+    when :voice
+      send_voice_notes(attachments)
     else
       send_individual_attachments(attachments)
     end
   end
 
   def group_attachments_by_type
-    attachments_by_type = { media: [], audio: [], document: [] }
+    attachments_by_type = { media: [], audio: [], voice: [], document: [] }
 
     message.attachments.each do |attachment|
       type = attachment_type(attachment[:file_type])
@@ -56,7 +59,7 @@ class Telegram::SendAttachmentsService
       when 'document'
         attachments_by_type[:document] << attachment_data
       when 'audio'
-        attachments_by_type[:audio] << attachment_data
+        attachments_by_type[voice_note?(attachment) ? :voice : :audio] << attachment_data
       when 'photo', 'video'
         attachments_by_type[:media] << attachment_data
       end
@@ -77,6 +80,27 @@ class Telegram::SendAttachmentsService
                     media: attachments.map { |hash| hash.except(:attachment) }.to_json,
                     reply_to_message_id: reply_to_message_id
                   })
+  end
+
+  # Tolzar: the dashboard records voice notes as OGG/Opus (it ships no MP3 encoder). A media group's
+  # audio items are MP3/M4A music files, so OGG/Opus goes through sendVoice, one note per request.
+  def voice_note?(attachment)
+    attachment.file.content_type == 'audio/ogg'
+  end
+
+  def send_voice_notes(attachments)
+    response = nil
+    attachments.each do |attachment|
+      response = HTTParty.post("#{channel.telegram_api_url}/sendVoice",
+                               body: {
+                                 chat_id: channel.chat_id(message),
+                                 **business_connection_body,
+                                 voice: attachment[:media],
+                                 reply_to_message_id: channel.reply_to_message_id(message)
+                               })
+      break unless handle_response(response)
+    end
+    response
   end
 
   def send_individual_attachments(attachments)

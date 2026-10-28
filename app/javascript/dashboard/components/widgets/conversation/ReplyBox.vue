@@ -475,14 +475,15 @@ export default {
       return `draft-${this.conversationIdByRoute}-${this.effectiveReplyMode}`;
     },
     audioRecordFormat() {
-      if (this.isAWhatsAppCloudChannel) {
+      // Tolzar: OGG/Opus wherever upstream sent MP3 (no LGPL MP3 encoder in
+      // the bundle). WhatsApp (Cloud, 360dialog, Twilio) and Telegram (sendVoice)
+      // take OGG/Opus voice notes; API inboxes get the same file.
+      if (
+        this.isAWhatsAppChannel ||
+        this.isATelegramChannel ||
+        this.isAPIInbox
+      ) {
         return AUDIO_FORMATS.OGG;
-      }
-      if (this.isAWhatsAppChannel || this.isATelegramChannel) {
-        return AUDIO_FORMATS.MP3;
-      }
-      if (this.isAPIInbox) {
-        return AUDIO_FORMATS.MP3;
       }
       return AUDIO_FORMATS.WAV;
     },

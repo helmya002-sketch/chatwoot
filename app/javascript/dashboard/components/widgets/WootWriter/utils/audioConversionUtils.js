@@ -1,5 +1,3 @@
-import lamejs from '@breezystack/lamejs';
-
 import { remuxWebmToOgg } from './webmOpusToOgg';
 
 const writeString = (view, offset, string) => {
@@ -66,97 +64,41 @@ export const convertToWav = async audioBlob => {
   );
 };
 
-/**
- * Encodes audio samples to MP3 format.
- * @param {number} channels - Number of audio channels.
- * @param {number} sampleRate - Sample rate in Hz.
- * @param {Int16Array} samples - Audio samples to be encoded.
- * @param {number} bitrate - MP3 bitrate (default: 128)
- * @returns {Blob} - The MP3 encoded audio as a Blob.
- */
-export const encodeToMP3 = (channels, sampleRate, samples, bitrate = 128) => {
-  const outputBuffer = [];
-  const encoder = new lamejs.Mp3Encoder(channels, sampleRate, bitrate);
-  const maxSamplesPerFrame = 1152;
-
-  for (let offset = 0; offset < samples.length; offset += maxSamplesPerFrame) {
-    const sliceEnd = Math.min(offset + maxSamplesPerFrame, samples.length);
-    const sampleSlice = samples.subarray(offset, sliceEnd);
-    const mp3Buffer = encoder.encodeBuffer(sampleSlice);
-
-    if (mp3Buffer.length > 0) {
-      outputBuffer.push(new Int8Array(mp3Buffer));
-    }
-  }
-
-  const remainingData = encoder.flush();
-  if (remainingData.length > 0) {
-    outputBuffer.push(new Int8Array(remainingData));
-  }
-
-  return new Blob(outputBuffer, { type: 'audio/mp3' });
-};
+// Voice notes are recorded as Opus by the browser's own MediaRecorder and
+// only re-wrapped (WebM -> OGG), never re-encoded. Tolzar ships no MP3 encoder:
+// lamejs is LGPL-3.0, and every channel that used to get MP3 (WhatsApp 360dialog,
+// Telegram, API inboxes) accepts OGG/Opus.
+const RECORDER_MIME_TYPES = ['audio/ogg;codecs=opus', 'audio/webm;codecs=opus'];
 
 /**
- * Converts an audio Blob to an MP3 format Blob.
- * @param {Blob} audioBlob - The audio data as a Blob.
- * @param {number} bitrate - MP3 bitrate (default: 128)
- * @returns {Promise<Blob>} - A Blob containing the MP3 encoded audio.
+ * Picks the MediaRecorder mime type for a requested output format.
+ * Firefox records OGG/Opus directly; Chrome, Edge and Safari 18.4+ record
+ * WebM/Opus, which convertAudio remuxes to OGG. Older Safari records neither
+ * and gets its default (audio/mp4, AAC).
+ * @param {string} audioFormat - The requested output format.
+ * @param {(type: string) => boolean} isTypeSupported - MediaRecorder.isTypeSupported.
+ * @returns {string|undefined} - The mime type to record with, or undefined for the browser default.
  */
-export const convertToMp3 = async (audioBlob, bitrate = 128) => {
-  try {
-    const audioBuffer = await decodeAudioData(audioBlob);
-    const samples = new Int16Array(
-      audioBuffer.length * audioBuffer.numberOfChannels
-    );
-    let offset = 0;
-    for (let i = 0; i < audioBuffer.length; i += 1) {
-      for (
-        let channel = 0;
-        channel < audioBuffer.numberOfChannels;
-        channel += 1
-      ) {
-        const sample = Math.max(
-          -1,
-          Math.min(1, audioBuffer.getChannelData(channel)[i])
-        );
-        samples[offset] = sample < 0 ? sample * 0x8000 : sample * 0x7fff;
-        offset += 1;
-      }
-    }
-    return encodeToMP3(
-      audioBuffer.numberOfChannels,
-      audioBuffer.sampleRate,
-      samples,
-      bitrate
-    );
-  } catch (error) {
-    throw new Error('Conversion to MP3 failed.');
-  }
+export const getRecorderMimeType = (audioFormat, isTypeSupported) => {
+  if (audioFormat !== 'audio/ogg') return undefined;
+  return RECORDER_MIME_TYPES.find(type => isTypeSupported(type));
 };
 
-export const convertAudio = async (inputBlob, outputFormat, bitrate = 128) => {
-  let audio;
-  if (outputFormat === 'audio/wav') {
-    audio = await convertToWav(inputBlob);
-  } else if (outputFormat === 'audio/mp3') {
-    audio = await convertToMp3(inputBlob, bitrate);
-  } else if (outputFormat === 'audio/ogg') {
-    const inputType = inputBlob.type.split(';')[0].trim();
-    if (inputType === 'audio/webm' || inputType === 'video/webm') {
-      audio = await remuxWebmToOgg(inputBlob);
-    } else if (inputType === 'audio/ogg') {
-      audio = inputBlob;
-    } else {
-      // Browsers that record neither WebM nor OGG (e.g. Safari records
-      // audio/mp4) cannot produce OGG/Opus. Fall back to MP3 so the recording
-      // still sends as a regular audio message instead of failing. The caller
-      // keys the voice-note flag off the returned blob type, so an MP3 result
-      // is never mislabeled as an OGG/Opus voice note.
-      audio = await convertToMp3(inputBlob, bitrate);
-    }
-  } else {
-    throw new Error('Unsupported output format');
+const toOggOpus = async inputBlob => {
+  const inputType = inputBlob.type.split(';')[0].trim();
+  if (inputType === 'audio/webm' || inputType === 'video/webm') {
+    return remuxWebmToOgg(inputBlob);
   }
-  return audio;
+  if (inputType === 'audio/ogg') return inputBlob;
+  // Safari before 18.4 records only audio/mp4 (AAC). It is sent as it is: a
+  // regular audio message (WhatsApp and Telegram accept M4A). The caller keys
+  // the file name and voice-note flag off the returned type, so it is never
+  // labelled as an OGG/Opus voice note.
+  return new Blob([inputBlob], { type: 'audio/mp4' });
+};
+
+export const convertAudio = async (inputBlob, outputFormat) => {
+  if (outputFormat === 'audio/wav') return convertToWav(inputBlob);
+  if (outputFormat === 'audio/ogg') return toOggOpus(inputBlob);
+  throw new Error('Unsupported output format');
 };

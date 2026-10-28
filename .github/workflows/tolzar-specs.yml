@@ -35,6 +35,8 @@ jobs:
         options: --entrypoint redis-server
     steps:
       - uses: actions/checkout@v4
+      - name: Install libvips (spec/tolzar/image_variants_spec.rb)
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libvips-tools
       - uses: pnpm/action-setup@v4
       - uses: ruby/setup-ruby@v1
         with:
@@ -59,4 +61,4 @@ jobs:
         env:
           NODE_OPTIONS: --openssl-legacy-provider
       - name: Tolzar frontend specs
-        run: pnpm exec vitest run app/javascript/dashboard/components-next/Tolzar
+        run: pnpm exec vitest run app/javascript/dashboard/components-next/Tolzar app/javascript/dashboard/components/widgets/WootWriter/utils

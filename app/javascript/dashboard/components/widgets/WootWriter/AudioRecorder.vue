@@ -4,7 +4,10 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import WaveSurfer from 'wavesurfer.js';
 import RecordPlugin from 'wavesurfer.js/dist/plugins/record.js';
 import { format, intervalToDuration } from 'date-fns';
-import { convertAudio } from './utils/audioConversionUtils';
+import {
+  convertAudio,
+  getRecorderMimeType,
+} from './utils/audioConversionUtils';
 
 const props = defineProps({
   audioRecordFormat: {
@@ -39,10 +42,8 @@ const formatTimeProgress = time => {
 
 const AUDIO_EXTENSION_MAP = {
   'audio/ogg': 'ogg',
-  'audio/mp3': 'mp3',
-  'audio/mpeg': 'mp3',
+  'audio/mp4': 'm4a',
   'audio/wav': 'wav',
-  'audio/webm': 'webm',
 };
 
 const getRecordPluginOptions = audioFormat => {
@@ -50,12 +51,10 @@ const getRecordPluginOptions = audioFormat => {
     scrollingWaveform: true,
     renderRecordedAudio: false,
   };
-  if (
-    audioFormat === 'audio/ogg' &&
-    MediaRecorder.isTypeSupported('audio/ogg;codecs=opus')
-  ) {
-    options.mimeType = 'audio/ogg;codecs=opus';
-  }
+  const mimeType = getRecorderMimeType(audioFormat, type =>
+    MediaRecorder.isTypeSupported(type)
+  );
+  if (mimeType) options.mimeType = mimeType;
   return options;
 };
 
@@ -86,11 +85,11 @@ const initWaveSurfer = () => {
     try {
       const audioBlob = await convertAudio(blob, props.audioRecordFormat);
       // Use the converted blob's actual type, which may differ from the
-      // requested format when the browser can't produce it (e.g. Safari falls
-      // back to MP3 instead of OGG). This keeps the filename, content type, and
+      // requested format when the browser can't produce it (e.g. older Safari
+      // records M4A instead of OGG). This keeps the filename, content type, and
       // voice-note flag consistent with the real bytes.
-      const audioType = audioBlob.type || props.audioRecordFormat;
-      const ext = AUDIO_EXTENSION_MAP[audioType] || 'mp3';
+      const audioType = audioBlob.type;
+      const ext = AUDIO_EXTENSION_MAP[audioType];
       const fileName = `${getUuid()}.${ext}`;
       const file = new File([audioBlob], fileName, {
         type: audioType,
