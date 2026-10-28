@@ -27,7 +27,7 @@ RSpec.describe Tolzar::WorkspaceExportJob do
     described_class.perform_now(account.id)
 
     blob = described_class.blobs(account.id).first
-    expect(account.reload.internal_attributes['tolzar_export_blob_ids']).to eq([blob.id])
+    expect(account.reload.internal_attributes['tolzar_exports'].map { |e| e['id'] }).to eq([blob.id])
     expect(blob.reload.metadata).to include('tolzar_export' => true, 'account_id' => account.id)
   end
 
@@ -38,8 +38,9 @@ RSpec.describe Tolzar::WorkspaceExportJob do
     ActiveStorage::Blob.where(id: old_id).update_all(created_at: 8.days.ago)
 
     described_class.perform_now(account.id)
-    expect(account.reload.internal_attributes['tolzar_export_blob_ids']).not_to include(old_id)
-    expect(account.internal_attributes['tolzar_export_blob_ids'].size).to eq(1)
+    ids = account.reload.internal_attributes['tolzar_exports'].map { |e| e['id'] }
+    expect(ids).not_to include(old_id)
+    expect(ids.size).to eq(1)
   end
 end
 
@@ -72,8 +73,11 @@ RSpec.describe 'Tolzar workspace export lookup (H4)', type: :request do
 
   it "does not serve a blob recorded for the account whose metadata isn't a server-set export" do
     planted = plant('tolzar_export' => 'true', 'account_id' => account.id.to_s)
-    account.update!(internal_attributes: account.internal_attributes.merge('tolzar_export_blob_ids' => [planted.id]))
-    get "/api/v1/accounts/#{account.id}/tolzar/export/download", params: { id: planted.id }, headers: admin.create_new_auth_token
+    account.update!(internal_attributes: account.internal_attributes.merge(
+      'tolzar_exports' => [{ 'id' => planted.id, 'token' => 'planted-token-0123456789abcdef01' }]
+    ))
+    get "/api/v1/accounts/#{account.id}/tolzar/export/download", params: { token: 'planted-token-0123456789abcdef01' },
+                                                                 headers: admin.create_new_auth_token
     expect(response).to have_http_status(:not_found)
   end
 
@@ -85,11 +89,13 @@ RSpec.describe 'Tolzar workspace export lookup (H4)', type: :request do
     others = Tolzar::WorkspaceExportJob.blobs(other.id).first
 
     get "/api/v1/accounts/#{account.id}/tolzar/export", headers: admin.create_new_auth_token
-    expect(response.parsed_body['exports'].map { |e| e['id'] }).to eq([own.id])
+    own_token = Tolzar::WorkspaceExportJob.tokens(account.id)[own.id]
+    others_token = Tolzar::WorkspaceExportJob.tokens(other.id)[others.id]
+    expect(response.parsed_body['exports'].map { |e| e['token'] }).to eq([own_token])
 
-    get "/api/v1/accounts/#{account.id}/tolzar/export/download", params: { id: own.id }, headers: admin.create_new_auth_token
+    get "/api/v1/accounts/#{account.id}/tolzar/export/download", params: { token: own_token }, headers: admin.create_new_auth_token
     expect(response).to have_http_status(:success)
-    get "/api/v1/accounts/#{account.id}/tolzar/export/download", params: { id: others.id }, headers: admin.create_new_auth_token
+    get "/api/v1/accounts/#{account.id}/tolzar/export/download", params: { token: others_token }, headers: admin.create_new_auth_token
     expect(response).to have_http_status(:not_found)
   end
 end

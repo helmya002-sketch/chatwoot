@@ -117,7 +117,7 @@ async function startExport() {
 }
 async function download(x) {
   // The API authenticates with headers, so fetch the file and hand it to the browser.
-  const r = await window.axios.get(`${base.value}/export/download`, { params: { id: x.id }, responseType: 'blob' });
+  const r = await window.axios.get(`${base.value}/export/download`, { params: { token: x.token }, responseType: 'blob' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(r.data);
   a.download = x.filename || 'tolzar-export.tar.gz';
@@ -263,7 +263,7 @@ onMounted(() => open('usage'));
           <div v-if="current === 'export'">
             <button type="button" class="tz-btn" @click="startExport">{{ $t('TOLZAR_SETTINGS.EXPORT.PREPARE') }}</button>
             <table class="mt-4 w-full text-[13px]">
-              <tr v-for="x in data.exports || []" :key="x.id" class="border-t border-n-weak">
+              <tr v-for="x in data.exports || []" :key="x.token" class="border-t border-n-weak">
                 <td class="py-2">{{ String(x.created_at).slice(0, 16).replace('T', ' ') }}</td>
                 <td>{{ (x.size / 1048576).toFixed(1) }} MB</td>
                 <td><button type="button" class="text-n-brand" @click="download(x)">{{ $t('TOLZAR_SETTINGS.EXPORT.DOWNLOAD') }}</button></td>

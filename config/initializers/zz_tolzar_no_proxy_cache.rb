@@ -18,6 +18,8 @@
 # it protects the product behind any LSCache/CDN layer a customer deploys to.
 class TolzarNoProxyCache
   STATIC_PATH = %r{\A/(vite|vite-dev|packs|assets|rails/active_storage|favicon|brand-assets|widget|packs-test)}.freeze
+  # /api/v1/accounts/<id>/tolzar/... and /tolzar/... (mirror, Meta, MCP doors).
+  TOLZAR_PATH = %r{\A(?:/api/v1/accounts/[^/]+)?/tolzar(?:/|\z|\.)}
   STATIC_EXT = /\.(?:js|mjs|css|map|png|jpe?g|gif|svg|webp|avif|ico|woff2?|ttf|eot|wasm|mp3|mp4|webm|pdf)\z/i.freeze
 
   def initialize(app)
@@ -32,7 +34,12 @@ class TolzarNoProxyCache
     # removed — it let any unauthenticated client flush the entire proxy cache.
     # A one-off purge is now done out-of-band (CyberPanel) at deploy time only.
 
-    unless path.match?(STATIC_PATH) || path.match?(STATIC_EXT)
+    if path.match?(TOLZAR_PATH)
+      # H1 (full-sec): every Tolzar response (the workspace export is application/gzip, not JSON)
+      # is per-user data; never stored by a proxy, whatever its content type.
+      headers['X-LiteSpeed-Cache-Control'] = 'no-cache'
+      headers['Cache-Control'] = 'no-store, private'
+    elsif !(path.match?(STATIC_PATH) || path.match?(STATIC_EXT))
       content_type = (headers['Content-Type'] || headers['content-type']).to_s
       if content_type.include?('text/html') || content_type.include?('application/json')
         headers['X-LiteSpeed-Cache-Control'] = 'no-cache'

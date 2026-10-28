@@ -187,15 +187,21 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
   end
 
   def export_status
+    tokens = Tolzar::WorkspaceExportJob.tokens(account_scope_id)
     blobs = Tolzar::WorkspaceExportJob.blobs(account_scope_id).where('created_at >= ?', Tolzar::WorkspaceExportJob::KEEP.ago).limit(5)
-    render json: { ok: true, exports: blobs.map { |b| { id: b.id, filename: b.filename.to_s, size: b.byte_size, created_at: b.created_at } } }
+    exports = blobs.map { |b| { token: tokens[b.id], filename: b.filename.to_s, size: b.byte_size, created_at: b.created_at } }
+    render json: { ok: true, exports: exports }
   end
 
+  # H1 (full-sec): found by its random token + this account, never by the sequential blob id, and
+  # never stored by a proxy cache (LSCache keys on cookies and honours these headers).
   def export_download
-    blob = Tolzar::WorkspaceExportJob.blobs(account_scope_id).where('created_at >= ?', Tolzar::WorkspaceExportJob::KEEP.ago)
-                                     .find_by(id: params[:id])
+    blob = Tolzar::WorkspaceExportJob.find_by_token(account_scope_id, params[:token])
     return head(:not_found) unless Tolzar::WorkspaceExportJob.export_blob?(blob, account_scope_id)
+    return head(:not_found) if blob.created_at < Tolzar::WorkspaceExportJob::KEEP.ago
 
+    response.headers['Cache-Control'] = 'no-store, private'
+    response.headers['X-LiteSpeed-Cache-Control'] = 'no-cache'
     send_data blob.download, filename: blob.filename.to_s, type: 'application/gzip'
   end
 
@@ -231,6 +237,14 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
   # A member's Tolzar role (H3), decided here, not by the brain's default: Chatwoot agents are agents;
   # the account owner is always an Owner; any other administrator is a Manager unless the brain's role
   # table explicitly says 'owner' (an Owner promoted them).
+  #
+  # KNOWN LIMIT (full-sec review 2026-10-29, LOW): a Manager is a Chatwoot `administrator` underneath.
+  # Tolzar's owner-only gates (OWNER_POSTS / OWNER_GETS, ensure_owner: export, MCP token, Meta connect,
+  # role changes) hold only for the Tolzar endpoints in this controller. Everywhere else in Chatwoot
+  # core (inboxes, channel credentials, integrations, webhooks, agents, account settings, Chatwoot's
+  # own reports and CSV exports) a Manager has the same administrator rights as an Owner. Closing it
+  # needs a Chatwoot custom role or per-controller policy changes; until then, make someone a Manager
+  # only if you would make them a Chatwoot administrator.
   def tolzar_role_of(account_user)
     return 'agent' unless account_user&.administrator?
     return 'owner' if account_user.user_id == Tolzar::AccountOwner.user_id(Current.account)
