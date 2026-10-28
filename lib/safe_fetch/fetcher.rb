@@ -45,6 +45,11 @@ class SafeFetch::Fetcher
 
   def perform_request(&)
     return SafeFetch::PrivateNetworkRequest.new(options).perform(&) if SafeFetch.allow_private_network?
+    # Tolzar: an allowlisted private host (SafeFetch.allowed_private_hosts); every hop, redirects included,
+    # must stay on the allowlist.
+    if SafeFetch.allowed_private_host?(options.uri.hostname)
+      return SafeFetch::PrivateNetworkRequest.new(options, only_hosts: SafeFetch.allowed_private_hosts).perform(&)
+    end
 
     SsrfFilter.public_send(options.method, options.url, **options.request_options, &)
   end

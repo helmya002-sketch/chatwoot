@@ -1,6 +1,9 @@
 class SafeFetch::PrivateNetworkRequest
-  def initialize(options)
+  # only_hosts (Tolzar): when given, every hop's host must be in it (the SAFE_FETCH_ALLOWED_PRIVATE_HOSTS
+  # path); nil = any host (SAFE_FETCH_ALLOW_PRIVATE_NETWORK=true).
+  def initialize(options, only_hosts: nil)
     @options = options
+    @only_hosts = only_hosts
   end
 
   def perform(&)
@@ -11,6 +14,7 @@ class SafeFetch::PrivateNetworkRequest
     (SsrfFilter::DEFAULT_MAX_REDIRECTS + 1).times do
       uri = URI(url)
       validate_scheme!(uri)
+      validate_host!(uri)
 
       response, next_url = fetch_once(uri, resolved_addresses(uri.hostname).sample.to_s, original_uri, &)
       return response if next_url.nil?
@@ -23,7 +27,13 @@ class SafeFetch::PrivateNetworkRequest
 
   private
 
-  attr_reader :options
+  attr_reader :options, :only_hosts
+
+  def validate_host!(uri)
+    return if only_hosts.nil? || only_hosts.include?(uri.hostname.to_s.downcase)
+
+    raise SafeFetch::UnsafeUrlError, "Host '#{uri.hostname}' is not in SAFE_FETCH_ALLOWED_PRIVATE_HOSTS"
+  end
 
   def validate_scheme!(uri)
     return if SsrfFilter::DEFAULT_SCHEME_WHITELIST.include?(uri.scheme)
