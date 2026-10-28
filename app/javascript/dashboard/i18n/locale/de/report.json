@@ -1037,6 +1037,8 @@
       "channels": "Kanäle"
     },
     "NAV": {
+      "workspace_settings": "Arbeitsbereich-Einstellungen",
+      "go_live": "Live schalten",
       "usage": "Nutzung",
       "audit": "Protokoll",
       "export": "Export",
@@ -1065,6 +1067,8 @@
       "tuning": "Verbesserungsvorschläge"
     },
     "HINT": {
+      "workspace_settings": "Zeiten, Sprachen, Vorlagen und Beschreibungen für diesen Arbeitsbereich, über den Standardwerten. Gespeichert wird nur, was du änderst.",
+      "go_live": "Shadow oder live, je Posteingang. Nur für Owner. Heute ist nichts live.",
       "usage": "What this workspace used in the last 30 days.",
       "audit": "Who changed what, and when. Secret values are never shown.",
       "export": "Everything this workspace holds in one file. The link works for 7 days.",
@@ -1490,6 +1494,148 @@
       "LINK": "Link nicht erlaubt",
       "COMMITMENT": "Versprechen/Rabatt-Formulierung",
       "PRICE": "Preis nicht in der Preistabelle"
+    }
+  },
+  "TOLZAR_WORKSPACE": {
+    "OWNER_ONLY_EDIT": "Nur ein Owner kann diese Einstellungen ändern. Du kannst sie lesen.",
+    "VERSION": "Version {version}, zuletzt geändert {at} von {by}",
+    "NEVER_CHANGED": "Noch nichts geändert: alles ist Standard.",
+    "DEFAULT": "Standard: {value}",
+    "DEFAULT_EMPTY": "Standard: (leer)",
+    "CHANGED": "Geändert",
+    "RESET": "Auf Standard zurücksetzen",
+    "KEEP": "Meinen Wert behalten",
+    "WILL_RESET": "Wird beim Speichern auf den Standard zurückgesetzt",
+    "NOTHING_CHANGED": "Nichts zu speichern.",
+    "SAVED": "Gespeichert",
+    "CONFLICT": "Jemand anderes hat diese Einstellungen gespeichert, während du bearbeitet hast. Lade neu, um dessen Version zu sehen; deine ungespeicherten Änderungen gehen verloren.",
+    "RELOAD": "Neu laden",
+    "INVALID_STORED": "Die gespeicherten Einstellungen passen nicht mehr zu den Standardwerten; der Arbeitsbereich läuft auf den Standardwerten, bis sie korrigiert sind:",
+    "LOAD_FAILED": "Die Einstellungen konnten nicht geladen werden.",
+    "GROUP": {
+      "general": "Allgemein",
+      "hours": "Öffnungszeiten",
+      "budgets": "KI-Budgets",
+      "templates": "Nachrichtenvorlagen",
+      "places": "Ortsnamen",
+      "categories": "Kategoriebeschreibungen",
+      "teams": "Teambeschreibungen"
+    },
+    "FIELD": {
+      "workspace_name": "Name des Arbeitsbereichs",
+      "bot_display_name": "Anzeigename des Bots",
+      "timezone": "Zeitzone",
+      "languages": "Sprachen",
+      "local_currency": "Landeswährung",
+      "phone_region": "Telefonregion",
+      "working_hours_start": "Öffnet um",
+      "working_hours_end": "Schließt um",
+      "working_hours_closed_days": "Ruhetage",
+      "working_hours_holidays": "Feiertage",
+      "budgets_max_llm_calls_per_conversation": "Modellaufrufe pro Unterhaltung",
+      "budgets_max_llm_calls_per_day": "Modellaufrufe pro Tag"
+    },
+    "FIELD_HINT": {
+      "workspace_name": "Auch das, was du zur Bestätigung beim Live-Schalten eintippst.",
+      "languages": "Sprachcodes, durch Komma getrennt: en, de, fr",
+      "local_currency": "Ein Code mit 3 Buchstaben wie EUR",
+      "phone_region": "2 Buchstaben, z. B. DE",
+      "working_hours_holidays": "Eine pro Zeile: 2026-12-25 oder ein Zeitraum 2026-12-24..2026-12-26"
+    },
+    "TEMPLATE": "{name} ({lang})",
+    "TEMPLATE_NAME": {
+      "ask_location": "Nach dem Ort fragen",
+      "handover": "Übergabe an eine Person",
+      "handover_owners": "Übergabe an die Inhaber",
+      "nudge": "Erinnerung nach Stille",
+      "after_hours": "Außerhalb der Öffnungszeiten"
+    },
+    "PLACE": "Anzeigename von {name}",
+    "CATEGORY": "Was {name} bedeutet",
+    "TEAM": "Wofür Team {name} zuständig ist",
+    "DAYS": {
+      "0": "Mo",
+      "1": "Di",
+      "2": "Mi",
+      "3": "Do",
+      "4": "Fr",
+      "5": "Sa",
+      "6": "So"
+    },
+    "GO_LIVE": {
+      "BANNER_SHADOW": "Nichts ist live. Jeder Posteingang läuft im Shadow: Die KI entwirft in Tolzar und schreibt nie an Kunden.",
+      "BANNER_LIVE": "LIVE: Die KI antwortet echten Kunden in {n} Posteingang/Posteingängen dieses Arbeitsbereichs.",
+      "WARNING": "Live schalten lässt die KI echten Kunden in diesem Posteingang antworten. Tolzar lehnt ab, solange nicht jede Live-Prüfung bestanden ist.",
+      "OWNER_ONLY": "Nur ein Owner kann einen Posteingang live schalten oder den Notschalter benutzen.",
+      "INBOX": "Posteingang",
+      "MODE": "Modus",
+      "MODES": {
+        "shadow": "Shadow",
+        "live": "LIVE",
+        "eval": "Spiegel (nur lesen)",
+        "off": "Aus"
+      },
+      "SINCE": "seit {at}",
+      "GO": "Live schalten",
+      "BACK": "Zurück in den Shadow",
+      "CONFIRM_TITLE": "{inbox} live schalten?",
+      "CONFIRM_BODY": "Die KI antwortet in diesem Posteingang echten Kunden. Tippe zur Bestätigung den Namen des Arbeitsbereichs ein:",
+      "CONFIRM_PLACEHOLDER": "Name des Arbeitsbereichs",
+      "CONFIRM_GO": "Ja, live schalten",
+      "CANCEL": "Abbrechen",
+      "REFUSED": "Tolzar hat diesen Posteingang nicht live geschaltet:",
+      "TEAM_REASON": "Team {team}: {reason}",
+      "TEAM_AGENT_REASON": "Ein Team-Agent: {reason}",
+      "REASON": {
+        "no_price_table": "Der KI-Agent hat keine geladene Preistabelle. Füge dem Agenten eine Preisquelle hinzu (KI-Agenten) und teste sie.",
+        "price_table_without_prices": "Die Preistabelle des Agenten enthält keine Preise.",
+        "legacy_path": "Antworten laufen noch über den alten Weg. Schalte zuerst den eigenen Antwortweg des KI-Agenten ein.",
+        "mirror_inbox": "Das ist ein Spiegel-Posteingang (nur lesen). Er geht nie live.",
+        "negotiation_on": "Verhandeln ist eingeschaltet. Es muss vor dem Live-Schalten aus (oder im Shadow) sein.",
+        "no_active_agent": "Dieser Arbeitsbereich hat keinen aktiven KI-Agenten.",
+        "live_check_error": "Die Live-Prüfung konnte nicht laufen. Versuche es später noch einmal.",
+        "not_live_ready": "Die Live-Prüfungen sind noch nicht bestanden."
+      },
+      "DONE_LIVE": "{inbox} ist live.",
+      "DONE_SHADOW": "{inbox} ist zurück im Shadow.",
+      "KILL": "Notschalter: alles zurück in den Shadow",
+      "KILL_HINT": "Setzt jeden Posteingang dieses Arbeitsbereichs auf einmal zurück in den Shadow, auch die, die die Standardwerte live setzen.",
+      "KILL_CONFIRM": "Jetzt jeden Posteingang dieses Arbeitsbereichs zurück in den Shadow setzen?",
+      "KILL_DONE": "Erledigt. Vorher live: {were}. Jetzt live: {now}.",
+      "NONE": "keine",
+      "LAST_KILL": "Notschalter zuletzt benutzt {at} von {by}.",
+      "NO_INBOXES": "Dieser Arbeitsbereich hat noch keine Posteingänge."
+    },
+    "PRICE": {
+      "TITLE": "Preisquelle",
+      "HINT": "Woher die Preise dieses Agenten kommen. Tolzar liest sie nur; der Agent darf nur Preise nennen, die hier stehen.",
+      "TYPE": "Art",
+      "TYPES": {
+        "url": "Webseite (strukturierte Daten)",
+        "feed": "JSON-Feed",
+        "table": "Tabelle (CSV)",
+        "commerce": "Shop-Katalog"
+      },
+      "URL": "Adresse (https)",
+      "URL_PLACEHOLDER": "https://example.com/prices",
+      "REFRESH": "Aktualisieren alle (Stunden, 1 bis 168)",
+      "TEST": "Abruf testen",
+      "SAVE": "Preisquelle speichern",
+      "ROWS": "{n} Zeilen gefunden",
+      "LOADED": "{n} Zeilen jetzt geladen, zuletzt abgerufen {at}",
+      "NOT_LOADED": "Noch keine Preiszeilen geladen.",
+      "SAMPLE": "Erste Zeilen",
+      "FETCH_FAILED": "Der Abruf ist fehlgeschlagen: {detail}",
+      "TEST_FIRST": "Teste den Abruf, bevor du speicherst.",
+      "SAVED": "Preisquelle gespeichert",
+      "OWNER_SAVE": "Nur ein Owner kann die Preisquelle speichern. Du kannst sie testen.",
+      "COMMERCE_HINT": "Die Preise kommen aus dem Katalogabgleich deines Shops (Einstellungen, Shop).",
+      "PROBLEM": {
+        "url_required": "Gib die Adresse ein.",
+        "https_only": "Nur https-Adressen werden gelesen.",
+        "hours_range": "Die Stunden müssen zwischen 1 und 168 liegen.",
+        "type": "Wähle eine Art."
+      }
     }
   },
   "TOLZAR_HONEST": {

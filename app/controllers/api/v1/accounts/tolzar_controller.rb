@@ -7,7 +7,8 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
   # Owner-only (H3): every write that changes the workspace's settings or data. Tests, previews and
   # reads stay open to every administrator.
   before_action :ensure_owner, only: %i[export_start export_download meta_connect_url meta_disconnect meta_select
-                                        agent_save agent_delete agent_default workflow_save workflow_delete]
+                                        agent_save agent_delete agent_default workflow_save workflow_delete
+                                        workspace_settings_save price_source_save go_live kill_switch]
 
   def agent_test
     body = {
@@ -234,6 +235,63 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
     render json: { ok: true, entries: (chatwoot + brain).sort_by { |e| e[:at].to_s }.reverse.first(limit) }
   end
 
+  # Workspace settings in the brain's DB on top of the yaml defaults (brain workspace_settings.py).
+  # Every administrator reads them; only an Owner saves. The reply also says who is looking
+  # (viewer_role) and the workspace's own name, so the page can lock the Owner-only controls and
+  # know what the go-live confirmation must say. The brain's 400 / 409 / 422 keep their status.
+  def workspace_settings
+    res = get_from_brain("/workspace/settings?account_id=#{account_scope_id}")
+    render_brain(res.merge('viewer_role' => tolzar_role_of(Current.account_user), 'account_name' => Current.account.name))
+  end
+
+  def workspace_settings_save
+    body = { account_id: account_scope_id, version: Integer(params[:version].to_s, exception: false),
+             set: unsafe(params[:set]) || {}, unset: Array(params[:unset]).map(&:to_s) }
+    render_brain(post_to_brain('/workspace/settings', body))
+  end
+
+  # An AI agent's price source (url | feed | table | commerce). Test fetch is read-only (every
+  # administrator); saving is Owner-only.
+  AGENT_ID = /\A[A-Za-z0-9_-]{1,80}\z/
+
+  def price_source
+    return head(:not_found) unless params[:agent_id].to_s.match?(AGENT_ID)
+
+    render_brain(get_from_brain("#{price_source_path}?account_id=#{account_scope_id}"))
+  end
+
+  def price_source_save
+    return head(:not_found) unless params[:agent_id].to_s.match?(AGENT_ID)
+
+    render_brain(post_to_brain(price_source_path, price_source_body))
+  end
+
+  def price_source_test
+    return head(:not_found) unless params[:agent_id].to_s.match?(AGENT_ID)
+
+    render_brain(post_to_brain("#{price_source_path}/test", price_source_body))
+  end
+
+  # Going live, per inbox of THIS account (Owner-only). The brain checks the confirmation against
+  # the workspace name, so the proxy passes the account's real name from the server side; a value
+  # from the browser is never forwarded. The brain refuses (422 not_live_ready) unless every live
+  # check is clear.
+  def go_live
+    inbox = Current.account.inboxes.find_by(id: params[:inbox_id].to_i)
+    return render(json: { ok: false, error: 'inbox_not_found' }, status: :not_found) if inbox.nil?
+
+    mode = params[:mode].to_s
+    return render(json: { ok: false, error: 'invalid_mode' }, status: :bad_request) unless %w[live shadow].include?(mode)
+
+    render_brain(post_to_brain('/workspace/go-live', { account_id: account_scope_id, inbox_id: inbox.id, mode: mode,
+                                                       confirm: params[:confirm].to_s, account_name: Current.account.name }))
+  end
+
+  # Every inbox of this workspace back to Shadow, now (Owner-only, no confirmation needed).
+  def kill_switch
+    render_brain(post_to_brain('/workspace/kill-switch', { account_id: account_scope_id }))
+  end
+
   # Shadow-eval scoreboard for the Reports page (would-vs-did, go-live checks).
   def scoreboard
     days = (params[:days].presence || 30).to_i.clamp(1, 90)
@@ -281,6 +339,29 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
 
     owners = Current.account.account_users.administrator.select { |au| tolzar_role_of(au) == 'owner' }
     ['last_owner', :forbidden] if owners.map(&:user_id) == [member.user_id]
+  end
+
+  def price_source_path
+    "/agents/#{ERB::Util.url_encode(params[:agent_id].to_s)}/price-source"
+  end
+
+  # Only these fields, never the rest of the browser's body.
+  def price_source_body
+    { account_id: account_scope_id, type: params[:type].presence&.to_s, url: params[:url].presence&.to_s,
+      refresh_hours: params[:refresh_hours].presence&.to_i }.compact
+  end
+
+  # The brain's refusals keep their HTTP status (the page tells a conflict from a field error).
+  BRAIN_ERROR_STATUS = { 'owner_only' => :forbidden, 'invalid_settings' => :bad_request,
+                         'version_conflict' => :conflict, 'not_live_ready' => :unprocessable_entity,
+                         'brain_unreachable' => :bad_gateway }.freeze
+
+  def render_brain(res)
+    res = {} unless res.is_a?(Hash)
+    status = BRAIN_ERROR_STATUS[res['error'].to_s]
+    # A FastAPI HTTPException ({detail} only): a refused request.
+    status ||= :bad_request if res.key?('detail') && !res.key?('ok')
+    render json: res, status: status || :ok
   end
 
   def ensure_owner

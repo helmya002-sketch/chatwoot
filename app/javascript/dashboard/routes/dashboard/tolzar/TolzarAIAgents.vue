@@ -4,6 +4,8 @@ import { useI18n } from 'vue-i18n';
 import { useMapGetter } from 'dashboard/composables/store';
 import CredentialInput from 'dashboard/components-next/Tolzar/settings/CredentialInput.vue';
 import BrainNotice from 'dashboard/components-next/Tolzar/settings/BrainNotice.vue';
+import PriceSourcePanel from 'dashboard/components-next/Tolzar/settings/PriceSourcePanel.vue';
+import { agentPrices } from 'dashboard/components-next/Tolzar/tolzarWorkspace';
 import { BTN } from 'dashboard/components-next/Tolzar/settings/tzClasses';
 import {
   getPriceKey,
@@ -132,6 +134,16 @@ async function priceKeyAction(fn, okText) {
   } finally {
     priceBusy.value = false;
   }
+}
+// The price source was saved by the brain (Price source section): keep this editor's copy and the
+// list's copy in step, so "Save" on the agent does not write the old source back.
+function onPriceSourceSaved(source) {
+  const prices = agentPrices(source, (draft.value?.generic || {}).prices);
+  const put = a => {
+    if (a) a.generic = { ...(a.generic || {}), prices };
+  };
+  put(draft.value);
+  put(agents.value.find(a => a.id === draft.value?.id));
 }
 const savePrice = () =>
   priceKeyAction(
@@ -445,6 +457,9 @@ onMounted(() => {
               <button type="button" class="grid place-content-center rounded-lg transition-colors size-7 text-n-slate-10 hover:text-rose-500 hover:bg-n-alpha-2" @click="removeKnowledge(i)"><span class="i-lucide-x size-4" /></button>
             </div>
           </section>
+
+          <!-- Price source (type, address, refresh; test fetch; Owner saves) -->
+          <PriceSourcePanel :agent-id="draft.id" @saved="onPriceSourceSaved" />
 
           <!-- Price feed key -->
           <section class="p-[18px] rounded-2xl border shadow-sm bg-n-solid-1 border-n-weak" data-tz-price-key>

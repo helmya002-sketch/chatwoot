@@ -80,6 +80,13 @@ Rails.application.routes.draw do
           post   'tolzar/agents/delete',  to: 'tolzar#agent_delete'
           post   'tolzar/agents/default', to: 'tolzar#agent_default'
           get    'tolzar/scoreboard',     to: 'tolzar#scoreboard'
+          get    'tolzar/workspace/settings',    to: 'tolzar#workspace_settings'
+          post   'tolzar/workspace/settings',    to: 'tolzar#workspace_settings_save'
+          post   'tolzar/workspace/go_live',     to: 'tolzar#go_live'
+          post   'tolzar/workspace/kill_switch', to: 'tolzar#kill_switch'
+          get    'tolzar/agents/:agent_id/price_source',      to: 'tolzar#price_source'
+          post   'tolzar/agents/:agent_id/price_source',      to: 'tolzar#price_source_save'
+          post   'tolzar/agents/:agent_id/price_source/test', to: 'tolzar#price_source_test'
           # Tolzar: real Workflows (roadmap B1), stored and run by the brain, shadow only.
           get    'tolzar/workflows',           to: 'tolzar#workflows'
           post   'tolzar/workflows',           to: 'tolzar#workflow_save'

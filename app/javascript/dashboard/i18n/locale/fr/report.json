@@ -1037,6 +1037,8 @@
       "channels": "Canaux"
     },
     "NAV": {
+      "workspace_settings": "Réglages de l'espace",
+      "go_live": "Passer en direct",
       "usage": "Utilisation",
       "audit": "Journal",
       "export": "Export",
@@ -1065,6 +1067,8 @@
       "tuning": "Propositions d'amélioration"
     },
     "HINT": {
+      "workspace_settings": "Horaires, langues, modèles et descriptions de cet espace, par-dessus les valeurs par défaut. Seul ce que vous modifiez est enregistré.",
+      "go_live": "Shadow ou direct, par boîte de réception. Owner uniquement. Aujourd'hui rien n'est en direct.",
       "usage": "What this workspace used in the last 30 days.",
       "audit": "Who changed what, and when. Secret values are never shown.",
       "export": "Everything this workspace holds in one file. The link works for 7 days.",
@@ -1490,6 +1494,148 @@
       "LINK": "lien non autorisé",
       "COMMITMENT": "formulation de promesse/remise",
       "PRICE": "prix absent de la grille tarifaire"
+    }
+  },
+  "TOLZAR_WORKSPACE": {
+    "OWNER_ONLY_EDIT": "Seul un Owner peut modifier ces réglages. Vous pouvez les lire.",
+    "VERSION": "Version {version}, modifiée le {at} par {by}",
+    "NEVER_CHANGED": "Rien n'a encore été modifié : tout est par défaut.",
+    "DEFAULT": "Par défaut : {value}",
+    "DEFAULT_EMPTY": "Par défaut : (vide)",
+    "CHANGED": "Modifié",
+    "RESET": "Revenir à la valeur par défaut",
+    "KEEP": "Garder ma valeur",
+    "WILL_RESET": "Revient à la valeur par défaut à l'enregistrement",
+    "NOTHING_CHANGED": "Rien à enregistrer.",
+    "SAVED": "Enregistré",
+    "CONFLICT": "Quelqu'un d'autre a enregistré ces réglages pendant votre modification. Rechargez pour voir sa version ; vos modifications non enregistrées seront perdues.",
+    "RELOAD": "Recharger",
+    "INVALID_STORED": "Les réglages enregistrés ne correspondent plus aux valeurs par défaut ; l'espace fonctionne sur ses valeurs par défaut jusqu'à leur correction :",
+    "LOAD_FAILED": "Impossible de charger les réglages.",
+    "GROUP": {
+      "general": "Général",
+      "hours": "Horaires",
+      "budgets": "Budgets IA",
+      "templates": "Modèles de messages",
+      "places": "Noms des lieux",
+      "categories": "Descriptions des catégories",
+      "teams": "Descriptions des équipes"
+    },
+    "FIELD": {
+      "workspace_name": "Nom de l'espace",
+      "bot_display_name": "Nom affiché du bot",
+      "timezone": "Fuseau horaire",
+      "languages": "Langues",
+      "local_currency": "Devise locale",
+      "phone_region": "Région téléphonique",
+      "working_hours_start": "Ouvre à",
+      "working_hours_end": "Ferme à",
+      "working_hours_closed_days": "Jours de fermeture",
+      "working_hours_holidays": "Jours fériés",
+      "budgets_max_llm_calls_per_conversation": "Appels au modèle par conversation",
+      "budgets_max_llm_calls_per_day": "Appels au modèle par jour"
+    },
+    "FIELD_HINT": {
+      "workspace_name": "C'est aussi ce que vous tapez pour confirmer le passage en direct.",
+      "languages": "Codes de langue séparés par des virgules : en, de, fr",
+      "local_currency": "Un code de 3 lettres comme EUR",
+      "phone_region": "2 lettres, comme FR",
+      "working_hours_holidays": "Un par ligne : 2026-12-25 ou une période 2026-12-24..2026-12-26"
+    },
+    "TEMPLATE": "{name} ({lang})",
+    "TEMPLATE_NAME": {
+      "ask_location": "Demander le lieu",
+      "handover": "Transfert à une personne",
+      "handover_owners": "Transfert aux propriétaires",
+      "nudge": "Relance après un silence",
+      "after_hours": "Hors horaires"
+    },
+    "PLACE": "Nom affiché de {name}",
+    "CATEGORY": "Ce que signifie {name}",
+    "TEAM": "Ce que gère l'équipe {name}",
+    "DAYS": {
+      "0": "Lun",
+      "1": "Mar",
+      "2": "Mer",
+      "3": "Jeu",
+      "4": "Ven",
+      "5": "Sam",
+      "6": "Dim"
+    },
+    "GO_LIVE": {
+      "BANNER_SHADOW": "Rien n'est en direct. Chaque boîte tourne en Shadow : l'IA rédige dans Tolzar et n'écrit jamais aux clients.",
+      "BANNER_LIVE": "EN DIRECT : l'IA répond à de vrais clients dans {n} boîte(s) de cet espace.",
+      "WARNING": "Passer en direct permet à l'IA de répondre à de vrais clients dans cette boîte. Tolzar refuse tant que tous les contrôles ne sont pas validés.",
+      "OWNER_ONLY": "Seul un Owner peut passer une boîte en direct ou utiliser l'arrêt d'urgence.",
+      "INBOX": "Boîte de réception",
+      "MODE": "Mode",
+      "MODES": {
+        "shadow": "Shadow",
+        "live": "EN DIRECT",
+        "eval": "Miroir (lecture seule)",
+        "off": "Désactivé"
+      },
+      "SINCE": "depuis {at}",
+      "GO": "Passer en direct",
+      "BACK": "Revenir en Shadow",
+      "CONFIRM_TITLE": "Passer {inbox} en direct ?",
+      "CONFIRM_BODY": "L'IA répondra à de vrais clients dans cette boîte. Tapez le nom de l'espace pour confirmer :",
+      "CONFIRM_PLACEHOLDER": "Nom de l'espace",
+      "CONFIRM_GO": "Oui, passer en direct",
+      "CANCEL": "Annuler",
+      "REFUSED": "Tolzar n'a pas passé cette boîte en direct :",
+      "TEAM_REASON": "Équipe {team} : {reason}",
+      "TEAM_AGENT_REASON": "Un agent d'équipe : {reason}",
+      "REASON": {
+        "no_price_table": "L'agent IA n'a pas de table de prix chargée. Ajoutez une source de prix à l'agent (Agents IA) et testez-la.",
+        "price_table_without_prices": "La table de prix de l'agent ne contient aucun prix.",
+        "legacy_path": "Les réponses passent encore par l'ancien chemin. Activez d'abord le chemin de réponse propre à l'agent IA.",
+        "mirror_inbox": "C'est une boîte miroir en lecture seule. Elle ne passe jamais en direct.",
+        "negotiation_on": "La négociation est activée. Elle doit être désactivée (ou en Shadow) avant le passage en direct.",
+        "no_active_agent": "Cet espace n'a aucun agent IA actif.",
+        "live_check_error": "Le contrôle n'a pas pu s'exécuter. Réessayez plus tard.",
+        "not_live_ready": "Les contrôles ne sont pas encore validés."
+      },
+      "DONE_LIVE": "{inbox} est en direct.",
+      "DONE_SHADOW": "{inbox} est revenue en Shadow.",
+      "KILL": "Arrêt d'urgence : tout revient en Shadow",
+      "KILL_HINT": "Remet d'un coup chaque boîte de cet espace en Shadow, y compris celles que les valeurs par défaut mettent en direct.",
+      "KILL_CONFIRM": "Remettre maintenant chaque boîte de cet espace en Shadow ?",
+      "KILL_DONE": "C'est fait. En direct avant : {were}. En direct maintenant : {now}.",
+      "NONE": "aucune",
+      "LAST_KILL": "Arrêt d'urgence utilisé pour la dernière fois le {at} par {by}.",
+      "NO_INBOXES": "Cet espace n'a pas encore de boîte de réception."
+    },
+    "PRICE": {
+      "TITLE": "Source de prix",
+      "HINT": "D'où viennent les prix de cet agent. Tolzar les lit seulement ; l'agent ne peut citer que les prix trouvés ici.",
+      "TYPE": "Type",
+      "TYPES": {
+        "url": "Page web (données structurées)",
+        "feed": "Flux JSON",
+        "table": "Tableau (CSV)",
+        "commerce": "Catalogue de la boutique"
+      },
+      "URL": "Adresse (https)",
+      "URL_PLACEHOLDER": "https://example.com/prices",
+      "REFRESH": "Actualiser toutes les (heures, 1 à 168)",
+      "TEST": "Tester la lecture",
+      "SAVE": "Enregistrer la source",
+      "ROWS": "{n} lignes trouvées",
+      "LOADED": "{n} lignes chargées, dernière lecture le {at}",
+      "NOT_LOADED": "Aucune ligne de prix chargée pour l'instant.",
+      "SAMPLE": "Premières lignes",
+      "FETCH_FAILED": "La lecture a échoué : {detail}",
+      "TEST_FIRST": "Testez la lecture avant d'enregistrer.",
+      "SAVED": "Source de prix enregistrée",
+      "OWNER_SAVE": "Seul un Owner peut enregistrer la source de prix. Vous pouvez la tester.",
+      "COMMERCE_HINT": "Les prix viennent de la synchronisation du catalogue de votre boutique (Réglages, Boutique).",
+      "PROBLEM": {
+        "url_required": "Saisissez l'adresse.",
+        "https_only": "Seules les adresses https sont lues.",
+        "hours_range": "Les heures doivent être entre 1 et 168.",
+        "type": "Choisissez un type."
+      }
     }
   },
   "TOLZAR_HONEST": {

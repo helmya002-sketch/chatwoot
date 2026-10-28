@@ -7,6 +7,8 @@ import ChannelsPanel from 'dashboard/components-next/Tolzar/settings/ChannelsPan
 import AiLimitsPanel from 'dashboard/components-next/Tolzar/settings/AiLimitsPanel.vue';
 import QuotasPanel from 'dashboard/components-next/Tolzar/settings/QuotasPanel.vue';
 import DocumentsPanel from 'dashboard/components-next/Tolzar/settings/DocumentsPanel.vue';
+import WorkspacePanel from 'dashboard/components-next/Tolzar/settings/WorkspacePanel.vue';
+import GoLivePanel from 'dashboard/components-next/Tolzar/settings/GoLivePanel.vue';
 import { MEDIA_MODES, VIDEO_FRAMES, getMedia, saveMedia as saveMediaConfig, mediaConfig } from 'dashboard/components-next/Tolzar/tolzarMedia';
 import { brainErrors } from 'dashboard/components-next/Tolzar/tolzarBrainApi';
 
@@ -22,7 +24,7 @@ const post = (feature, body = {}) =>
   window.axios.post(`${base.value}/brain/${feature}`, body).then(r => r.data);
 
 const SECTIONS = [
-  ['workspace', ['usage', 'roles', 'audit', 'export']],
+  ['workspace', ['workspace_settings', 'usage', 'roles', 'audit', 'export', 'go_live']],
   ['trust', ['disclosure', 'retention', 'privacy']],
   ['channels', ['sms', 'crm', 'commerce']],
   ['team', ['sla', 'qa']],
@@ -231,6 +233,8 @@ onMounted(() => open('usage'));
           <ChannelsPanel v-if="CHANNELS.includes(current)" :key="current" :section="current" />
           <AiLimitsPanel v-if="AI_LIMITS.includes(current)" :key="current" :section="current" />
           <DocumentsPanel v-if="current === 'documents'" />
+          <WorkspacePanel v-if="current === 'workspace_settings'" />
+          <GoLivePanel v-if="current === 'go_live'" />
 
           <!-- roles -->
           <div v-if="current === 'roles'">

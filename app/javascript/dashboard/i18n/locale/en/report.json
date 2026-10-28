@@ -1037,6 +1037,8 @@
       "channels": "Channels"
     },
     "NAV": {
+      "workspace_settings": "Workspace settings",
+      "go_live": "Go live",
       "usage": "Usage",
       "audit": "Audit log",
       "export": "Export",
@@ -1065,6 +1067,8 @@
       "tuning": "Improvement proposals"
     },
     "HINT": {
+      "workspace_settings": "Hours, languages, templates and descriptions for this workspace, on top of the defaults. Only what you change is stored.",
+      "go_live": "Shadow or live, per inbox. Owner only. Today nothing is live.",
       "usage": "What this workspace used in the last 30 days.",
       "audit": "Who changed what, and when. Secret values are never shown.",
       "export": "Everything this workspace holds in one file. The link works for 7 days.",
@@ -1490,6 +1494,148 @@
       "LINK": "link not allowed",
       "COMMITMENT": "promise/discount wording",
       "PRICE": "price not in the price table"
+    }
+  },
+  "TOLZAR_WORKSPACE": {
+    "OWNER_ONLY_EDIT": "Only an Owner can change these settings. You can read them.",
+    "VERSION": "Version {version}, last changed {at} by {by}",
+    "NEVER_CHANGED": "Not changed yet: everything is the default.",
+    "DEFAULT": "Default: {value}",
+    "DEFAULT_EMPTY": "Default: (empty)",
+    "CHANGED": "Changed",
+    "RESET": "Reset to default",
+    "KEEP": "Keep my value",
+    "WILL_RESET": "Goes back to the default when you save",
+    "NOTHING_CHANGED": "Nothing to save.",
+    "SAVED": "Saved",
+    "CONFLICT": "Someone else saved these settings while you were editing. Reload to see their version; your unsaved edits will be lost.",
+    "RELOAD": "Reload",
+    "INVALID_STORED": "The saved settings no longer fit the defaults, so the workspace runs on its defaults until they are fixed:",
+    "LOAD_FAILED": "The settings could not be loaded.",
+    "GROUP": {
+      "general": "General",
+      "hours": "Working hours",
+      "budgets": "AI budgets",
+      "templates": "Message templates",
+      "places": "Place names",
+      "categories": "Category descriptions",
+      "teams": "Team descriptions"
+    },
+    "FIELD": {
+      "workspace_name": "Workspace name",
+      "bot_display_name": "Bot display name",
+      "timezone": "Timezone",
+      "languages": "Languages",
+      "local_currency": "Local currency",
+      "phone_region": "Phone region",
+      "working_hours_start": "Opens at",
+      "working_hours_end": "Closes at",
+      "working_hours_closed_days": "Closed days",
+      "working_hours_holidays": "Holidays",
+      "budgets_max_llm_calls_per_conversation": "Model calls per conversation",
+      "budgets_max_llm_calls_per_day": "Model calls per day"
+    },
+    "FIELD_HINT": {
+      "workspace_name": "Also what you type to confirm going live.",
+      "languages": "Language codes, comma separated: en, de, fr",
+      "local_currency": "A 3-letter code like EUR",
+      "phone_region": "2 letters, like DE",
+      "working_hours_holidays": "One per line: 2026-12-25 or a range 2026-12-24..2026-12-26"
+    },
+    "TEMPLATE": "{name} ({lang})",
+    "TEMPLATE_NAME": {
+      "ask_location": "Ask which place",
+      "handover": "Hand-over to a person",
+      "handover_owners": "Hand-over to the owners",
+      "nudge": "Nudge after silence",
+      "after_hours": "After hours"
+    },
+    "PLACE": "Display name of {name}",
+    "CATEGORY": "What {name} means",
+    "TEAM": "What team {name} handles",
+    "DAYS": {
+      "0": "Mon",
+      "1": "Tue",
+      "2": "Wed",
+      "3": "Thu",
+      "4": "Fri",
+      "5": "Sat",
+      "6": "Sun"
+    },
+    "GO_LIVE": {
+      "BANNER_SHADOW": "Nothing is live. Every inbox runs in Shadow: the AI drafts inside Tolzar and never writes to customers.",
+      "BANNER_LIVE": "LIVE: the AI replies to real customers in {n} inbox(es) of this workspace.",
+      "WARNING": "Going live lets the AI reply to real customers in that inbox. Tolzar refuses unless every live check passes.",
+      "OWNER_ONLY": "Only an Owner can switch an inbox live or use the kill switch.",
+      "INBOX": "Inbox",
+      "MODE": "Mode",
+      "MODES": {
+        "shadow": "Shadow",
+        "live": "LIVE",
+        "eval": "Mirror (read-only)",
+        "off": "Off"
+      },
+      "SINCE": "since {at}",
+      "GO": "Go live",
+      "BACK": "Back to Shadow",
+      "CONFIRM_TITLE": "Go live in {inbox}?",
+      "CONFIRM_BODY": "The AI will reply to real customers in this inbox. Type the workspace name to confirm:",
+      "CONFIRM_PLACEHOLDER": "Workspace name",
+      "CONFIRM_GO": "Yes, go live",
+      "CANCEL": "Cancel",
+      "REFUSED": "Tolzar did not switch this inbox live:",
+      "TEAM_REASON": "Team {team}: {reason}",
+      "TEAM_AGENT_REASON": "A team agent: {reason}",
+      "REASON": {
+        "no_price_table": "The AI agent has no price table loaded. Add a price source to the agent (AI Agents) and test it.",
+        "price_table_without_prices": "The agent's price table has no prices in it.",
+        "legacy_path": "Replies still go through the old path. Turn on the AI agent's own reply path first.",
+        "mirror_inbox": "This is a read-only mirror inbox. It never goes live.",
+        "negotiation_on": "Negotiation is switched on. It has to be off (or in Shadow) before going live.",
+        "no_active_agent": "This workspace has no active AI agent.",
+        "live_check_error": "The live check could not run. Try again later.",
+        "not_live_ready": "The live checks are not clear yet."
+      },
+      "DONE_LIVE": "{inbox} is live.",
+      "DONE_SHADOW": "{inbox} is back in Shadow.",
+      "KILL": "Kill switch: everything back to Shadow",
+      "KILL_HINT": "Puts every inbox of this workspace back to Shadow at once, including inboxes the defaults set live.",
+      "KILL_CONFIRM": "Put every inbox of this workspace back to Shadow now?",
+      "KILL_DONE": "Done. Live before: {were}. Live now: {now}.",
+      "NONE": "none",
+      "LAST_KILL": "Kill switch last used {at} by {by}.",
+      "NO_INBOXES": "This workspace has no inboxes yet."
+    },
+    "PRICE": {
+      "TITLE": "Price source",
+      "HINT": "Where this agent's prices come from. Tolzar only reads them; the agent may quote only prices found here.",
+      "TYPE": "Type",
+      "TYPES": {
+        "url": "Web page (structured data)",
+        "feed": "JSON feed",
+        "table": "Table (CSV)",
+        "commerce": "Shop catalogue"
+      },
+      "URL": "Address (https)",
+      "URL_PLACEHOLDER": "https://example.com/prices",
+      "REFRESH": "Refresh every (hours, 1 to 168)",
+      "TEST": "Test fetch",
+      "SAVE": "Save price source",
+      "ROWS": "{n} rows found",
+      "LOADED": "{n} rows loaded now, last fetched {at}",
+      "NOT_LOADED": "No price rows loaded yet.",
+      "SAMPLE": "First rows",
+      "FETCH_FAILED": "The fetch failed: {detail}",
+      "TEST_FIRST": "Test the fetch before you save.",
+      "SAVED": "Price source saved",
+      "OWNER_SAVE": "Only an Owner can save the price source. You can test it.",
+      "COMMERCE_HINT": "Prices come from your shop's catalogue sync (Settings, Shop).",
+      "PROBLEM": {
+        "url_required": "Enter the address.",
+        "https_only": "Only https addresses are read.",
+        "hours_range": "Refresh hours must be between 1 and 168.",
+        "type": "Pick a type."
+      }
     }
   },
   "TOLZAR_HONEST": {
