@@ -91,6 +91,9 @@ Rails.application.routes.draw do
           get    'tolzar/agents/:agent_id/price_source',      to: 'tolzar#price_source'
           post   'tolzar/agents/:agent_id/price_source',      to: 'tolzar#price_source_save'
           post   'tolzar/agents/:agent_id/price_source/test', to: 'tolzar#price_source_test'
+          get    'tolzar/agents/:agent_id/price_upload',      to: 'tolzar#price_upload_versions'
+          post   'tolzar/agents/:agent_id/price_upload',      to: 'tolzar#price_upload'
+          post   'tolzar/agents/:agent_id/price_upload/restore', to: 'tolzar#price_upload_restore'
           # Tolzar: real Workflows (roadmap B1), stored and run by the brain, shadow only.
           get    'tolzar/workflows',           to: 'tolzar#workflows'
           post   'tolzar/workflows',           to: 'tolzar#workflow_save'

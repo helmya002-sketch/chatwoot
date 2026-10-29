@@ -1419,6 +1419,20 @@
       "VERIFY_TOKEN": "Jeton de vérification",
       "OWNER_ONLY": "Seul le propriétaire de l'espace peut connecter un numéro.",
       "FAILED": "Connexion impossible. Vérifiez les ID et le jeton."
+    },
+    "PRICE_UPLOAD": {
+      "TITLE": "Ou importer un fichier de prix (privé)",
+      "WHAT": "Un fichier CSV ou Excel avec les colonnes item, price, currency (et en option category, where, url). Il reste privé : il n'est jamais publié. Une seule ligne fausse refuse le fichier, pour qu'une bonne liste de prix ne soit jamais remplacée à moitié.",
+      "CURRENT": "En service : version {version}, {rows} prix depuis {file} ({at}).",
+      "CHOOSE": "Fichier de prix (.csv ou .xlsx, 1 Mo max.)",
+      "UPLOAD": "Importer",
+      "ACCEPTED": "Accepté comme version {version} : {rows} prix.",
+      "REJECTED": "Le fichier n'a pas été accepté. Corrigez ces lignes et importez-le à nouveau :",
+      "ROW": "Ligne {row} : {error}",
+      "VERSIONS": "Fichiers précédents (les 10 derniers sont conservés)",
+      "VERSION_ROW": "Version {version} : {rows} prix, {at}",
+      "RESTORE": "Utiliser celui-ci",
+      "OWNER_ONLY": "Seul le propriétaire de l'espace peut importer un fichier de prix."
     }
   },
   "TOLZAR_ONBOARDING": {

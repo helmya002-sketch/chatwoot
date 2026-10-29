@@ -1419,6 +1419,20 @@
       "VERIFY_TOKEN": "Verify-Token",
       "OWNER_ONLY": "Nur der Owner des Workspaces kann eine Nummer verbinden.",
       "FAILED": "Verbindung fehlgeschlagen. Prüfen Sie die IDs und den Token."
+    },
+    "PRICE_UPLOAD": {
+      "TITLE": "Oder eine Preisdatei hochladen (privat)",
+      "WHAT": "Eine CSV- oder Excel-Datei mit den Spalten item, price, currency (optional category, where, url). Sie bleibt privat und wird nie veröffentlicht. Eine falsche Zeile weist die Datei zurück, damit eine gute Preisliste nie halb ersetzt wird.",
+      "CURRENT": "In Verwendung: Version {version}, {rows} Preise aus {file} ({at}).",
+      "CHOOSE": "Preisdatei (.csv oder .xlsx, bis 1 MB)",
+      "UPLOAD": "Hochladen",
+      "ACCEPTED": "Als Version {version} übernommen: {rows} Preise.",
+      "REJECTED": "Die Datei wurde nicht übernommen. Korrigieren Sie diese Zeilen und laden Sie sie erneut hoch:",
+      "ROW": "Zeile {row}: {error}",
+      "VERSIONS": "Frühere Dateien (die letzten 10 werden aufbewahrt)",
+      "VERSION_ROW": "Version {version}: {rows} Preise, {at}",
+      "RESTORE": "Diese verwenden",
+      "OWNER_ONLY": "Nur der Owner des Workspaces kann eine Preisdatei hochladen."
     }
   },
   "TOLZAR_ONBOARDING": {

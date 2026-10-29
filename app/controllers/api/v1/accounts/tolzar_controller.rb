@@ -9,7 +9,8 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
   before_action :ensure_owner, only: %i[export_start export_download meta_connect_url meta_disconnect meta_select
                                         agent_save agent_delete agent_default workflow_save workflow_delete
                                         workspace_settings_save price_source_save price_source_test go_live kill_switch
-                                        kill_switch_release workspace_bootstrap whatsapp_listen_only_connect]
+                                        kill_switch_release workspace_bootstrap whatsapp_listen_only_connect
+                                        price_upload price_upload_restore]
 
   # Listen-only WhatsApp (Tolzar::ListenOnly): the workspace owner connects the business's own in-house
   # Meta app to a number another provider runs. The token and the app secret are write-only: stored on
@@ -308,6 +309,42 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
     render_brain(post_to_brain("#{price_source_path}/test", price_source_body))
   end
 
+  # A private price file (CSV / XLSX) for one agent (brain price_upload.py): read here, sent to the brain
+  # base64-encoded, never stored by Rails and never served at any URL. Uploading and restoring are
+  # Owner-only; the version list (no row content) is for every administrator.
+  PRICE_UPLOAD_MAX_BYTES = 1_000_000
+  PRICE_UPLOAD_FORMATS = { '.csv' => 'csv', '.xlsx' => 'xlsx' }.freeze
+
+  def price_upload_versions
+    return head(:not_found) unless params[:agent_id].to_s.match?(AGENT_ID)
+
+    render_brain(get_from_brain("#{price_upload_path}?account_id=#{account_scope_id}"))
+  end
+
+  def price_upload
+    return head(:not_found) unless params[:agent_id].to_s.match?(AGENT_ID)
+
+    file = params[:file]
+    return render(json: { ok: false, error: 'file required' }, status: :bad_request) unless file.respond_to?(:read)
+
+    fmt = PRICE_UPLOAD_FORMATS[File.extname(file.original_filename.to_s).downcase]
+    return render(json: { ok: false, error: 'a .csv or .xlsx file' }, status: :bad_request) if fmt.nil?
+
+    raw = file.read(PRICE_UPLOAD_MAX_BYTES + 1).to_s
+    return render(json: { ok: false, error: 'the file is larger than 1 MB' }, status: :bad_request) if raw.bytesize > PRICE_UPLOAD_MAX_BYTES
+
+    body = { account_id: account_scope_id, filename: file.original_filename.to_s.first(120), format: fmt,
+             content_b64: Base64.strict_encode64(raw) }
+    render_brain(post_to_brain(price_upload_path, body))
+  end
+
+  def price_upload_restore
+    return head(:not_found) unless params[:agent_id].to_s.match?(AGENT_ID)
+
+    render_brain(post_to_brain("#{price_upload_path}/restore",
+                               { account_id: account_scope_id, version: Integer(params[:version].to_s, exception: false) }))
+  end
+
   # Going live, per inbox of THIS account (Owner-only). The brain checks the confirmation against
   # the workspace name, so the proxy passes the account's real name from the server side; a value
   # from the browser is never forwarded. The brain refuses (422 not_live_ready) unless every live
@@ -387,6 +424,10 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
     "/agents/#{ERB::Util.url_encode(params[:agent_id].to_s)}/price-source"
   end
 
+  def price_upload_path
+    "/agents/#{ERB::Util.url_encode(params[:agent_id].to_s)}/price-upload"
+  end
+
   def bootstrap_body
     body = BOOTSTRAP_FIELDS.index_with { |key| unsafe(params[key]) }.compact
     hours = unsafe(params[:working_hours])
@@ -401,7 +442,7 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
   end
 
   # The brain's refusals keep their HTTP status (the page tells a conflict from a field error).
-  BRAIN_ERROR_STATUS = { 'owner_only' => :forbidden, 'invalid_settings' => :bad_request,
+  BRAIN_ERROR_STATUS = { 'owner_only' => :forbidden, 'invalid_settings' => :bad_request, 'invalid_file' => :bad_request,
                          'version_conflict' => :conflict, 'not_live_ready' => :unprocessable_entity,
                          'already_bootstrapped' => :conflict, 'settings_exist' => :conflict,
                          'workspace_has_config_file' => :conflict,
