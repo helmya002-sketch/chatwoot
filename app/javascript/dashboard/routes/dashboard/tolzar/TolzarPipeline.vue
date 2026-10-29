@@ -3,6 +3,8 @@ import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import ContactAPI from 'dashboard/api/contacts';
 import { useMapGetter } from 'dashboard/composables/store';
+import { useAlert } from 'dashboard/composables';
+import { useI18n } from 'vue-i18n';
 import {
   STAGES as SHARED_STAGES,
   applyPipelineStages,
@@ -15,6 +17,7 @@ import {
 } from 'dashboard/components-next/Tolzar/tolzarStages';
 
 const route = useRoute();
+const { t } = useI18n();
 const router = useRouter();
 const accountId = computed(() => route.params.accountId);
 
@@ -115,14 +118,15 @@ const allLoaded = computed(() =>
 
 onMounted(async () => {
   await loadStageAttributes(accountId.value);
-  for (const s of STAGES.value) {
-    // eslint-disable-next-line no-await-in-loop
-    try {
-      cols.value[s.key] = await fetchStage(s);
-    } catch (e) {
-      cols.value[s.key] = { count: 0, contacts: [], loading: false, error: true };
-    }
-  }
+  await Promise.all(
+    STAGES.value.map(async s => {
+      try {
+        cols.value[s.key] = await fetchStage(s);
+      } catch (e) {
+        cols.value[s.key] = { count: 0, contacts: [], loading: false, error: true };
+      }
+    })
+  );
   loaded.value = true;
 });
 
@@ -153,7 +157,8 @@ async function move(card, fromKey, toKey) {
     await ContactAPI.update(card.id, { custom_attributes: merged });
     card.ca = merged;
   } catch (e) {
-    // revert
+    // revert, and say why the card jumped back
+    useAlert(t('TOLZAR_CONTACTS.STAGES.SET_FAILED'));
     to.contacts = to.contacts.filter(c => c.id !== card.id);
     to.count = Math.max(0, to.count - 1);
     card.ca = { ...card.ca, lifecycle_stage: fromKey };
@@ -263,7 +268,8 @@ function otherStages(key) {
                 </button>
               </div>
             </div>
-            <div v-if="!cols[s.key].contacts.length" class="pt-8 text-xs text-center text-n-slate-10">No contacts</div>
+            <div v-if="cols[s.key].error" class="pt-8 text-xs text-center text-n-ruby-11">{{ t('TOLZAR_PIPELINE.LOAD_FAILED') }}</div>
+            <div v-else-if="!cols[s.key].contacts.length" class="pt-8 text-xs text-center text-n-slate-10">No contacts</div>
             <div v-else-if="cols[s.key].count > cols[s.key].contacts.length" class="pt-1 text-[11px] text-center text-n-slate-10">
               <button type="button" class="underline hover:text-n-slate-12" :disabled="cols[s.key].more" @click="loadMore(s)">
                 {{ cols[s.key].more ? 'Loading…' : `Show more (${cols[s.key].count - cols[s.key].contacts.length} left)` }}

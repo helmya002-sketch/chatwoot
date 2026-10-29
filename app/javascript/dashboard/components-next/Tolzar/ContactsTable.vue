@@ -10,7 +10,7 @@ import Avatar from 'dashboard/components-next/avatar/Avatar.vue';
 import ChannelIcon from 'dashboard/components-next/icon/ChannelIcon.vue';
 import Checkbox from 'dashboard/components-next/checkbox/Checkbox.vue';
 import {
-  DEFAULT_STAGE,
+  defaultStage,
   contactStage,
   leadScore,
   scoreBar,
@@ -68,7 +68,7 @@ const rows = computed(() =>
       summary: (attrs.tolzar_summary || '').trim(),
       contactLine:
         [contact.phoneNumber, contact.email].filter(Boolean)[0] || '',
-      stage: contactStage(attrs) || DEFAULT_STAGE,
+      stage: contactStage(attrs) || defaultStage(),
       score,
       place: contactPlace(pack.value, attrs, add),
       lastAt: raw.last_activity_at,

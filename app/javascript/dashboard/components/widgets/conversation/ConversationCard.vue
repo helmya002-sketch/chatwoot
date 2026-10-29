@@ -21,8 +21,9 @@ import VoiceCallStatus from './VoiceCallStatus.vue';
 import Checkbox from 'dashboard/components-next/checkbox/Checkbox.vue';
 import {
   contactStage,
-  DEFAULT_STAGE,
+  defaultStage,
   stageOf,
+  stageChipStyle,
 } from 'dashboard/components-next/Tolzar/tolzarStages';
 
 const props = defineProps({
@@ -97,30 +98,9 @@ const noReplyFor = computed(() => {
 // Tolzar #9: every card shows a Stage so staff can plan at a glance; un-staged
 // contacts default to the funnel entry "New Lead".
 const lifecycleStage = computed(
-  () => contactStage(props.currentContact?.custom_attributes) || DEFAULT_STAGE
+  () => contactStage(props.currentContact?.custom_attributes) || defaultStage()
 );
-const lifecycleChipStyle = computed(() => {
-  const s = String(lifecycleStage.value).toLowerCase();
-  let bg = '#CCFBF1';
-  let fg = '#0F766E'; // teal (brand) fallback / "new lead"
-  if (/lost/.test(s)) {
-    bg = '#FEE2E2';
-    fg = '#B91C1C';
-  } else if (/won|customer/.test(s)) {
-    bg = '#DCFCE7';
-    fg = '#15803D';
-  } else if (/qualif|lead/.test(s)) {
-    bg = '#DBEAFE';
-    fg = '#1D4ED8';
-  } else if (/open|progress|active|engag|contact|negoti/.test(s)) {
-    bg = '#FEF3C7';
-    fg = '#B45309';
-  } else if (/new/.test(s)) {
-    bg = '#E2E8F0';
-    fg = '#475569';
-  }
-  return { backgroundColor: bg, color: fg };
-});
+const lifecycleChipStyle = computed(() => stageChipStyle(lifecycleStage.value));
 const lifecycleLabel = computed(() => stageOf(lifecycleStage.value).label);
 
 const voiceCallData = computed(() => {

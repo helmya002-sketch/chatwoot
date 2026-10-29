@@ -4,7 +4,7 @@ import { useRoute, useRouter } from 'vue-router';
 import ContactAPI from 'dashboard/api/contacts';
 import {
   STAGES as SHARED_STAGES,
-  DEFAULT_STAGE,
+  defaultStage,
   applyPipelineStages,
   contactStage,
   loadStageAttributes,
@@ -132,7 +132,7 @@ const recent = computed(() =>
       name: c.meta?.sender?.name || 'Unknown',
       snippet: (c.last_non_activity_message?.content || '').slice(0, 72),
       team: c.meta?.team?.name || '',
-      stage: contactStage(c.meta?.sender?.custom_attributes) || DEFAULT_STAGE,
+      stage: contactStage(c.meta?.sender?.custom_attributes) || defaultStage(),
       ts: c.last_activity_at,
       assignee: c.meta?.assignee?.name || '',
     }))
@@ -189,6 +189,18 @@ async function loadTeams(openTotal) {
   teamCounts.value = [...rows, { name: 'No team', n: Math.max(0, openTotal - inTeams) }];
 }
 
+// The workspace's first-run checklist (open to every administrator): a card until it is done.
+const setup = ref(null);
+const setupOpen = computed(() => setup.value && setup.value.total && setup.value.done < setup.value.total);
+async function loadSetup() {
+  try {
+    const { data } = await window.axios.get(`/api/v1/accounts/${accountId.value}/tolzar/workspace/checklist`);
+    setup.value = data && data.ok !== false ? data : null;
+  } catch (e) {
+    setup.value = null;
+  }
+}
+
 onMounted(async () => {
   store.dispatch('agents/get').catch(() => {});
   applyPipelineStages(getAccount.value(accountId.value)?.settings);
@@ -216,6 +228,7 @@ onMounted(async () => {
   } finally {
     loaded.value = true;
     lastUpdated.value = new Date();
+    loadSetup();
   }
 });
 </script>
@@ -279,6 +292,15 @@ onMounted(async () => {
             </button>
           </div>
         </div>
+      </div>
+
+      <!-- first-run setup: until the workspace's checklist is done -->
+      <div v-if="setupOpen" class="flex flex-wrap gap-3 justify-between items-center p-4 mt-4 rounded-2xl border bg-n-solid-1 border-n-weak" data-tz-setup-card>
+        <div class="min-w-0">
+          <div class="text-[14px] font-semibold text-n-slate-12">{{ $t('TOLZAR_ONBOARDING.CARD_TITLE') }}</div>
+          <div class="text-[13px] text-n-slate-11">{{ $t('TOLZAR_ONBOARDING.CARD_PROGRESS', { done: setup.done, total: setup.total }) }}</div>
+        </div>
+        <button type="button" class="inline-flex items-center px-4 h-9 text-sm font-semibold text-white rounded-xl border-0 cursor-pointer bg-n-brand" @click="go('tolzar_onboarding')">{{ $t('TOLZAR_ONBOARDING.CARD_OPEN') }}</button>
       </div>
 
       <!-- KPI cards -->

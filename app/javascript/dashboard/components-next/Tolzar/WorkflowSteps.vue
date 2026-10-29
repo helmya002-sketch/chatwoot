@@ -72,7 +72,7 @@ const emit = defineEmits(['select', 'add', 'remove']);
               >{{ arm === 'then' ? $t('TOLZAR_WORKFLOWS.YES') : $t('TOLZAR_WORKFLOWS.NO') }}</span
             >
             <WorkflowSteps
-              :steps="node.config[arm] || (node.config[arm] = [])"
+              :steps="node.config[arm]"
               :selected="selected"
               :depth="depth + 1"
               @select="n => emit('select', n)"

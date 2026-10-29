@@ -712,8 +712,8 @@
         "NUMBER": "Number",
         "TEXT": "Details"
       },
-      "GROUP_SIZE": "Group size",
-      "BOOKING_VALUE": "Booking value",
+      "GROUP_SIZE": "Party size",
+      "BOOKING_VALUE": "Deal value",
       "LANGUAGE": "Language",
       "PHONE": "Phone",
       "EMAIL": "Email"

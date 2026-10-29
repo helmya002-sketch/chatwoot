@@ -10,6 +10,10 @@ import {
   stageConditions,
   stageOfConditions,
   STAGE_ATTRIBUTES,
+  defaultStage,
+  wonStage,
+  lostStage,
+  stageChipStyle,
 } from '../tolzarStages';
 
 describe('tolzarStages', () => {
@@ -127,3 +131,16 @@ describe('stage attributes', () => {
     ).toBe('');
   });
 });
+
+describe('a custom pipeline', () => {
+  afterEach(() => applyPipelineStages({}));
+
+  it('takes default, won and lost by position, never by name', () => {
+    applyPipelineStages({ pipeline_stages: ['Inquiry', 'Quote', 'Signed', 'Declined'] });
+    expect([defaultStage(), wonStage(), lostStage()]).toEqual(['Inquiry', 'Signed', 'Declined']);
+    expect(stageOf(undefined).key).toBe('Inquiry');
+    expect(stageConditions('Inquiry').at(-1).filter_operator).toBe('is_not_present');
+    expect(stageChipStyle('Signed').color).toMatch(/^#/);
+  });
+});
+

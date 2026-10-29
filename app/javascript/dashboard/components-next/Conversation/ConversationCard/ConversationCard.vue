@@ -17,8 +17,9 @@ import CardMessagePreviewWithMeta from './CardMessagePreviewWithMeta.vue';
 import CardPriorityIcon from './CardPriorityIcon.vue';
 import {
   contactStage,
-  DEFAULT_STAGE,
+  defaultStage,
   stageOf,
+  stageChipStyle,
 } from 'dashboard/components-next/Tolzar/tolzarStages';
 
 const props = defineProps({
@@ -96,28 +97,15 @@ const noReplyFor = computed(() => {
   return secs > 60 ? compactAgo(secs) : '';
 });
 
-// Tolzar: lifecycle chip on the conversation card (respond.io-style sales funnel)
-// Tolzar: muted, eye-safe lifecycle pill colors (calmer for long shifts)
-const LIFECYCLE_STYLES = {
-  'New Lead': { background: '#e9eefb', color: '#3e63dd' },
-  Active: { background: '#e6f2ef', color: '#4e9488' },
-  'Offer Sent Follow up': { background: '#f6edd6', color: '#9a6b2f' },
-  'Customer Won': { background: '#e7f1ea', color: '#4a8560' },
-  'Customer Lost': { background: '#f6e7e6', color: '#b5564f' },
-};
-const LIFECYCLE_LABELS = { 'Offer Sent Follow up': 'Offer Sent' };
+// Tolzar: lifecycle chip on the conversation card; colour and label from the workspace's stage list.
 // Owner #9: every card shows a Stage so staff can plan at a glance; un-staged
 // contacts default to the funnel entry "New Lead".
 const lifecycleStage = computed(
-  () => contactStage(currentContact.value?.custom_attributes) || DEFAULT_STAGE
+  () => contactStage(currentContact.value?.custom_attributes) || defaultStage()
 );
 const lifecycleChipStyle = computed(() => {
-  const c = LIFECYCLE_STYLES[lifecycleStage.value] || {
-    background: '#eef2f7',
-    color: '#64748b',
-  };
   return {
-    ...c,
+    ...stageChipStyle(lifecycleStage.value),
     display: 'inline-flex',
     alignItems: 'center',
     borderRadius: '999px',
@@ -127,9 +115,7 @@ const lifecycleChipStyle = computed(() => {
     lineHeight: '1.5',
   };
 });
-const lifecycleLabel = computed(
-  () => LIFECYCLE_LABELS[lifecycleStage.value] || stageOf(lifecycleStage.value).label
-);
+const lifecycleLabel = computed(() => stageOf(lifecycleStage.value).label);
 
 // Tolzar: a quiet "why" line on the card (the brain's lead hint).
 const tolzarHint = computed(

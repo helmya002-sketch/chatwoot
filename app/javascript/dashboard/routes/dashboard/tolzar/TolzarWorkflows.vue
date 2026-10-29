@@ -2,7 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useMapGetter } from 'dashboard/composables/store';
 import WorkflowSteps from 'dashboard/components-next/Tolzar/WorkflowSteps.vue';
-import {
+import { normaliseBranches,
   STEP_TYPES,
   TRIGGERS,
   CONDITIONS,
@@ -48,6 +48,7 @@ async function load() {
 
 function open(f, fresh = false) {
   draft.value = clone(f);
+  normaliseBranches(draft.value.steps);
   draft.value.settings = draft.value.settings || {};
   isNew.value = fresh;
   selected.value = 'trigger';
@@ -86,6 +87,7 @@ async function save() {
     if (data.ok === false) errors.value = data.errors || [data.error || 'error'];
     else {
       draft.value = data.workflow;
+      normaliseBranches(draft.value?.steps);
       isNew.value = false;
     }
   } catch (e) {

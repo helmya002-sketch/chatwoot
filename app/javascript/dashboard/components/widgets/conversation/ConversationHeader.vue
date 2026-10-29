@@ -18,7 +18,10 @@ import { useI18n } from 'vue-i18n';
 import { copyTextToClipboard } from 'shared/helpers/clipboard';
 import {
   contactStage,
-  DEFAULT_STAGE,
+  defaultStage,
+  stageOf,
+  stageColor as stageHex,
+  STAGES as SHARED_STAGES,
 } from 'dashboard/components-next/Tolzar/tolzarStages';
 
 const props = defineProps({
@@ -134,29 +137,14 @@ const leadRingStyle = computed(() => ({
 // Tolzar #5: set the sales lifecycle Stage from the conversation header. Writes
 // the contact's `lifecycle_stage` custom attribute — the same field the list-card
 // pill reads, so the card updates instantly. Existing attributes are preserved.
-const STAGES = [
-  'New Lead',
-  'Active',
-  'Offer Sent Follow up',
-  'Customer Won',
-  'Customer Lost',
-];
-const STAGE_LABELS = { 'Offer Sent Follow up': 'Offer Sent' };
-const STAGE_COLOR = {
-  'New Lead': '#3e63dd',
-  Active: '#4e9488',
-  'Offer Sent Follow up': '#9a6b2f',
-  'Customer Won': '#4a8560',
-  'Customer Lost': '#b5564f',
-};
+// The workspace's own stage list (Settings > Pipeline), in order.
+const STAGES = computed(() => SHARED_STAGES.map(s => s.key));
 const stageOpen = ref(false);
 const currentStage = computed(
-  () => contactStage(currentContact.value?.custom_attributes) || DEFAULT_STAGE
+  () => contactStage(currentContact.value?.custom_attributes) || defaultStage()
 );
-const stageLabel = computed(
-  () => STAGE_LABELS[currentStage.value] || currentStage.value
-);
-const stageColor = stage => STAGE_COLOR[stage] || '#64748b';
+const stageLabel = computed(() => stageOf(currentStage.value).label);
+const stageColor = stage => stageHex(stage);
 const setStage = stage => {
   stageOpen.value = false;
   const cc = currentContact.value;
@@ -164,8 +152,8 @@ const setStage = stage => {
   const merged = { ...(cc.custom_attributes || {}), lifecycle_stage: stage };
   store
     .dispatch('contacts/update', { id: cc.id, customAttributes: merged })
-    .then(() => useAlert(`Stage set to ${STAGE_LABELS[stage] || stage}`))
-    .catch(() => useAlert('Could not update the stage'));
+    .then(() => useAlert(t('TOLZAR_CONTACTS.STAGES.SET_SUCCESS', { stage: stageOf(stage).label })))
+    .catch(() => useAlert(t('TOLZAR_CONTACTS.STAGES.SET_FAILED')));
 };
 </script>
 
@@ -276,7 +264,7 @@ const setStage = stage => {
             @click="setStage(s)"
           >
             <span class="tz-stage-dot" :style="{ background: stageColor(s) }" />
-            <span>{{ STAGE_LABELS[s] || s }}</span>
+            <span>{{ stageOf(s).label }}</span>
           </button>
         </div>
       </div>

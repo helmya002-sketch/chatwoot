@@ -105,7 +105,13 @@ export const money = (v, { short = false } = {}) => {
   }
 };
 
-export const DEFAULT_STAGE = 'New Lead';
+// The workspace's list decides, by position: the first stage takes contacts with no stage, the last
+// two are won and lost. Nothing is matched by a stage's name.
+export const defaultStage = () => STAGES[0]?.key || DEFAULT_STAGES[0].key;
+export const wonStage = () => STAGES[STAGES.length - 2]?.key;
+export const lostStage = () => STAGES[STAGES.length - 1]?.key;
+// Kept for older imports; prefer defaultStage() (it follows the workspace's list).
+export const DEFAULT_STAGE = DEFAULT_STAGES[0].key;
 
 // The stored stage of a contact ('' when none is set).
 export const contactStage = attrs => {
@@ -161,7 +167,7 @@ export const stageConditions = key => {
     absentBefore(i);
     out.push(condition(k, 'equal_to', [key]));
   });
-  if (key === DEFAULT_STAGE) {
+  if (key === defaultStage()) {
     absentBefore(keys.length - 1);
     out.push(condition(keys[keys.length - 1], 'is_not_present', []));
   }
@@ -191,7 +197,7 @@ const TONE_CLASSES = {
 
 export const stageOf = key =>
   STAGES.find(s => s.key === key) ||
-  (key ? { key, label: key, tone: 'slate' } : stageOf(DEFAULT_STAGE));
+  (key ? { key, label: key, tone: 'slate' } : stageOf(defaultStage()));
 
 export const stageClass = key => TONE_CLASSES[stageOf(key).tone];
 
@@ -212,6 +218,11 @@ const TONE_ICON = {
 };
 export const stageColor = key => TONE_HEX[stageOf(key).tone];
 export const stageIcon = key => TONE_ICON[stageOf(key).tone];
+// A stage chip's colours (inline style), from the stage's tone: the same in every list and header.
+export const stageChipStyle = key => {
+  const hex = stageColor(key);
+  return { backgroundColor: `${hex}1f`, color: hex };
+};
 
 // Lead score 0–100 from the brain (`tolzar_lead_score`); null when the brain hasn't scored yet.
 export const leadScore = attrs => {

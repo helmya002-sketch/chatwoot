@@ -16,7 +16,8 @@ import Button from 'dashboard/components-next/button/Button.vue';
 import ChannelIcon from 'dashboard/components-next/icon/ChannelIcon.vue';
 import ContactLabels from 'dashboard/components-next/Contacts/ContactLabels/ContactLabels.vue';
 import {
-  DEFAULT_STAGE,
+  defaultStage,
+  lostStage,
   contactStage,
   dealValue,
   money,
@@ -45,10 +46,10 @@ const raw = computed(
 );
 const attrs = computed(() => raw.value.custom_attributes || {});
 const inbox = computed(() => contactChannel(raw.value));
-const stage = computed(() => contactStage(attrs.value) || DEFAULT_STAGE);
+const stage = computed(() => contactStage(attrs.value) || defaultStage());
 const stageIndex = computed(() => STAGES.findIndex(s => s.key === stage.value));
-const isLost = computed(() => stage.value === 'Customer Lost');
-const funnel = STAGES.filter(s => s.key !== 'Customer Lost');
+const isLost = computed(() => stage.value === lostStage());
+const funnel = computed(() => STAGES.filter(s => s.key !== lostStage()));
 const score = computed(() => leadScore(attrs.value));
 const summary = computed(() => (attrs.value.tolzar_summary || '').trim());
 const scoreLabel = computed(() => attrs.value.tolzar_lead_label || '');

@@ -83,6 +83,21 @@ export const stepSummary = s => {
   }
 };
 
+// Every branch gets its Yes / No lists before the canvas renders (a workflow saved by the brain may
+// have a branch without them), so the canvas never has to create state while it draws.
+export const normaliseBranches = steps => {
+  (steps || []).forEach(s => {
+    if (s && s.type === 'branch') {
+      s.config = s.config || {};
+      s.config.then = Array.isArray(s.config.then) ? s.config.then : [];
+      s.config.else = Array.isArray(s.config.else) ? s.config.else : [];
+      normaliseBranches(s.config.then);
+      normaliseBranches(s.config.else);
+    }
+  });
+  return steps;
+};
+
 export const newStep = type => {
   const config = {
     send_message: { text: { en: '' } },

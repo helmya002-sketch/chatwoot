@@ -1456,6 +1456,9 @@
     }
   },
   "TOLZAR_ONBOARDING": {
+    "CARD_TITLE": "Finish setting up this workspace",
+    "CARD_PROGRESS": "{done} of {total} steps done",
+    "CARD_OPEN": "Open the checklist",
     "OPEN": "Set up Tolzar",
     "NEXT": "Next",
     "STEP": {
@@ -1627,7 +1630,8 @@
     "STAGE_FIELDS_HINT": "Contact attribute keys, best first, comma-separated. Tolzar writes the first; the others are read when it is empty (for example an imported stage).",
     "DEAL_FIELD": "Deal value field",
     "CURRENCY": "Currency",
-    "SAVE": "Save pipeline"
+    "SAVE": "Save pipeline",
+    "LOAD_FAILED": "Could not load this stage. Reload the page."
   },
   "TOLZAR_META_APP": {
     "LISTEN_ONLY": "Listen only: nothing is sent from Tolzar",

@@ -218,8 +218,14 @@ async function createFromTemplate(t) {
 }
 
 // A new agent is listed only once the brain has stored it.
+// One create or save at a time: a double click must not create two agents or send two saves.
+const saving = ref(false);
 async function addAgent(a) {
-  const r = await saveToServer(a);
+  if (saving.value) return;
+  saving.value = true;
+  const r = await saveToServer(a).finally(() => {
+    saving.value = false;
+  });
   listResult.value = refused(r) ? r : null;
   if (refused(r)) return;
   agents.value.push(a);
@@ -249,6 +255,7 @@ function cancelEdit() {
 }
 
 async function saveAgent() {
+  if (saving.value) return;
   // Skills switched on must be complete (the brain would skip a half-filled one silently).
   if (SKILLS_LIVE && blocksSave(skillsForm.value)) {
     skillsError.value = true;
@@ -260,7 +267,10 @@ async function saveAgent() {
   const payload = JSON.parse(JSON.stringify(draft.value));
   // The instructions edited here are the generic agent's instructions too.
   if (payload.generic) payload.generic.instructions = payload.instructions;
-  const r = await saveToServer(payload);
+  saving.value = true;
+  const r = await saveToServer(payload).finally(() => {
+    saving.value = false;
+  });
   if (refused(r)) {
     // Keep the builder open with the edits; the list keeps what the brain has.
     saveResult.value = r;
@@ -414,7 +424,7 @@ onMounted(async () => {
 
       <div class="tz-rise flex gap-2.5 items-center mt-4 px-3.5 py-2.5 text-xs rounded-xl border border-n-weak bg-n-alpha-1 text-n-slate-11" style="animation-delay: 60ms">
         <span class="i-lucide-sparkles size-4 text-n-brand" />
-        <span><strong class="text-n-slate-12">Default agent:</strong> {{ (agents.find(x => x.id === defaultId) || {}).name || 'none' }} — new open conversations are assigned to it automatically.</span>
+        <span><strong class="text-n-slate-12">Default agent:</strong> {{ (agents.find(x => x.id === defaultId) || {}).name || 'none' }} — Tolzar drafts with this agent unless a team has its own (Settings → Agents per team).</span>
       </div>
 
       <div class="grid gap-4 mt-6 grid-cols-[repeat(auto-fill,minmax(320px,1fr))]">
@@ -485,7 +495,7 @@ onMounted(async () => {
           Active
         </label>
         <button type="button" class="tz-btn-ghost" @click="cancelEdit">Cancel</button>
-        <button type="button" class="tz-btn-primary" @click="saveAgent"><span class="i-lucide-check size-4" /> Save</button>
+        <button type="button" class="tz-btn-primary disabled:opacity-60" :disabled="saving" @click="saveAgent"><span class="i-lucide-check size-4" /> {{ saving ? 'Saving…' : 'Save' }}</button>
       </div>
       <div class="max-w-[640px] -mt-2 mb-3">
         <BrainNotice :result="saveResult" />

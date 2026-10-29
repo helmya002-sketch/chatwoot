@@ -25,7 +25,6 @@ const isOpen = ref(true);
 const ringStyle = computed(() => ({
   background: `conic-gradient(rgb(var(--blue-9)) ${score.value}%, rgb(var(--slate-5)) 0)`,
 }));
-const showVoucher = computed(() => score.value && score.value >= 70);
 </script>
 
 <template>
@@ -40,14 +39,6 @@ const showVoucher = computed(() => score.value && score.value >= 70);
           </span>
         </div>
         <p v-if="summary" class="tz-sp-sum">{{ summary }}</p>
-        <div v-if="showVoucher" class="tz-sp-nudge">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path
-              d="M9 11l3 3 8-8M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"
-            />
-          </svg>
-          <span>Offer the free pre-booking voucher — the team's strongest close.</span>
-        </div>
       </div>
     </AccordionItem>
   </div>

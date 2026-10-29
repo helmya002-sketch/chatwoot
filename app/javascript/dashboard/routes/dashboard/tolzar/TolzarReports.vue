@@ -118,7 +118,7 @@ watch(days, load);
 
 // ---- KPIs ------------------------------------------------------------------------------
 const wonValue = computed(
-  () => values.value.find(v => v.stage === 'Customer Won') || null
+  () => values.value.find(v => v.stage === wonKey.value) || null
 );
 const kpis = computed(() => {
   const s = summary.value || {};
@@ -427,7 +427,7 @@ const updatedLabel = computed(() =>
             </div>
             <div class="grid grid-cols-[6.5rem_1fr] items-center gap-3">
               <span class="text-sm text-n-slate-12">{{
-                stageLabel('Customer Lost')
+                stageLabel(lostKey)
               }}</span>
               <span class="text-sm font-semibold text-n-slate-12">{{
                 lost

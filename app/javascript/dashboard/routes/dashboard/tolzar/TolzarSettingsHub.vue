@@ -52,36 +52,43 @@ const usageDays = ref(30);
 const data = ref({});
 const busy = ref(false);
 const note = ref('');
+const noteBad = ref(false);
 
+// A section's answer only lands if it is still the open section (a slower earlier one is dropped).
+let openSeq = 0;
 async function open(key) {
+  openSeq += 1;
+  const seq = openSeq;
   current.value = key;
   note.value = '';
+  noteBad.value = false;
   busy.value = true;
+  let out = {};
   try {
-    if (key === 'usage') data.value = await get('usage', { days: usageDays.value });
-    if (key === 'audit') data.value = (await window.axios.get(`${base.value}/audit`)).data;
-    if (key === 'export') data.value = (await window.axios.get(`${base.value}/export`)).data;
-    if (key === 'sla') data.value = await get('sla');
-    if (key === 'qa') data.value = await get('qa');
+    if (key === 'usage') out = await get('usage', { days: usageDays.value });
+    if (key === 'audit') out = (await window.axios.get(`${base.value}/audit`)).data;
+    if (key === 'export') out = (await window.axios.get(`${base.value}/export`)).data;
+    if (key === 'sla') out = await get('sla');
+    if (key === 'qa') out = await get('qa');
     if (key === 'media') {
       const m = await getMedia(accountId.value);
-      data.value = { ...m, config: mediaConfig(m.config) };
+      out = { ...m, config: mediaConfig(m.config) };
     }
-    if (key === 'recovery') data.value = await get('recovery');
-    if (key === 'learned') data.value = await get('learned');
-    if (key === 'brief') data.value = await get('brief');
-    if (key === 'ask') data.value = { answer: null, question: '' };
-    if (key === 'dedupe') data.value = await get('dedupe');
+    if (key === 'recovery') out = await get('recovery');
+    if (key === 'learned') out = await get('learned');
+    if (key === 'brief') out = await get('brief');
+    if (key === 'ask') out = { answer: null, question: '' };
+    if (key === 'dedupe') out = await get('dedupe');
     if (key === 'links') {
       const [ch, at] = await Promise.all([get('channels'), get('attribution')]);
-      data.value = { channels: ch.channels || {}, refs: at.refs || [], campaign: '', greeting: '', made: null };
+      out = { channels: ch.channels || {}, refs: at.refs || [], campaign: '', greeting: '', made: null };
     }
     if (key === 'broadcasts') {
       const b = await get('broadcasts');
-      data.value = { list: b.broadcasts || [], draft: { name: '', audience: { field: 'lifecycle_stage', value: '' }, text: { en: '' } }, preview: null };
+      out = { list: b.broadcasts || [], draft: { name: '', audience: { field: 'lifecycle_stage', value: '' }, text: { en: '' } }, preview: null };
     }
-    if (key === 'mcp') data.value = { token: '' };
-    if (key === 'connections') data.value = (await window.axios.get(`${base.value}/meta/status`)).data;
+    if (key === 'mcp') out = { token: '' };
+    if (key === 'connections') out = (await window.axios.get(`${base.value}/meta/status`)).data;
     if (key === 'roles') {
       const [members, r] = await Promise.all([
         window.axios.get(`/api/v1/accounts/${accountId.value}/agents`).then(x => x.data),
@@ -90,7 +97,7 @@ async function open(key) {
       // H3: the account owner is always an Owner; other admins are Managers unless promoted.
       const table = r.roles || {};
       const ownerId = r.owner_user_id;
-      data.value = {
+      out = {
         ownerId,
         members: (members || []).map(m => {
           let tolzar = 'agent';
@@ -101,20 +108,23 @@ async function open(key) {
         }),
       };
     }
+    if (seq === openSeq) data.value = out;
   } catch (e) {
+    if (seq !== openSeq) return;
     const why = problems(e?.response?.data);
-    note.value = why.length ? why.join(' · ') : String(e);
+    done(why.length ? why.join(' · ') : String(e), true);
   } finally {
-    busy.value = false;
+    if (seq === openSeq) busy.value = false;
   }
 }
-const done = msg => {
+const done = (msg, bad = false) => {
   note.value = msg;
+  noteBad.value = bad;
 };
 // Shows the brain's refusal, else `msg`; true when the request went through.
 const report = (r, msg = $t('TOLZAR_SETTINGS.R1.SAVED')) => {
   const why = problems(r);
-  done(why.length ? why.join(' · ') : msg);
+  done(why.length ? why.join(' · ') : msg, why.length > 0);
   return !why.length;
 };
 
@@ -257,7 +267,7 @@ onMounted(() => {
         <section class="p-5 rounded-xl border bg-n-solid-1 border-n-weak min-h-[300px]">
           <h2 class="mt-0 mb-1 text-[17px] font-bold text-n-slate-12">{{ $t(`TOLZAR_SETTINGS.NAV.${current}`) }}</h2>
           <p class="mt-0 mb-4 text-[13px] text-n-slate-10">{{ $t(`TOLZAR_SETTINGS.HINT.${current}`) }}</p>
-          <p v-if="note" class="p-2 mb-3 text-[13px] rounded-lg text-n-brand bg-n-brand/10">{{ note }}</p>
+          <p v-if="note" class="p-2 mb-3 text-[13px] rounded-lg" :class="noteBad ? 'text-n-ruby-11 bg-n-ruby-9/10' : 'text-n-brand bg-n-brand/10'" :role="noteBad ? 'alert' : null">{{ note }}</p>
           <p v-if="busy" class="text-n-slate-10">…</p>
 
           <!-- usage -->
