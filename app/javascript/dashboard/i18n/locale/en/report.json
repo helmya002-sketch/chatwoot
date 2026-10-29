@@ -840,7 +840,7 @@
   },
   "TOLZAR_REPORTS": {
     "TITLE": "Overview",
-    "SUBTITLE": "Leads, bookings, team speed and how Tolzar is doing, for this workspace",
+    "SUBTITLE": "Leads, deals, team speed and how Tolzar is doing, for this workspace",
     "RANGE": {
       "D7": "7 days",
       "D30": "30 days",
@@ -852,7 +852,7 @@
       "CONVERSATIONS": "Conversations",
       "NEW_CONTACTS": "New contacts",
       "WON": "Won (all time)",
-      "WON_VALUE": "Won booking value",
+      "WON_VALUE": "Won deal value",
       "FIRST_REPLY": "First reply (average)",
       "RESOLVE": "Time to resolve (average)",
       "RESOLVED": "{n} resolved",
@@ -863,7 +863,7 @@
     "LIFECYCLE": "Lifecycle",
     "FUNNEL": "Contacts by stage",
     "FUNNEL_SUB": "Where every contact is today, and the share of each stage that reached the next",
-    "SHARE_OF": "{pct}% of {stage}",
+    "SHARE_OF": "{pct}% of those at {stage} got this far",
     "WEEKLY": "New contacts by week",
     "WEEKLY_SUB": "Contacts created in each of the last 5 weeks",
     "TEAM": "Team",
@@ -888,8 +888,8 @@
       "AGREES": "Agrees with staff",
       "ASKS": "Asks for location"
     },
-    "PIPELINE": "Booking value by stage",
-    "PIPELINE_SUB": "Sum of the contacts' booking value (€)",
+    "PIPELINE": "Deal value by stage",
+    "PIPELINE_SUB": "Sum of the contacts' deal value (Settings → Pipeline sets the field and currency)",
     "CONTACTS_N": "{n} contacts",
     "SHOW_TABLE": "Show as table",
     "HIDE_TABLE": "Show as chart",
@@ -1159,6 +1159,7 @@
     },
     "BRIEF": {
       "BUILD": "Build now",
+      "EMPTY": "Built for {week}: {n} conversations last week, so nothing to summarise yet.",
       "top_questions": "Top questions",
       "lost_reasons": "Lost-deal reasons",
       "objections": "Objections",
@@ -1171,6 +1172,7 @@
     },
     "DEDUPE": {
       "REFRESH": "Check now",
+      "NONE": "Checked: no duplicates found.",
       "REVIEW": "Review & merge"
     },
     "LINKS": {
@@ -1200,7 +1202,7 @@
       "RULE_AGENT": "Agent: replies to conversations (set by the agent role in Settings → Agents)."
     },
     "CONNECTIONS": {
-      "PARKED": "Facebook & Instagram connections open once the Tolzar Meta app exists (parked until the company papers are done).",
+      "PARKED": "This is the install-wide Tolzar Meta app, not set up on this install yet. A business with its own Meta app connects it under Channels → Facebook & Instagram app (listen-only).",
       "CONNECT": "Connect Facebook & Instagram",
       "CONNECTED": "Connected by {who} ({status})",
       "TEAM": "team",
@@ -1233,7 +1235,9 @@
         "decisions": "Decision records",
         "kv_rows": "Stored rows",
         "kv_trimmed": "Rows trimmed",
-        "conversations": "Conversations covered"
+        "conversations": "Conversations covered",
+        "workflow_logs": "Workflow log rows",
+        "audit_scrubbed": "Audit entries cleaned"
       },
       "OWNER_NOTE": "Owner only. Run this before deleting the contact: afterwards Tolzar can no longer find the contact's conversations.",
       "CONTACT_ID": "Contact ID",
@@ -1654,7 +1658,7 @@
     },
     "INDEX_NOW": "Index now",
     "INDEXING": "Indexing…",
-    "KNOWLEDGE_INDEXED": "Indexed. This agent now has {total} knowledge passages.",
+    "KNOWLEDGE_INDEXED": "Indexed. This agent now has {total} knowledge passage. | Indexed. This agent now has {total} knowledge passages.",
     "KNOWLEDGE_OFF": "Answer from knowledge sources is off, so these sources are not used."
   },
   "TOLZAR_AGENT_TEST": {

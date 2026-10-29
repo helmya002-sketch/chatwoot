@@ -99,9 +99,11 @@ const lostKey = computed(() => stageKeys.value[stageKeys.value.length - 1]);
 const total = computed(() => totalContacts.value);
 const won = computed(() => counts.value[wonKey.value] || 0);
 const lost = computed(() => counts.value[lostKey.value] || 0);
+// In progress: the stages between the first (new) and the last two (won, lost).
 const pipeline = computed(() =>
-  stageKeys.value.slice(0, -2).reduce((a, k) => a + (counts.value[k] || 0), 0)
+  stageKeys.value.slice(1, -2).reduce((a, k) => a + (counts.value[k] || 0), 0)
 );
+const otherStages = computed(() => counts.value.__other || 0);
 const winRate = computed(() => {
   const decided = won.value + lost.value;
   return decided ? Math.round((won.value / decided) * 100) : 0;
@@ -137,7 +139,7 @@ const recent = computed(() =>
 );
 
 const kpis = computed(() => [
-  { k: 'Total contacts', v: total.value, icon: 'i-lucide-users', sub: `${pipeline.value} in active pipeline`, accent: '#3e63dd', go: 'contacts_dashboard_index' },
+  { k: 'Total contacts', v: total.value, icon: 'i-lucide-users', sub: `${pipeline.value} in progress${otherStages.value ? ` · ${otherStages.value} in other stages` : ''}`, accent: '#3e63dd', go: 'contacts_dashboard_index' },
   { k: 'Open conversations', v: openConvs.value, icon: 'i-lucide-messages-square', sub: `${unassigned.value} unassigned`, accent: '#0ea5e9', go: 'home' },
   { k: stageOf(wonKey.value).label, v: won.value, icon: 'i-lucide-trophy', sub: `${lost.value} ${stageOf(lostKey.value).label.toLowerCase()}`, accent: '#10b981', go: 'tolzar_pipeline' },
   { k: 'Win rate', v: `${winRate.value}%`, icon: 'i-lucide-target', sub: 'of decided leads', accent: '#8b5cf6', go: 'tolzar_reports' },

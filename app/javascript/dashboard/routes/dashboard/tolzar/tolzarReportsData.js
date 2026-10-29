@@ -85,7 +85,10 @@ const countOf = async query => {
   return data?.meta?.count || 0;
 };
 
-// Contacts with no stage yet count as New Lead, as everywhere else in the app.
+// Contacts with no stage yet count in the first (default) stage: stageConditions includes them.
+// Contacts in a stage that is not in the workspace's list (e.g. an imported "spam" stage) are counted
+// apart under OTHER_STAGES, so no stage looks bigger than it is.
+export const OTHER_STAGES = '__other';
 export const stageCounts = async () => {
   const [entries, all] = await Promise.all([
     Promise.all(
@@ -94,11 +97,8 @@ export const stageCounts = async () => {
     ContactAPI.get(1).then(({ data }) => data?.meta?.count || 0),
   ]);
   const out = Object.fromEntries(entries);
-  const staged = STAGES.filter(s => s.key !== 'New Lead').reduce(
-    (sum, s) => sum + (out[s.key] || 0),
-    0
-  );
-  out['New Lead'] = Math.max(out['New Lead'] || 0, all - staged);
+  const listed = STAGES.reduce((sum, s) => sum + (out[s.key] || 0), 0);
+  out[OTHER_STAGES] = Math.max(0, all - listed);
   return out;
 };
 

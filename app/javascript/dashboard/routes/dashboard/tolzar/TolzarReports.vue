@@ -153,7 +153,7 @@ const kpis = computed(() => {
     {
       key: 'won',
       label: t('TOLZAR_REPORTS.KPI.WON'),
-      value: counts.value['Customer Won'] ?? '—',
+      value: counts.value[wonKey.value] ?? '—',
       text: '',
       dir: 0,
     },
@@ -190,12 +190,20 @@ const toneOf = k => {
 };
 
 // ---- Funnel ----------------------------------------------------------------------------
+// The workspace's list ends with won, lost (Settings → Pipeline).
+const wonKey = computed(() => STAGES[STAGES.length - 2]?.key);
+const lostKey = computed(() => STAGES[STAGES.length - 1]?.key);
+// A stage's share is of the contacts that reached at least the stage before it (that stage and
+// every later one but lost), so it can never pass 100%.
 const funnel = computed(() => {
-  const order = STAGES.filter(s => s.key !== 'Customer Lost');
+  const order = STAGES.filter(s => s.key !== lostKey.value);
   const max = Math.max(1, ...order.map(s => counts.value[s.key] || 0));
+  const reached = i =>
+    order.slice(i).reduce((sum, x) => sum + (counts.value[x.key] || 0), 0);
   return order.map((s, i) => {
     const n = counts.value[s.key] || 0;
-    const prevN = i ? counts.value[order[i - 1].key] || 0 : null;
+    const prevN = i ? reached(i - 1) : null;
+    const nowN = reached(i);
     return {
       ...s,
       n,
@@ -203,7 +211,7 @@ const funnel = computed(() => {
       share:
         i && prevN
           ? t('TOLZAR_REPORTS.SHARE_OF', {
-              pct: Math.round((n / prevN) * 100),
+              pct: Math.round((nowN / prevN) * 100),
               stage: order[i - 1].label,
             })
           : '',
@@ -211,7 +219,7 @@ const funnel = computed(() => {
     };
   });
 });
-const lost = computed(() => counts.value['Customer Lost'] || 0);
+const lost = computed(() => counts.value[lostKey.value] || 0);
 
 // ---- Weekly bars (single series) --------------------------------------------------------
 const weekMax = computed(() => Math.max(1, ...weekly.value.map(w => w.count)));

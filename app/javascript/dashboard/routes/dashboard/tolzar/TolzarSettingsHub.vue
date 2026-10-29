@@ -415,6 +415,9 @@ onMounted(() => {
           <!-- brief -->
           <div v-if="current === 'brief'">
             <button type="button" class="tz-btn" @click="buildBrief">{{ $t('TOLZAR_SETTINGS.BRIEF.BUILD') }}</button>
+            <p v-if="data.brief && !data.brief.summary" class="mt-3 text-[13px] text-n-slate-10">
+              {{ $t('TOLZAR_SETTINGS.BRIEF.EMPTY', { week: data.brief.week || '', n: (data.brief.stats && data.brief.stats.conversations) || 0 }) }}
+            </p>
             <div v-if="data.brief && data.brief.summary" class="grid gap-3 mt-4 md:grid-cols-2">
               <div v-for="(items, k) in data.brief.summary" :key="k" class="p-3 rounded-lg bg-n-alpha-1">
                 <div class="text-xs font-semibold uppercase text-n-slate-10">{{ $t(`TOLZAR_SETTINGS.BRIEF.${k}`) }}</div>
@@ -439,6 +442,7 @@ onMounted(() => {
           <!-- dedupe -->
           <div v-if="current === 'dedupe'">
             <button type="button" class="tz-btn" @click="refreshDedupe">{{ $t('TOLZAR_SETTINGS.DEDUPE.REFRESH') }}</button>
+            <p v-if="data.at && !(data.groups || []).length" class="mt-3 text-[13px] text-n-slate-10">{{ $t('TOLZAR_SETTINGS.DEDUPE.NONE') }}</p>
             <div v-for="(g, i) in (data.groups || []).slice(0, 50)" :key="i" class="flex flex-wrap gap-2 justify-between py-2 border-t border-n-weak text-[13px]">
               <span>{{ g.contacts.map(c => c.name || `#${c.id}`).join(' · ') }}</span>
               <span class="text-n-slate-10">{{ g.matched_on.join(', ') }}</span>

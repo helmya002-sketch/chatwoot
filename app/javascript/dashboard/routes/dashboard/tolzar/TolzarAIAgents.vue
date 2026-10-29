@@ -305,9 +305,11 @@ async function refreshKnowledge() {
 }
 const knowledgeSaved = computed(() =>
   knowledgeResult.value && !refused(knowledgeResult.value)
-    ? t('TOLZAR_AGENTS.KNOWLEDGE_INDEXED', {
-        total: knowledgeResult.value.total ?? 0,
-      })
+    ? t(
+        'TOLZAR_AGENTS.KNOWLEDGE_INDEXED',
+        { total: knowledgeResult.value.total ?? 0 },
+        knowledgeResult.value.total ?? 0
+      )
     : ''
 );
 
