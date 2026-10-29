@@ -317,9 +317,22 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
     created = app.new_record?
     app.assign_attributes(app_id: params[:app_id].to_s.strip)
     app.app_secret = params[:app_secret].to_s.strip if created || params[:app_secret].present?
+    changed = !created && (app.app_id_changed? || app.app_secret_changed?)
     return render(json: { ok: false, error: 'invalid_settings', detail: app.errors.full_messages }, status: :bad_request) unless app.save
 
-    render json: { ok: true, app: app.view, verify_token: (created ? app.verify_token : nil) }.compact
+    render json: { ok: true, app: app.view, verify_token: (created ? app.verify_token : nil) }.merge(changed ? app_switch(app) : {}).compact
+  end
+
+  # A new app id or secret with pages connected: the new app's webhook fields are set at once, and the
+  # Owner is told which pages to connect again (their tokens belong to the old app).
+  def app_switch(app)
+    pages = Current.account.facebook_pages.where(tolzar_listen_only: true).pluck(:page_id)
+    return {} if pages.empty?
+
+    Tolzar::MetaGraph.subscribe_app(app)
+    { reconnect_pages: pages }
+  rescue Tolzar::MetaGraph::Error => e
+    { reconnect_pages: pages, error: "Saved, but Meta refused the webhook fields: #{e.message}" }
   end
 
   # A new verify token, set in Meta by Tolzar itself (the app's webhook subscriptions are made again
@@ -328,11 +341,14 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
     app = Current.account.tolzar_meta_app
     return render(json: { ok: false, error: 'Save the workspace Meta app first' }, status: :not_found) if app.blank?
 
+    old = app.verify_token
     app.update!(verify_token: SecureRandom.hex(16))
     Tolzar::MetaGraph.subscribe_app(app)
     render json: { ok: true, rotated_at: Time.current.iso8601 }
   rescue Tolzar::MetaGraph::Error => e
-    render json: { ok: false, error: "New token saved, but Meta did not accept it: #{e.message}" }, status: :bad_gateway
+    # Meta still has the old token: keep it, so the next handshake still works.
+    app.update!(verify_token: old)
+    render json: { ok: false, error: "Meta did not accept a new token; the current one stays: #{e.message}" }, status: :bad_gateway
   end
 
   def meta_app_delete

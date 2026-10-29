@@ -21,7 +21,10 @@ class AgentBots::WebhookJob < WebhookJob
   def perform(url, payload, webhook_type = :agent_bot_webhook, secret: nil, delivery_id: nil)
     super(url, payload, webhook_type, secret: secret, delivery_id: delivery_id)
   rescue Webhooks::Trigger::RetryableError => e
-    Rails.logger.warn("[AgentBots::WebhookJob] attempt #{executions} failed #{e.class.name} payload=#{payload.to_json}")
+    # Tolzar: ids only; the payload carries the customer's message, name, phone and e-mail.
+    event = payload['event'] || payload[:event]
+    conversation = payload.dig('conversation', 'id') || payload.dig(:conversation, :id)
+    Rails.logger.warn("[AgentBots::WebhookJob] attempt #{executions} failed #{e.class.name} event=#{event} conversation=#{conversation}")
     raise
   end
 end

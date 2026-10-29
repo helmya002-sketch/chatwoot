@@ -85,7 +85,13 @@ module Tolzar::MetaGraph
 
   # The token goes in the Authorization header, never in the URL (URLs end up in logs and error
   # trackers). A POST carries its fields form-encoded in the body; GET and DELETE in the query.
+  # Only these shapes reach Graph: /me or a numeric id, then at most one edge (ids come from Meta's own
+  # webhooks and the Owner's input; a crafted one must not change which endpoint the token calls).
+  SAFE_PATH = %r{\A/(?:me|\d{3,30})(?:/[a-z_]+)?\z}
+
   def request(klass, path, params, token, app_secret)
+    raise Error, 'refused: not a Graph id path' unless path.match?(SAFE_PATH)
+
     uri = URI("#{BASE}#{path}")
     fields = params.merge(appsecret_proof: proof(token, app_secret))
     uri.query = URI.encode_www_form(fields) unless klass == Net::HTTP::Post

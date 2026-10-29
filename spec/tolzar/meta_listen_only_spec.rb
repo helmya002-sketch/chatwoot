@@ -212,6 +212,22 @@ RSpec.describe 'Tolzar Meta app, listen-only Facebook and Instagram' do
       expect(meta_app.reload.app_secret).to eq(secret)
     end
 
+    it 'keeps the current verify token when Meta refuses a new one' do
+      old = meta_app.verify_token
+      stub_request(:post, 'https://graph.facebook.com/v26.0/1234567890123/subscriptions')
+        .to_return(status: 400, body: { error: { message: 'callback check failed' } }.to_json)
+      post "#{base}/verify_token", headers: owner.create_new_auth_token, as: :json
+      expect(response).to have_http_status(:bad_gateway)
+      expect(meta_app.reload.verify_token).to eq(old)
+    end
+
+    it 'tells the Owner which pages to reconnect when the app changes, and sets the new app fields' do
+      fields = stub_request(:post, 'https://graph.facebook.com/v26.0/1234567890999/subscriptions').to_return(body: { success: true }.to_json)
+      post base, params: { app_id: '1234567890999', app_secret: 'c' * 32 }, headers: owner.create_new_auth_token, as: :json
+      expect(response.parsed_body['reconnect_pages']).to eq(['1001'])
+      expect(fields).to have_been_requested.twice
+    end
+
     it 'rotates the verify token and sets it in Meta itself, without ever returning it' do
       old = meta_app.verify_token
       fields = stub_request(:post, 'https://graph.facebook.com/v26.0/1234567890123/subscriptions').to_return(body: { success: true }.to_json)
@@ -225,3 +241,25 @@ RSpec.describe 'Tolzar Meta app, listen-only Facebook and Instagram' do
     end
   end
 end
+
+RSpec.describe Tolzar::MetaGraph do
+  it 'calls only /me or a numeric id with one edge' do
+    expect { described_class.get('/me/messages?x=1', {}, 't', 's') }.to raise_error(described_class::Error, /refused/)
+    expect { described_class.get('/123/../admin', {}, 't', 's') }.to raise_error(described_class::Error, /refused/)
+    stub_request(:get, %r{graph\.facebook\.com/v26\.0/12345/subscribed_apps}).to_return(body: '{}')
+    expect(described_class.get('/12345/subscribed_apps', {}, 't', 's')).to eq({})
+  end
+end
+
+RSpec.describe AgentBots::WebhookJob do
+  it 'logs ids only on a retry, never the customer message' do
+    allow_any_instance_of(WebhookJob).to receive(:perform).and_raise(Webhooks::Trigger::RetryableError.new(status: 502, message: 'x'))
+    logged = []
+    allow(Rails.logger).to receive(:warn) { |m| logged << m }
+    payload = { 'event' => 'message_created', 'content' => 'my phone is +20100', 'conversation' => { 'id' => 7 } }
+    expect { described_class.new.perform('http://tolzar-brain:8080/hooks/chatwoot', payload) }.to raise_error(Webhooks::Trigger::RetryableError)
+    expect(logged.join).to include('conversation=7')
+    expect(logged.join).not_to include('+20100')
+  end
+end
+
