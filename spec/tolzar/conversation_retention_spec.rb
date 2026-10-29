@@ -7,6 +7,12 @@ RSpec.describe Tolzar::ConversationRetention do
   let(:account) { create(:account) }
   let(:inbox) { create(:inbox, account: account) }
   let(:now) { Time.zone.parse('2028-11-01 03:15') }
+  let(:brain_calls) { [] }
+
+  # The brain is told what went (POST /retention/forget); no brain in tests.
+  before do
+    allow(Tolzar::BrainClient).to receive(:post) { |path, body, **| brain_calls << [path, body] && { 'ok' => true } }
+  end
 
   def conversation_at(time, in_inbox = inbox)
     create(:conversation, account: account, inbox: in_inbox).tap { |c| c.update_columns(last_activity_at: time) }
@@ -35,6 +41,33 @@ RSpec.describe Tolzar::ConversationRetention do
     expect(Conversation.exists?(recent.id)).to be(true)
     expect(Conversation.exists?(mirrored.id)).to be(true)
     expect(Conversation.exists?(other.id)).to be(true)
+    # The brain forgets the same conversations, by the display id its webhooks use.
+    expect(brain_calls).to eq([['/retention/forget', { account_id: account.id, conversation_ids: [old.display_id] }]])
+  end
+
+  it 'counts a conversation with no activity date from its creation, and one failing workspace does not stop the rest' do
+    account.update!(settings: (account.settings || {}).merge(described_class::KEY => 730))
+    undated = create(:conversation, account: account, inbox: inbox)
+    undated.update_columns(last_activity_at: nil, created_at: now - 3.years)
+    broken = create(:account)
+    broken.update!(settings: (broken.settings || {}).merge(described_class::KEY => 730))
+    allow_any_instance_of(described_class).to receive(:purge).and_wrap_original do |m, *args|
+      raise 'boom' if m.receiver.instance_variable_get(:@account).id == broken.id
+
+      m.call(*args)
+    end
+    result = described_class.purge_all(now: now)
+    expect(result[broken.id]).to be_nil
+    expect(result[account.id]).to eq(1)
+    expect(Conversation.exists?(undated.id)).to be(false)
+  end
+
+  it 'still deletes when the brain cannot be told' do
+    allow(Tolzar::BrainClient).to receive(:post).and_raise(Errno::ECONNREFUSED)
+    account.update!(settings: (account.settings || {}).merge(described_class::KEY => 730))
+    old = conversation_at(now - 800.days)
+    expect(described_class.new(account, now: now).purge).to eq(1)
+    expect(Conversation.exists?(old.id)).to be(false)
   end
 
   it 'ignores a period outside 365 to 3650 days' do

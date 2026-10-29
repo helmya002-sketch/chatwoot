@@ -19,7 +19,8 @@ class Tolzar::MetaHookController < ActionController::API
     raw = request.raw_post
     return head(:forbidden) unless app.valid_signature?(raw, request.headers['X-Hub-Signature-256'])
 
-    Tolzar::MetaHookRouter.new(app, JSON.parse(raw)).perform
+    JSON.parse(raw) # a body that is not JSON is refused here, not in the job
+    Tolzar::MetaHookJob.perform_later(app.id, raw)
     head :ok
   rescue JSON::ParserError
     head :bad_request

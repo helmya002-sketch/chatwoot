@@ -20,10 +20,14 @@ class Tolzar::MetaCommentIngestService
     return if @inbox.blank? || comment_id.blank?
     return unless facebook_comment? || @platform == 'instagram'
 
-    case verb
-    when 'remove', 'hide' then removed
-    when 'edited' then edited
-    else added
+    # One comment at a time per inbox: Meta redelivers when it does not get its 200 quickly, and two
+    # deliveries of the same comment must not both insert.
+    @inbox.with_lock do
+      case verb
+      when 'remove', 'hide' then removed
+      when 'edited' then edited
+      else added
+      end
     end
   end
 
@@ -74,7 +78,11 @@ class Tolzar::MetaCommentIngestService
   end
 
   def customer_comment
-    return if author_id.blank?
+    if author_id.blank?
+      # Meta withholds the author for people who have not interacted with the app: say so in the log.
+      Rails.logger.info("[Tolzar comments] no author from Meta, comment dropped: inbox=#{@inbox.id}")
+      return
+    end
 
     contact_inbox = ContactInboxWithContactBuilder.new(
       inbox: @inbox, source_id: "comment:#{@platform}:#{author_id}", contact_attributes: { name: author_name }
@@ -130,10 +138,10 @@ class Tolzar::MetaCommentIngestService
 
   def removed
     message = existing_message
-    return if message.blank?
+    return if message.blank? || find_message("#{comment_id}:removed")
 
     message.conversation.messages.create!(
-      account_id: @inbox.account_id, inbox_id: @inbox.id, message_type: :activity,
+      account_id: @inbox.account_id, inbox_id: @inbox.id, message_type: :activity, source_id: "comment:#{comment_id}:removed",
       content: "Comment removed on #{@platform == 'instagram' ? 'Instagram' : 'Facebook'}"
     )
   end

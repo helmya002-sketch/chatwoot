@@ -99,3 +99,10 @@ tolzar_conversation_retention_job:
   cron: '15 5 * * * UTC'
   class: 'Tolzar::ConversationRetentionJob'
   queue: housekeeping
+
+# Tolzar: executed daily at 0530 UTC
+# empties respond.io mirror payloads 180 days after they were projected (ids and times stay)
+tolzar_mirror_event_prune_job:
+  cron: '30 5 * * * UTC'
+  class: 'Tolzar::MirrorEventPruneJob'
+  queue: housekeeping

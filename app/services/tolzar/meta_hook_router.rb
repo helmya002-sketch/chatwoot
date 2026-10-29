@@ -2,7 +2,8 @@
 
 # Tolzar: routes one verified webhook body of a workspace's own Meta app (Tolzar::MetaHookController)
 # to that workspace's listen-only Facebook Page inboxes, and only those. Messenger and Instagram DMs
-# go to Chatwoot's own parsers (the same jobs its webhooks use); page and Instagram comments go to
+# go to Tolzar::MetaEventJob for the matched channel (Chatwoot's parsers and builders, no global
+# lookup); page and Instagram comments go to
 # Tolzar::MetaCommentIngestService. Events for a page or account this workspace has not connected are
 # dropped. `standby` entries (sent while another app, e.g. Business Suite, is the page's responder)
 # are read like `messaging`.
@@ -29,8 +30,9 @@ class Tolzar::MetaHookRouter
     channel = listen_only_pages.find_by(page_id: entry['id'].to_s)
     return if channel.blank?
 
+    # Each event goes to THIS channel only (Tolzar::MetaEventJob), never through Chatwoot's global page lookup.
     { 'messaging' => entry['messaging'], 'standby' => entry['standby'] }.each do |key, items|
-      Array(items).each { |item| Webhooks::FacebookEventsJob.perform_later({ key => item }.to_json) if item.is_a?(Hash) }
+      Array(items).each { |item| Tolzar::MetaEventJob.perform_later(channel.id, 'messenger', { key => item }.to_json) if item.is_a?(Hash) }
     end
     changes(entry, 'feed').each { |value| comment(channel, 'facebook', value) }
   end
@@ -39,7 +41,9 @@ class Tolzar::MetaHookRouter
     channel = listen_only_pages.find_by(instagram_id: entry['id'].to_s)
     return if channel.blank?
 
-    Webhooks::InstagramEventsJob.perform_later([entry]) if entry['messaging'].present? || entry['standby'].present?
+    (Array(entry['messaging']) + Array(entry['standby'])).each do |item|
+      Tolzar::MetaEventJob.perform_later(channel.id, 'instagram', item.to_json) if item.is_a?(Hash)
+    end
     changes(entry, 'comments').each { |value| comment(channel, 'instagram', value) }
   end
 

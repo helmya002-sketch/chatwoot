@@ -60,9 +60,28 @@ RSpec.describe 'Tolzar Meta app, listen-only Facebook and Instagram' do
         { id: '9999', messaging: [{ sender: { id: 'u3' }, recipient: { id: '9999' }, message: { mid: 'm3' } }] }
       ] }.to_json
       expect do
-        post url, params: body, headers: { 'CONTENT_TYPE' => 'application/json', 'X-Hub-Signature-256' => sign(body) }
-      end.to have_enqueued_job(Webhooks::FacebookEventsJob).exactly(2).times
+        perform_enqueued_jobs(only: Tolzar::MetaHookJob) do
+          post url, params: body, headers: { 'CONTENT_TYPE' => 'application/json', 'X-Hub-Signature-256' => sign(body) }
+        end
+      end.to have_enqueued_job(Tolzar::MetaEventJob).with(channel.id, 'messenger', anything).exactly(2).times
       expect(response).to have_http_status(:ok)
+    end
+
+    it 'writes a DM only into this workspace, even when another workspace has the same page' do
+      other = create(:account)
+      twin = Channel::FacebookPage.create!(account: other, page_id: '1001', page_access_token: 'x', user_access_token: 'y',
+                                           tolzar_listen_only: true)
+      create(:inbox, account: other, channel: twin)
+      stub_request(:get, %r{graph\.facebook\.com}).to_return(body: { name: 'Fan' }.to_json)
+      body = { object: 'page', entry: [{ id: '1001', messaging: [
+        { sender: { id: 'fan-9' }, recipient: { id: '1001' }, timestamp: 1, message: { mid: 'mid-iso', text: 'only here' } }
+      ] }] }.to_json
+      perform_enqueued_jobs do
+        post url, params: body, headers: { 'CONTENT_TYPE' => 'application/json', 'X-Hub-Signature-256' => sign(body) }
+        post url, params: body, headers: { 'CONTENT_TYPE' => 'application/json', 'X-Hub-Signature-256' => sign(body) }
+      end
+      expect(Message.where(account_id: account.id, source_id: 'mid-iso').count).to eq(1) # a redelivery adds nothing
+      expect(Message.where(account_id: other.id).count).to eq(0)
     end
   end
 
@@ -161,7 +180,8 @@ RSpec.describe 'Tolzar Meta app, listen-only Facebook and Instagram' do
       ingest(comment.merge(verb: 'edited', message: 'How much is it, please?'))
       expect(conversation.messages.incoming.first.content).to eq('How much is it, please?')
       ingest(comment.merge(verb: 'remove'))
-      expect(conversation.messages.activity.last.content).to eq('Comment removed on Facebook')
+      ingest(comment.merge(verb: 'remove')) # redelivered: still one note
+      expect(conversation.messages.activity.where(content: 'Comment removed on Facebook').count).to eq(1)
     end
 
     it 'reads Instagram comments too' do
