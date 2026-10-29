@@ -17,7 +17,7 @@ describe ChatwootHub do
     expect(RestClient).not_to have_received(:post)
   end
 
-  it 'has no push relay: mobile push needs the install's own Firebase project' do
+  it "has no push relay: mobile push needs the install's own Firebase project" do
     expect(described_class.send_push({ token: 'x' })).to be_nil
     expect { described_class.send_push_with_response({ token: 'x' }) }.to raise_error(/FIREBASE_PROJECT_ID/)
     expect(RestClient).not_to have_received(:post)
