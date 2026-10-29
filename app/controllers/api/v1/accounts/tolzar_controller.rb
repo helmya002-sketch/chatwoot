@@ -11,7 +11,7 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
                                         workspace_settings_save price_source_save price_source_test go_live kill_switch
                                         kill_switch_release workspace_bootstrap whatsapp_listen_only_connect
                                         price_upload price_upload_restore pipeline_settings_save
-                                        meta_app meta_app_save meta_app_delete meta_page_connect
+                                        meta_app meta_app_save meta_app_delete meta_page_connect meta_app_rotate_verify_token
                                         conversation_retention_save]
 
   # Listen-only WhatsApp (Tolzar::ListenOnly): the workspace owner connects the business's own in-house
@@ -319,6 +319,19 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
     return render(json: { ok: false, error: 'invalid_settings', detail: app.errors.full_messages }, status: :bad_request) unless app.save
 
     render json: { ok: true, app: app.view, verify_token: (created ? app.verify_token : nil) }.compact
+  end
+
+  # A new verify token, set in Meta by Tolzar itself (the app's webhook subscriptions are made again
+  # with it, and Meta checks it against our hook). Nobody needs to see or paste it.
+  def meta_app_rotate_verify_token
+    app = Current.account.tolzar_meta_app
+    return render(json: { ok: false, error: 'Save the workspace Meta app first' }, status: :not_found) if app.blank?
+
+    app.update!(verify_token: SecureRandom.hex(16))
+    Tolzar::MetaGraph.subscribe_app(app)
+    render json: { ok: true, rotated_at: Time.current.iso8601 }
+  rescue Tolzar::MetaGraph::Error => e
+    render json: { ok: false, error: "New token saved, but Meta did not accept it: #{e.message}" }, status: :bad_gateway
   end
 
   def meta_app_delete

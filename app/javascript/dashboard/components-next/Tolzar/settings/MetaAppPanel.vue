@@ -76,6 +76,14 @@ async function saveApp() {
   await load();
 }
 
+// A new verify token, set in Meta by Tolzar (nothing to copy or paste).
+async function rotateToken() {
+  await run(
+    () => window.axios.post(`${url.value}/verify_token`).then(r => r.data),
+    t('TOLZAR_META_APP.ROTATED')
+  );
+}
+
 async function connectPage() {
   const data = await run(
     () => window.axios.post(`${url.value}/pages`, page.value).then(r => r.data),
@@ -113,6 +121,9 @@ onMounted(load);
     <div v-if="view" class="p-3 mt-3 text-[13px] rounded-lg bg-n-alpha-1">
       <div>{{ t('TOLZAR_META_APP.WEBHOOK_URL') }}</div>
       <code class="block mt-1 break-all">{{ view.webhook_url }}</code>
+      <button type="button" :class="BTN_GHOST" class="!mt-2 !h-7" :disabled="busy" @click="rotateToken">
+        {{ t('TOLZAR_META_APP.ROTATE') }}
+      </button>
       <div v-if="verifyToken" class="mt-2">
         {{ t('TOLZAR_META_APP.VERIFY_TOKEN') }}
         <code class="block mt-1 break-all">{{ verifyToken }}</code>

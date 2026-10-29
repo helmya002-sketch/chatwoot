@@ -20,8 +20,14 @@ class SendReplyJob < ApplicationJob
 
     # Tolzar shadow mirror: never deliver anything for a mirror inbox.
     return if Tolzar::MirrorConfig.mirror_inbox?(message.conversation.inbox)
-    # Tolzar listen-only inbox (its own app next to another provider): nothing is ever sent.
-    return Tolzar::ListenOnly.blocked(message.conversation.inbox.channel, :reply) if Tolzar::ListenOnly.inbox?(message.conversation.inbox)
+    # Tolzar listen-only inbox (its own app next to another provider): nothing is ever sent. This job
+    # runs for every new message, incoming too; only an attempt to send (outgoing or template) is
+    # logged as refused.
+    if Tolzar::ListenOnly.inbox?(message.conversation.inbox)
+      return unless message.outgoing? || message.template?
+
+      return Tolzar::ListenOnly.blocked(message.conversation.inbox.channel, :reply)
+    end
 
     channel_name = message.conversation.inbox.channel.class.to_s
 

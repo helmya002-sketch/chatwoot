@@ -97,6 +97,7 @@ Rails.application.routes.draw do
           post   'tolzar/meta_app',              to: 'tolzar#meta_app_save'
           delete 'tolzar/meta_app',              to: 'tolzar#meta_app_delete'
           post   'tolzar/meta_app/pages',        to: 'tolzar#meta_page_connect'
+          post   'tolzar/meta_app/verify_token', to: 'tolzar#meta_app_rotate_verify_token'
           post   'tolzar/pipeline',              to: 'tolzar#pipeline_settings_save'
           get    'tolzar/agents/:agent_id/price_source',      to: 'tolzar#price_source'
           post   'tolzar/agents/:agent_id/price_source',      to: 'tolzar#price_source_save'

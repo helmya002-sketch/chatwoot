@@ -38,6 +38,23 @@ RSpec.describe Tolzar::ListenOnly do
       SendReplyJob.perform_now(message.id)
     end
 
+    it 'logs a refusal only for an attempt to send, not for every incoming message' do
+      conversation = create(:conversation, account: account, inbox: inbox)
+      incoming = create(:message, account: account, inbox: inbox, conversation: conversation, message_type: :incoming)
+      outgoing = create(:message, account: account, inbox: inbox, conversation: conversation, message_type: :outgoing)
+      allow(described_class).to receive(:blocked)
+      SendReplyJob.perform_now(incoming.id)
+      expect(described_class).not_to have_received(:blocked)
+      SendReplyJob.perform_now(outgoing.id)
+      expect(described_class).to have_received(:blocked).once
+    end
+
+    it 'keeps Meta webhook bodies (sender ids, message text) out of the logs' do
+      filter = ActiveSupport::ParameterFilter.new(Rails.application.config.filter_parameters)
+      filtered = filter.filter('object' => 'page', 'entry' => [{ 'messaging' => [{ 'message' => { 'text' => 'hi' } }] }])
+      expect(filtered).to eq('object' => 'page', 'entry' => '[FILTERED]')
+    end
+
     it 'refuses sends, templates, CSAT templates and calling settings at the provider, without an HTTP call' do
       provider = Whatsapp::Providers::WhatsappCloudService.new(whatsapp_channel: channel)
       message = build(:message, content: 'hello')

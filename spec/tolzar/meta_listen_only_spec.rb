@@ -175,5 +175,17 @@ RSpec.describe 'Tolzar Meta app, listen-only Facebook and Instagram' do
       expect(response.parsed_body).not_to have_key('verify_token') # only on create
       expect(meta_app.reload.app_secret).to eq(secret)
     end
+
+    it 'rotates the verify token and sets it in Meta itself, without ever returning it' do
+      old = meta_app.verify_token
+      fields = stub_request(:post, 'https://graph.facebook.com/v26.0/1234567890123/subscriptions').to_return(body: { success: true }.to_json)
+      post "#{base}/verify_token", headers: owner.create_new_auth_token, as: :json
+      expect(response.parsed_body).to include('ok' => true)
+      expect(response.body).not_to include(meta_app.reload.verify_token)
+      expect(meta_app.verify_token).not_to eq(old)
+      expect(fields).to have_been_requested.twice
+      post "#{base}/verify_token", headers: manager.create_new_auth_token, as: :json
+      expect(response).to have_http_status(:forbidden)
+    end
   end
 end
