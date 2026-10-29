@@ -112,7 +112,8 @@ class Notification::PushNotificationService
   end
 
   def chatwoot_hub_enabled?
-    ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_PUSH_RELAY_SERVER', false)   # Tolzar: never Chatwoot's relay by default)
+    # Tolzar: never Chatwoot's relay by default.
+    ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_PUSH_RELAY_SERVER', false))
   end
 
   def remove_subscription_if_error(subscription, response)
