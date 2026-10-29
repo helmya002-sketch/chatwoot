@@ -19,6 +19,10 @@ import UnreadBadge from 'dashboard/components-next/Conversation/ConversationCard
 import SLACardLabel from './components/SLACardLabel.vue';
 import VoiceCallStatus from './VoiceCallStatus.vue';
 import Checkbox from 'dashboard/components-next/checkbox/Checkbox.vue';
+import {
+  contactStage,
+  DEFAULT_STAGE,
+} from 'dashboard/components-next/Tolzar/tolzarStages';
 
 const props = defineProps({
   chat: { type: Object, required: true },
@@ -92,7 +96,7 @@ const noReplyFor = computed(() => {
 // Tolzar #9: every card shows a Stage so staff can plan at a glance; un-staged
 // contacts default to the funnel entry "New Lead".
 const lifecycleStage = computed(
-  () => props.currentContact?.custom_attributes?.lifecycle_stage || 'New Lead'
+  () => contactStage(props.currentContact?.custom_attributes) || DEFAULT_STAGE
 );
 const lifecycleChipStyle = computed(() => {
   const s = String(lifecycleStage.value).toLowerCase();

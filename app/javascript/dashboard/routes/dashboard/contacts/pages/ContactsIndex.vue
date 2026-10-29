@@ -15,7 +15,12 @@ import ContactsTable from 'dashboard/components-next/Tolzar/ContactsTable.vue';
 import ContactPreviewPane from 'dashboard/components-next/Tolzar/ContactPreviewPane.vue';
 import StageFilterBar from 'dashboard/components-next/Tolzar/StageFilterBar.vue';
 import ContactAPI from 'dashboard/api/contacts';
-import { stageOf } from 'dashboard/components-next/Tolzar/tolzarStages';
+import {
+  stageOf,
+  stageConditions,
+  stageOfConditions,
+  loadStageAttributes,
+} from 'dashboard/components-next/Tolzar/tolzarStages';
 import ContactsBulkActionBar from '../components/ContactsBulkActionBar.vue';
 import Dialog from 'dashboard/components-next/dialog/Dialog.vue';
 import BulkActionsAPI from 'dashboard/api/bulkActions';
@@ -440,30 +445,23 @@ watch(visibleContactIds, ids => {
   }
 });
 
+// Tolzar writes the stage here; reading also falls back to an imported stage (tolzarStages).
 const STAGE_KEY = 'lifecycle_stage';
-const activeStage = computed(() => {
-  const list = appliedFilters.value || [];
-  if (activeSegmentId.value || list.length !== 1) return '';
-  const [f] = list;
-  return f.attribute_key === STAGE_KEY && f.filter_operator === 'equal_to'
-    ? [f.values].flat()[0] || ''
-    : '';
-});
+const activeStage = computed(() =>
+  activeSegmentId.value ? '' : stageOfConditions(appliedFilters.value)
+);
 
 const applyStage = async key => {
   if (!key) {
     await fetchContacts();
     return;
   }
-  const filters = [
-    {
-      attribute_key: STAGE_KEY,
-      filter_operator: 'equal_to',
-      values: [key],
-      query_operator: 'and',
-      attribute_model: 'customAttributes',
-    },
-  ];
+  await loadStageAttributes(route.params.accountId);
+  const filters = stageConditions(key);
+  if (!filters) {
+    useAlert(t('TOLZAR_CONTACTS.STAGES.NO_FIELD'));
+    return;
+  }
   await store.dispatch('contacts/setContactFilters', filters);
   await fetchSavedOrAppliedFilteredContact(filterQueryGenerator(filters));
 };
@@ -554,6 +552,11 @@ watch(searchQuery, value => {
 
 onMounted(async () => {
   if (!activeSegmentId.value) {
+    // Opened from Pipeline / Dashboard with ?stage=: show that stage view.
+    if (route.query?.stage) {
+      await applyStage(String(route.query.stage));
+      return;
+    }
     if (searchQuery.value) {
       await searchContacts(searchQuery.value, pageNumber.value, false, {
         clearSelection: false,

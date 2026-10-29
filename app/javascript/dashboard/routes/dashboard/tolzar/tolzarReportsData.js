@@ -1,7 +1,10 @@
 // Tolzar Reports: data + formatting helpers (kept out of the component so they're testable).
 // Everything reads live Chatwoot data or the brain's scoreboard; nothing is estimated.
 import ContactAPI from 'dashboard/api/contacts';
-import { STAGES } from 'dashboard/components-next/Tolzar/tolzarStages';
+import {
+  STAGES,
+  stageConditions,
+} from 'dashboard/components-next/Tolzar/tolzarStages';
 
 const DAY = 86400;
 
@@ -45,17 +48,11 @@ export const delta = (now, prev) => {
   return (now - prev) / prev;
 };
 
-const stageFilter = stage => ({
-  payload: [
-    {
-      attribute_key: 'lifecycle_stage',
-      filter_operator: 'equal_to',
-      values: [stage],
-      query_operator: null,
-      custom_attribute_type: 'contact_attribute',
-    },
-  ],
-});
+// null when the workspace has no stage attribute at all (nothing to count).
+const stageFilter = stage => {
+  const payload = stageConditions(stage);
+  return payload ? { payload } : null;
+};
 
 const createdBetween = (fromDate, toDate) => ({
   payload: [
@@ -81,6 +78,7 @@ const createdBetween = (fromDate, toDate) => ({
 });
 
 const countOf = async query => {
+  if (!query) return 0;
   const { data } = await ContactAPI.filter(1, 'name', query);
   return data?.meta?.count || 0;
 };

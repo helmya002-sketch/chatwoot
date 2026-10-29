@@ -690,7 +690,8 @@
       "SET_SUCCESS": "Stage set to {stage}",
       "SET_FAILED": "Could not update the stage",
       "BULK_SUCCESS": "Stage set to {stage} for {count} contacts",
-      "BULK_PARTIAL": "Stage set to {stage} for {done} of {count} contacts"
+      "BULK_PARTIAL": "Stage set to {stage} for {done} of {count} contacts",
+      "NO_FIELD": "This workspace has no stage field yet. Add a contact attribute named lifecycle_stage in Settings → Custom attributes."
     },
     "PANE": {
       "FULL_PROFILE": "Full profile",

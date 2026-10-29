@@ -17,6 +17,7 @@ import ChannelIcon from 'dashboard/components-next/icon/ChannelIcon.vue';
 import ContactLabels from 'dashboard/components-next/Contacts/ContactLabels/ContactLabels.vue';
 import {
   DEFAULT_STAGE,
+  contactStage,
   STAGES,
   leadScore,
   scoreTone,
@@ -42,7 +43,7 @@ const raw = computed(
 );
 const attrs = computed(() => raw.value.custom_attributes || {});
 const inbox = computed(() => contactChannel(raw.value));
-const stage = computed(() => attrs.value.lifecycle_stage || DEFAULT_STAGE);
+const stage = computed(() => contactStage(attrs.value) || DEFAULT_STAGE);
 const stageIndex = computed(() => STAGES.findIndex(s => s.key === stage.value));
 const isLost = computed(() => stage.value === 'Customer Lost');
 const funnel = STAGES.filter(s => s.key !== 'Customer Lost');

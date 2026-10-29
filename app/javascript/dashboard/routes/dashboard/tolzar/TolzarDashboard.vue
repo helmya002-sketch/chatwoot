@@ -2,6 +2,17 @@
 import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import ContactAPI from 'dashboard/api/contacts';
+import {
+  STAGES as SHARED_STAGES,
+  DEFAULT_STAGE,
+  applyPipelineStages,
+  contactStage,
+  loadStageAttributes,
+  stageColor,
+  stageIcon,
+  stageOf,
+} from 'dashboard/components-next/Tolzar/tolzarStages';
+import { stageCounts } from './tolzarReportsData';
 import { useMapGetter, useStore } from 'dashboard/composables/store';
 
 const route = useRoute();
@@ -62,53 +73,52 @@ const greeting = computed(() => {
   return 'Good evening';
 });
 
-// respond.io lifecycle stages (the funnel spine)
-const STAGES = [
-  { key: 'New Lead', label: 'New Lead', icon: 'i-lucide-user-plus', color: '#64748b' },
-  { key: 'Active', label: 'Active', icon: 'i-lucide-activity', color: '#f59e0b' },
-  { key: 'Offer Sent Follow up', label: 'Offer Sent', icon: 'i-lucide-file-text', color: '#5472e4' },
-  { key: 'Customer Won', label: 'Won', icon: 'i-lucide-trophy', color: '#10b981' },
-  { key: 'Customer Lost', label: 'Lost', icon: 'i-lucide-circle-x', color: '#f43f5e' },
-];
+// The workspace's stages (account setting, else the defaults) and their colours.
+const getAccount = useMapGetter('accounts/getAccount');
+const STAGES = computed(() =>
+  SHARED_STAGES.map(s => ({
+    ...s,
+    color: stageColor(s.key),
+    icon: stageIcon(s.key),
+  }))
+);
 const TEAM_COLORS = ['#3e63dd', '#0ea5e9', '#8b5cf6', '#f59e0b', '#ec4899', '#64748b'];
 
 const counts = ref({});
 const conversations = ref([]);
-const convMeta = ref({});
+const openMeta = ref({});
+const teamCounts = ref([]);
+const totalContacts = ref(0);
 const loaded = ref(false);
 const errored = ref(false);
 
-const total = computed(() =>
-  Object.values(counts.value).reduce((a, b) => a + (b || 0), 0)
-);
-const won = computed(() => counts.value['Customer Won'] || 0);
-const lost = computed(() => counts.value['Customer Lost'] || 0);
-const pipeline = computed(
-  () =>
-    (counts.value['New Lead'] || 0) +
-    (counts.value['Active'] || 0) +
-    (counts.value['Offer Sent Follow up'] || 0)
+const stageKeys = computed(() => STAGES.value.map(s => s.key));
+// Won and lost are the last two stages of the list (the defaults end with Won, Lost).
+const wonKey = computed(() => stageKeys.value[stageKeys.value.length - 2]);
+const lostKey = computed(() => stageKeys.value[stageKeys.value.length - 1]);
+const total = computed(() => totalContacts.value);
+const won = computed(() => counts.value[wonKey.value] || 0);
+const lost = computed(() => counts.value[lostKey.value] || 0);
+const pipeline = computed(() =>
+  stageKeys.value.slice(0, -2).reduce((a, k) => a + (counts.value[k] || 0), 0)
 );
 const winRate = computed(() => {
   const decided = won.value + lost.value;
   return decided ? Math.round((won.value / decided) * 100) : 0;
 });
-const openConvs = computed(() => convMeta.value.all_count || 0);
-const unassigned = computed(() => convMeta.value.unassigned_count || 0);
+const openConvs = computed(() => openMeta.value.all_count || 0);
+const unassigned = computed(() => openMeta.value.unassigned_count || 0);
 const funnelMax = computed(() =>
-  Math.max(1, ...STAGES.map(s => counts.value[s.key] || 0))
+  Math.max(1, ...STAGES.value.map(s => counts.value[s.key] || 0))
 );
 
+// Open conversations per team, counted by the server (not from one page of the list).
 const teamDist = computed(() => {
-  const m = {};
-  conversations.value.forEach(c => {
-    const t = c.meta?.team?.name || 'Unassigned';
-    m[t] = (m[t] || 0) + 1;
-  });
-  const max = Math.max(1, ...Object.values(m));
-  return Object.entries(m)
-    .sort((a, b) => b[1] - a[1])
-    .map(([name, n], i) => ({ name, n, pct: Math.round((n / max) * 100), color: TEAM_COLORS[i % TEAM_COLORS.length] }));
+  const max = Math.max(1, ...teamCounts.value.map(t => t.n));
+  return teamCounts.value
+    .filter(t => t.n > 0)
+    .sort((a, b) => b.n - a.n)
+    .map((t, i) => ({ ...t, pct: Math.round((t.n / max) * 100), color: TEAM_COLORS[i % TEAM_COLORS.length] }));
 });
 
 const recent = computed(() =>
@@ -120,7 +130,7 @@ const recent = computed(() =>
       name: c.meta?.sender?.name || 'Unknown',
       snippet: (c.last_non_activity_message?.content || '').slice(0, 72),
       team: c.meta?.team?.name || '',
-      stage: c.meta?.sender?.custom_attributes?.lifecycle_stage || '',
+      stage: contactStage(c.meta?.sender?.custom_attributes) || DEFAULT_STAGE,
       ts: c.last_activity_at,
       assignee: c.meta?.assignee?.name || '',
     }))
@@ -129,8 +139,8 @@ const recent = computed(() =>
 const kpis = computed(() => [
   { k: 'Total contacts', v: total.value, icon: 'i-lucide-users', sub: `${pipeline.value} in active pipeline`, accent: '#3e63dd', go: 'contacts_dashboard_index' },
   { k: 'Open conversations', v: openConvs.value, icon: 'i-lucide-messages-square', sub: `${unassigned.value} unassigned`, accent: '#0ea5e9', go: 'home' },
-  { k: 'Won', v: won.value, icon: 'i-lucide-trophy', sub: `${lost.value} lost`, accent: '#10b981' },
-  { k: 'Win rate', v: `${winRate.value}%`, icon: 'i-lucide-target', sub: 'of decided leads', accent: '#8b5cf6' },
+  { k: stageOf(wonKey.value).label, v: won.value, icon: 'i-lucide-trophy', sub: `${lost.value} ${stageOf(lostKey.value).label.toLowerCase()}`, accent: '#10b981', go: 'tolzar_pipeline' },
+  { k: 'Win rate', v: `${winRate.value}%`, icon: 'i-lucide-target', sub: 'of decided leads', accent: '#8b5cf6', go: 'tolzar_reports' },
 ]);
 
 function stageStyle(color) {
@@ -160,39 +170,45 @@ function openConversation(id) {
   router.push({ name: 'inbox_conversation', params: { accountId: accountId.value, conversation_id: id } });
 }
 
-async function fetchStageCount(stage) {
-  const { data } = await ContactAPI.filter(1, 'name', {
-    payload: [
-      {
-        attribute_key: 'lifecycle_stage',
-        filter_operator: 'equal_to',
-        values: [stage],
-        query_operator: null,
-        custom_attribute_type: 'contact_attribute',
-      },
-    ],
-  });
-  return (data && data.meta && data.meta.count) || 0;
+const openMetaFor = async (params = '') => {
+  const { data } = await window.axios.get(
+    `/api/v1/accounts/${accountId.value}/conversations/meta?status=open${params}`
+  );
+  return data?.meta || {};
+};
+
+async function loadTeams(openTotal) {
+  await store.dispatch('teams/get');
+  const teams = store.getters['teams/getTeams'] || [];
+  const rows = await Promise.all(
+    teams.map(async t => ({ name: t.name, n: (await openMetaFor(`&team_id=${t.id}`)).all_count || 0 }))
+  );
+  const inTeams = rows.reduce((a, r) => a + r.n, 0);
+  teamCounts.value = [...rows, { name: 'No team', n: Math.max(0, openTotal - inTeams) }];
 }
 
 onMounted(async () => {
   store.dispatch('agents/get').catch(() => {});
+  applyPipelineStages(getAccount.value(accountId.value)?.settings);
   try {
-    const out = {};
-    for (const s of STAGES) {
-      // eslint-disable-next-line no-await-in-loop
-      out[s.key] = await fetchStageCount(s.key);
-    }
-    counts.value = out;
-    try {
-      const { data } = await window.axios.get(
-        `/api/v1/accounts/${accountId.value}/conversations?status=all`
-      );
-      conversations.value = data?.data?.payload || [];
-      convMeta.value = data?.data?.meta || {};
-    } catch (e) {
-      /* conversations optional */
-    }
+    await loadStageAttributes(accountId.value);
+    const [stageCountsOut, contactsTotal, meta] = await Promise.all([
+      stageCounts(),
+      ContactAPI.get(1).then(({ data }) => data?.meta?.count || 0),
+      openMetaFor(),
+    ]);
+    counts.value = stageCountsOut;
+    totalContacts.value = contactsTotal;
+    openMeta.value = meta;
+    await Promise.all([
+      loadTeams(meta.all_count || 0).catch(() => {}),
+      window.axios
+        .get(`/api/v1/accounts/${accountId.value}/conversations?status=open`)
+        .then(({ data }) => {
+          conversations.value = data?.data?.payload || [];
+        })
+        .catch(() => {}),
+    ]);
   } catch (e) {
     errored.value = true;
   } finally {

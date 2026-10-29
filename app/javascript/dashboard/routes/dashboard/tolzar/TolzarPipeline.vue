@@ -2,19 +2,29 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import ContactAPI from 'dashboard/api/contacts';
+import { useMapGetter } from 'dashboard/composables/store';
+import {
+  STAGES as SHARED_STAGES,
+  applyPipelineStages,
+  loadStageAttributes,
+  stageConditions,
+  stageColor,
+  stageIcon,
+} from 'dashboard/components-next/Tolzar/tolzarStages';
 
 const route = useRoute();
 const router = useRouter();
 const accountId = computed(() => route.params.accountId);
 
-// respond.io lifecycle spine — the exact 5 stages (match the dashboard funnel).
-const STAGES = [
-  { key: 'New Lead', label: 'New Lead', icon: 'i-lucide-user-plus', color: '#64748b' },
-  { key: 'Active', label: 'Active', icon: 'i-lucide-activity', color: '#f59e0b' },
-  { key: 'Offer Sent Follow up', label: 'Offer Sent', icon: 'i-lucide-file-text', color: '#8b5cf6' },
-  { key: 'Customer Won', label: 'Won', icon: 'i-lucide-trophy', color: '#10b981' },
-  { key: 'Customer Lost', label: 'Lost', icon: 'i-lucide-circle-x', color: '#f43f5e' },
-];
+// The workspace's stages (account setting `pipeline_stages`, else the defaults).
+const getAccount = useMapGetter('accounts/getAccount');
+const STAGES = computed(() =>
+  SHARED_STAGES.map(s => ({
+    ...s,
+    color: stageColor(s.key),
+    icon: stageIcon(s.key),
+  }))
+);
 
 // cols[stageKey] = { count, contacts: [...], loading }
 const cols = ref({});
@@ -22,7 +32,8 @@ const loaded = ref(false);
 const moveFor = ref(null); // contact id whose move-menu is open
 const movingId = ref(null);
 
-STAGES.forEach(s => {
+applyPipelineStages(getAccount.value(accountId.value)?.settings);
+STAGES.value.forEach(s => {
   cols.value[s.key] = { count: 0, contacts: [], loading: true };
 });
 
@@ -51,17 +62,9 @@ function colValue(key) {
 }
 
 async function fetchStage(stage) {
-  const { data } = await ContactAPI.filter(1, 'name', {
-    payload: [
-      {
-        attribute_key: 'lifecycle_stage',
-        filter_operator: 'equal_to',
-        values: [stage.key],
-        query_operator: null,
-        custom_attribute_type: 'contact_attribute',
-      },
-    ],
-  });
+  const conditions = stageConditions(stage.key);
+  if (!conditions) return { count: 0, contacts: [], loading: false };
+  const { data } = await ContactAPI.filter(1, 'name', { payload: conditions });
   const payload = data?.payload || [];
   return {
     count: data?.meta?.count ?? payload.length,
@@ -79,21 +82,22 @@ async function fetchStage(stage) {
 }
 
 const totalValue = computed(() =>
-  STAGES.reduce((a, s) => a + colValue(s.key), 0)
+  STAGES.value.reduce((a, s) => a + colValue(s.key), 0)
 );
 
 // Each column loads only the first page (≤15 cards), so a column with more
 // leads would make the summed value wrong. Only surface the total when every
 // column is fully loaded — otherwise we'd show a misleadingly low number.
 const allLoaded = computed(() =>
-  STAGES.every(s => {
+  STAGES.value.every(s => {
     const c = cols.value[s.key];
     return c && !c.loading && (c.contacts?.length || 0) >= (c.count || 0);
   })
 );
 
 onMounted(async () => {
-  for (const s of STAGES) {
+  await loadStageAttributes(accountId.value);
+  for (const s of STAGES.value) {
     // eslint-disable-next-line no-await-in-loop
     try {
       cols.value[s.key] = await fetchStage(s);
@@ -146,8 +150,12 @@ function openContact(id) {
   // contact detail — where the Merge tab + full profile live
   router.push(`/app/accounts/${accountId.value}/contacts/${id}`);
 }
+// Contacts with this stage view applied (ContactsIndex reads ?stage=).
+function openStageInContacts(key) {
+  router.push({ name: 'contacts_dashboard_index', params: { accountId: accountId.value }, query: { stage: key } });
+}
 function otherStages(key) {
-  return STAGES.filter(s => s.key !== key);
+  return STAGES.value.filter(s => s.key !== key);
 }
 </script>
 
@@ -161,7 +169,7 @@ function otherStages(key) {
         </span>
         <div>
           <h1 class="m-0 text-[22px] font-extrabold tracking-tight text-n-slate-12">Pipeline</h1>
-          <p class="m-0 text-sm text-n-slate-11">Your lifecycle funnel — move leads toward Won.</p>
+          <p class="m-0 text-sm text-n-slate-11">Your lifecycle funnel: move each lead to its next stage.</p>
         </div>
       </div>
       <div class="flex gap-2 items-center">
@@ -239,7 +247,9 @@ function otherStages(key) {
             </div>
             <div v-if="!cols[s.key].contacts.length" class="pt-8 text-xs text-center text-n-slate-10">No contacts</div>
             <div v-else-if="cols[s.key].count > cols[s.key].contacts.length" class="pt-1 text-[11px] text-center text-n-slate-10">
-              +{{ cols[s.key].count - cols[s.key].contacts.length }} more — open Contacts to see all
+              <button type="button" class="underline hover:text-n-slate-12" @click="openStageInContacts(s.key)">
+                +{{ cols[s.key].count - cols[s.key].contacts.length }} more: open in Contacts
+              </button>
             </div>
           </template>
         </div>

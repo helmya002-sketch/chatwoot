@@ -15,6 +15,10 @@ import Avatar from 'dashboard/components-next/avatar/Avatar.vue';
 import CardMessagePreview from './CardMessagePreview.vue';
 import CardMessagePreviewWithMeta from './CardMessagePreviewWithMeta.vue';
 import CardPriorityIcon from './CardPriorityIcon.vue';
+import {
+  contactStage,
+  DEFAULT_STAGE,
+} from 'dashboard/components-next/Tolzar/tolzarStages';
 
 const props = defineProps({
   conversation: {
@@ -104,7 +108,7 @@ const LIFECYCLE_LABELS = { 'Offer Sent Follow up': 'Offer Sent' };
 // Owner #9: every card shows a Stage so staff can plan at a glance; un-staged
 // contacts default to the funnel entry "New Lead".
 const lifecycleStage = computed(
-  () => currentContact.value?.custom_attributes?.lifecycle_stage || 'New Lead'
+  () => contactStage(currentContact.value?.custom_attributes) || DEFAULT_STAGE
 );
 const lifecycleChipStyle = computed(() => {
   const c = LIFECYCLE_STYLES[lifecycleStage.value] || {

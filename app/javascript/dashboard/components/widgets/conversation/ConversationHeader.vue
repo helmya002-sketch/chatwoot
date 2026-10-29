@@ -16,6 +16,10 @@ import { useInbox } from 'dashboard/composables/useInbox';
 import { useAlert } from 'dashboard/composables';
 import { useI18n } from 'vue-i18n';
 import { copyTextToClipboard } from 'shared/helpers/clipboard';
+import {
+  contactStage,
+  DEFAULT_STAGE,
+} from 'dashboard/components-next/Tolzar/tolzarStages';
 
 const props = defineProps({
   chat: {
@@ -147,7 +151,7 @@ const STAGE_COLOR = {
 };
 const stageOpen = ref(false);
 const currentStage = computed(
-  () => currentContact.value?.custom_attributes?.lifecycle_stage || 'New Lead'
+  () => contactStage(currentContact.value?.custom_attributes) || DEFAULT_STAGE
 );
 const stageLabel = computed(
   () => STAGE_LABELS[currentStage.value] || currentStage.value

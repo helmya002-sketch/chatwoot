@@ -6,6 +6,10 @@ import {
   scoreTone,
   stageClass,
   stageOf,
+  contactStage,
+  stageConditions,
+  stageOfConditions,
+  STAGE_ATTRIBUTES,
 } from '../tolzarStages';
 
 describe('tolzarStages', () => {
@@ -70,5 +74,56 @@ describe('tolzarStages', () => {
     expect(STAGES.length).toBe(5);
     applyPipelineStages(undefined);
     expect(STAGES[0].key).toBe('New Lead');
+  });
+});
+
+describe('stage attributes', () => {
+  afterEach(() => applyPipelineStages({}));
+
+  it('reads the Tolzar stage first, then the imported one', () => {
+    expect(
+      contactStage({ lifecycle_stage: 'Active', rio_lifecycle: 'Customer Won' })
+    ).toBe('Active');
+    expect(contactStage({ rio_lifecycle: 'Customer Won' })).toBe(
+      'Customer Won'
+    );
+    expect(contactStage({ lifecycle_stage: '' })).toBe('');
+    expect(contactStage(undefined)).toBe('');
+  });
+
+  it('builds conditions where AND binds tighter than OR, last operator null', () => {
+    const c = stageConditions('Active');
+    expect(
+      c.map(x => [x.attribute_key, x.filter_operator, x.query_operator])
+    ).toEqual([
+      ['lifecycle_stage', 'equal_to', 'or'],
+      ['lifecycle_stage', 'is_not_present', 'and'],
+      ['rio_lifecycle', 'equal_to', null],
+    ]);
+    expect(stageOfConditions(c)).toBe('Active');
+  });
+
+  it('lets the default stage take contacts with no stage at all', () => {
+    const c = stageConditions('New Lead');
+    expect(
+      c
+        .slice(-3)
+        .map(x => [x.attribute_key, x.filter_operator, x.query_operator])
+    ).toEqual([
+      ['rio_lifecycle', 'equal_to', 'or'],
+      ['lifecycle_stage', 'is_not_present', 'and'],
+      ['rio_lifecycle', 'is_not_present', null],
+    ]);
+  });
+
+  it('follows the stage_attributes setting and ignores bad keys', () => {
+    applyPipelineStages({ stage_attributes: ['deal_stage', 'Bad Key!'] });
+    expect([...STAGE_ATTRIBUTES]).toEqual(['deal_stage']);
+    expect(stageConditions('Active')).toHaveLength(1);
+    expect(
+      stageOfConditions([
+        { attribute_key: 'email', filter_operator: 'equal_to', values: ['x'] },
+      ])
+    ).toBe('');
   });
 });
