@@ -1038,6 +1038,7 @@
     },
     "NAV": {
       "workspace_settings": "Workspace settings",
+      "pipeline": "Pipeline",
       "go_live": "Go live",
       "usage": "Usage",
       "audit": "Audit log",
@@ -1069,6 +1070,7 @@
     },
     "HINT": {
       "workspace_settings": "Hours, languages, templates and descriptions for this workspace, on top of the defaults. Only what you change is stored.",
+      "pipeline": "Your sales stages, where a contact's stage and deal value are stored, and the currency. Dashboard, Pipeline, Contacts and Reports follow it.",
       "go_live": "Shadow or live, per inbox. Owner only. Today nothing is live.",
       "usage": "What this workspace used in the last 30 days.",
       "audit": "Who changed what, and when. Secret values are never shown.",
@@ -1590,6 +1592,43 @@
     "CAMPAIGN_ROW": "{n} conversations · {codes} links",
     "NO_CAMPAIGNS": "No campaign links used yet."
   },
+  "TOLZAR_PIPELINE": {
+    "STAGES": "Stages",
+    "STAGES_HINT": "In funnel order. Contacts with no stage count in the first one; the last two are won and lost.",
+    "KEY": "Stored value",
+    "LABEL": "Shown as",
+    "TONE": {
+      "slate": "Grey",
+      "amber": "Amber",
+      "iris": "Blue",
+      "teal": "Green",
+      "ruby": "Red"
+    },
+    "ADD": "Add a stage",
+    "STAGE_FIELDS": "Stage fields",
+    "STAGE_FIELDS_HINT": "Contact attribute keys, best first, comma-separated. Tolzar writes the first; the others are read when it is empty (for example an imported stage).",
+    "DEAL_FIELD": "Deal value field",
+    "CURRENCY": "Currency",
+    "SAVE": "Save pipeline"
+  },
+  "TOLZAR_AGENTS": {
+    "BEHAVIOUR": "Behaviour",
+    "BEHAVIOUR_HINT": "What this agent may use when it drafts a reply (in Shadow it only drafts; nothing is sent).",
+    "SWITCH": {
+      "enabled": "Workspace agent",
+      "answer_from_knowledge": "Answer from knowledge sources",
+      "quote_prices": "Quote prices from the price source"
+    },
+    "SWITCH_HINT": {
+      "enabled": "Uses this agent's knowledge, prices and skills. Off: instructions only.",
+      "answer_from_knowledge": "Cites the links and texts below; says it will check when they don't cover a question.",
+      "quote_prices": "Only prices from the saved source or upload. Saving a source switches this on."
+    },
+    "INDEX_NOW": "Index now",
+    "INDEXING": "Indexing…",
+    "KNOWLEDGE_INDEXED": "Indexed. This agent now has {total} knowledge passages.",
+    "KNOWLEDGE_OFF": "Answer from knowledge sources is off, so these sources are not used."
+  },
   "TOLZAR_AGENT_TEST": {
     "REPLACED": "Shadow would send this instead of the model's draft",
     "MODEL_DRAFT": "Model's draft",
@@ -1668,6 +1707,7 @@
       "6": "Sun"
     },
     "GO_LIVE": {
+      "LOCKED": "Shadow only on this workspace",
       "BANNER_SHADOW": "Nothing is live. Every inbox runs in Shadow: the AI drafts inside Tolzar and never writes to customers.",
       "BANNER_LIVE": "LIVE: the AI replies to real customers in {n} inbox(es) of this workspace.",
       "WARNING": "Going live lets the AI reply to real customers in that inbox. Tolzar refuses unless every live check passes.",

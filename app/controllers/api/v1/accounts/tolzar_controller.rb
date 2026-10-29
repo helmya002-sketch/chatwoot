@@ -10,7 +10,7 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
                                         agent_save agent_delete agent_default workflow_save workflow_delete
                                         workspace_settings_save price_source_save price_source_test go_live kill_switch
                                         kill_switch_release workspace_bootstrap whatsapp_listen_only_connect
-                                        price_upload price_upload_restore]
+                                        price_upload price_upload_restore pipeline_settings_save]
 
   # Listen-only WhatsApp (Tolzar::ListenOnly): the workspace owner connects the business's own in-house
   # Meta app to a number another provider runs. The token and the app secret are write-only: stored on
@@ -37,6 +37,9 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
       account_id: account_scope_id,
       history: Array(params[:history]).first(20).map { |m| { role: m[:role].to_s, content: m[:content].to_s } }
     }
+    # The agent open in the builder is the one tested (its knowledge and prices); the brain checks it
+    # belongs to this workspace and falls back to the active agent.
+    body[:agent_id] = params[:agent_id].to_s.first(80) if params[:agent_id].present?
     render json: post_to_brain('/agent-test', body)
   end
 
@@ -47,15 +50,15 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
 
   def agent_save
     agent = params[:agent].respond_to?(:to_unsafe_h) ? params[:agent].to_unsafe_h : params[:agent]
-    render json: post_to_brain('/agents', { account_id: account_scope_id, agent: agent })
+    render_brain post_to_brain('/agents', { account_id: account_scope_id, agent: agent })
   end
 
   def agent_delete
-    render json: post_to_brain('/agents/delete', { account_id: account_scope_id, id: params[:id].to_s })
+    render_brain post_to_brain('/agents/delete', { account_id: account_scope_id, id: params[:id].to_s })
   end
 
   def agent_default
-    render json: post_to_brain('/agents/default', { account_id: account_scope_id, id: params[:id].to_s })
+    render_brain post_to_brain('/agents/default', { account_id: account_scope_id, id: params[:id].to_s })
   end
 
   # Real Workflows (B1): the brain stores, validates and runs them (shadow only).
@@ -171,7 +174,7 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
     res = get_from_brain("#{path}?account_id=#{account_scope_id}#{extra}")
     # The account owner (H3) is always an Owner; the Roles page shows it as fixed.
     res = res.merge('owner_user_id' => Tolzar::AccountOwner.user_id(Current.account)) if params[:feature].to_s == 'roles'
-    render json: res
+    render_brain res
   end
 
   def brain_post
@@ -189,7 +192,8 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
     # The brain refuses to demote the account owner / the last Owner too; it learns the owner
     # from the server side only (never from the browser).
     body = body.merge('owner_user_id' => Tolzar::AccountOwner.user_id(Current.account)) if params[:feature].to_s == 'roles'
-    render json: post_to_brain(path, body)
+    # The brain's refusals keep their status (403/400/404/502), so a page can't show them as saved.
+    render_brain post_to_brain(path, body)
   end
 
   # White-label (R11): every member of the workspace reads its branding (name, colour, logo,
@@ -285,6 +289,22 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
   def workspace_checklist
     ids = Current.account.inboxes.order(:id).limit(50).pluck(:id).join(',')
     render_brain(get_from_brain("/workspace/checklist?account_id=#{account_scope_id}&inbox_ids=#{ids}"))
+  end
+
+  # The workspace's pipeline (Tolzar::PipelineSettings): stages, stage fields, deal value field and
+  # currency, in account.settings. Every administrator reads it; only an Owner changes it.
+  def pipeline_settings
+    render json: { ok: true, settings: Tolzar::PipelineSettings.view(Current.account) }
+  end
+
+  def pipeline_settings_save
+    result = Tolzar::PipelineSettings.validate(unsafe(params[:settings]) || {})
+    return render(json: { ok: false, error: 'invalid_settings', detail: result.errors }, status: :bad_request) if result.errors.any?
+
+    settings = (Current.account.settings || {}).merge(result.values)
+    cleared = result.values.select { |_k, v| v.nil? }.keys
+    Current.account.update!(settings: settings.except(*cleared))
+    render json: { ok: true, settings: Tolzar::PipelineSettings.view(Current.account.reload) }
   end
 
   # An AI agent's price source (url | feed | table | commerce). Every administrator reads it; the

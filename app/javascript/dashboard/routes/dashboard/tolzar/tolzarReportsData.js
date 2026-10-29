@@ -4,6 +4,8 @@ import ContactAPI from 'dashboard/api/contacts';
 import {
   STAGES,
   stageConditions,
+  dealValue,
+  money,
 } from 'dashboard/components-next/Tolzar/tolzarStages';
 
 const DAY = 86400;
@@ -39,8 +41,8 @@ export const duration = seconds => {
 export const pct = (v, digits = 0) =>
   v === null || v === undefined ? '—' : `${(v * 100).toFixed(digits)}%`;
 
-export const euro = v =>
-  `€${v >= 10000 ? `${(v / 1000).toFixed(1)}k` : Math.round(v).toLocaleString()}`;
+// In the workspace's deal currency (Settings > Pipeline).
+export const euro = v => money(v, { short: true });
 
 // Relative change, or null when there is nothing to compare with.
 export const delta = (now, prev) => {
@@ -121,7 +123,7 @@ export const weeklyNewContacts = async (weeks = 5, now = Date.now()) => {
   );
 };
 
-// Sum of booking_value_eur for contacts in a stage (pages of 15; capped).
+// Sum of the deal value field for contacts in a stage (pages of 15; capped).
 export const stageValue = async (stage, maxPages = 10) => {
   let total = 0;
   let count = 0;
@@ -133,8 +135,7 @@ export const stageValue = async (stage, maxPages = 10) => {
     const { data } = await ContactAPI.filter(page, 'name', stageFilter(stage));
     const rows = data?.payload || [];
     total += rows.reduce((sum, c) => {
-      const v = Number(c.custom_attributes?.booking_value_eur);
-      return Number.isFinite(v) ? sum + v : sum;
+      return sum + dealValue(c.custom_attributes);
     }, 0);
     count = data?.meta?.count || 0;
     if (page * 15 >= count || !rows.length) break;

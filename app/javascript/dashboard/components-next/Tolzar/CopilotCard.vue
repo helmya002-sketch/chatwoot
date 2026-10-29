@@ -17,26 +17,30 @@ const contactAttrs = computed(
   () => chat.value?.meta?.sender?.custom_attributes || {}
 );
 
+// The brain's triage category; a workspace's own categories show as written ("trade_partner" ->
+// "Trade partner").
 const INTENT_LABEL = {
   lead: 'Lead',
   job: 'Job application',
   spam: 'Spam',
-  agency: 'Agency',
-  booking_com: 'Booking.com',
-  submarine: 'Submarine',
   other: 'Needs routing',
 };
-const intent = computed(
-  () => INTENT_LABEL[convAttrs.value.triage_category] || ''
-);
+const intent = computed(() => {
+  const c = String(convAttrs.value.triage_category || '');
+  if (!c) return '';
+  const words = c.replace(/[_-]+/g, ' ').trim();
+  return INTENT_LABEL[c] || words.charAt(0).toUpperCase() + words.slice(1);
+});
 const confidence = computed(() => {
   const c = Number(convAttrs.value.brain_confidence);
   return Number.isFinite(c) ? Math.round(c * 100) : null;
 });
-const suggestedReply = computed(
-  () => (convAttrs.value.tolzar_suggested_reply || '').trim()
+const suggestedReply = computed(() =>
+  (convAttrs.value.tolzar_suggested_reply || '').trim()
 );
-const summary = computed(() => (contactAttrs.value.tolzar_summary || '').trim());
+const summary = computed(() =>
+  (contactAttrs.value.tolzar_summary || '').trim()
+);
 const score = computed(() => {
   const n = Number(contactAttrs.value.tolzar_lead_score);
   return Number.isFinite(n) && n > 0 ? Math.round(n) : null;
@@ -98,7 +102,11 @@ const useReply = () => {
   margin: 10px 16px 14px;
   border-radius: 15px;
   border: 1px solid rgb(var(--slate-5));
-  background: linear-gradient(180deg, rgb(var(--blue-9) / 0.06), transparent 34%),
+  background: linear-gradient(
+      180deg,
+      rgb(var(--blue-9) / 0.06),
+      transparent 34%
+    ),
     rgb(var(--surface-1));
   box-shadow: 0 10px 30px -24px rgb(0 0 0 / 0.5);
   padding: 13px 15px;
@@ -201,7 +209,11 @@ const useReply = () => {
   font-size: 12px;
   font-weight: 650;
   color: #fff;
-  background: linear-gradient(180deg, rgb(var(--blue-9) / 0.9), rgb(var(--blue-9)));
+  background: linear-gradient(
+    180deg,
+    rgb(var(--blue-9) / 0.9),
+    rgb(var(--blue-9))
+  );
   border: 0;
   border-radius: 8px;
   padding: 6px 13px;

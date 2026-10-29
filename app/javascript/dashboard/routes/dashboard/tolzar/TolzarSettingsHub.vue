@@ -10,9 +10,10 @@ import QuotasPanel from 'dashboard/components-next/Tolzar/settings/QuotasPanel.v
 import DocumentsPanel from 'dashboard/components-next/Tolzar/settings/DocumentsPanel.vue';
 import WorkspacePanel from 'dashboard/components-next/Tolzar/settings/WorkspacePanel.vue';
 import GoLivePanel from 'dashboard/components-next/Tolzar/settings/GoLivePanel.vue';
+import PipelinePanel from 'dashboard/components-next/Tolzar/settings/PipelinePanel.vue';
 import WhatsappListenOnlyPanel from 'dashboard/components-next/Tolzar/settings/WhatsappListenOnlyPanel.vue';
 import { MEDIA_MODES, VIDEO_FRAMES, getMedia, saveMedia as saveMediaConfig, mediaConfig } from 'dashboard/components-next/Tolzar/tolzarMedia';
-import { brainErrors } from 'dashboard/components-next/Tolzar/tolzarBrainApi';
+import { brainErrors, isOwnerOnly } from 'dashboard/components-next/Tolzar/tolzarBrainApi';
 
 // Tolzar Settings hub (approved mock settings-hub-v1): one home for what Tolzar does for this
 // workspace. Every section reads/writes the brain through the admin proxy; AI features run in
@@ -22,11 +23,17 @@ const { t: $t } = useI18n();
 const base = computed(() => `/api/v1/accounts/${accountId.value}/tolzar`);
 const get = (feature, params = {}) =>
   window.axios.get(`${base.value}/brain/${feature}`, { params }).then(r => r.data);
+// A refusal (Owner-only, invalid, brain unreachable) comes back as its body, never as "Saved".
 const post = (feature, body = {}) =>
-  window.axios.post(`${base.value}/brain/${feature}`, body).then(r => r.data);
+  window.axios
+    .post(`${base.value}/brain/${feature}`, body)
+    .then(r => r.data)
+    .catch(e => e?.response?.data || { ok: false, error: 'brain_unreachable' });
+const problems = r =>
+  isOwnerOnly(r) ? [$t('TOLZAR_SETTINGS.R1.OWNER_ONLY')] : brainErrors(r);
 
 const SECTIONS = [
-  ['workspace', ['workspace_settings', 'usage', 'roles', 'audit', 'export', 'go_live']],
+  ['workspace', ['workspace_settings', 'pipeline', 'usage', 'roles', 'audit', 'export', 'go_live']],
   ['trust', ['disclosure', 'retention', 'privacy']],
   ['channels', ['whatsapp_listen', 'sms', 'crm', 'commerce']],
   ['team', ['sla', 'qa']],
@@ -93,7 +100,8 @@ async function open(key) {
       };
     }
   } catch (e) {
-    note.value = String(e);
+    const why = problems(e?.response?.data);
+    note.value = why.length ? why.join(' · ') : String(e);
   } finally {
     busy.value = false;
   }
@@ -101,10 +109,16 @@ async function open(key) {
 const done = msg => {
   note.value = msg;
 };
+// Shows the brain's refusal, else `msg`; true when the request went through.
+const report = (r, msg = $t('TOLZAR_SETTINGS.R1.SAVED')) => {
+  const why = problems(r);
+  done(why.length ? why.join(' · ') : msg);
+  return !why.length;
+};
 
 async function saveSla() {
-  data.value = { ...data.value, ...(await post('sla', data.value.config)) };
-  done('Saved');
+  const r = await post('sla', data.value.config);
+  if (report(r)) data.value = { ...data.value, ...r };
 }
 async function saveMedia() {
   const r = await saveMediaConfig(accountId.value, data.value.config);
@@ -112,12 +126,14 @@ async function saveMedia() {
   done(errors.length ? errors.join(' · ') : $t('TOLZAR_SETTINGS.R1.SAVED'));
 }
 async function saveRecovery() {
-  await post('recovery', data.value.config);
-  done('Saved');
+  report(await post('recovery', data.value.config));
 }
 async function startExport() {
-  await window.axios.post(`${base.value}/export`);
-  done('Preparing: refresh in a few minutes.');
+  const r = await window.axios
+    .post(`${base.value}/export`)
+    .then(x => x.data)
+    .catch(e => e?.response?.data || { ok: false, error: 'brain_unreachable' });
+  report(r, 'Preparing: refresh in a few minutes.');
 }
 async function download(x) {
   // The API authenticates with headers, so fetch the file and hand it to the browser.
@@ -130,44 +146,47 @@ async function download(x) {
 }
 async function refreshDedupe() {
   busy.value = true;
-  data.value = await post('dedupe_refresh');
+  const r = await post('dedupe_refresh');
+  if (report(r, '')) data.value = r;
   busy.value = false;
 }
 async function saveChannels() {
-  await post('channels', data.value.channels);
-  done('Saved');
+  report(await post('channels', data.value.channels));
 }
 async function makeLinks() {
-  data.value.made = await post('links', { campaign: data.value.campaign, greeting: data.value.greeting });
+  const r = await post('links', { campaign: data.value.campaign, greeting: data.value.greeting });
+  if (report(r, '')) data.value.made = r;
 }
 async function previewBroadcast() {
-  data.value.preview = await post('broadcasts_preview', { broadcast: data.value.draft });
+  const r = await post('broadcasts_preview', { broadcast: data.value.draft });
+  if (report(r, '')) data.value.preview = r;
 }
 async function saveBroadcast() {
-  await post('broadcasts', { broadcast: data.value.draft });
-  open('broadcasts');
+  if (report(await post('broadcasts', { broadcast: data.value.draft }))) open('broadcasts');
 }
 async function runBroadcast(id) {
   const r = await post('broadcasts_run', { id });
-  done(`Shadow run: would send to ${r.run?.would_send ?? 0}`);
+  report(r, `Shadow run: would send to ${r.run?.would_send ?? 0}`);
 }
 async function decide(qt, status) {
-  await post('learned_status', { question_type: qt, status });
-  open('learned');
+  if (report(await post('learned_status', { question_type: qt, status }))) open('learned');
 }
 async function buildBrief() {
   busy.value = true;
-  data.value = await post('brief_build');
+  const r = await post('brief_build');
+  if (report(r, '')) data.value = r;
   busy.value = false;
 }
 async function askInbox() {
   busy.value = true;
-  data.value.answer = await post('ask', { question: data.value.question });
+  const r = await post('ask', { question: data.value.question });
+  if (report(r, '')) data.value.answer = r;
   busy.value = false;
 }
 async function setRole(m) {
   const r = await post('roles', { user_id: m.id, role: m.tolzar });
-  done(r.ok === false ? $t('TOLZAR_SETTINGS.ROLES.OWNER_ONLY') : $t('TOLZAR_SETTINGS.SAVE'));
+  if (problems(r).length) await open('roles'); // put the select back to what is stored
+  report(r);
 }
 async function metaConnect() {
   const r = (await window.axios.post(`${base.value}/meta/connect_url`)).data;
@@ -243,6 +262,7 @@ onMounted(() => {
           <DocumentsPanel v-if="current === 'documents'" />
           <WorkspacePanel v-if="current === 'workspace_settings'" />
           <GoLivePanel v-if="current === 'go_live'" />
+          <PipelinePanel v-if="current === 'pipeline'" />
 
           <!-- roles -->
           <div v-if="current === 'roles'">

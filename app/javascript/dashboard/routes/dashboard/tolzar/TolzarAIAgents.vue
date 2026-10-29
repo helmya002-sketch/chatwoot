@@ -1,5 +1,6 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useMapGetter } from 'dashboard/composables/store';
 import CredentialInput from 'dashboard/components-next/Tolzar/settings/CredentialInput.vue';
@@ -26,6 +27,7 @@ import {
 } from 'dashboard/components-next/Tolzar/tolzarAgentTest';
 
 const accountId = useMapGetter('getCurrentAccountId');
+const route = useRoute();
 const { t } = useI18n();
 
 // --- AI Agents pillar. Configs are stored SERVER-SIDE by the brain
@@ -66,33 +68,47 @@ async function load() {
   loaded.value = true;
 }
 
-async function saveToServer(agent) {
-  // id/name/description/instructions/knowledge/skills/status/emoji — stored as-is.
-  await window.axios.post(`${apiBase.value}/agents`, { agent });
+// What the brain (or the proxy) answered: a refusal comes back as data ({ok: false, error}), so the
+// page can say why (Owner-only, brain unreachable) instead of looking saved.
+const listResult = ref(null);
+const saveResult = ref(null);
+async function brainPost(path, body) {
+  try {
+    const { data } = await window.axios.post(`${apiBase.value}/${path}`, body);
+    return data || {};
+  } catch (e) {
+    return e?.response?.data || { ok: false, error: 'brain_unreachable' };
+  }
 }
+const refused = r => !r || r.ok === false || r.detail !== undefined;
+// The sidebar's AI Agents tree reloads when the stored list changes.
+const announce = () => window.dispatchEvent(new Event('tolzar:agents-changed'));
+
+// id/name/description/instructions/knowledge/skills/status/emoji/generic, stored as-is.
+const saveToServer = agent => brainPost('agents', { agent });
 
 async function setDefault(id, ev) {
   if (ev) ev.stopPropagation();
+  const before = defaultId.value;
   defaultId.value = id;
-  try {
-    await window.axios.post(`${apiBase.value}/agents/default`, { id });
-  } catch (e) {
-    /* non-fatal */
-  }
+  const r = await brainPost('agents/default', { id });
+  listResult.value = refused(r) ? r : null;
+  if (refused(r)) defaultId.value = before;
 }
 async function toggleStatus(a, ev) {
   if (ev) ev.stopPropagation();
+  const before = a.status;
   a.status = a.status === 'active' ? 'inactive' : 'active';
-  try {
-    await saveToServer(a);
-  } catch (e) {
-    /* non-fatal */
-  }
+  const r = await saveToServer(a);
+  listResult.value = refused(r) ? r : null;
+  if (refused(r)) a.status = before;
 }
 
 const selected = computed(() => agents.value.find(a => a.id === selectedId.value));
 
 function openAgent(id) {
+  saveResult.value = null;
+  knowledgeResult.value = null;
   selectedId.value = id;
   draft.value = JSON.parse(JSON.stringify(agents.value.find(a => a.id === id)));
   skillsForm.value = skillsFromAgent(draft.value);
@@ -162,6 +178,21 @@ const removePrice = () =>
 // Ready-made, editable prompt templates from the brain (owner, 28 Oct: agents are configurable;
 // behaviour comes from the instructions). A new agent starts inactive.
 const templates = ref([]);
+const BLANK_GENERIC = Object.freeze({
+  enabled: true,
+  answer_from_knowledge: true,
+  quote_prices: false,
+});
+
+// The agent's behaviour switches (brain generic.py). An agent saved before these existed has no
+// `generic`: switching one on gives it the workspace agent path.
+const behaviour = computed(() => draft.value?.generic || {});
+function setBehaviour(key, on) {
+  draft.value.generic = {
+    ...(draft.value.generic || { ...BLANK_GENERIC, teams: {} }),
+    [key]: on,
+  };
+}
 async function loadTemplates() {
   try {
     const { data } = await window.axios.get(`${apiBase.value}/brain/agent_templates`);
@@ -183,8 +214,16 @@ async function createFromTemplate(t) {
     template: t.id,
     generic: { enabled: true, ...JSON.parse(JSON.stringify(t.generic)), teams: {} },
   };
+  await addAgent(a);
+}
+
+// A new agent is listed only once the brain has stored it.
+async function addAgent(a) {
+  const r = await saveToServer(a);
+  listResult.value = refused(r) ? r : null;
+  if (refused(r)) return;
   agents.value.push(a);
-  await saveToServer(a);
+  announce();
   openAgent(a.id);
 }
 
@@ -198,14 +237,10 @@ async function createAgent() {
     instructions: '',
     knowledge: [],
     skills: [],
+    // The workspace agent path: answers from its knowledge; quotes prices once a source is saved.
+    generic: { ...BLANK_GENERIC, teams: {} },
   };
-  agents.value.push(a);
-  try {
-    await saveToServer(a);
-  } catch (e) {
-    /* non-fatal */
-  }
-  openAgent(a.id);
+  await addAgent(a);
 }
 
 function cancelEdit() {
@@ -221,16 +256,19 @@ async function saveAgent() {
   }
   // Skills in the brain's shape (agent_skills.py); an older draft is saved in the new shape.
   if (SKILLS_LIVE) Object.assign(draft.value, skillsToAgent(skillsForm.value));
-  const i = agents.value.findIndex(a => a.id === draft.value.id);
-  if (i >= 0) agents.value[i] = JSON.parse(JSON.stringify(draft.value));
+  saveResult.value = null;
   const payload = JSON.parse(JSON.stringify(draft.value));
   // The instructions edited here are the generic agent's instructions too.
   if (payload.generic) payload.generic.instructions = payload.instructions;
-  try {
-    await saveToServer(payload);
-  } catch (e) {
-    /* non-fatal */
+  const r = await saveToServer(payload);
+  if (refused(r)) {
+    // Keep the builder open with the edits; the list keeps what the brain has.
+    saveResult.value = r;
+    return;
   }
+  const i = agents.value.findIndex(a => a.id === draft.value.id);
+  if (i >= 0) agents.value[i] = JSON.parse(JSON.stringify(draft.value));
+  announce();
   selectedId.value = null;
   draft.value = null;
 }
@@ -238,14 +276,40 @@ async function saveAgent() {
 async function deleteAgent(id) {
   // eslint-disable-next-line no-alert
   if (!window.confirm('Delete this AI Agent?')) return;
-  agents.value = agents.value.filter(a => a.id !== id);
-  try {
-    await window.axios.post(`${apiBase.value}/agents/delete`, { id });
-  } catch (e) {
-    /* non-fatal */
+  const r = await brainPost('agents/delete', { id });
+  if (refused(r)) {
+    if (selectedId.value === id) saveResult.value = r;
+    else listResult.value = r;
+    return;
   }
+  agents.value = agents.value.filter(a => a.id !== id);
+  announce();
   if (selectedId.value === id) cancelEdit();
 }
+
+// Index the agent's links and texts now (the brain also does it daily). Uses the saved agent,
+// so unsaved rows are saved first.
+const knowledgeResult = ref(null);
+const knowledgeBusy = ref(false);
+async function refreshKnowledge() {
+  knowledgeBusy.value = true;
+  knowledgeResult.value = null;
+  const payload = JSON.parse(JSON.stringify(draft.value));
+  if (payload.generic) payload.generic.instructions = payload.instructions;
+  const saved = await saveToServer(payload);
+  const r = refused(saved)
+    ? saved
+    : await brainPost('brain/knowledge_refresh', { id: draft.value.id });
+  knowledgeResult.value = r;
+  knowledgeBusy.value = false;
+}
+const knowledgeSaved = computed(() =>
+  knowledgeResult.value && !refused(knowledgeResult.value)
+    ? t('TOLZAR_AGENTS.KNOWLEDGE_INDEXED', {
+        total: knowledgeResult.value.total ?? 0,
+      })
+    : ''
+);
 
 function addKnowledge() {
   draft.value.knowledge.push({ type: 'url', label: '', value: '' });
@@ -274,7 +338,12 @@ async function sendTest() {
   try {
     const { data } = await window.axios.post(
       `/api/v1/accounts/${accountId.value}/tolzar/agent_test`,
-      { message: text, instructions: draft.value?.instructions || '', history }
+      {
+        message: text,
+        instructions: draft.value?.instructions || '',
+        agent_id: draft.value?.id || '',
+        history,
+      }
     );
     drop();
     // The bubble is the final reply (what Shadow would send); a replaced draft rides along.
@@ -288,9 +357,17 @@ async function sendTest() {
   }
 }
 
-onMounted(() => {
-  load();
+// ?agent=<id> (the sidebar tree) opens that agent's builder.
+const openFromRoute = () => {
+  const id = route.query?.agent;
+  if (id && agents.value.some(a => a.id === id)) openAgent(String(id));
+};
+watch(() => route.query?.agent, openFromRoute);
+
+onMounted(async () => {
   loadTemplates();
+  await load();
+  openFromRoute();
 });
 </script>
 
@@ -328,6 +405,9 @@ onMounted(() => {
             <span class="i-lucide-plus size-4" /> Create AI Agent
           </button>
         </div>
+      </div>
+      <div class="max-w-[640px]">
+        <BrainNotice :result="listResult" />
       </div>
 
       <div class="tz-rise flex gap-2.5 items-center mt-4 px-3.5 py-2.5 text-xs rounded-xl border border-n-weak bg-n-alpha-1 text-n-slate-11" style="animation-delay: 60ms">
@@ -405,6 +485,9 @@ onMounted(() => {
         <button type="button" class="tz-btn-ghost" @click="cancelEdit">Cancel</button>
         <button type="button" class="tz-btn-primary" @click="saveAgent"><span class="i-lucide-check size-4" /> Save</button>
       </div>
+      <div class="max-w-[640px] -mt-2 mb-3">
+        <BrainNotice :result="saveResult" />
+      </div>
 
       <div class="grid gap-[18px] items-start grid-cols-1 lg:grid-cols-[1fr_380px]">
         <!-- left: config -->
@@ -421,6 +504,19 @@ onMounted(() => {
             ></textarea>
           </section>
 
+          <!-- Behaviour switches (brain generic.py) -->
+          <section class="p-[18px] rounded-2xl border shadow-sm bg-n-solid-1 border-n-weak" data-tz-behaviour>
+            <h3 class="mb-1 text-[15px] font-semibold text-n-slate-12">{{ t('TOLZAR_AGENTS.BEHAVIOUR') }}</h3>
+            <p class="mt-0 mb-2.5 text-xs text-n-slate-11">{{ t('TOLZAR_AGENTS.BEHAVIOUR_HINT') }}</p>
+            <label v-for="k in ['enabled', 'answer_from_knowledge', 'quote_prices']" :key="k" class="flex gap-2 items-start mb-2 text-[13px] text-n-slate-12">
+              <input type="checkbox" class="mt-0.5 accent-[#3e63dd]" :checked="!!behaviour[k]" @change="setBehaviour(k, $event.target.checked)" />
+              <span>
+                {{ t(`TOLZAR_AGENTS.SWITCH.${k}`) }}
+                <span class="block text-xs text-n-slate-10">{{ t(`TOLZAR_AGENTS.SWITCH_HINT.${k}`) }}</span>
+              </span>
+            </label>
+          </section>
+
           <!-- Description -->
           <section class="p-[18px] rounded-2xl border shadow-sm bg-n-solid-1 border-n-weak">
             <h3 class="mb-2.5 text-[15px] font-semibold text-n-slate-12">Description</h3>
@@ -431,20 +527,28 @@ onMounted(() => {
           <section class="p-[18px] rounded-2xl border shadow-sm bg-n-solid-1 border-n-weak">
             <div class="flex justify-between items-center">
               <h3 class="m-0 text-[15px] font-semibold text-n-slate-12">Knowledge sources</h3>
-              <button type="button" class="tz-btn-soft" @click="addKnowledge"><span class="i-lucide-plus size-3.5" /> Add</button>
+              <div class="flex gap-2">
+                <button type="button" class="tz-btn-soft" :disabled="knowledgeBusy || !draft.knowledge.length" @click="refreshKnowledge">
+                  <span class="i-lucide-refresh-cw size-3.5" /> {{ knowledgeBusy ? t('TOLZAR_AGENTS.INDEXING') : t('TOLZAR_AGENTS.INDEX_NOW') }}
+                </button>
+                <button type="button" class="tz-btn-soft" @click="addKnowledge"><span class="i-lucide-plus size-3.5" /> Add</button>
+              </div>
             </div>
             <p class="mt-1.5 mb-3 text-xs text-n-slate-11">Documents, FAQs and links the agent can use to answer.</p>
             <div v-if="!draft.knowledge.length" class="text-[13px] text-n-slate-10">No sources yet.</div>
+            <p v-if="draft.knowledge.length && !behaviour.answer_from_knowledge" class="mt-0 mb-2 text-xs text-n-amber-11">{{ t('TOLZAR_AGENTS.KNOWLEDGE_OFF') }}</p>
             <div v-for="(k, i) in draft.knowledge" :key="i" class="flex gap-2 items-center mb-2">
               <select v-model="k.type" class="tz-in !w-auto">
                 <option value="url">Link</option>
-                <option value="file">File</option>
                 <option value="text">Text</option>
+                <!-- File sources are not read by the brain yet; an old row stays visible to remove. -->
+                <option v-if="k.type === 'file'" value="file" disabled>File (not read yet)</option>
               </select>
               <input v-model="k.label" placeholder="Label" class="tz-in !w-[120px]" />
-              <input v-model="k.value" placeholder="URL / file / text" class="flex-1 tz-in" />
+              <input v-model="k.value" :placeholder="k.type === 'text' ? 'Text the agent may use' : 'https://…'" class="flex-1 tz-in" />
               <button type="button" class="grid place-content-center rounded-lg transition-colors size-7 text-n-slate-10 hover:text-rose-500 hover:bg-n-alpha-2" @click="removeKnowledge(i)"><span class="i-lucide-x size-4" /></button>
             </div>
+            <BrainNotice :result="knowledgeResult" :saved="knowledgeSaved" />
           </section>
 
           <!-- Price source (type, address, refresh; test fetch; Owner saves) -->
@@ -494,7 +598,7 @@ onMounted(() => {
           </div>
           <div class="flex gap-2 items-start px-2.5 py-2 mb-2.5 text-[11.5px] rounded-lg" style="color: #3a5bc7; background: rgba(62,99,221,.1); border: 1px solid rgba(62,99,221,.22)">
             <span class="flex-shrink-0 mt-0.5 i-lucide-circle-check size-3.5" />
-            <span class="dark:text-n-iris-11">Live — replies come from your self-hosted model using the instructions above. This won’t touch any real conversation.</span>
+            <span class="dark:text-n-iris-11">Replies come from your self-hosted model using this agent’s instructions, knowledge and prices (saved ones; instructions as typed). This won’t touch any real conversation.</span>
           </div>
           <div class="flex overflow-auto flex-col gap-2 p-2.5 h-[300px] rounded-xl border border-n-weak bg-n-background">
             <div v-if="!testMsgs.length" class="m-auto text-[12.5px] text-center text-n-slate-10">Send a message to see how your agent replies.</div>

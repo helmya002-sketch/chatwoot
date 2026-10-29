@@ -54,6 +54,10 @@ export const DEFAULT_STAGE_ATTRIBUTES = Object.freeze([
 ]);
 export const STAGE_ATTRIBUTES = reactive([...DEFAULT_STAGE_ATTRIBUTES]);
 
+// A deal's value: which contact attribute holds it and its currency (settings deal_value_attribute,
+// deal_currency; Settings > Pipeline). No currency: the number is shown without a symbol.
+export const DEAL = reactive({ attribute: 'deal_value', currency: '' });
+
 export const parseStageAttributes = value => {
   if (!Array.isArray(value)) return null;
   const out = [
@@ -71,7 +75,34 @@ export const applyPipelineStages = accountSettings => {
     parseStageAttributes(accountSettings?.stage_attributes) ||
     DEFAULT_STAGE_ATTRIBUTES;
   STAGE_ATTRIBUTES.splice(0, STAGE_ATTRIBUTES.length, ...attrs);
+  const dealKey = String(accountSettings?.deal_value_attribute || '');
+  DEAL.attribute = /^[a-z0-9_]{1,60}$/.test(dealKey) ? dealKey : 'deal_value';
+  const code = String(accountSettings?.deal_currency || '');
+  DEAL.currency = /^[A-Z]{3}$/.test(code) ? code : '';
   return STAGES;
+};
+
+// The contact's deal value as a number (0 when none).
+export const dealValue = attrs => {
+  const n = Number(attrs?.[DEAL.attribute]);
+  return Number.isFinite(n) ? n : 0;
+};
+
+// 1234 -> "€1,234" (or "1,234" with no currency); `short` gives "€12.3k" from 10,000 up.
+export const money = (v, { short = false } = {}) => {
+  const n = Number(v) || 0;
+  const compact = short && Math.abs(n) >= 10000;
+  const opts = compact
+    ? { notation: 'compact', maximumFractionDigits: 1 }
+    : { maximumFractionDigits: 0 };
+  try {
+    return new Intl.NumberFormat(undefined, {
+      ...opts,
+      ...(DEAL.currency ? { style: 'currency', currency: DEAL.currency } : {}),
+    }).format(n);
+  } catch (e) {
+    return Math.round(n).toLocaleString();
+  }
 };
 
 export const DEFAULT_STAGE = 'New Lead';

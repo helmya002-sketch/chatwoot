@@ -1,5 +1,5 @@
 <script setup>
-import { h, ref, computed, onMounted, watch } from 'vue';
+import { h, ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { usePolicy } from 'dashboard/composables/usePolicy';
 import { useUISettings } from 'dashboard/composables/useUISettings';
@@ -265,19 +265,24 @@ const teams = useMapGetter('teams/getMyTeams');
 // (respond.io-style team inbox); agents still see only the teams they belong to.
 const allTeams = useMapGetter('teams/getTeams');
 
-// Tolzar: AI Agents tree (respond.io-style) — read the agents saved by the
-// AI Agents builder (localStorage); listed as children under the AI Agents nav.
+// Tolzar: AI Agents tree. The agents are stored by the brain (AI Agents builder, through the
+// admin proxy); listed as children under the AI Agents nav, each opening its builder.
+const currentRole = useMapGetter('getCurrentRole');
 const tzAiAgents = ref([]);
-const loadTzAiAgents = () => {
+const loadTzAiAgents = async () => {
+  if (currentRole.value !== 'administrator' || !accountId.value) {
+    tzAiAgents.value = [];
+    return;
+  }
   try {
-    tzAiAgents.value = JSON.parse(
-      localStorage.getItem('tolzar_ai_agents_v1') || '[]'
+    const { data } = await window.axios.get(
+      `/api/v1/accounts/${accountId.value}/tolzar/agents`
     );
+    tzAiAgents.value = Array.isArray(data?.agents) ? data.agents : [];
   } catch (e) {
     tzAiAgents.value = [];
   }
 };
-const currentRole = useMapGetter('getCurrentRole');
 const teamsForSidebar = computed(() =>
   currentRole.value === 'administrator' ? allTeams.value : teams.value
 );
@@ -313,7 +318,13 @@ onMounted(() => {
   store.dispatch('customViews/get', 'contact');
   store.dispatch('agents/get');
   loadTzAiAgents();
+  // The AI Agents builder says when it stored, added or deleted an agent.
+  window.addEventListener('tolzar:agents-changed', loadTzAiAgents);
 });
+onBeforeUnmount(() =>
+  window.removeEventListener('tolzar:agents-changed', loadTzAiAgents)
+);
+watch([accountId, currentRole], loadTzAiAgents);
 
 watch([accountId, hasConversationUnreadCounts], fetchConversationUnreadCounts, {
   immediate: true,
@@ -681,7 +692,11 @@ const menuItems = computed(() => {
               name: `ai-agent-${agent.id}`,
               label: agent.name,
               icon: 'i-lucide-bot',
-              to: accountScopedRoute('tolzar_ai_agents'),
+              to: accountScopedRoute(
+                'tolzar_ai_agents',
+                {},
+                { agent: agent.id }
+              ),
               activeOn: ['tolzar_ai_agents'],
             }))
           : undefined,

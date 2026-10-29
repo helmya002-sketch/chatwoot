@@ -6,6 +6,7 @@ import {
   pct,
   rangeFor,
 } from '../tolzarReportsData';
+import { applyPipelineStages } from 'dashboard/components-next/Tolzar/tolzarStages';
 
 describe('tolzarReportsData', () => {
   it('formats durations the way people read them', () => {
@@ -17,8 +18,11 @@ describe('tolzarReportsData', () => {
   });
 
   it('formats money and percentages', () => {
-    expect(euro(640)).toBe('€640');
-    expect(euro(38400)).toBe('€38.4k');
+    applyPipelineStages({ deal_currency: 'EUR' });
+    expect(euro(640)).toMatch(/^€\s?640$/);
+    expect(euro(38400)).toMatch(/^€\s?38\.4K$/i);
+    applyPipelineStages({});
+    expect(euro(640)).toBe('640'); // no currency set: no symbol
     expect(pct(0.885, 1)).toBe('88.5%');
     expect(pct(null)).toBe('—');
   });

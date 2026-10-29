@@ -33,6 +33,13 @@ const typed = ref('');
 const refused = ref(null); // {inbox, reasons}
 
 const owner = computed(() => isOwner(view.value));
+// Going live is locked unless the install turned it on for this workspace (account setting
+// tolzar_live_allowed, set from the console only). Back to Shadow and the kill switch always work.
+const getAccount = useMapGetter('accounts/getAccount');
+const liveAllowed = computed(
+  () =>
+    getAccount.value(accountId.value)?.settings?.tolzar_live_allowed === true
+);
 const rows = computed(() =>
   view.value ? inboxModes(view.value, inboxes.value || []) : []
 );
@@ -217,6 +224,13 @@ onMounted(() => {
             >
               {{ t('TOLZAR_WORKSPACE.GO_LIVE.BACK') }}
             </button>
+            <span
+              v-else-if="r.mode !== 'eval' && !liveAllowed"
+              class="text-xs text-n-slate-10"
+              data-tz-live-locked
+            >
+              {{ t('TOLZAR_WORKSPACE.GO_LIVE.LOCKED') }}
+            </span>
             <button
               v-else-if="r.mode !== 'eval'"
               type="button"

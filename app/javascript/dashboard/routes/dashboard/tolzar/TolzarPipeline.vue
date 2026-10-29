@@ -10,6 +10,8 @@ import {
   stageConditions,
   stageColor,
   stageIcon,
+  dealValue,
+  money as formatMoney,
 } from 'dashboard/components-next/Tolzar/tolzarStages';
 
 const route = useRoute();
@@ -44,7 +46,7 @@ function initials(name) {
   return (name || '?').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
 }
 function money(v) {
-  return v ? '€' + Number(v).toLocaleString() : '';
+  return v ? formatMoney(v) : '';
 }
 function timeAgo(ts) {
   if (!ts) return '';
@@ -54,8 +56,7 @@ function timeAgo(ts) {
   return `${Math.floor(s / 86400)}d`;
 }
 function cardValue(c) {
-  const ca = c.ca || {};
-  return Number(ca.booking_value_eur || ca.value || 0);
+  return dealValue(c.ca);
 }
 function colValue(key) {
   return (cols.value[key]?.contacts || []).reduce((a, c) => a + cardValue(c), 0);

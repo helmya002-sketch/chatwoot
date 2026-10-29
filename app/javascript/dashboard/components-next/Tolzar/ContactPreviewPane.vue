@@ -18,6 +18,8 @@ import ContactLabels from 'dashboard/components-next/Contacts/ContactLabels/Cont
 import {
   DEFAULT_STAGE,
   contactStage,
+  dealValue,
+  money,
   STAGES,
   leadScore,
   scoreTone,
@@ -90,7 +92,7 @@ const details = computed(() =>
     [t('TOLZAR_CONTACTS.PANE.GROUP_SIZE'), attrs.value.group_size],
     [
       t('TOLZAR_CONTACTS.PANE.BOOKING_VALUE'),
-      attrs.value.booking_value_eur ? `€${attrs.value.booking_value_eur}` : '',
+      dealValue(attrs.value) ? money(dealValue(attrs.value)) : '',
     ],
     [t('TOLZAR_CONTACTS.PANE.LANGUAGE'), attrs.value.preferred_language],
     [t('TOLZAR_CONTACTS.PANE.PHONE'), raw.value.phone_number],

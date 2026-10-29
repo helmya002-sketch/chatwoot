@@ -7,7 +7,11 @@ import { useI18n } from 'vue-i18n';
 import { useStore, useMapGetter } from 'dashboard/composables/store';
 import ReportsAPI from 'dashboard/api/reports';
 import SummaryReportsAPI from 'dashboard/api/summaryReports';
-import { STAGES } from 'dashboard/components-next/Tolzar/tolzarStages';
+import {
+  STAGES,
+  applyPipelineStages,
+  loadStageAttributes,
+} from 'dashboard/components-next/Tolzar/tolzarStages';
 import {
   delta,
   duration,
@@ -47,16 +51,18 @@ const tables = ref({
   ai: false,
 });
 
-const STAGE_VAR = {
-  'New Lead': 'var(--tz-s1)',
-  Active: 'var(--tz-s2)',
-  'Offer Sent Follow up': 'var(--tz-s3)',
-  'Customer Won': 'var(--tz-s4)',
-  'Customer Lost': 'var(--tz-s5)',
+// The stage colours follow the stage's place in the workspace's list (five theme colours).
+const stageVar = key => {
+  const i = STAGES.findIndex(s => s.key === key);
+  return `var(--tz-s${(Math.max(0, i) % 5) + 1})`;
 };
+
+const getAccount = useMapGetter('accounts/getAccount');
 
 async function load() {
   loading.value = true;
+  applyPipelineStages(getAccount.value(accountId.value)?.settings);
+  await loadStageAttributes(accountId.value);
   const r = rangeFor(days.value);
   const id = accountId.value;
   const jobs = [
@@ -83,9 +89,8 @@ async function load() {
         people.value = (x.data || []).filter(p => p.conversations_count > 0);
       }
     ),
-    Promise.all(
-      ['Active', 'Offer Sent Follow up', 'Customer Won'].map(s => stageValue(s))
-    ).then(v => {
+    // Value in every stage but the first (no deal yet) and the last (lost).
+    Promise.all(STAGES.slice(1, -1).map(s => stageValue(s.key))).then(v => {
       values.value = v;
     }),
     window.axios
@@ -202,7 +207,7 @@ const funnel = computed(() => {
               stage: order[i - 1].label,
             })
           : '',
-      color: STAGE_VAR[s.key],
+      color: stageVar(s.key),
     };
   });
 });
@@ -625,7 +630,7 @@ const updatedLabel = computed(() =>
                     class="block h-6 rounded"
                     :style="{
                       width: `${Math.max(1, (v.total / pipeMax) * 100)}%`,
-                      background: STAGE_VAR[v.stage],
+                      background: stageVar(v.stage),
                     }"
                   />
                   <span class="text-sm font-semibold text-n-slate-12">{{
