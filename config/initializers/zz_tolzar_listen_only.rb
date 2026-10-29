@@ -7,7 +7,11 @@ Rails.application.config.to_prepare do
   {
     Whatsapp::Providers::WhatsappCloudService => Tolzar::ListenOnly::ProviderGuard,
     Whatsapp::Providers::WhatsappCloudContactInfoRequestService => Tolzar::ListenOnly::ContactInfoGuard,
-    Channel::Whatsapp => Tolzar::ListenOnly::ChannelGuard
+    Channel::Whatsapp => Tolzar::ListenOnly::ChannelGuard,
+    Channel::FacebookPage => Tolzar::ListenOnly::FacebookPageGuard,
+    Facebook::SendOnFacebookService => Tolzar::ListenOnly::SendGuard,
+    Instagram::SendOnInstagramService => Tolzar::ListenOnly::SendGuard,
+    Instagram::Messenger::SendOnInstagramService => Tolzar::ListenOnly::SendGuard
   }.each do |klass, guard|
     klass.prepend(guard) unless klass.ancestors.include?(guard)
   end

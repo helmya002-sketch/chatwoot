@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_10_28_143217) do
+ActiveRecord::Schema[7.1].define(version: 2026_10_29_120000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -638,6 +638,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_28_143217) do
     t.datetime "updated_at", precision: nil, null: false
     t.string "instagram_id"
     t.string "provider_name"
+    t.boolean "tolzar_listen_only", default: false, null: false
     t.index ["page_id", "account_id"], name: "index_channel_facebook_pages_on_page_id_and_account_id", unique: true
     t.index ["page_id"], name: "index_channel_facebook_pages_on_page_id"
   end
@@ -650,6 +651,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_28_143217) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "provider_name"
+    t.boolean "tolzar_listen_only", default: false, null: false
     t.index ["instagram_id"], name: "index_channel_instagram_on_instagram_id", unique: true
   end
 
@@ -1752,6 +1754,19 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_28_143217) do
       before(:insert).
       for_each(:row) do
     "NEW.display_id := nextval('conv_dpid_seq_' || NEW.account_id);"
+  end
+
+  create_table "tolzar_meta_apps", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.string "app_id", null: false
+    t.text "app_secret", null: false
+    t.text "verify_token", null: false
+    t.string "webhook_token", null: false
+    t.bigint "created_by_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_tolzar_meta_apps_on_account_id", unique: true
+    t.index ["webhook_token"], name: "index_tolzar_meta_apps_on_webhook_token", unique: true
   end
 
   create_table "tolzar_mirror_events", force: :cascade do |t|

@@ -10,7 +10,8 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
                                         agent_save agent_delete agent_default workflow_save workflow_delete
                                         workspace_settings_save price_source_save price_source_test go_live kill_switch
                                         kill_switch_release workspace_bootstrap whatsapp_listen_only_connect
-                                        price_upload price_upload_restore pipeline_settings_save]
+                                        price_upload price_upload_restore pipeline_settings_save
+                                        meta_app meta_app_save meta_app_delete meta_page_connect]
 
   # Listen-only WhatsApp (Tolzar::ListenOnly): the workspace owner connects the business's own in-house
   # Meta app to a number another provider runs. The token and the app secret are write-only: stored on
@@ -298,6 +299,44 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
       res = get_from_brain(path)
     end
     render_brain(res)
+  end
+
+  # The workspace's own Meta app (Tolzar::MetaApp), Owner only: the app id and secret pasted from the
+  # business's Meta app dashboard. The verify token is shown once, on create; the secret never.
+  def meta_app
+    app = Current.account.tolzar_meta_app
+    pages = Current.account.facebook_pages.where(tolzar_listen_only: true).includes(:inbox)
+    render json: { ok: true, app: app&.view,
+                   pages: pages.map { |c| { inbox_id: c.inbox&.id, name: c.inbox&.name, page_id: c.page_id, instagram_id: c.instagram_id } } }
+  end
+
+  def meta_app_save
+    app = Current.account.tolzar_meta_app || Current.account.build_tolzar_meta_app(created_by_id: Current.user&.id)
+    created = app.new_record?
+    app.assign_attributes(app_id: params[:app_id].to_s.strip)
+    app.app_secret = params[:app_secret].to_s.strip if created || params[:app_secret].present?
+    return render(json: { ok: false, error: 'invalid_settings', detail: app.errors.full_messages }, status: :bad_request) unless app.save
+
+    render json: { ok: true, app: app.view, verify_token: (created ? app.verify_token : nil) }.compact
+  end
+
+  def meta_app_delete
+    app = Current.account.tolzar_meta_app
+    in_use = Current.account.facebook_pages.exists?(tolzar_listen_only: true)
+    return render(json: { ok: false, error: 'Remove the listen-only page inboxes first' }, status: :conflict) if in_use
+
+    app&.destroy!
+    render json: { ok: true }
+  end
+
+  # A Facebook Page (and its Instagram account) as a listen-only inbox, through the workspace's app.
+  def meta_page_connect
+    setup = Tolzar::MetaListenOnlySetupService.new(account: Current.account, page_id: params[:page_id],
+                                                  access_token: params[:access_token], inbox_name: params[:inbox_name]).perform
+    render json: { ok: setup.webhook_error.blank?, inbox_id: setup.inbox.id, listen_only: true,
+                   instagram_id: setup.channel.instagram_id, error: setup.webhook_error }.compact, status: :created
+  rescue ArgumentError, Tolzar::MetaGraph::Error, ActiveRecord::RecordInvalid => e
+    render json: { ok: false, error: e.message.to_s.first(300) }, status: :unprocessable_entity
   end
 
   # The workspace's pipeline (Tolzar::PipelineSettings): stages, stage fields, deal value field and
