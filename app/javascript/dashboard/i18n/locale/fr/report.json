@@ -1064,7 +1064,8 @@
       "commerce": "Boutique",
       "negotiation": "Limites de négociation",
       "agent_teams": "Agents par équipe",
-      "tuning": "Propositions d'amélioration"
+      "tuning": "Propositions d'amélioration",
+      "whatsapp_listen": "WhatsApp (réception seule)"
     },
     "HINT": {
       "workspace_settings": "Horaires, langues, modèles et descriptions de cet espace, par-dessus les valeurs par défaut. Seul ce que vous modifiez est enregistré.",
@@ -1094,7 +1095,8 @@
       "commerce": "Connecter votre boutique : prix du catalogue, statut de commande sur demande (lecture seule), un workflow de panier abandonné.",
       "negotiation": "Jusqu'où l'IA peut aller sur le prix. Un garde-fou vérifie chaque réponse ; tout ce qui dépasse les limites passe à un collègue.",
       "agent_teams": "Quel agent IA parle pour quelle équipe (ventes, support...). Vide = agent par défaut de l'espace.",
-      "tuning": "Une fois par jour, Tolzar propose jusqu'à 3 modifications des instructions de votre agent, à partir des notes QA, des arrêts des garde-fous et des réponses de votre équipe."
+      "tuning": "Une fois par jour, Tolzar propose jusqu'à 3 modifications des instructions de votre agent, à partir des notes QA, des arrêts des garde-fous et des réponses de votre équipe.",
+      "whatsapp_listen": "Recevoir un numéro WhatsApp déjà géré par une autre plateforme, avec l'app Meta de votre entreprise. Réservé au propriétaire."
     },
     "SAVE": "Enregistrer",
     "NONE_YET": "Rien pour l'instant.",
@@ -1397,6 +1399,26 @@
       "REMAINING": "{n} restants",
       "LIMIT": "Limite",
       "EMPTY_UNLIMITED": "vide = sans limite"
+    },
+    "WA_LISTEN": {
+      "BADGE": "Réception seule · IA en Shadow",
+      "WHAT": "Votre fournisseur WhatsApp actuel continue de gérer le numéro et votre équipe continue d'y répondre. Tolzar reçoit seulement les messages des clients, pour que l'IA les lise en Shadow.",
+      "NEVER_SENDS": "Tolzar n'envoie jamais rien sur ce numéro : ni réponses, ni modèles, ni enquêtes, ni messages d'accueil.",
+      "NUMBER_UNTOUCHED": "Le numéro n'est ni enregistré ni déplacé, et ses webhooks chez l'autre fournisseur restent tels quels. Tolzar ajoute seulement votre propre app au compte WhatsApp.",
+      "SECRETS": "Le jeton et le secret de l'app sont enregistrés et ne sont plus jamais affichés.",
+      "WABA_ID": "ID du compte WhatsApp Business",
+      "PHONE_NUMBER_ID": "ID du numéro de téléphone",
+      "TOKEN": "Jeton d'utilisateur système (votre app Meta)",
+      "APP_SECRET": "Secret de l'app (votre app Meta)",
+      "INBOX_NAME": "Nom de la boîte (facultatif)",
+      "CONNECT": "Connecter (réception seule)",
+      "CONNECTED": "Connecté : votre app reçoit maintenant les messages de ce numéro.",
+      "SUBSCRIBE_FAILED": "La boîte est créée, mais Meta a refusé l'abonnement.",
+      "IN_META": "Dans votre app Meta → WhatsApp → Configuration → Webhook, saisissez :",
+      "CALLBACK_URL": "URL de rappel",
+      "VERIFY_TOKEN": "Jeton de vérification",
+      "OWNER_ONLY": "Seul le propriétaire de l'espace peut connecter un numéro.",
+      "FAILED": "Connexion impossible. Vérifiez les ID et le jeton."
     }
   },
   "TOLZAR_ONBOARDING": {

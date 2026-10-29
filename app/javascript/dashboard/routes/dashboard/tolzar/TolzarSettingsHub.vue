@@ -10,6 +10,7 @@ import QuotasPanel from 'dashboard/components-next/Tolzar/settings/QuotasPanel.v
 import DocumentsPanel from 'dashboard/components-next/Tolzar/settings/DocumentsPanel.vue';
 import WorkspacePanel from 'dashboard/components-next/Tolzar/settings/WorkspacePanel.vue';
 import GoLivePanel from 'dashboard/components-next/Tolzar/settings/GoLivePanel.vue';
+import WhatsappListenOnlyPanel from 'dashboard/components-next/Tolzar/settings/WhatsappListenOnlyPanel.vue';
 import { MEDIA_MODES, VIDEO_FRAMES, getMedia, saveMedia as saveMediaConfig, mediaConfig } from 'dashboard/components-next/Tolzar/tolzarMedia';
 import { brainErrors } from 'dashboard/components-next/Tolzar/tolzarBrainApi';
 
@@ -27,7 +28,7 @@ const post = (feature, body = {}) =>
 const SECTIONS = [
   ['workspace', ['workspace_settings', 'usage', 'roles', 'audit', 'export', 'go_live']],
   ['trust', ['disclosure', 'retention', 'privacy']],
-  ['channels', ['sms', 'crm', 'commerce']],
+  ['channels', ['whatsapp_listen', 'sms', 'crm', 'commerce']],
   ['team', ['sla', 'qa']],
   ['ai', ['media', 'documents', 'recovery', 'learned', 'brief', 'ask', 'negotiation', 'agent_teams', 'tuning']],
   ['contacts', ['dedupe']],
@@ -237,6 +238,7 @@ onMounted(() => {
           <QuotasPanel v-if="current === 'usage'" />
           <TrustPanel v-if="TRUST.includes(current)" :key="current" :section="current" />
           <ChannelsPanel v-if="CHANNELS.includes(current)" :key="current" :section="current" />
+          <WhatsappListenOnlyPanel v-if="current === 'whatsapp_listen'" />
           <AiLimitsPanel v-if="AI_LIMITS.includes(current)" :key="current" :section="current" />
           <DocumentsPanel v-if="current === 'documents'" />
           <WorkspacePanel v-if="current === 'workspace_settings'" />

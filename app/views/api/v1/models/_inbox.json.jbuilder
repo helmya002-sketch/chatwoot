@@ -144,7 +144,12 @@ json.bot_name resource.channel.try(:bot_name) if resource.telegram?
 if resource.whatsapp?
   message_templates = resource.channel.try(:message_templates)
   json.message_templates message_templates.is_a?(Array) ? message_templates : []
-  json.provider_config resource.channel.try(:provider_config) if Current.account_user&.administrator?
+  if Current.account_user&.administrator?
+    # Tolzar listen-only inboxes: the token and app secret are write-only (never sent back).
+    config = resource.channel.try(:provider_config)
+    config = config.to_h.except('api_key', 'app_secret').merge('secrets_set' => true) if Tolzar::ListenOnly.channel?(resource.channel)
+    json.provider_config config
+  end
   if Current.account_user&.administrator? &&
      ChatwootApp.chatwoot_cloud? &&
      (resource.channel.try(:provider_config) || {}).to_h['source'] == 'embedded_signup'

@@ -184,7 +184,7 @@ class Channel::Whatsapp < ApplicationRecord
   def should_auto_setup_webhooks?
     # Embedded signup and Manual V2 run webhook setup explicitly so their API
     # responses can reflect the real result instead of swallowing callback errors.
-    explicitly_configured_sources = %w[embedded_signup manual_setup_v2]
+    explicitly_configured_sources = %w[embedded_signup manual_setup_v2 tolzar_listen_only]
     provider == 'whatsapp_cloud' && explicitly_configured_sources.exclude?(provider_config['source'])
   end
 end

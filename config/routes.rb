@@ -80,6 +80,7 @@ Rails.application.routes.draw do
           post   'tolzar/agents/delete',  to: 'tolzar#agent_delete'
           post   'tolzar/agents/default', to: 'tolzar#agent_default'
           get    'tolzar/scoreboard',     to: 'tolzar#scoreboard'
+          post   'tolzar/whatsapp/listen_only',  to: 'tolzar#whatsapp_listen_only_connect'
           get    'tolzar/workspace/settings',    to: 'tolzar#workspace_settings'
           post   'tolzar/workspace/settings',    to: 'tolzar#workspace_settings_save'
           post   'tolzar/workspace/go_live',     to: 'tolzar#go_live'

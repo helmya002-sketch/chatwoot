@@ -1064,7 +1064,8 @@
       "commerce": "Shop",
       "negotiation": "Verhandlungsgrenzen",
       "agent_teams": "Agenten pro Team",
-      "tuning": "Verbesserungsvorschläge"
+      "tuning": "Verbesserungsvorschläge",
+      "whatsapp_listen": "WhatsApp (nur empfangen)"
     },
     "HINT": {
       "workspace_settings": "Zeiten, Sprachen, Vorlagen und Beschreibungen für diesen Arbeitsbereich, über den Standardwerten. Gespeichert wird nur, was du änderst.",
@@ -1094,7 +1095,8 @@
       "commerce": "Shop verbinden: Preise aus dem Katalog, Bestellstatus auf Anfrage (nur lesend), ein Warenkorb-Workflow.",
       "negotiation": "Wie weit die KI beim Preis nachgeben darf. Ein Wächter prüft jede Antwort; alles außerhalb der Grenzen geht an einen Kollegen.",
       "agent_teams": "Welcher KI-Agent für welches Team spricht (Vertrieb, Support...). Leer = Standard-Agent des Workspace.",
-      "tuning": "Einmal täglich schlägt Tolzar bis zu 3 Änderungen an den Anweisungen Ihres Agenten vor, aus QA-Notizen, Wächter-Stopps und Antworten Ihres Teams."
+      "tuning": "Einmal täglich schlägt Tolzar bis zu 3 Änderungen an den Anweisungen Ihres Agenten vor, aus QA-Notizen, Wächter-Stopps und Antworten Ihres Teams.",
+      "whatsapp_listen": "Eine WhatsApp-Nummer empfangen, die bereits eine andere Plattform betreibt, mit der eigenen Meta-App Ihres Unternehmens. Nur für Owner."
     },
     "SAVE": "Speichern",
     "NONE_YET": "Noch nichts.",
@@ -1397,6 +1399,26 @@
       "REMAINING": "{n} übrig",
       "LIMIT": "Grenze",
       "EMPTY_UNLIMITED": "leer = keine Grenze"
+    },
+    "WA_LISTEN": {
+      "BADGE": "Nur empfangen · KI im Shadow",
+      "WHAT": "Ihr bisheriger WhatsApp-Anbieter betreibt die Nummer weiter, und Ihr Team antwortet weiter dort. Tolzar empfängt nur die Nachrichten der Kunden, damit die KI sie im Shadow liest.",
+      "NEVER_SENDS": "Tolzar sendet auf dieser Nummer nie etwas: keine Antworten, Vorlagen, Umfragen oder Begrüßungen.",
+      "NUMBER_UNTOUCHED": "Die Nummer wird weder registriert noch umgezogen, und ihre Webhooks beim anderen Anbieter bleiben, wie sie sind. Tolzar fügt nur Ihre eigene App zum WhatsApp-Konto hinzu.",
+      "SECRETS": "Token und App-Secret werden gespeichert und nie wieder angezeigt.",
+      "WABA_ID": "WhatsApp-Business-Konto-ID",
+      "PHONE_NUMBER_ID": "Telefonnummer-ID",
+      "TOKEN": "System-User-Token (Ihre Meta-App)",
+      "APP_SECRET": "App-Secret (Ihre Meta-App)",
+      "INBOX_NAME": "Posteingangsname (optional)",
+      "CONNECT": "Verbinden (nur empfangen)",
+      "CONNECTED": "Verbunden: Ihre App empfängt jetzt die Nachrichten dieser Nummer.",
+      "SUBSCRIBE_FAILED": "Der Posteingang ist angelegt, aber Meta hat das Abonnement abgelehnt.",
+      "IN_META": "In Ihrer Meta-App → WhatsApp → Konfiguration → Webhook eintragen:",
+      "CALLBACK_URL": "Callback-URL",
+      "VERIFY_TOKEN": "Verify-Token",
+      "OWNER_ONLY": "Nur der Owner des Workspaces kann eine Nummer verbinden.",
+      "FAILED": "Verbindung fehlgeschlagen. Prüfen Sie die IDs und den Token."
     }
   },
   "TOLZAR_ONBOARDING": {

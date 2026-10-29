@@ -1064,7 +1064,8 @@
       "commerce": "Shop",
       "negotiation": "Negotiation limits",
       "agent_teams": "Agents per team",
-      "tuning": "Improvement proposals"
+      "tuning": "Improvement proposals",
+      "whatsapp_listen": "WhatsApp (listen-only)"
     },
     "HINT": {
       "workspace_settings": "Hours, languages, templates and descriptions for this workspace, on top of the defaults. Only what you change is stored.",
@@ -1094,7 +1095,8 @@
       "commerce": "Connect your shop: prices from the catalogue, order status on request (read-only), a cart-recovery workflow.",
       "negotiation": "How far the AI may move on price. A guard checks every reply; anything outside the limits goes to a colleague.",
       "agent_teams": "Which AI agent speaks for which team (sales, support...). Empty uses the workspace's default agent.",
-      "tuning": "Once a day Tolzar suggests up to 3 edits to your agent's instructions, from QA notes, guard stops and your team's answers."
+      "tuning": "Once a day Tolzar suggests up to 3 edits to your agent's instructions, from QA notes, guard stops and your team's answers.",
+      "whatsapp_listen": "Receive a WhatsApp number that another platform already runs, with your business's own Meta app. Owner only."
     },
     "SAVE": "Save",
     "NONE_YET": "Nothing yet.",
@@ -1397,6 +1399,26 @@
       "REMAINING": "{n} left",
       "LIMIT": "Limit",
       "EMPTY_UNLIMITED": "empty = no limit"
+    },
+    "WA_LISTEN": {
+      "BADGE": "Listen-only · AI in Shadow",
+      "WHAT": "Your existing WhatsApp provider keeps running the number and your team keeps replying there. Tolzar only receives the customers' messages, so the AI can read them in Shadow.",
+      "NEVER_SENDS": "Tolzar never sends anything on this number: no replies, templates, surveys or greetings.",
+      "NUMBER_UNTOUCHED": "The number is not registered or moved, and its webhooks at your other provider stay as they are. Tolzar only adds your own app to the WhatsApp account.",
+      "SECRETS": "The token and the app secret are saved and never shown again.",
+      "WABA_ID": "WhatsApp Business Account ID",
+      "PHONE_NUMBER_ID": "Phone number ID",
+      "TOKEN": "System-user token (your Meta app)",
+      "APP_SECRET": "App secret (your Meta app)",
+      "INBOX_NAME": "Inbox name (optional)",
+      "CONNECT": "Connect (listen-only)",
+      "CONNECTED": "Connected: your app now receives this number's messages.",
+      "SUBSCRIBE_FAILED": "The inbox is created, but Meta refused the subscription.",
+      "IN_META": "In your Meta app → WhatsApp → Configuration → Webhook, enter:",
+      "CALLBACK_URL": "Callback URL",
+      "VERIFY_TOKEN": "Verify token",
+      "OWNER_ONLY": "Only the workspace owner can connect a number.",
+      "FAILED": "Could not connect. Check the IDs and the token."
     }
   },
   "TOLZAR_ONBOARDING": {

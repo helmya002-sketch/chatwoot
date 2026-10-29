@@ -11,6 +11,7 @@ class Whatsapp::WebhookSetupService
 
   def perform
     validate_parameters!
+    return subscribe_listen_only if Tolzar::ListenOnly.channel?(@channel)
 
     register_phone_number if should_register_phone_number?
 
@@ -19,10 +20,21 @@ class Whatsapp::WebhookSetupService
 
   def register_callback
     validate_parameters!
+    return subscribe_listen_only if Tolzar::ListenOnly.channel?(@channel)
+
     setup_webhook
   end
 
   private
+
+  # Listen-only (Tolzar::ListenOnly): subscribe our own app to the WABA and nothing else. The
+  # number is another provider's: no /register, no phone-level callback override.
+  def subscribe_listen_only
+    @api_client.subscribe_app_to_waba(@waba_id, subscribed_fields: subscribed_fields)
+  rescue StandardError => e
+    @registration_error = e
+    Rails.logger.error("[WHATSAPP] Listen-only WABA subscription failed: #{e.message}")
+  end
 
   # Coexistence numbers come pre-registered, so /register is redundant. @is_coexistence (from the
   # FE's FINISH event) skips the health API call entirely; the is_on_biz_app fallback only runs for

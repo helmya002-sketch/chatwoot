@@ -7,6 +7,7 @@ class Whatsapp::WebhookTeardownService
     return unless should_teardown_webhook?
 
     api_client = Whatsapp::FacebookApiClient.new(provider_config['api_key'])
+    return unsubscribe_listen_only(api_client) if Tolzar::ListenOnly.channel?(@channel)
 
     clear_phone_number_override(api_client)
     deregister_phone_number(api_client)
@@ -65,6 +66,16 @@ class Whatsapp::WebhookTeardownService
     Rails.logger.info "[WHATSAPP] WABA app subscription removed for channel #{@channel.id}"
   rescue StandardError => e
     Rails.logger.error "[WHATSAPP] WABA app unsubscribe failed for channel #{@channel.id}: #{e.message}"
+  end
+
+  # Listen-only: remove only our own app's WABA subscription (the token is our app's), and only when
+  # no other inbox still uses that WABA. The number, its overrides and the other provider stay as they are.
+  def unsubscribe_listen_only(api_client)
+    waba_id = provider_config['business_account_id']
+    return if waba_id.blank? || waba_sibling_exists?(waba_id)
+
+    api_client.unsubscribe_app_from_waba(waba_id)
+    Rails.logger.info "[WHATSAPP] Listen-only: our app's WABA subscription removed for channel #{@channel.id}"
   end
 
   def waba_sibling_exists?(waba_id)

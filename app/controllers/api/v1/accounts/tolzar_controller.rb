@@ -9,7 +9,25 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
   before_action :ensure_owner, only: %i[export_start export_download meta_connect_url meta_disconnect meta_select
                                         agent_save agent_delete agent_default workflow_save workflow_delete
                                         workspace_settings_save price_source_save price_source_test go_live kill_switch
-                                        kill_switch_release workspace_bootstrap]
+                                        kill_switch_release workspace_bootstrap whatsapp_listen_only_connect]
+
+  # Listen-only WhatsApp (Tolzar::ListenOnly): the workspace owner connects the business's own in-house
+  # Meta app to a number another provider runs. The token and the app secret are write-only: stored on
+  # the channel like every WhatsApp token, never returned here or in the inbox JSON. Answers what the owner types into Meta's app
+  # dashboard (callback URL + verify token), the inbox, and whether the WABA subscription worked.
+  def whatsapp_listen_only_connect
+    setup = Tolzar::WhatsappListenOnlySetupService.new(
+      account: Current.account, waba_id: params[:waba_id], phone_number_id: params[:phone_number_id],
+      access_token: params[:access_token], app_secret: params[:app_secret], inbox_name: params[:inbox_name]
+    ).perform
+    render json: { ok: setup.webhook_error.blank?, inbox_id: setup.inbox.id, listen_only: true,
+                   callback_url: setup.callback_url, verify_token: setup.channel.provider_config['webhook_verify_token'],
+                   subscription_error: setup.webhook_error }, status: :created
+  rescue CustomExceptions::Inbox::LimitExceeded => e
+    render json: { ok: false, error: e.message }, status: :unprocessable_entity
+  rescue StandardError => e
+    render json: { ok: false, error: e.message.to_s.first(300) }, status: :unprocessable_entity
+  end
 
   def agent_test
     body = {
