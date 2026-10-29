@@ -41,6 +41,15 @@ module Tolzar::MetaGraph
     end
   end
 
+  # The Instagram account linked to the page needs its own subscription to our app (with the page
+  # token), or its comments never arrive.
+  IG_FIELDS = %w[messages comments].freeze
+
+  def subscribe_instagram(ig_user_id, page_token, app_secret)
+    request(Net::HTTP::Post, "/#{ig_user_id}/subscribed_apps", { subscribed_fields: IG_FIELDS.join(',') },
+            page_token, app_secret)
+  end
+
   def unsubscribe(page_id, page_token, app_secret)
     request(Net::HTTP::Delete, "/#{page_id}/subscribed_apps", {}, page_token, app_secret)
   end

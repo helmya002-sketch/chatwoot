@@ -85,8 +85,13 @@ RSpec.describe 'Tolzar Meta app, listen-only Facebook and Instagram' do
       app_fields = stub_request(:post, 'https://graph.facebook.com/v26.0/2234567890123/subscriptions')
                    .with(headers: { 'Authorization' => "Bearer 2234567890123|#{'b' * 32}" })
                    .to_return(body: { success: true }.to_json)
+      # The linked Instagram account's own subscription (comments and DMs), with the page token.
+      ig = stub_request(:post, 'https://graph.facebook.com/v26.0/1785/subscribed_apps')
+           .with(headers: { 'Authorization' => 'Bearer pt' }, body: hash_including('subscribed_fields' => 'messages,comments'))
+           .to_return(body: { success: true }.to_json)
       setup = described_class.new(account: other, page_id: '2002002', access_token: 'sut').perform
       expect(read).to have_been_requested.once
+      expect(ig).to have_been_requested.once
       expect(app_fields).to have_been_requested.twice
       expect(a_request(:post, 'https://graph.facebook.com/v26.0/2234567890123/subscriptions')
              .with(body: hash_including('object' => 'instagram', 'fields' => 'messages,comments'))).to have_been_made.once
