@@ -38,9 +38,9 @@ export default {
     CONDENSED: 'condensed',
     EXPANDED: 'expanded',
   },
-  DOCS_URL: 'https://www.chatwoot.com/docs/product/',
-  HELP_CENTER_DOCS_URL:
-    'https://www.chatwoot.com/docs/product/others/help-center',
+  // Tolzar: our own help centre (relative: works on any domain), never Chatwoot's docs.
+  DOCS_URL: '/hc/help/en',
+  HELP_CENTER_DOCS_URL: '/hc/help/en',
   // Tolzar: no testimonials feed from Chatwoot's CDN (never depend on Chatwoot).
   TESTIMONIAL_URL: '',
   WHATSAPP_EMBEDDED_SIGNUP_DOCS_URL:
