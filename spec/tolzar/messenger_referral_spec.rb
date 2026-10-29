@@ -6,7 +6,9 @@ require 'rails_helper'
 # or kept for the contact's next message when no conversation is open yet.
 RSpec.describe 'Tolzar Messenger referral' do
   let(:page_id) { '117172741761305' }
-  let!(:facebook_channel) { create(:channel_facebook_page, page_id: page_id) }
+  # Not let!: Channel::FacebookPage subscribes the page after_create_commit (an HTTParty POST to
+  # graph.facebook.com), so it must be created after the stub below, not before it.
+  let(:facebook_channel) { create(:channel_facebook_page, page_id: page_id) }
   let(:inbox) { facebook_channel.inbox }
   let(:fb_object) { double }
   let(:fixtures) { Rails.root.join('spec/tolzar/fixtures/messenger_referral') }
@@ -29,6 +31,7 @@ RSpec.describe 'Tolzar Messenger referral' do
     stub_request(:post, /graph.facebook.com/)
     allow(Koala::Facebook::API).to receive(:new).and_return(fb_object)
     allow(fb_object).to receive(:get_object).and_return({ name: 'Jane Dae' }.with_indifferent_access)
+    facebook_channel
     Redis::Alfred.delete(pending_key)
   end
 
