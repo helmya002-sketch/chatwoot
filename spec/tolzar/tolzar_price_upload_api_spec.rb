@@ -7,6 +7,7 @@ RSpec.describe 'Tolzar private price-file upload', type: :request do
   let(:other_account) { create(:account, name: 'Other') }
   let!(:owner) { create(:user, account: account, role: :administrator) }
   let!(:manager) { create(:user, account: account, role: :administrator) }
+  let(:agent_user) { create(:user, account: account, role: :agent) }
   let(:controller_class) { Api::V1::Accounts::TolzarController }
   let(:gets) { [] }
   let(:posts) { [] }
@@ -45,6 +46,22 @@ RSpec.describe 'Tolzar private price-file upload', type: :request do
     post url('agents/a1/price_upload/restore'), params: { version: 1 }, headers: manager.create_new_auth_token, as: :json
     expect(response).to have_http_status(:forbidden)
     expect(posts).to be_empty
+  end
+
+  it 'refuses agents (not administrators) the list and the upload' do
+    get url('agents/a1/price_upload'), headers: agent_user.create_new_auth_token
+    expect(response).to have_http_status(:unauthorized)
+    upload('prices.csv', csv, agent_user)
+    expect(response).to have_http_status(:unauthorized)
+    expect(gets).to be_empty
+    expect(posts).to be_empty
+  end
+
+  it 'stores nothing in Rails: no blob, no attachment, only the brain call' do
+    expect { upload('prices.csv', csv, owner) }
+      .not_to(change { [ActiveStorage::Blob.count, ActiveStorage::Attachment.count] })
+    expect(response).to have_http_status(:success)
+    expect(posts.size).to eq(1)
   end
 
   it 'sends the Owner\'s file to the brain base64-encoded, for this workspace' do
