@@ -102,6 +102,17 @@ RSpec.describe 'Tolzar Meta app, listen-only Facebook and Instagram' do
       expect(setup.webhook_error).to be_nil
     end
 
+    it 'reconnects an already connected page with a new token (new app): same inbox, no duplicate' do
+      stub_request(:get, %r{graph\.facebook\.com/v26\.0/2002002\?})
+        .to_return(body: { id: '2002002', name: 'Shop', access_token: 'pt-new', instagram_business_account: { id: '1785' } }.to_json)
+      stub_request(:post, %r{graph\.facebook\.com/v26\.0/.*(subscribed_apps|subscriptions)}).to_return(body: { success: true }.to_json)
+      first = described_class.new(account: other, page_id: '2002002', access_token: 'sut-old').perform
+      again = described_class.new(account: other, page_id: '2002002', access_token: 'sut-new').perform
+      expect(again.inbox).to eq(first.inbox)
+      expect(other.facebook_pages.count).to eq(1)
+      expect(again.channel.reload).to have_attributes(page_access_token: 'pt-new', user_access_token: 'sut-new')
+    end
+
     it 'needs the workspace app first' do
       expect { described_class.new(account: create(:account), page_id: '2002002', access_token: 't').perform }
         .to raise_error(ArgumentError, /Meta app/)

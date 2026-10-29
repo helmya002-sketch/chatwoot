@@ -42,6 +42,9 @@ class Tolzar::MetaListenOnlySetupService
 
   def create_channel_and_inbox(page)
     token = page['access_token'].presence || @access_token
+    existing = @account.facebook_pages.find_by(page_id: page['id'].to_s, tolzar_listen_only: true)
+    return reconnect(existing, page, token) if existing
+
     ActiveRecord::Base.transaction do
       @channel = @account.facebook_pages.create!(
         page_id: page['id'], page_access_token: token, user_access_token: @access_token,
@@ -53,6 +56,15 @@ class Tolzar::MetaListenOnlySetupService
         greeting_enabled: false, working_hours_enabled: false, csat_survey_enabled: false, enable_email_collect: false
       )
     end
+  end
+
+  # The page is connected already (e.g. the workspace moved to a new Meta app): same inbox and
+  # conversations, the new token (and Instagram link) in place; subscribe runs again for the new app.
+  def reconnect(channel, page, token)
+    channel.update!(page_access_token: token, user_access_token: @access_token,
+                    instagram_id: page.dig('instagram_business_account', 'id') || channel.instagram_id)
+    @channel = channel
+    @inbox = channel.inbox
   end
 
   # Every level Meta needs: the app's webhook fields, this page's subscription to our app, and the
