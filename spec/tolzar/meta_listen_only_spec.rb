@@ -147,6 +147,11 @@ RSpec.describe 'Tolzar Meta app, listen-only Facebook and Instagram' do
     let!(:manager) { create(:user, account: account, role: :administrator) }
     let(:base) { "/api/v1/accounts/#{account.id}/tolzar/meta_app" }
 
+    # A Manager's role is looked up in the brain (Tolzar roles); no brain in tests.
+    before do
+      allow_any_instance_of(Api::V1::Accounts::TolzarController).to receive(:get_from_brain).and_return({ 'ok' => true, 'roles' => {} })
+    end
+
     it 'shows the app without its secret, and only the Owner changes it' do
       get base, headers: manager.create_new_auth_token, as: :json
       expect(response).to have_http_status(:forbidden)
