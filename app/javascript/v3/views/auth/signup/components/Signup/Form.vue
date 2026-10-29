@@ -60,13 +60,12 @@ const v$ = useVuelidate(rules, { credentials });
 
 const globalConfig = computed(() => store.getters['globalConfig/get']);
 
+// Tolzar: the install's own terms/privacy URLs fill named placeholders in every language.
 const termsLink = computed(() =>
-  t('REGISTER.TERMS_ACCEPT')
-    .replace('https://www.chatwoot.com/terms', globalConfig.value.termsURL)
-    .replace(
-      'https://www.chatwoot.com/privacy-policy',
-      globalConfig.value.privacyURL
-    )
+  t('REGISTER.TERMS_ACCEPT', {
+    termsURL: globalConfig.value.termsURL,
+    privacyURL: globalConfig.value.privacyURL,
+  })
 );
 
 const sanitizedTermsLink = computed(() => DOMPurify.sanitize(termsLink.value));

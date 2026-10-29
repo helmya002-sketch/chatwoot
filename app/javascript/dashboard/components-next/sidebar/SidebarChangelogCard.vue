@@ -85,7 +85,8 @@ const handleDismiss = slug => {
 const handleReadMore = () => {
   const currentPost = unDismissedPosts.value[currentIndex.value];
   if (currentPost?.slug) {
-    window.open(`https://www.chatwoot.com/blog/${currentPost.slug}`, '_blank');
+    // Tolzar: no Chatwoot blog; a post opens only if the feed gives its own link.
+    if (currentPost.url) window.open(currentPost.url, '_blank');
   }
 };
 
