@@ -42,7 +42,7 @@ class Tolzar::ConversationRetention
       Conversation.where(id: batch.map(&:id)).destroy_all
       deleted += batch.size
     end
-    Rails.logger.info("[Tolzar retention] account #{@account.id}: #{deleted} conversations past the retention period deleted")
+    Rails.logger.info("[Tolzar retention] account=#{@account.id} period_days=#{self.class.days(@account)} deleted=#{deleted}")
     deleted
   end
 end
