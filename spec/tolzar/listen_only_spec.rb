@@ -9,10 +9,15 @@ RSpec.describe Tolzar::ListenOnly do
       'business_account_id' => 'waba-1', 'webhook_verify_token' => 'vt',
       'source' => Tolzar::ListenOnly::SOURCE, Tolzar::ListenOnly::KEY => true }
   end
-  let(:channel) do
-    create(:channel_whatsapp, account: account, phone_number: '+201000000001', provider: 'whatsapp_cloud',
-                              provider_config: config, sync_templates: false, validate_provider_config: false)
+  # The factory merges its own ids over provider_config on create, so set ours afterwards.
+  def listen_only_channel(phone, cfg)
+    ch = create(:channel_whatsapp, account: account, phone_number: phone, provider: 'whatsapp_cloud',
+                                   provider_config: cfg, sync_templates: false, validate_provider_config: false)
+    ch.update_columns(provider_config: cfg)
+    ch.reload
   end
+
+  let(:channel) { listen_only_channel('+201000000001', config) }
   let(:inbox) { channel.inbox || create(:inbox, account: account, channel: channel) }
 
   # WebMock blocks every request a test does not stub, so an unexpected graph.facebook.com call fails it.
@@ -79,9 +84,7 @@ RSpec.describe Tolzar::ListenOnly do
     end
 
     it 'keeps our subscription while another inbox still uses the WABA' do
-      create(:channel_whatsapp, account: account, phone_number: '+201000000003', provider: 'whatsapp_cloud',
-                                provider_config: config.merge('phone_number_id' => '222'),
-                                sync_templates: false, validate_provider_config: false)
+      listen_only_channel('+201000000003', config.merge('phone_number_id' => '222'))
       Whatsapp::WebhookTeardownService.new(channel).perform
       expect(a_request(:any, /graph.facebook.com/)).not_to have_been_made
     end
@@ -96,6 +99,11 @@ RSpec.describe Tolzar::ListenOnly do
         { display_phone_number: '+201000000005', phone_number_id: '555', waba_id: 'waba-9', suggested_inbox_name: 'DWT' }
       )
       stub_request(:post, %r{/waba-9/subscribed_apps}).to_return(status: 200, body: '{"success":true}')
+      # Creating the channel reads Meta (token check, phone id check, template sync): GET only.
+      json = { 'Content-Type' => 'application/json' }
+      stub_request(:get, %r{graph.facebook.com/.*/waba-9/message_templates}).to_return(status: 200, body: '{"data":[]}', headers: json)
+      stub_request(:get, %r{graph.facebook.com/.*/waba-9/phone_numbers}).to_return(status: 200, body: '{"data":[{"id":"555"}]}',
+                                                                                    headers: json)
     end
 
     it 'creates a flagged inbox with every customer-facing auto-message off and subscribes only our app' do
@@ -107,6 +115,7 @@ RSpec.describe Tolzar::ListenOnly do
                                              csat_survey_enabled: false, enable_email_collect: false)
       expect(setup.webhook_error).to be_nil
       expect(a_request(:post, /register/)).not_to have_been_made
+      expect(a_request(:post, %r{graph.facebook.com/.*/555$})).not_to have_been_made     # no phone-level override
     end
 
     it 'needs the app secret (Meta signs every webhook with it)' do
