@@ -190,8 +190,10 @@ class Messages::Facebook::MessageBuilder < Messages::Messenger::MessageBuilder
     }
   end
 
+  # Tolzar: a sender whose profile Meta does not share (no app role, or no profile access) is a
+  # neutral "Messenger user", not an invented person's name.
   def process_contact_params_result(result)
-    name = result['name'].presence || [result['first_name'], result['last_name']].compact_blank.join(' ').presence || 'John Doe'
+    name = result['name'].presence || [result['first_name'], result['last_name']].compact_blank.join(' ').presence || 'Messenger user'
 
     {
       name: name,

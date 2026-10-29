@@ -24,6 +24,23 @@ module Tolzar::MetaGraph
             page_token, app_secret)
   end
 
+  # The app-level webhook fields (the app dashboard's Webhooks section). Without them Meta sends
+  # nothing, even with the page subscribed. Set with the app access token (app id|secret), which never
+  # leaves the server; Meta checks the callback with a verify request (Tolzar::MetaHookController).
+  APP_OBJECTS = {
+    'page' => PAGE_FIELDS,
+    'instagram' => %w[messages comments]
+  }.freeze
+
+  def subscribe_app(meta_app)
+    token = "#{meta_app.app_id}|#{meta_app.app_secret}"
+    APP_OBJECTS.each do |object, fields|
+      request(Net::HTTP::Post, "/#{meta_app.app_id}/subscriptions",
+              { object: object, callback_url: meta_app.webhook_url, verify_token: meta_app.verify_token,
+                fields: fields.join(',') }, token, meta_app.app_secret)
+    end
+  end
+
   def unsubscribe(page_id, page_token, app_secret)
     request(Net::HTTP::Delete, "/#{page_id}/subscribed_apps", {}, page_token, app_secret)
   end

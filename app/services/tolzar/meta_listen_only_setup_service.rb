@@ -55,7 +55,9 @@ class Tolzar::MetaListenOnlySetupService
     end
   end
 
+  # Both levels Meta needs: the app's webhook fields, then this page's subscription to our app.
   def subscribe(app)
+    Tolzar::MetaGraph.subscribe_app(app)
     Tolzar::MetaGraph.subscribe(@channel.page_id, @channel.page_access_token, app.app_secret)
   rescue Tolzar::MetaGraph::Error => e
     @webhook_error = e.message
