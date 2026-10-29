@@ -207,6 +207,7 @@ RSpec.describe 'Tolzar Meta app, listen-only Facebook and Instagram' do
       expect(response.parsed_body['app']).to include('app_id' => '1234567890123', 'secret_last4' => 'aaaa')
       expect(response.body).not_to include(secret)
       expect(response.parsed_body['pages'].pluck('page_id')).to eq(['1001'])
+      stub_request(:post, 'https://graph.facebook.com/v26.0/1234567890124/subscriptions').to_return(body: { success: true }.to_json)
       post base, params: { app_id: '1234567890124' }, headers: owner.create_new_auth_token, as: :json
       expect(response.parsed_body).not_to have_key('verify_token') # only on create
       expect(meta_app.reload.app_secret).to eq(secret)

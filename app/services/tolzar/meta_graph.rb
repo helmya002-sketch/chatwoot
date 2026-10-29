@@ -109,5 +109,7 @@ module Tolzar::MetaGraph
     body
   rescue JSON::ParserError
     raise Error, 'Meta sent an unreadable answer'
+  rescue SocketError, Timeout::Error, SystemCallError, OpenSSL::SSL::SSLError, Net::ProtocolError => e
+    raise Error, "Meta could not be reached (#{e.class.name})"
   end
 end

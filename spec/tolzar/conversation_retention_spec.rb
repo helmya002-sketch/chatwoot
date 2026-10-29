@@ -45,10 +45,9 @@ RSpec.describe Tolzar::ConversationRetention do
     expect(brain_calls).to eq([['/retention/forget', { account_id: account.id, conversation_ids: [old.display_id] }]])
   end
 
-  it 'counts a conversation with no activity date from its creation, and one failing workspace does not stop the rest' do
+  it 'keeps going when one workspace fails' do
     account.update!(settings: (account.settings || {}).merge(described_class::KEY => 730))
-    undated = create(:conversation, account: account, inbox: inbox)
-    undated.update_columns(last_activity_at: nil, created_at: now - 3.years)
+    old = conversation_at(now - 3.years)
     broken = create(:account)
     broken.update!(settings: (broken.settings || {}).merge(described_class::KEY => 730))
     allow_any_instance_of(described_class).to receive(:purge).and_wrap_original do |m, *args|
@@ -59,7 +58,7 @@ RSpec.describe Tolzar::ConversationRetention do
     result = described_class.purge_all(now: now)
     expect(result[broken.id]).to be_nil
     expect(result[account.id]).to eq(1)
-    expect(Conversation.exists?(undated.id)).to be(false)
+    expect(Conversation.exists?(old.id)).to be(false)
   end
 
   it 'still deletes when the brain cannot be told' do

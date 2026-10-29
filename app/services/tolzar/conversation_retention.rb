@@ -44,9 +44,7 @@ class Tolzar::ConversationRetention
 
     cutoff = @now - days.days
     mirror_ids = @account.inboxes.select { |i| Tolzar::MirrorConfig.mirror_inbox?(i) }.map(&:id)
-    # A conversation with no activity date (an old import) counts from its creation.
-    stale = 'conversations.last_activity_at < :cut OR (conversations.last_activity_at IS NULL AND conversations.created_at < :cut)'
-    @account.conversations.where(stale, cut: cutoff).where.not(inbox_id: mirror_ids)
+    @account.conversations.where(last_activity_at: ...cutoff).where.not(inbox_id: mirror_ids)
   end
 
   def purge

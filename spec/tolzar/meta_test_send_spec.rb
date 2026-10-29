@@ -12,7 +12,7 @@ RSpec.describe Tolzar::MetaTestSend do
                                   user_access_token: 'sut', tolzar_listen_only: true)
   end
   let(:inbox) { create(:inbox, account: account, channel: channel) }
-  let(:own) { conversation_with('Ahmed Helmy', 'psid-owner') }
+  let(:own) { conversation_with('Ahmed Helmy', '71000000001') }
   let(:meta) do
     stub_request(:post, 'https://graph.facebook.com/v26.0/me/messages')
       .with(headers: { 'Authorization' => 'Bearer pt' })
@@ -49,7 +49,7 @@ RSpec.describe Tolzar::MetaTestSend do
   it 'never sends to a customer, and a refused check does not use the window' do
     meta
     described_class.open!(account, owner)
-    customer = conversation_with('Jane Customer', 'psid-customer')
+    customer = conversation_with('Jane Customer', '71000000002')
     expect { send_to(customer) }.to raise_error(described_class::Refused, /your own account/)
     expect { send_to(own, 'someone else') }.to raise_error(described_class::Refused, /confirm/)
     expect(meta).not_to have_been_requested
@@ -59,21 +59,21 @@ RSpec.describe Tolzar::MetaTestSend do
   it 'refuses a sender Meta does not confirm as an app role holder, even with the Owner name' do
     meta
     described_class.open!(account, owner)
-    meta_says_role('psid-owner', 'asid-copycat', roles: ['asid-real-owner'])
+    meta_says_role('71000000001', '82000000002', roles: ['82000000003'])
     expect { send_to(own) }.to raise_error(described_class::Refused, /role on the app/)
-    stub_request(:get, %r{/psid-owner/ids_for_apps}).to_return(status: 400, body: { error: { message: 'x' } }.to_json)
+    stub_request(:get, %r{/71000000001/ids_for_apps}).to_return(status: 400, body: { error: { message: 'x' } }.to_json)
     expect { send_to(own) }.to raise_error(described_class::Refused, /role on the app/)
     expect(meta).not_to have_been_requested
   end
 
   it 'sends exactly one message to the Owner, saves and audits it, then closes the window' do
     meta
-    meta_says_role('psid-owner', 'asid-owner')
+    meta_says_role('71000000001', '82000000001')
     described_class.open!(account, owner)
     message = send_to(own)
     expect(meta).to have_been_requested.once
     expect(a_request(:post, 'https://graph.facebook.com/v26.0/me/messages')
-           .with(body: hash_including('recipient' => { id: 'psid-owner' }.to_json))).to have_been_made.once
+           .with(body: hash_including('recipient' => { id: '71000000001' }.to_json))).to have_been_made.once
     expect(message).to have_attributes(message_type: 'outgoing', source_id: 'm_1')
     expect(message.content_attributes['tolzar_app_review_test']).to be(true)
     expect(described_class.open_until(account)).to be_nil
