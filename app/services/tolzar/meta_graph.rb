@@ -5,7 +5,7 @@
 # or unsubscribes THIS app to the page. Nothing here sends a message or changes a page setting.
 # Every call carries appsecret_proof for the workspace's app, so it also works when the app requires it.
 module Tolzar::MetaGraph
-  VERSION = 'v21.0'
+  VERSION = 'v26.0'
   BASE = "https://graph.facebook.com/#{VERSION}".freeze
   # Webhook fields for the page: messages and echoes (staff replies from Business Suite), postbacks,
   # standby (messages while another app is the page's responder) and feed (page post comments).

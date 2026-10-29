@@ -72,10 +72,10 @@ RSpec.describe 'Tolzar Meta app, listen-only Facebook and Instagram' do
     before { Tolzar::MetaApp.create!(account: other, app_id: '2234567890123', app_secret: 'b' * 32) }
 
     it 'reads the page once, creates a quiet inbox and subscribes only our app' do
-      read = stub_request(:get, %r{graph\.facebook\.com/v21\.0/2002\?})
+      read = stub_request(:get, %r{graph\.facebook\.com/v26\.0/2002\?})
              .to_return(body: { id: '2002', name: 'Shop', access_token: 'pt',
                                 instagram_business_account: { id: '1785' } }.to_json)
-      sub = stub_request(:post, %r{graph\.facebook\.com/v21\.0/2002/subscribed_apps\?.*subscribed_fields=messages%2Cmessage_echoes})
+      sub = stub_request(:post, %r{graph\.facebook\.com/v26\.0/2002/subscribed_apps\?.*subscribed_fields=messages%2Cmessage_echoes})
             .to_return(body: { success: true }.to_json)
       setup = described_class.new(account: other, page_id: '2002', access_token: 'sut').perform
       expect(read).to have_been_requested.once
