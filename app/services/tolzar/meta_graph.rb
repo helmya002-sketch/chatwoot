@@ -52,6 +52,19 @@ module Tolzar::MetaGraph
 
   # The one App Review test message (Tolzar::MetaTestSend, Owner's own account only). Nothing else in
   # Tolzar sends from a listen-only inbox.
+  # Is this page-scoped sender a person with a role on the app (admin, developer, tester)? Meta's ID
+  # matching (/{psid}/ids_for_apps, same business) gives the sender's app-scoped id, compared with the
+  # app's role list (/{app}/roles, app token). Anything Meta does not confirm counts as "no".
+  def app_role_holder?(meta_app, psid, page_token)
+    ids = Array(get("/#{psid}/ids_for_apps", {}, page_token, meta_app.app_secret)['data'])
+          .select { |row| row.dig('app', 'id').to_s == meta_app.app_id }.filter_map { |row| row['id'].to_s.presence }
+    return false if ids.empty?
+
+    app_token = "#{meta_app.app_id}|#{meta_app.app_secret}"
+    roles = Array(get("/#{meta_app.app_id}/roles", { limit: 100 }, app_token, meta_app.app_secret)['data'])
+    roles.any? { |r| ids.include?(r['user'].to_s) }
+  end
+
   def send_test_message(recipient_id, text, page_token, app_secret)
     request(Net::HTTP::Post, '/me/messages',
             { recipient: { id: recipient_id }.to_json, message: { text: text }.to_json, messaging_type: 'RESPONSE' },

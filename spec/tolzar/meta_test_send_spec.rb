@@ -19,6 +19,14 @@ RSpec.describe Tolzar::MetaTestSend do
       .to_return(body: { message_id: 'm_1' }.to_json)
   end
 
+  # Meta's ID matching (psid -> app-scoped id) and the app's role list.
+  def meta_says_role(psid, asid, roles: [asid])
+    stub_request(:get, %r{graph\.facebook\.com/v26\.0/#{psid}/ids_for_apps})
+      .to_return(body: { data: [{ id: asid, app: { id: '1234567890123' } }] }.to_json)
+    stub_request(:get, %r{graph\.facebook\.com/v26\.0/1234567890123/roles})
+      .to_return(body: { data: roles.map { |u| { user: u, role: 'administrators' } } }.to_json)
+  end
+
   def conversation_with(name, psid)
     contact = create(:contact, account: account, name: name)
     contact_inbox = create(:contact_inbox, contact: contact, inbox: inbox, source_id: psid)
@@ -48,8 +56,19 @@ RSpec.describe Tolzar::MetaTestSend do
     expect(described_class.open_until(account)).to be_present
   end
 
+  it 'refuses a sender Meta does not confirm as an app role holder, even with the Owner name' do
+    meta
+    described_class.open!(account, owner)
+    meta_says_role('psid-owner', 'asid-copycat', roles: ['asid-real-owner'])
+    expect { send_to(own) }.to raise_error(described_class::Refused, /role on the app/)
+    stub_request(:get, %r{/psid-owner/ids_for_apps}).to_return(status: 400, body: { error: { message: 'x' } }.to_json)
+    expect { send_to(own) }.to raise_error(described_class::Refused, /role on the app/)
+    expect(meta).not_to have_been_requested
+  end
+
   it 'sends exactly one message to the Owner, saves and audits it, then closes the window' do
     meta
+    meta_says_role('psid-owner', 'asid-owner')
     described_class.open!(account, owner)
     message = send_to(own)
     expect(meta).to have_been_requested.once

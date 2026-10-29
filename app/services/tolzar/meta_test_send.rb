@@ -9,6 +9,9 @@
 #   - only a conversation in this workspace's listen-only page inbox, whose contact carries the
 #     Owner's own name and wrote in the last 24 hours (Meta's reply window);
 #   - the Owner types that name again to confirm;
+#   - Meta itself confirms the sender holds a role on the app (ID matching against the app's roles);
+#     a name alone can be copied. Anything Meta does not confirm is refused. Facebook Messenger only
+#     (ID matching works on page-scoped ids);
 #   - one message: the window closes as it sends, success or not;
 #   - every step (open, send, close) is written to the audit log; the message is saved in the
 #     conversation, marked as the App Review test.
@@ -82,8 +85,17 @@ class Tolzar::MetaTestSend
     raise Refused, "Only to your own account: the contact must be named #{@user.name}" unless same_name?(name, @user.name)
     raise Refused, 'Type the contact name exactly to confirm' unless same_name?(@confirm, name)
     raise Refused, 'Write to the Page from your account first (Meta allows replies within 24 hours)' unless recent_incoming?
+    raise Refused, 'Meta does not confirm this sender has a role on the app (admin, developer, tester)' unless role_holder?
 
     @checked = true
+  end
+
+  # The platform check (a name can be copied): Meta must confirm the sender holds a role on the app.
+  def role_holder?
+    Tolzar::MetaGraph.app_role_holder?(@account.tolzar_meta_app, @conversation.contact_inbox.source_id,
+                                       @conversation.inbox.channel.page_access_token)
+  rescue Tolzar::MetaGraph::Error
+    false
   end
 
   def listen_only_page?
