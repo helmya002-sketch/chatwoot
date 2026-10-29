@@ -867,7 +867,7 @@
       "CONFIRM_BUTTON_LABEL": "Opret",
       "NAME": {
         "LABEL": "Navn",
-        "PLACEHOLDER": "User Guide | Chatwoot",
+        "PLACEHOLDER": "User Guide | Tolzar",
         "MESSAGE": "Choose an name for your portal.",
         "ERROR": "Navn er påkrævet"
       },
@@ -990,7 +990,7 @@
         "HEADER": "Integrationer",
         "DESCRIPTION": "Tilslut værktøjer, der udvider, hvad din hjælpecenter kan gøre.",
         "LIVE_CHAT": {
-          "TITLE": "Live chat med Chatwoot",
+          "TITLE": "Live chat med Tolzar",
           "DESCRIPTION": "Vis en live chat widget på dit hjælpecenter, så besøgende kan nå dig, mens de læser.",
           "PLACEHOLDER": "Select live chat widget",
           "NONE_OPTION": "No widget"

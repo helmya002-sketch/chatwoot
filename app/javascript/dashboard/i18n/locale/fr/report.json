@@ -1087,7 +1087,7 @@
       "roles": "Qui peut faire quoi dans cet espace de travail.",
       "connections": "Lire les commentaires de vos pages (lecture seule) ; réponses préparées en mode fantôme.",
       "disclosure": "Informer les personnes qu'elles parlent à une IA (AI Act de l'UE). La mention est ajoutée à la première réponse IA d'une conversation, jamais deux fois.",
-      "retention": "Combien de temps Tolzar garde ses propres données. Les lignes plus anciennes sont supprimées chaque jour. Les conversations Chatwoot suivent les réglages de Chatwoot.",
+      "retention": "Combien de temps Tolzar garde ses propres données. Les lignes plus anciennes sont supprimées chaque jour. Les conversations et les contacts suivent les réglages de la boîte de réception.",
       "privacy": "Exporter ou effacer ce que Tolzar détient sur une personne (RGPD : accès et effacement).",
       "sms": "Joindre les clients par SMS via votre propre compte fournisseur. Shadow : Tolzar montre exactement le SMS qu'il enverrait.",
       "crm": "Garder les contacts alignés avec HubSpot, Zoho CRM ou Pipedrive. Essai à blanc : Tolzar liste ce qu'il changerait et ne change rien.",
@@ -1123,7 +1123,7 @@
       "MINUTES": "Reply within (minutes)",
       "WORKING_HOURS": "Count only during working hours",
       "COUNTS": "{late} late · {ok} in time",
-      "MENTION": "Alerter aussi la personne assignée (mention : notification Chatwoot + push sur le téléphone)"
+      "MENTION": "Alerter aussi la personne assignée (mention : notification dans l'app + push sur le téléphone)"
     },
     "QA": {
       "RUBRIC": "Rubric"
@@ -1224,14 +1224,14 @@
         "kv_trimmed": "Lignes raccourcies",
         "conversations": "Conversations concernées"
       },
-      "OWNER_NOTE": "Réservé aux Owners. À faire avant de supprimer le contact dans Chatwoot : ensuite Tolzar ne retrouve plus ses conversations.",
+      "OWNER_NOTE": "Réservé aux Owners. À faire avant de supprimer le contact : ensuite Tolzar ne retrouve plus ses conversations.",
       "CONTACT_ID": "ID du contact",
       "CONTACT_ID_HINT": "Le numéro dans l'adresse du contact sous Contacts (…/contacts/1234).",
       "EXPORT": "Exporter (JSON)",
       "ERASE": "Effacer les données Tolzar",
       "EXPORTED": "Export téléchargé.",
       "ERASED": "Les données Tolzar de ce contact sont effacées.",
-      "NEXT_STEP": "Étape suivante : supprimer le contact lui-même dans Chatwoot (Contacts → contact → Supprimer).",
+      "NEXT_STEP": "Étape suivante : supprimer le contact lui-même (Contacts → contact → Supprimer).",
       "OPEN_CONTACT": "Ouvrir le contact",
       "CONFIRM_TITLE": "Effacer les données de ce contact ?",
       "CONFIRM_TEXT": "La mémoire, les décisions IA, les notes et les transcriptions de Tolzar pour le contact {id} sont supprimées définitivement. C'est irréversible.",

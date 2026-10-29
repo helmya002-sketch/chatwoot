@@ -1,7 +1,7 @@
 {
   "REGISTER": {
     "TRY_WOOT": "Створити акаунт",
-    "GET_STARTED": "Get started with Chatwoot",
+    "GET_STARTED": "Get started with Tolzar",
     "TITLE": "Реєстрація",
     "TESTIMONIAL_HEADER": "Один крок і вперед",
     "TESTIMONIAL_CONTENT": "Ви за один крок від залучення своїх клієнтів, утримання їх та пошуку нових.",
@@ -10,7 +10,7 @@
       "GOOGLE_SIGNUP": "Зареєструватися через Google"
     },
     "SHOPIFY": {
-      "TITLE": "Set up Chatwoot for your Shopify store",
+      "TITLE": "Set up Tolzar for your Shopify store",
       "DESCRIPTION": "Create your account to continue to Shopify App Pricing and choose a plan."
     },
     "COMPANY_NAME": {

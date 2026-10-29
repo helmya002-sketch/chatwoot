@@ -47,7 +47,8 @@ const runSDK = ({ baseUrl, websiteToken }) => {
     restoreWidgetInDOM(event.newDocument.body)
   );
 
-  const chatwootSettings = window.chatwootSettings || {};
+  // Tolzar names first; the original Chatwoot names keep working for existing sites.
+  const chatwootSettings = window.tolzarSettings || window.chatwootSettings || {};
   let locale = chatwootSettings.locale;
   let baseDomain = chatwootSettings.baseDomain;
 
@@ -210,6 +211,9 @@ const runSDK = ({ baseUrl, websiteToken }) => {
     },
   };
 
+  // Tolzar alias: the same object, so window.$tolzar.toggle() etc. work like $chatwoot.
+  window.$tolzar = window.$chatwoot;
+
   IFrameHelper.createFrame({
     baseUrl,
     websiteToken,
@@ -219,3 +223,4 @@ const runSDK = ({ baseUrl, websiteToken }) => {
 window.chatwootSDK = {
   run: runSDK,
 };
+window.tolzarSDK = window.chatwootSDK;

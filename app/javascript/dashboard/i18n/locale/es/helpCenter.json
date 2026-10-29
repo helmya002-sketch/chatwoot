@@ -867,7 +867,7 @@
       "CONFIRM_BUTTON_LABEL": "Crear",
       "NAME": {
         "LABEL": "Nombre",
-        "PLACEHOLDER": "User Guide | Chatwoot",
+        "PLACEHOLDER": "User Guide | Tolzar",
         "MESSAGE": "Choose an name for your portal.",
         "ERROR": "El nombre es requerido"
       },
@@ -990,7 +990,7 @@
         "HEADER": "Integraciones",
         "DESCRIPTION": "Conecta herramientas que amplían las funciones de tu centro de ayuda.",
         "LIVE_CHAT": {
-          "TITLE": "Chat en directo con Chatwoot",
+          "TITLE": "Chat en directo con Tolzar",
           "DESCRIPTION": "Muestra un widget de chat en directo en tu centro de ayuda para que los visitantes puedan contactarte mientras leen.",
           "PLACEHOLDER": "Seleccionar widget de chat en directo",
           "NONE_OPTION": "Sin widget"

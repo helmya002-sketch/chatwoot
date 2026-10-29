@@ -12,10 +12,16 @@
 Rails.application.config.after_initialize do
   begin
     if ActiveRecord::Base.connection.table_exists?('installation_configs')
+      # Every "Powered by" / legal link points at Tolzar's own address (TOLZAR_PUBLIC_URL), never
+      # chatwoot.com: the widget footer (WIDGET_BRAND_URL), e-mails (BRAND_URL), sign-up terms/privacy.
+      base = ENV.fetch('TOLZAR_PUBLIC_URL', 'https://chat.xplorer-redsea.com').to_s.chomp('/')
       {
         'INSTALLATION_NAME' => 'Tolzar',
         'BRAND_NAME' => 'Tolzar',
-        'BRAND_URL' => 'https://chat.xplorer-redsea.com'
+        'BRAND_URL' => base,
+        'WIDGET_BRAND_URL' => base,
+        'TERMS_URL' => base,
+        'PRIVACY_URL' => base
       }.each do |name, value|
         config = InstallationConfig.find_by(name: name)
         config.update!(value: value) if config && config.value != value

@@ -57,3 +57,25 @@ describe('$chatwoot.setUser', () => {
     });
   });
 });
+
+describe('Tolzar SDK names', () => {
+  afterEach(() => {
+    delete window.$chatwoot;
+    delete window.$tolzar;
+    delete window.tolzarSettings;
+    vi.restoreAllMocks();
+  });
+
+  it('runs as window.tolzarSDK, exposes $tolzar as $chatwoot and reads tolzarSettings', () => {
+    vi.spyOn(Cookies, 'get').mockReturnValue(undefined);
+    vi.spyOn(Cookies, 'set').mockImplementation(() => {});
+    window.tolzarSettings = { position: 'left' };
+
+    window.tolzarSDK.run({ baseUrl: 'https://chat.example.test', websiteToken: 'website-token' });
+
+    expect(window.tolzarSDK).toBe(window.chatwootSDK);
+    expect(window.$tolzar).toBe(window.$chatwoot);
+    expect(window.$tolzar.position).toBe('left');
+    expect(IFrameHelper.createFrame).toHaveBeenCalled();
+  });
+});

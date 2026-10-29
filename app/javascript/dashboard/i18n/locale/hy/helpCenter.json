@@ -867,7 +867,7 @@
       "CONFIRM_BUTTON_LABEL": "Ստեղծել",
       "NAME": {
         "LABEL": "Անուն",
-        "PLACEHOLDER": "Օգտագործողի ուղեցույց | Chatwoot",
+        "PLACEHOLDER": "Օգտագործողի ուղեցույց | Tolzar",
         "MESSAGE": "Ընտրեք անուն ձեր պորտալի համար։",
         "ERROR": "Անունը պարտադիր է"
       },
@@ -990,7 +990,7 @@
         "HEADER": "Ինտեգրացիաներ",
         "DESCRIPTION": "Connect tools that extend what your help center can do.",
         "LIVE_CHAT": {
-          "TITLE": "Live chat with Chatwoot",
+          "TITLE": "Live chat with Tolzar",
           "DESCRIPTION": "Show a live chat widget on your help center so visitors can reach you while they read.",
           "PLACEHOLDER": "Ընտրեք ուղիղ զրույցի վիջեթը",
           "NONE_OPTION": "Առկա չէ վիջեթ"

@@ -1,7 +1,7 @@
 {
   "REGISTER": {
     "TRY_WOOT": "Izveidot kontu",
-    "GET_STARTED": "Get started with Chatwoot",
+    "GET_STARTED": "Get started with Tolzar",
     "TITLE": "Reģistrēt",
     "TESTIMONIAL_HEADER": "Viss, kas nepieciešams, ir viens solis, lai virzītos uz priekšu",
     "TESTIMONIAL_CONTENT": "Jūs esat viena soļa attālumā no klientu piesaistīšanas, noturēšanas un jaunu klientu atrašanas.",
@@ -10,7 +10,7 @@
       "GOOGLE_SIGNUP": "Reģistrēties, izmantojot Google"
     },
     "SHOPIFY": {
-      "TITLE": "Set up Chatwoot for your Shopify store",
+      "TITLE": "Set up Tolzar for your Shopify store",
       "DESCRIPTION": "Create your account to continue to Shopify App Pricing and choose a plan."
     },
     "COMPANY_NAME": {

@@ -867,7 +867,7 @@
       "CONFIRM_BUTTON_LABEL": "Gumawa",
       "NAME": {
         "LABEL": "Pangalan",
-        "PLACEHOLDER": "Gabay ng Gumagamit | Chatwoot",
+        "PLACEHOLDER": "Gabay ng Gumagamit | Tolzar",
         "MESSAGE": "Pumili ng pangalan para sa iyong portal.",
         "ERROR": "Kinakailangan ang pangalan"
       },
@@ -990,7 +990,7 @@
         "HEADER": "Mga Integrasyon",
         "DESCRIPTION": "Connect tools that extend what your help center can do.",
         "LIVE_CHAT": {
-          "TITLE": "Live chat with Chatwoot",
+          "TITLE": "Live chat with Tolzar",
           "DESCRIPTION": "Show a live chat widget on your help center so visitors can reach you while they read.",
           "PLACEHOLDER": "Pumili ng live chat widget",
           "NONE_OPTION": "Walang widget"

@@ -1087,7 +1087,7 @@
       "roles": "Who may do what in this workspace.",
       "connections": "Read comments on your pages (read-only); replies are drafted in Shadow.",
       "disclosure": "Tell people they are talking to an AI (EU AI Act). The line is added to the first AI reply of a conversation, never twice.",
-      "retention": "How long Tolzar keeps its own records. Older rows are removed once a day. Chatwoot's conversations follow Chatwoot's settings.",
+      "retention": "How long Tolzar keeps its AI records (decisions, notes, logs). Older rows are removed once a day. Conversations and contacts follow the inbox's own settings.",
       "privacy": "Export or erase what Tolzar holds about one person (GDPR access and erasure).",
       "sms": "Reach customers by SMS through your own provider account. Shadow: Tolzar shows the exact SMS it would send.",
       "crm": "Keep contacts in step with HubSpot, Zoho CRM or Pipedrive. Dry run: Tolzar lists what it would change and changes nothing.",
@@ -1123,7 +1123,7 @@
       "MINUTES": "Reply within (minutes)",
       "WORKING_HOURS": "Count only during working hours",
       "COUNTS": "{late} late · {ok} in time",
-      "MENTION": "Also alert the assigned person (a mention: Chatwoot notification + phone push)"
+      "MENTION": "Also alert the assigned person (a mention: in-app notification + phone push)"
     },
     "QA": {
       "RUBRIC": "Rubric"
@@ -1186,7 +1186,7 @@
       "OWNER_ONLY": "Only an Owner can change roles.",
       "RULE_OWNER": "Owner: everything, including export, connections, AI-tool tokens and roles.",
       "RULE_MANAGER": "Manager: AI agents, workflows, reports and settings; not export, connections or roles.",
-      "RULE_AGENT": "Agent: replies to conversations (set by the Chatwoot agent role)."
+      "RULE_AGENT": "Agent: replies to conversations (set by the agent role in Settings → Agents)."
     },
     "CONNECTIONS": {
       "PARKED": "Facebook & Instagram connections open once the Tolzar Meta app exists (parked until the company papers are done).",
@@ -1224,14 +1224,14 @@
         "kv_trimmed": "Rows trimmed",
         "conversations": "Conversations covered"
       },
-      "OWNER_NOTE": "Owner only. Run this before deleting the contact in Chatwoot: afterwards Tolzar can no longer find the contact's conversations.",
+      "OWNER_NOTE": "Owner only. Run this before deleting the contact: afterwards Tolzar can no longer find the contact's conversations.",
       "CONTACT_ID": "Contact ID",
       "CONTACT_ID_HINT": "The number in the contact's address in Contacts (…/contacts/1234).",
       "EXPORT": "Export (JSON)",
       "ERASE": "Erase Tolzar's data",
       "EXPORTED": "Export downloaded.",
       "ERASED": "Tolzar's data about this contact is erased.",
-      "NEXT_STEP": "Next: delete the contact itself in Chatwoot (Contacts → contact → Delete).",
+      "NEXT_STEP": "Next: delete the contact itself (Contacts → contact → Delete).",
       "OPEN_CONTACT": "Open the contact",
       "CONFIRM_TITLE": "Erase this contact's data?",
       "CONFIRM_TEXT": "Tolzar's memory, AI decisions, scores and transcripts for contact {id} are removed for good. This cannot be undone.",

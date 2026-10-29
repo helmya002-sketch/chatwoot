@@ -867,7 +867,7 @@
       "CONFIRM_BUTTON_LABEL": "Yarat",
       "NAME": {
         "LABEL": "İsim",
-        "PLACEHOLDER": "User Guide | Chatwoot",
+        "PLACEHOLDER": "User Guide | Tolzar",
         "MESSAGE": "Choose an name for your portal.",
         "ERROR": "Ad gerekli"
       },
@@ -990,7 +990,7 @@
         "HEADER": "Entegrasyonlar",
         "DESCRIPTION": "Yardım merkezinizin işlevlerini genişleten araçları entegre edin.",
         "LIVE_CHAT": {
-          "TITLE": "Chatwoot ile canlı sohbet",
+          "TITLE": "Tolzar ile canlı sohbet",
           "DESCRIPTION": "Ziyaretçilerin içerikleri okurken sizinle iletişime geçebilmesi için yardım merkezinizde canlı sohbet bileşenini gösterin.",
           "PLACEHOLDER": "Select live chat widget",
           "NONE_OPTION": "Widget yok"

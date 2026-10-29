@@ -1087,7 +1087,7 @@
       "roles": "Wer in diesem Arbeitsbereich was darf.",
       "connections": "Kommentare auf deinen Seiten lesen (nur lesen); Antworten als Entwurf im Schattenbetrieb.",
       "disclosure": "Menschen erfahren, dass sie mit einer KI sprechen (EU AI Act). Der Hinweis steht in der ersten KI-Antwort eines Gesprächs, nie zweimal.",
-      "retention": "Wie lange Tolzar seine eigenen Daten aufbewahrt. Ältere Einträge werden täglich gelöscht. Chatwoot-Gespräche folgen den Chatwoot-Einstellungen.",
+      "retention": "Wie lange Tolzar seine eigenen Daten aufbewahrt. Ältere Einträge werden täglich gelöscht. Gespräche und Kontakte folgen den Einstellungen des Posteingangs.",
       "privacy": "Exportieren oder löschen, was Tolzar über eine Person speichert (DSGVO Auskunft und Löschung).",
       "sms": "Kunden per SMS über Ihr eigenes Anbieterkonto erreichen. Shadow: Tolzar zeigt genau die SMS, die es senden würde.",
       "crm": "Kontakte mit HubSpot, Zoho CRM oder Pipedrive abgleichen. Probelauf: Tolzar listet, was es ändern würde, und ändert nichts.",
@@ -1123,7 +1123,7 @@
       "MINUTES": "Reply within (minutes)",
       "WORKING_HOURS": "Count only during working hours",
       "COUNTS": "{late} late · {ok} in time",
-      "MENTION": "Auch die zugewiesene Person benachrichtigen (Erwähnung: Chatwoot-Benachrichtigung + Push aufs Handy)"
+      "MENTION": "Auch die zugewiesene Person benachrichtigen (Erwähnung: Benachrichtigung in der App + Push aufs Handy)"
     },
     "QA": {
       "RUBRIC": "Rubric"
@@ -1224,14 +1224,14 @@
         "kv_trimmed": "Gekürzte Einträge",
         "conversations": "Betroffene Gespräche"
       },
-      "OWNER_NOTE": "Nur für Owner. Vor dem Löschen des Kontakts in Chatwoot ausführen: danach findet Tolzar die Gespräche des Kontakts nicht mehr.",
+      "OWNER_NOTE": "Nur für Owner. Vor dem Löschen des Kontakts ausführen: danach findet Tolzar die Gespräche des Kontakts nicht mehr.",
       "CONTACT_ID": "Kontakt-ID",
       "CONTACT_ID_HINT": "Die Zahl in der Adresse des Kontakts unter Kontakte (…/contacts/1234).",
       "EXPORT": "Exportieren (JSON)",
       "ERASE": "Tolzar-Daten löschen",
       "EXPORTED": "Export heruntergeladen.",
       "ERASED": "Tolzars Daten zu diesem Kontakt sind gelöscht.",
-      "NEXT_STEP": "Nächster Schritt: den Kontakt selbst in Chatwoot löschen (Kontakte → Kontakt → Löschen).",
+      "NEXT_STEP": "Nächster Schritt: den Kontakt selbst löschen (Kontakte → Kontakt → Löschen).",
       "OPEN_CONTACT": "Kontakt öffnen",
       "CONFIRM_TITLE": "Daten dieses Kontakts löschen?",
       "CONFIRM_TEXT": "Tolzars Gedächtnis, KI-Entscheidungen, Bewertungen und Transkripte zu Kontakt {id} werden endgültig entfernt. Das lässt sich nicht rückgängig machen.",

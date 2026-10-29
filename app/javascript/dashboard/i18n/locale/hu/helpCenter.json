@@ -867,7 +867,7 @@
       "CONFIRM_BUTTON_LABEL": "Létrehozás",
       "NAME": {
         "LABEL": "Név",
-        "PLACEHOLDER": "User Guide | Chatwoot",
+        "PLACEHOLDER": "User Guide | Tolzar",
         "MESSAGE": "Choose an name for your portal.",
         "ERROR": "Név kötelező"
       },
@@ -990,7 +990,7 @@
         "HEADER": "Integrációk",
         "DESCRIPTION": "Kapcsoljon össze olyan eszközöket, amelyekkel bővítheti a súgóközpont funkcióit.",
         "LIVE_CHAT": {
-          "TITLE": "Chatwoot élő csevegés",
+          "TITLE": "Tolzar élő csevegés",
           "DESCRIPTION": "Jelenítsen meg élő csevegőablakot a súgóközpontban, hogy a látogatók olvasás közben is kapcsolatba léphessenek Önnel.",
           "PLACEHOLDER": "Select live chat widget",
           "NONE_OPTION": "No widget"

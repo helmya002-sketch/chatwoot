@@ -1,7 +1,7 @@
 {
   "REGISTER": {
     "TRY_WOOT": "创建新账户",
-    "GET_STARTED": "开始使用Chatwoot",
+    "GET_STARTED": "开始使用Tolzar",
     "TITLE": "注册",
     "TESTIMONIAL_HEADER": "只差最后一步就可以了",
     "TESTIMONIAL_CONTENT": "您离吸引客户、留住客户和寻找新客户仅一步之遥。",
@@ -10,7 +10,7 @@
       "GOOGLE_SIGNUP": "使用 Google 注册"
     },
     "SHOPIFY": {
-      "TITLE": "Set up Chatwoot for your Shopify store",
+      "TITLE": "Set up Tolzar for your Shopify store",
       "DESCRIPTION": "Create your account to continue to Shopify App Pricing and choose a plan."
     },
     "COMPANY_NAME": {

@@ -867,7 +867,7 @@
       "CONFIRM_BUTTON_LABEL": "ፍጠር",
       "NAME": {
         "LABEL": "ስም",
-        "PLACEHOLDER": "የተጠቃሚ መመሪያ | Chatwoot",
+        "PLACEHOLDER": "የተጠቃሚ መመሪያ | Tolzar",
         "MESSAGE": "ለፖርታልዎ ስም ይምረጡ።.",
         "ERROR": "ስም ያስፈልጋል"
       },
@@ -990,7 +990,7 @@
         "HEADER": "አካባቢዎች",
         "DESCRIPTION": "Connect tools that extend what your help center can do.",
         "LIVE_CHAT": {
-          "TITLE": "Live chat with Chatwoot",
+          "TITLE": "Live chat with Tolzar",
           "DESCRIPTION": "Show a live chat widget on your help center so visitors can reach you while they read.",
           "PLACEHOLDER": "ቀጥታ የንግግር ዊጅት ይምረጡ",
           "NONE_OPTION": "ምንም የማይታይ እቃ"

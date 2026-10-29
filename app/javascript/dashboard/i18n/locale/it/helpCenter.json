@@ -867,7 +867,7 @@
       "CONFIRM_BUTTON_LABEL": "Crea",
       "NAME": {
         "LABEL": "Nome",
-        "PLACEHOLDER": "Guida Utente | Chatwoot",
+        "PLACEHOLDER": "Guida Utente | Tolzar",
         "MESSAGE": "Scegli un nome per il tuo portale.",
         "ERROR": "Nome richiesto"
       },
@@ -990,7 +990,7 @@
         "HEADER": "Integrazioni",
         "DESCRIPTION": "Collega strumenti che estendono le funzioni del tuo centro assistenza.",
         "LIVE_CHAT": {
-          "TITLE": "Chat dal vivo con Chatwoot",
+          "TITLE": "Chat dal vivo con Tolzar",
           "DESCRIPTION": "Mostra un widget di chat dal vivo nel centro assistenza, così i visitatori possono contattarti mentre leggono.",
           "PLACEHOLDER": "Seleziona widget live chat",
           "NONE_OPTION": "Nessun widget"
