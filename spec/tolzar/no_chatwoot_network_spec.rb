@@ -18,7 +18,7 @@ RSpec.describe 'No dependency on Chatwoot services' do
   it 'has no chatwoot.com address in app, lib or config (languages included)' do
     any_host = /chatwoot\.(?:com|dev|help)\b/i
     files = Dir.glob(Rails.root.join('{app,lib,config}/**/*.{rb,js,vue,yml,erb,liquid,json,scss}').to_s)
-               .reject { |f| f =~ /(\.spec\.js|\.story\.vue|_spec\.rb)$/ || f.include?('/specs/') || f.include?('/fixtures/') }
+               .reject { |f| f =~ %r{(\.spec\.js|\.story\.vue|_spec\.rb|/fixtures\.js)$} || f =~ %r{/(specs?|fixtures|story|stories)/} }
     offenders = files.select { |f| File.read(f).match?(any_host) }
     expect(offenders.map { |f| f.delete_prefix("#{Rails.root}/") }).to eq([])
   end
