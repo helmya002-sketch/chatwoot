@@ -19,6 +19,8 @@ Rails.application.routes.draw do
   post 'tolzar/meta/data_deletion', to: 'tolzar/meta#data_deletion'
   get  'tolzar/meta/deletion',      to: 'tolzar/meta#deletion'
   get  'tolzar/meta/error',         to: 'tolzar/meta#failed'
+  get  'tolzar/meta/hook/:webhook_token', to: 'tolzar/meta_hook#verify'
+  post 'tolzar/meta/hook/:webhook_token', to: 'tolzar/meta_hook#events'
   # Tolzar MCP server (F1): public, read-only, per-workspace Bearer token checked by the brain.
   # Held back from the internet until Server ops has reviewed the hardening (28 Oct): enable with
   # TOLZAR_MCP_PUBLIC=true once rate limits + fail2ban logging are confirmed on the box.
@@ -89,6 +91,10 @@ Rails.application.routes.draw do
           post   'tolzar/workspace/bootstrap',   to: 'tolzar#workspace_bootstrap'
           get    'tolzar/workspace/checklist',   to: 'tolzar#workspace_checklist'
           get    'tolzar/pipeline',              to: 'tolzar#pipeline_settings'
+          get    'tolzar/meta_app',              to: 'tolzar#meta_app'
+          post   'tolzar/meta_app',              to: 'tolzar#meta_app_save'
+          delete 'tolzar/meta_app',              to: 'tolzar#meta_app_delete'
+          post   'tolzar/meta_app/pages',        to: 'tolzar#meta_page_connect'
           post   'tolzar/pipeline',              to: 'tolzar#pipeline_settings_save'
           get    'tolzar/agents/:agent_id/price_source',      to: 'tolzar#price_source'
           post   'tolzar/agents/:agent_id/price_source',      to: 'tolzar#price_source_save'

@@ -11,6 +11,7 @@ import DocumentsPanel from 'dashboard/components-next/Tolzar/settings/DocumentsP
 import WorkspacePanel from 'dashboard/components-next/Tolzar/settings/WorkspacePanel.vue';
 import GoLivePanel from 'dashboard/components-next/Tolzar/settings/GoLivePanel.vue';
 import PipelinePanel from 'dashboard/components-next/Tolzar/settings/PipelinePanel.vue';
+import MetaAppPanel from 'dashboard/components-next/Tolzar/settings/MetaAppPanel.vue';
 import WhatsappListenOnlyPanel from 'dashboard/components-next/Tolzar/settings/WhatsappListenOnlyPanel.vue';
 import { MEDIA_MODES, VIDEO_FRAMES, getMedia, saveMedia as saveMediaConfig, mediaConfig } from 'dashboard/components-next/Tolzar/tolzarMedia';
 import { brainErrors, isOwnerOnly } from 'dashboard/components-next/Tolzar/tolzarBrainApi';
@@ -35,7 +36,7 @@ const problems = r =>
 const SECTIONS = [
   ['workspace', ['workspace_settings', 'pipeline', 'usage', 'roles', 'audit', 'export', 'go_live']],
   ['trust', ['disclosure', 'retention', 'privacy']],
-  ['channels', ['whatsapp_listen', 'sms', 'crm', 'commerce']],
+  ['channels', ['whatsapp_listen', 'meta_app', 'sms', 'crm', 'commerce']],
   ['team', ['sla', 'qa']],
   ['ai', ['media', 'documents', 'recovery', 'learned', 'brief', 'ask', 'negotiation', 'agent_teams', 'tuning']],
   ['contacts', ['dedupe']],
@@ -288,6 +289,7 @@ onMounted(() => {
           <WorkspacePanel v-if="current === 'workspace_settings'" />
           <GoLivePanel v-if="current === 'go_live'" />
           <PipelinePanel v-if="current === 'pipeline'" />
+          <MetaAppPanel v-if="current === 'meta_app'" />
 
           <!-- roles -->
           <div v-if="current === 'roles'">

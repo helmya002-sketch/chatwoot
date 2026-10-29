@@ -14,7 +14,10 @@
 #   - nothing reaches the customer: replies (SendReplyJob), templates, CSAT templates, contact-info
 #     requests and calling settings are refused here and logged.
 # The flag lives in the channel's provider_config (KEY); Tolzar::WhatsappListenOnlySetupService
-# creates such inboxes. Generic: no business is named anywhere.
+# creates such inboxes. Facebook Page and Instagram inboxes carry it as the `tolzar_listen_only` column
+# (Tolzar::MetaListenOnlySetupService, the workspace's own Meta app): replies refused, and the page
+# subscription is made and removed by Tolzar only, never by Chatwoot's channel callbacks.
+# Generic: no business is named anywhere.
 module Tolzar
   module ListenOnly
     KEY = 'tolzar_listen_only'
@@ -25,6 +28,7 @@ module Tolzar
     module_function
 
     def channel?(channel)
+      return channel.tolzar_listen_only == true if channel.respond_to?(:tolzar_listen_only)
       return false unless channel.respond_to?(:provider_config)
 
       ActiveModel::Type::Boolean.new.cast((channel.provider_config || {})[KEY]) == true
@@ -35,7 +39,7 @@ module Tolzar
     end
 
     def blocked(channel, what)
-      Rails.logger.warn("[Tolzar listen-only] refused #{what} for whatsapp channel #{channel&.id}")
+      Rails.logger.warn("[Tolzar listen-only] refused #{what} for #{channel&.class&.name} #{channel&.id}")
       nil
     end
 
@@ -54,6 +58,32 @@ module Tolzar
     module ContactInfoGuard
       def perform(*args, **kwargs, &block)
         return Tolzar::ListenOnly.blocked(whatsapp_channel, :request_contact_info) if Tolzar::ListenOnly.channel?(whatsapp_channel)
+
+        super
+      end
+    end
+
+    # Facebook Messenger and Instagram reply services (Base::SendOnChannelService#perform): nothing is
+    # sent from a listen-only inbox; staff answer in the business's own tool (e.g. Meta Business Suite).
+    module SendGuard
+      def perform
+        return Tolzar::ListenOnly.blocked(channel, :send_message) if Tolzar::ListenOnly.channel?(channel)
+
+        super
+      end
+    end
+
+    # Chatwoot subscribes and unsubscribes a page on create/destroy through the install-wide app; a
+    # listen-only page is subscribed for the workspace's own app by Tolzar (MetaListenOnlySetupService).
+    module FacebookPageGuard
+      def subscribe
+        return true if Tolzar::ListenOnly.channel?(self)
+
+        super
+      end
+
+      def unsubscribe
+        return Tolzar::MetaListenOnlySetupService.teardown(self) || true if Tolzar::ListenOnly.channel?(self)
 
         super
       end

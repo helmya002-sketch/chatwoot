@@ -246,11 +246,17 @@ export default {
         this.isAPIInbox
       );
     },
+    // Tolzar listen-only inboxes (Tolzar::ListenOnly): staff answer in the business's own tool;
+    // only private notes are written here.
+    isListenOnlyInbox() {
+      return this.inbox?.tolzar_listen_only === true;
+    },
     canSendPublicReply() {
       return (
         this.isWithinMessagingWindow &&
         !this.isAIOwnedPendingConversation &&
-        !this.isInstagramReplyRestricted
+        !this.isInstagramReplyRestricted &&
+        !this.isListenOnlyInbox
       );
     },
     isVoiceCallConversation() {

@@ -1039,6 +1039,7 @@
     "NAV": {
       "workspace_settings": "Workspace settings",
       "pipeline": "Pipeline",
+      "meta_app": "Facebook & Instagram app",
       "go_live": "Go live",
       "usage": "Usage",
       "audit": "Audit log",
@@ -1071,6 +1072,7 @@
     "HINT": {
       "workspace_settings": "Hours, languages, templates and descriptions for this workspace, on top of the defaults. Only what you change is stored.",
       "pipeline": "Your sales stages, where a contact's stage and deal value are stored, and the currency. Dashboard, Pipeline, Contacts and Reports follow it.",
+      "meta_app": "Your business's own Meta app: Messenger, Instagram DMs and comments arrive here in listen-only mode. Staff keep answering in Meta Business Suite.",
       "go_live": "Shadow or live, per inbox. Owner only. Today nothing is live.",
       "usage": "What this workspace used in the last 30 days.",
       "audit": "Who changed what, and when. Secret values are never shown.",
@@ -1615,6 +1617,27 @@
     "DEAL_FIELD": "Deal value field",
     "CURRENCY": "Currency",
     "SAVE": "Save pipeline"
+  },
+  "TOLZAR_META_APP": {
+    "LISTEN_ONLY": "Listen only: nothing is sent from Tolzar",
+    "INTRO": "Create the app in your business's own Meta portfolio, then paste its App ID and App secret here. Tolzar receives your Page's Messenger messages, Instagram DMs and comments; staff keep answering in Meta Business Suite.",
+    "APP": "Your Meta app",
+    "APP_ID": "App ID",
+    "APP_SECRET": "App secret",
+    "SECRET_SAVED": "Saved ••••{last4} (type a new one to replace it)",
+    "SAVE": "Save app",
+    "SAVED": "Saved",
+    "WEBHOOK_URL": "Webhook callback URL (paste it in your app: Webhooks, for Page and Instagram)",
+    "VERIFY_TOKEN": "Verify token",
+    "VERIFY_ONCE": "Shown once: paste it into Meta now.",
+    "PAGES": "Listen-only pages",
+    "NO_PAGES": "No page connected yet.",
+    "PAGE_ID": "Facebook Page ID",
+    "TOKEN": "Access token (a system user of your portfolio, with this page)",
+    "INBOX_NAME": "Inbox name (optional)",
+    "CONNECT": "Connect page (listen only)",
+    "CONNECTED": "Page connected in listen-only mode",
+    "RELOAD": "Reload"
   },
   "TOLZAR_AGENTS": {
     "BEHAVIOUR": "Behaviour",
