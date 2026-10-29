@@ -8,6 +8,7 @@ import {
   getWorkspaceSettings,
   goLive,
   killSwitch,
+  releaseKillSwitch,
   inboxModes,
   anyLive,
   confirmMatches,
@@ -123,6 +124,15 @@ function kill() {
         were: (r.were_live || []).join(', ') || none,
         now: (r.live_inboxes || []).join(', ') || none,
       })
+  );
+}
+
+function release() {
+  // eslint-disable-next-line no-alert
+  if (!window.confirm(t('TOLZAR_WORKSPACE.GO_LIVE.RELEASE_CONFIRM'))) return;
+  run(
+    () => releaseKillSwitch(accountId.value),
+    () => t('TOLZAR_WORKSPACE.GO_LIVE.RELEASE_DONE')
   );
 }
 
@@ -309,6 +319,24 @@ onMounted(() => {
           })
         }}
       </p>
+      <div
+        v-if="view && view.kill_switch_on"
+        class="flex flex-wrap items-center gap-3 mt-3"
+        data-tz-kill-locked
+      >
+        <p class="m-0 text-xs text-n-ruby-11">
+          {{ t('TOLZAR_WORKSPACE.GO_LIVE.LOCKED') }}
+        </p>
+        <button
+          type="button"
+          class="!mt-0 !h-9 !px-4 text-sm rounded-lg border border-n-weak"
+          :disabled="!owner || busy"
+          data-tz-kill-release
+          @click="release"
+        >
+          {{ t('TOLZAR_WORKSPACE.GO_LIVE.RELEASE') }}
+        </button>
+      </div>
     </div>
     <BrainNotice :result="result" :saved="saved" />
   </div>

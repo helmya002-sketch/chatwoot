@@ -1604,7 +1604,11 @@
       "KILL_DONE": "C'est fait. En direct avant : {were}. En direct maintenant : {now}.",
       "NONE": "aucune",
       "LAST_KILL": "Arrêt d'urgence utilisé pour la dernière fois le {at} par {by}.",
-      "NO_INBOXES": "Cet espace n'a pas encore de boîte de réception."
+      "NO_INBOXES": "Cet espace n'a pas encore de boîte de réception.",
+      "LOCKED": "L'arrêt d'urgence est actif : aucune boîte ne peut passer en direct tant qu'un Owner ne l'a pas levé.",
+      "RELEASE": "Lever l'arrêt d'urgence",
+      "RELEASE_CONFIRM": "Lever l'arrêt d'urgence ? Rien ne passe en direct ; chaque boîte doit toujours être passée en direct séparément.",
+      "RELEASE_DONE": "Arrêt d'urgence levé. Toutes les boîtes restent en mode Shadow."
     },
     "PRICE": {
       "TITLE": "Source de prix",

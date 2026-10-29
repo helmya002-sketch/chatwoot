@@ -186,5 +186,14 @@ RSpec.describe 'Tolzar workspace settings, price source, go-live', type: :reques
       expect(response).to have_http_status(:success)
       expect(posts.last).to eq(['/workspace/kill-switch', { account_id: account.id }])
     end
+
+    it 'releases the kill switch for this workspace only, Owner-only' do
+      post url('workspace/kill_switch/release'), headers: manager.create_new_auth_token, as: :json
+      expect(response).to have_http_status(:forbidden)
+      post url('workspace/kill_switch/release'), params: { account_id: other_account.id },
+                                                 headers: owner.create_new_auth_token, as: :json
+      expect(response).to have_http_status(:success)
+      expect(posts.last).to eq(['/workspace/kill-switch/release', { account_id: account.id }])
+    end
   end
 end

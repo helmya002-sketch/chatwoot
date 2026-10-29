@@ -1604,7 +1604,11 @@
       "KILL_DONE": "Erledigt. Vorher live: {were}. Jetzt live: {now}.",
       "NONE": "keine",
       "LAST_KILL": "Notschalter zuletzt benutzt {at} von {by}.",
-      "NO_INBOXES": "Dieser Arbeitsbereich hat noch keine Posteingänge."
+      "NO_INBOXES": "Dieser Arbeitsbereich hat noch keine Posteingänge.",
+      "LOCKED": "Der Not-Aus ist aktiv: Kein Posteingang kann live gehen, bis ein Owner ihn freigibt.",
+      "RELEASE": "Not-Aus freigeben",
+      "RELEASE_CONFIRM": "Not-Aus freigeben? Dadurch geht nichts live; jeder Posteingang braucht weiterhin sein eigenes Live-Schalten.",
+      "RELEASE_DONE": "Not-Aus freigegeben. Alle Posteingänge sind weiterhin im Shadow-Modus."
     },
     "PRICE": {
       "TITLE": "Preisquelle",

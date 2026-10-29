@@ -8,7 +8,8 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
   # reads stay open to every administrator.
   before_action :ensure_owner, only: %i[export_start export_download meta_connect_url meta_disconnect meta_select
                                         agent_save agent_delete agent_default workflow_save workflow_delete
-                                        workspace_settings_save price_source_save price_source_test go_live kill_switch]
+                                        workspace_settings_save price_source_save price_source_test go_live kill_switch
+                                        kill_switch_release]
 
   def agent_test
     body = {
@@ -290,6 +291,12 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
   # Every inbox of this workspace back to Shadow, now (Owner-only, no confirmation needed).
   def kill_switch
     render_brain(post_to_brain('/workspace/kill-switch', { account_id: account_scope_id }))
+  end
+
+  # The kill switch is a lock (pass 8): go-live is refused until an Owner releases it. Releasing
+  # turns nothing live; each inbox needs its own go-live again.
+  def kill_switch_release
+    render_brain(post_to_brain('/workspace/kill-switch/release', { account_id: account_scope_id }))
   end
 
   # Shadow-eval scoreboard for the Reports page (would-vs-did, go-live checks).

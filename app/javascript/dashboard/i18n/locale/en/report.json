@@ -1604,7 +1604,11 @@
       "KILL_DONE": "Done. Live before: {were}. Live now: {now}.",
       "NONE": "none",
       "LAST_KILL": "Kill switch last used {at} by {by}.",
-      "NO_INBOXES": "This workspace has no inboxes yet."
+      "NO_INBOXES": "This workspace has no inboxes yet.",
+      "LOCKED": "The kill switch is on: no inbox can go live until an Owner releases it.",
+      "RELEASE": "Release the kill switch",
+      "RELEASE_CONFIRM": "Release the kill switch? Nothing goes live by releasing it; each inbox still needs its own go-live.",
+      "RELEASE_DONE": "Kill switch released. Every inbox is still in Shadow."
     },
     "PRICE": {
       "TITLE": "Price source",

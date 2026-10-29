@@ -84,6 +84,7 @@ Rails.application.routes.draw do
           post   'tolzar/workspace/settings',    to: 'tolzar#workspace_settings_save'
           post   'tolzar/workspace/go_live',     to: 'tolzar#go_live'
           post   'tolzar/workspace/kill_switch', to: 'tolzar#kill_switch'
+          post   'tolzar/workspace/kill_switch/release', to: 'tolzar#kill_switch_release'
           get    'tolzar/agents/:agent_id/price_source',      to: 'tolzar#price_source'
           post   'tolzar/agents/:agent_id/price_source',      to: 'tolzar#price_source_save'
           post   'tolzar/agents/:agent_id/price_source/test', to: 'tolzar#price_source_test'

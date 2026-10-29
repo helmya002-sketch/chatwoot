@@ -31,6 +31,12 @@ export const goLive = (accountId, inboxId, mode, confirm = '') =>
 export const killSwitch = accountId =>
   answer(window.axios.post(`${base(accountId)}/workspace/kill_switch`, {}));
 
+// The kill switch locks go-live until an Owner releases it (nothing goes live by releasing).
+export const releaseKillSwitch = accountId =>
+  answer(
+    window.axios.post(`${base(accountId)}/workspace/kill_switch/release`, {})
+  );
+
 const priceUrl = (accountId, agentId) =>
   `${base(accountId)}/agents/${encodeURIComponent(agentId)}/price_source`;
 export const getPriceSource = (accountId, agentId) =>

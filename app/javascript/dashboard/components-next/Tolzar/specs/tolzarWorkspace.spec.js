@@ -23,6 +23,7 @@ import {
   saveWorkspaceSettings,
   goLive,
   killSwitch,
+  releaseKillSwitch,
   getPriceSource,
   savePriceSource,
   testPriceSource,
@@ -329,6 +330,11 @@ describe('tolzarWorkspace API', () => {
     await killSwitch(2);
     expect(window.axios.post).toHaveBeenLastCalledWith(
       `${b}/workspace/kill_switch`,
+      {}
+    );
+    await releaseKillSwitch(2);
+    expect(window.axios.post).toHaveBeenLastCalledWith(
+      `${b}/workspace/kill_switch/release`,
       {}
     );
     await getPriceSource(2, 'a1');
