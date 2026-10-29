@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useMapGetter } from 'dashboard/composables/store';
 import { useI18n } from 'vue-i18n';
+import { useRoute } from 'vue-router';
 import TrustPanel from 'dashboard/components-next/Tolzar/settings/TrustPanel.vue';
 import ChannelsPanel from 'dashboard/components-next/Tolzar/settings/ChannelsPanel.vue';
 import AiLimitsPanel from 'dashboard/components-next/Tolzar/settings/AiLimitsPanel.vue';
@@ -186,7 +187,12 @@ async function newToken(revoke = false) {
 }
 const maxY = rows => Math.max(1, ...(rows || []).map(r => r.y || 0));
 
-onMounted(() => open('usage'));
+// ?section=<key> opens that section (links from the Getting started checklist).
+const route = useRoute();
+onMounted(() => {
+  const wanted = String(route.query.section || '');
+  open(SECTIONS.some(([, keys]) => keys.includes(wanted)) ? wanted : 'usage');
+});
 </script>
 
 <template>

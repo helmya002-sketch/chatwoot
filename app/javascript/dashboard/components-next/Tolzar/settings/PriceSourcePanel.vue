@@ -17,8 +17,9 @@ import {
 } from '../tolzarWorkspace';
 
 // AI Agents → one agent → Price source: where the agent's prices come from (a web page with
-// structured data, a JSON feed, a CSV table or the shop's catalogue). "Test fetch" is read-only
-// (row count + 3 sample rows); saving is Owner-only (the proxy refuses a Manager).
+// structured data, a JSON feed, a CSV table or the shop's catalogue). "Test fetch" changes nothing
+// (row count + 3 sample rows); the test fetch and saving are both Owner-only (the proxy refuses a
+// Manager: a test fetch can reach any https host).
 const props = defineProps({ agentId: { type: String, required: true } });
 const emit = defineEmits(['saved']);
 const { t } = useI18n();

@@ -9,7 +9,7 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
   before_action :ensure_owner, only: %i[export_start export_download meta_connect_url meta_disconnect meta_select
                                         agent_save agent_delete agent_default workflow_save workflow_delete
                                         workspace_settings_save price_source_save price_source_test go_live kill_switch
-                                        kill_switch_release]
+                                        kill_switch_release workspace_bootstrap]
 
   def agent_test
     body = {
@@ -251,8 +251,25 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
     render_brain(post_to_brain('/workspace/settings', body))
   end
 
-  # An AI agent's price source (url | feed | table | commerce). Test fetch is read-only (every
-  # administrator); saving is Owner-only.
+  # First-run setup (brain plugins/onboarding.py), Owner-only: the first workspace settings, the pack
+  # choice and an INACTIVE starter agent, once (409 already_bootstrapped / settings_exist /
+  # workspace_has_config_file). Only the known fields go through; the owner is this account's
+  # owner (Tolzar::AccountOwner), never a value from the browser.
+  BOOTSTRAP_FIELDS = %w[workspace_name timezone languages pack template agent_name].freeze
+
+  def workspace_bootstrap
+    render_brain(post_to_brain('/workspace/bootstrap', bootstrap_body))
+  end
+
+  # The Getting started checklist, for every administrator. The brain adds each inbox's go-live
+  # reasons for this account's inboxes.
+  def workspace_checklist
+    ids = Current.account.inboxes.order(:id).limit(50).pluck(:id).join(',')
+    render_brain(get_from_brain("/workspace/checklist?account_id=#{account_scope_id}&inbox_ids=#{ids}"))
+  end
+
+  # An AI agent's price source (url | feed | table | commerce). Every administrator reads it; the
+  # test fetch and saving are Owner-only (pass 8: a test fetch can reach any https host).
   AGENT_ID = /\A[A-Za-z0-9_-]{1,80}\z/
 
   def price_source
@@ -352,6 +369,13 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
     "/agents/#{ERB::Util.url_encode(params[:agent_id].to_s)}/price-source"
   end
 
+  def bootstrap_body
+    body = BOOTSTRAP_FIELDS.index_with { |key| unsafe(params[key]) }.compact
+    hours = unsafe(params[:working_hours])
+    body['working_hours'] = hours.to_h.slice('start', 'end', 'closed_days') if hours.is_a?(Hash)
+    body.merge('account_id' => account_scope_id, 'owner_user_id' => Tolzar::AccountOwner.user_id(Current.account))
+  end
+
   # Only these fields, never the rest of the browser's body.
   def price_source_body
     { account_id: account_scope_id, type: params[:type].presence&.to_s, url: params[:url].presence&.to_s,
@@ -361,6 +385,8 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
   # The brain's refusals keep their HTTP status (the page tells a conflict from a field error).
   BRAIN_ERROR_STATUS = { 'owner_only' => :forbidden, 'invalid_settings' => :bad_request,
                          'version_conflict' => :conflict, 'not_live_ready' => :unprocessable_entity,
+                         'already_bootstrapped' => :conflict, 'settings_exist' => :conflict,
+                         'workspace_has_config_file' => :conflict,
                          'brain_unreachable' => :bad_gateway }.freeze
 
   def render_brain(res)

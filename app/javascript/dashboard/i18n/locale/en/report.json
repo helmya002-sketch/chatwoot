@@ -1333,7 +1333,25 @@
       "ORDER_CHAT_HINT": "Lets the AI read an order's status when the shop confirms it belongs to this contact's email or phone. A web-chat visitor types their own email, so only turn this on where your contacts' details come from a trusted channel.",
       "ORDER_PATTERN": "Order number pattern (optional regular expression)",
       "ORDER_PATTERN_HINT": "Leave empty for the default. Up to 200 characters; Tolzar checks it when you save.",
-      "ORDER_LOOKUPS": "Order lookups per day"
+      "ORDER_LOOKUPS": "Order lookups per day",
+      "ORDER_CHANNELS": "Channels where order chat may answer",
+      "ORDER_CHANNELS_HINT": "Only conversations on these channels get order status; none picked means order chat answers nowhere.",
+      "ORDER_CHANNELS_NONE": "Order chat is on but no channel is picked, so it does nothing yet.",
+      "WIDGET_WARNING": "A website-chat visitor can type anyone's e-mail; order status could reach the wrong person.",
+      "TRACKING_HOSTS": "Extra tracking-link hosts (optional)",
+      "TRACKING_HOSTS_HINT": "Host names your carrier's tracking links use, besides your shop and the known carriers; up to {max}.",
+      "ORDER_CHANNEL": {
+        "Whatsapp": "WhatsApp",
+        "Sms": "SMS",
+        "TwilioSms": "Twilio SMS",
+        "Email": "E-mail",
+        "Api": "API",
+        "Telegram": "Telegram",
+        "Line": "LINE",
+        "FacebookPage": "Messenger",
+        "Instagram": "Instagram",
+        "WebWidget": "Website chat"
+      }
     },
     "AI": {
       "NEGOTIATE": "The AI may negotiate within these limits",
@@ -1393,7 +1411,11 @@
     },
     "WORKSPACE": {
       "TITLE": "Your workspace",
-      "NAME": "Business name"
+      "NAME": "Business name",
+      "TIMEZONE": "Time zone",
+      "HOURS": "Working hours",
+      "CLOSED": "Closed on",
+      "LANGUAGES": "Language codes your customers write in (e.g. en, ar, de)"
     },
     "AGENT": {
       "TITLE": "Let your AI agent learn your business",
@@ -1402,7 +1424,12 @@
       "PACK": "Start from",
       "NAME": "Agent name",
       "LANGUAGES": "Languages your customers write in",
-      "CREATE": "Create my agent"
+      "CREATE": "Create my agent",
+      "HINT_INACTIVE": "Pick a ready-made template to start from. The agent is created switched off: you review it in AI Agents and turn it on when you are ready; it then runs in Shadow.",
+      "NO_TEMPLATE": "No starter agent",
+      "NO_TEMPLATE_HINT": "Create agents later in AI Agents.",
+      "INDUSTRY_PACK": "Industry pack (optional)",
+      "NO_PACK": "None"
     },
     "PACK": {
       "general": "Any business",
@@ -1427,6 +1454,48 @@
       "TITLE": "Watch it work",
       "HINT": "Your agent starts in Shadow: it handles every conversation inside Tolzar and you see what it would have done next to what your team did. Switch it on when the scoreboard says it's ready.",
       "OPEN": "Open the scoreboard"
+    },
+    "STEP2": {
+      "1": "Workspace",
+      "2": "Your AI agent",
+      "3": "Getting started"
+    },
+    "BACK": "Back",
+    "SET_UP": "Set up my workspace",
+    "ALREADY": "This workspace is already set up.",
+    "OPEN_SETTINGS": "Open Settings",
+    "OWNER_ONLY": "Only the workspace Owner can run the setup.",
+    "FAILED": "The setup did not go through. Try again.",
+    "DAY": {
+      "0": "Mon",
+      "1": "Tue",
+      "2": "Wed",
+      "3": "Thu",
+      "4": "Fri",
+      "5": "Sat",
+      "6": "Sun"
+    },
+    "CHECKLIST": {
+      "TITLE": "Getting started",
+      "PROGRESS": "{done} of {total} done",
+      "HINT": "Everything runs in Shadow: Tolzar shows what it would do and sends nothing to customers.",
+      "CREATED": "Set up. {name} is ready (switched off, {chunks} passages read from your site).",
+      "CREATED_NO_AGENT": "Set up. Create your first AI agent next.",
+      "FAILED": "The checklist could not be loaded.",
+      "OPTIONAL": "(optional)",
+      "FIX": "Open",
+      "REFRESH": "Refresh"
+    },
+    "CHECK": {
+      "settings": "Workspace settings",
+      "pack": "Industry pack",
+      "agent": "An active AI agent",
+      "knowledge": "Knowledge",
+      "prices": "Prices",
+      "channel": "A connected channel",
+      "ai_disclosure": "AI disclosure",
+      "owner": "Workspace owner",
+      "live_ready": "Ready to go live"
     }
   },
   "TOLZAR_AGENCY": {
@@ -1632,7 +1701,7 @@
       "FETCH_FAILED": "The fetch failed: {detail}",
       "TEST_FIRST": "Test the fetch before you save.",
       "SAVED": "Price source saved",
-      "OWNER_SAVE": "Only an Owner can save the price source. You can test it.",
+      "OWNER_SAVE": "Only an Owner can test or save the price source.",
       "COMMERCE_HINT": "Prices come from your shop's catalogue sync (Settings, Shop).",
       "PROBLEM": {
         "url_required": "Enter the address.",
@@ -1644,10 +1713,60 @@
   },
   "TOLZAR_HONEST": {
     "COMING_SOON": "Coming soon",
-    "SKILLS_SOON": "Saved with the agent, but not used yet: replies don't run these skills today. What you saved is kept.",
+    "SKILLS_SOON": "Skills are read by the brain as proposals only, once 'Let this agent propose skills' is on. What you saved is kept.",
     "SMS": "Preview only — nothing is sent",
     "CRM": "Dry run — nothing is written to your CRM",
     "SHOP": "Read-only",
     "BROADCASTS": "Would-send only (Shadow)"
+  },
+  "TOLZAR_SKILLS": {
+    "TITLE": "AI skills",
+    "BADGE": "Preview: proposals only",
+    "BANNER": "Skills are proposals only: Tolzar writes 'would do' notes; nothing is executed.",
+    "ADD": "Add skill",
+    "REMOVE": "Remove skill",
+    "ENABLED": "Let this agent propose skills",
+    "ENABLED_HINT": "Off: the brain ignores every skill below. On: when a reply matches a skill, Tolzar adds a private 'would do' note for your team.",
+    "DRY_RUN": "Workflows: only note which workflow would start (always on)",
+    "EMPTY": "No skills yet: add one.",
+    "WHEN": "When to use it",
+    "WHEN_PLACEHOLDER": "In your own words: when should the agent propose this?",
+    "NONE_AVAILABLE": "Nothing to pick in this workspace yet.",
+    "MISSING": "No longer in this workspace: click to remove",
+    "TAGS_PLACEHOLDER": "vip, follow-up",
+    "CLOSE_HINT": "Proposes closing the conversation when the task is done.",
+    "SAVE_BLOCKED": "Fix the AI skills above before saving (or switch skills off to keep a draft).",
+    "PICK": {
+      "TEAMS": "Teams it may propose",
+      "AGENTS": "People it may propose (team members)",
+      "CONTACT_FIELDS": "Contact fields it may fill",
+      "CONVERSATION_FIELDS": "Conversation fields it may fill",
+      "STAGES": "Stages it may propose",
+      "TAGS": "Tags it may add (comma separated)",
+      "WORKFLOWS": "Workflows it may propose"
+    },
+    "TYPE": {
+      "assign": "Assign to a team or person",
+      "update_fields": "Update fields",
+      "change_stage": "Change lifecycle stage",
+      "close": "Close conversation",
+      "add_tag": "Add a tag",
+      "trigger_workflow": "Start a workflow"
+    },
+    "TYPE_HINT": {
+      "assign": "Propose handing the conversation to a team or a team member.",
+      "update_fields": "Propose saving details from the chat into contact or conversation fields.",
+      "change_stage": "Propose moving the contact along your pipeline.",
+      "close": "Propose resolving the conversation when the task is done.",
+      "add_tag": "Propose a label on the conversation.",
+      "trigger_workflow": "Propose starting one of your workflows."
+    },
+    "ERROR": {
+      "too_many_skills": "At most {max} skills per agent.",
+      "duplicate": "This skill is already in the list.",
+      "when_too_long": "Keep 'when to use it' to {max} characters.",
+      "too_many_values": "Pick at most {max} values.",
+      "needs_values": "Pick at least one value, or untick this skill."
+    }
   }
 }

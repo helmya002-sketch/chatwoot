@@ -9,6 +9,61 @@ export const CRM_DIRECTIONS = ['to_crm', 'from_crm', 'both'];
 export const SHOP_PROVIDERS = ['shopify', 'woocommerce', 'salla', 'zid'];
 export const ORDER_LOOKUPS_DEFAULT = 200;
 export const ORDER_PATTERN_MAX = 200; // MAX_PATTERN in plugins/commerce.py
+// The Chatwoot inbox types a workspace may trust for "Where is my order?" in chat (CHANNEL_TYPES in
+// plugins/commerce.py). Order chat answers nowhere until at least one is picked. The website chat
+// only together with allow_widget: a visitor can type anyone's e-mail address.
+export const WIDGET_CHANNEL = 'Channel::WebWidget';
+export const ORDER_CHAT_CHANNELS = [
+  'Channel::Whatsapp',
+  'Channel::Sms',
+  'Channel::TwilioSms',
+  'Channel::Email',
+  'Channel::Api',
+  'Channel::Telegram',
+  'Channel::Line',
+  'Channel::FacebookPage',
+  'Channel::Instagram',
+  WIDGET_CHANNEL,
+];
+export const TRACKING_HOSTS_MAX = 20;
+export const channelLabelKey = type =>
+  `TOLZAR_SETTINGS.CHANNELS.ORDER_CHANNEL.${String(type).replace('Channel::', '')}`;
+// "Track.Example.com, https://x.example/a" -> ['track.example.com', 'x.example'] (host names only).
+export const parseHosts = text => {
+  const out = [];
+  String(text || '')
+    .split(/[\s,]+/)
+    .map(
+      h =>
+        h
+          .trim()
+          .toLowerCase()
+          .replace(/^https?:\/\//, '')
+          .split('/')[0]
+    )
+    .filter(Boolean)
+    .forEach(h => {
+      if (!out.includes(h)) out.push(h);
+    });
+  return out;
+};
+// What order chat sends: known channel types only; the widget only with allow_widget.
+export const orderChatSettings = s => {
+  const picked = (s.order_chat_channels || []).filter(c =>
+    ORDER_CHAT_CHANNELS.includes(c)
+  );
+  const allowWidget =
+    s.allow_widget === true && picked.includes(WIDGET_CHANNEL);
+  return {
+    order_chat_channels: allowWidget
+      ? picked
+      : picked.filter(c => c !== WIDGET_CHANNEL),
+    allow_widget: allowWidget,
+    tracking_hosts: Array.isArray(s.tracking_hosts)
+      ? s.tracking_hosts
+      : parseHosts(s.tracking_hosts),
+  };
+};
 
 // Which credential fields a provider uses (mirrors NEEDS / CRED_FIELDS in the brain plugins).
 // The keys are write-only: typed here, stored encrypted by the brain, never shown again.
@@ -107,6 +162,7 @@ export const saveCommerce = (accountId, s, keys = {}, clear = []) =>
     // "Where is my order?" in chat: opt-in (a contact's email/phone is only as trustworthy as
     // its channel). The brain validates the pattern and the daily cap and says what is wrong.
     order_chat: !!s.order_chat,
+    ...orderChatSettings(s),
     order_pattern: String(s.order_pattern || '').trim(),
     ...(String(s.order_lookups_per_day ?? '').trim() === ''
       ? {}

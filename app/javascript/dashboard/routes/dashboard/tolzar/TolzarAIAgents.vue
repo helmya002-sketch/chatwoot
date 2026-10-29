@@ -5,6 +5,12 @@ import { useMapGetter } from 'dashboard/composables/store';
 import CredentialInput from 'dashboard/components-next/Tolzar/settings/CredentialInput.vue';
 import BrainNotice from 'dashboard/components-next/Tolzar/settings/BrainNotice.vue';
 import PriceSourcePanel from 'dashboard/components-next/Tolzar/settings/PriceSourcePanel.vue';
+import SkillsPanel from 'dashboard/components-next/Tolzar/settings/SkillsPanel.vue';
+import {
+  skillsFromAgent,
+  skillsToAgent,
+  blocksSave,
+} from 'dashboard/components-next/Tolzar/tolzarSkills';
 import { agentPrices } from 'dashboard/components-next/Tolzar/tolzarWorkspace';
 import { BTN } from 'dashboard/components-next/Tolzar/settings/tzClasses';
 import {
@@ -27,22 +33,16 @@ const { t } = useI18n();
 const EMOJIS = ['😇', '😎', '🤖', '✨', '💬', '📅', '🧭', '🛍️'];
 const apiBase = computed(() => `/api/v1/accounts/${accountId.value}/tolzar`);
 
-// Skill catalog. Saved with the agent, but the brain does not read `skills` yet: the section is
-// shown disabled ("Coming soon") and whatever was saved is kept as it is.
-const SKILL_CATALOG = [
-  { type: 'assign', label: 'Assign to agent or team', hint: 'Route the conversation to a human agent, a team, or another AI Agent.' },
-  { type: 'update_fields', label: 'Update Contact fields', hint: 'Save data from the conversation to contact fields (hotel, location, country…).' },
-  { type: 'update_lifecycle', label: 'Update Lifecycle Stage', hint: 'Move the contact along the funnel (New Lead → Active → Offer Sent → Won/Lost).' },
-  { type: 'close', label: 'Close conversation', hint: 'Resolve the conversation when the task is complete.' },
-  { type: 'comment', label: 'Add comments', hint: 'Leave a private note for the human team.' },
-  { type: 'tags', label: 'Update tags', hint: 'Add or remove labels on the conversation.' },
-  { type: 'workflow', label: 'Trigger Workflows', hint: 'Start an existing workflow to automate the rest.' },
-];
-
 const agents = ref([]);
 const selectedId = ref(null); // null = list view, else builder
 const draft = ref(null); // editable copy while in builder
 const loaded = ref(false);
+
+// Skills are proposals only (the brain writes "would do" notes, nothing is executed). The editor is
+// usable; the badge says "Preview: proposals only" until the owner has reviewed it live.
+const SKILLS_LIVE = true;
+const skillsForm = ref(skillsFromAgent({}));
+const skillsError = ref(false);
 const defaultId = ref(null);
 
 // test chat (preview only — brain not connected yet)
@@ -94,6 +94,8 @@ const selected = computed(() => agents.value.find(a => a.id === selectedId.value
 function openAgent(id) {
   selectedId.value = id;
   draft.value = JSON.parse(JSON.stringify(agents.value.find(a => a.id === id)));
+  skillsForm.value = skillsFromAgent(draft.value);
+  skillsError.value = false;
   testMsgs.value = [];
   loadPriceKey(id);
 }
@@ -211,6 +213,13 @@ function cancelEdit() {
 }
 
 async function saveAgent() {
+  // Skills switched on must be complete (the brain would skip a half-filled one silently).
+  if (SKILLS_LIVE && blocksSave(skillsForm.value)) {
+    skillsError.value = true;
+    return;
+  }
+  // Skills in the brain's shape (agent_skills.py); an older draft is saved in the new shape.
+  if (SKILLS_LIVE) Object.assign(draft.value, skillsToAgent(skillsForm.value));
   const i = agents.value.findIndex(a => a.id === draft.value.id);
   if (i >= 0) agents.value[i] = JSON.parse(JSON.stringify(draft.value));
   const payload = JSON.parse(JSON.stringify(draft.value));
@@ -243,22 +252,6 @@ function addKnowledge() {
 function removeKnowledge(i) {
   draft.value.knowledge.splice(i, 1);
 }
-
-const SKILLS_LIVE = false; // flip when the brain reads an agent's `skills`
-const addSkillOpen = ref(false);
-function addSkill(type) {
-  draft.value.skills.push({ type, config: '' });
-  addSkillOpen.value = false;
-}
-function removeSkill(i) {
-  draft.value.skills.splice(i, 1);
-}
-function skillLabel(type) {
-  return (SKILL_CATALOG.find(s => s.type === type) || {}).label || type;
-}
-const availableSkills = computed(() =>
-  SKILL_CATALOG.filter(s => !draft.value.skills.some(x => x.type === s.type))
-);
 
 const testBusy = ref(false);
 async function sendTest() {
@@ -294,11 +287,6 @@ async function sendTest() {
   }
 }
 
-const skillAccent = { assign: '#0ea5e9', update_fields: '#8b5cf6', update_lifecycle: '#ec4899', close: '#22c55e', comment: '#64748b', tags: '#10b981', workflow: '#3e63dd' };
-function tint(hex) {
-  return { color: hex, background: `${hex}1f` };
-}
-
 onMounted(() => {
   load();
   loadTemplates();
@@ -306,7 +294,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="overflow-auto flex-1 bg-n-background" data-tz-build="ai-agents-5-serverside">
+  <div class="overflow-auto flex-1 bg-n-background" data-tz-build="ai-agents-6-skills">
     <!-- ===================== LIST VIEW ===================== -->
     <div v-if="!selectedId" class="mx-auto max-w-[1120px] px-5 pb-16 pt-7 md:px-6">
       <div class="flex gap-4 justify-between items-start tz-rise">
@@ -485,36 +473,15 @@ onMounted(() => {
             <BrainNotice :result="priceResult" :saved="priceSaved" />
           </section>
 
-          <!-- AI skills: not read by the brain yet -> shown disabled, saved data untouched -->
-          <section class="p-[18px] rounded-2xl border shadow-sm bg-n-solid-1 border-n-weak" :aria-disabled="!SKILLS_LIVE">
-            <div class="flex relative justify-between items-center">
-              <h3 class="inline-flex gap-2 items-center m-0 text-[15px] font-semibold text-n-slate-12">
-                AI skills
-                <span v-if="!SKILLS_LIVE" class="inline-flex items-center px-2 py-0.5 text-[11px] font-semibold rounded-full text-n-slate-11 bg-n-alpha-2">{{ t('TOLZAR_HONEST.COMING_SOON') }}</span>
-              </h3>
-              <button type="button" class="tz-btn-soft disabled:opacity-50 disabled:cursor-not-allowed" :disabled="!SKILLS_LIVE" @click="addSkillOpen = !addSkillOpen"><span class="i-lucide-plus size-3.5" /> Add skill</button>
-              <div v-if="SKILLS_LIVE && addSkillOpen" class="overflow-hidden absolute top-9 z-10 w-[300px] rounded-xl border shadow-lg ltr:right-0 rtl:left-0 bg-n-solid-1 border-n-weak">
-                <div v-if="!availableSkills.length" class="p-3 text-[13px] text-n-slate-10">All skills added.</div>
-                <button v-for="s in availableSkills" :key="s.type" type="button" class="block px-3 py-2.5 w-full text-left border-b transition-colors border-n-weak last:border-0 hover:bg-n-alpha-1" @click="addSkill(s.type)">
-                  <div class="text-[13px] font-semibold text-n-slate-12">{{ s.label }}</div>
-                  <div class="text-[11px] text-n-slate-10">{{ s.hint }}</div>
-                </button>
-              </div>
-            </div>
-            <p v-if="!SKILLS_LIVE" class="mt-1.5 mb-3 text-xs text-n-slate-11">{{ t('TOLZAR_HONEST.SKILLS_SOON') }}</p>
-            <p v-else class="mt-1.5 mb-3 text-xs text-n-slate-11">Set clear rules so your agent behaves as expected.</p>
-            <div v-if="SKILLS_LIVE && !draft.skills.length" class="text-[13px] text-n-slate-10">No skills yet — add one.</div>
-            <div v-for="(sk, i) in draft.skills" :key="i" class="p-3 mb-2.5 rounded-xl border border-n-weak bg-n-alpha-1" :class="{ 'opacity-60': !SKILLS_LIVE }">
-              <div class="flex justify-between items-center mb-1.5">
-                <div class="inline-flex gap-1.5 items-center text-[13px] font-bold">
-                  <span class="inline-block rounded-full size-2" :style="{ background: skillAccent[sk.type] || '#64748b' }" />
-                  <span class="text-n-slate-12">{{ skillLabel(sk.type) }}</span>
-                </div>
-                <button type="button" class="grid place-content-center rounded-lg transition-colors size-6 text-n-slate-10 hover:text-rose-500 hover:bg-n-alpha-2 disabled:pointer-events-none" :disabled="!SKILLS_LIVE" @click="removeSkill(i)"><span class="i-lucide-x size-4" /></button>
-              </div>
-              <textarea v-model="sk.config" :readonly="!SKILLS_LIVE" rows="2" placeholder="When and how should this skill be performed?" class="box-border p-2 w-full text-[12.5px] rounded-lg border outline-none resize-y border-n-weak bg-n-solid-1 text-n-slate-12 focus:border-n-brand"></textarea>
-            </div>
-          </section>
+          <!-- AI skills: proposals only ("would do" notes); nothing is executed -->
+          <SkillsPanel
+            :key="draft.id"
+            v-model="skillsForm"
+            :live="SKILLS_LIVE"
+          />
+          <p v-if="skillsError" class="m-0 text-xs text-rose-600" role="alert">
+            {{ t('TOLZAR_SKILLS.SAVE_BLOCKED') }}
+          </p>
         </div>
 
         <!-- right: test -->

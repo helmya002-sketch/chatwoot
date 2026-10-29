@@ -12,6 +12,11 @@ import {
   SHOP_PROVIDERS,
   ORDER_LOOKUPS_DEFAULT,
   ORDER_PATTERN_MAX,
+  ORDER_CHAT_CHANNELS,
+  WIDGET_CHANNEL,
+  TRACKING_HOSTS_MAX,
+  channelLabelKey,
+  parseHosts,
   credentialFields,
   credentialLabelKey,
   getSms,
@@ -55,6 +60,20 @@ const mapRows = ref([]);
 const agents = ref([]);
 const templates = ref([]);
 
+// Order chat: which channels may answer "Where is my order?" (none until picked).
+const hostsText = ref('');
+const pickedChannel = type => (form.value?.order_chat_channels || []).includes(type);
+function toggleChannel(type) {
+  const list = form.value.order_chat_channels || [];
+  form.value.order_chat_channels = list.includes(type) ? list.filter(c => c !== type) : [...list, type];
+  // The website chat goes only together with allow_widget (and off again with it).
+  if (type === WIDGET_CHANNEL) form.value.allow_widget = form.value.order_chat_channels.includes(type);
+}
+function setHosts(text) {
+  hostsText.value = text;
+  form.value.tracking_hosts = parseHosts(text);
+}
+
 const credFields = computed(() => credentialFields(props.section, form.value?.provider));
 const credLabel = f => t(credentialLabelKey(props.section, form.value?.provider, f));
 // A saved key belongs to the saved provider: after switching provider the brain drops it on save.
@@ -82,7 +101,8 @@ async function load() {
       commerceTemplates(accountId.value),
     ]);
     raw.value = c;
-    form.value = { provider: 'shopify', shop_domain: '', currency: '', agent_id: '', catalogue_auto: false, order_chat: false, order_pattern: '', order_lookups_per_day: ORDER_LOOKUPS_DEFAULT, ...(c.settings || {}) };
+    form.value = { provider: 'shopify', shop_domain: '', currency: '', agent_id: '', catalogue_auto: false, order_chat: false, order_pattern: '', order_lookups_per_day: ORDER_LOOKUPS_DEFAULT, order_chat_channels: [], allow_widget: false, tracking_hosts: [], ...(c.settings || {}) };
+    hostsText.value = (form.value.tracking_hosts || []).join(', ');
     agents.value = a.agents || [];
     templates.value = tp.templates || [];
   }
@@ -292,6 +312,28 @@ onMounted(load);
           <label :class="CHECK"><input v-model="form.catalogue_auto" type="checkbox" /> {{ t('TOLZAR_SETTINGS.CHANNELS.CATALOGUE_DAILY') }}</label>
           <label :class="CHECK"><input v-model="form.order_chat" type="checkbox" /> {{ t('TOLZAR_SETTINGS.CHANNELS.ORDER_CHAT') }}</label>
           <p class="mt-1 mb-0 text-xs text-n-slate-10">{{ t('TOLZAR_SETTINGS.CHANNELS.ORDER_CHAT_HINT') }}</p>
+          <label :class="LABEL">{{ t('TOLZAR_SETTINGS.CHANNELS.ORDER_CHANNELS') }}</label>
+          <div class="flex flex-wrap gap-1.5" data-tz-order-channels>
+            <button
+              v-for="c in ORDER_CHAT_CHANNELS"
+              :key="c"
+              type="button"
+              class="px-2 py-0.5 text-xs rounded-full border transition-colors"
+              :class="pickedChannel(c) ? (c === WIDGET_CHANNEL ? 'text-white border-transparent bg-rose-600' : 'text-white border-transparent bg-n-brand') : 'border-n-weak text-n-slate-11 hover:bg-n-alpha-2'"
+              :aria-pressed="pickedChannel(c)"
+              @click="toggleChannel(c)"
+            >
+              {{ t(channelLabelKey(c)) }}
+            </button>
+          </div>
+          <p class="mt-1 mb-0 text-xs text-n-slate-10">{{ t('TOLZAR_SETTINGS.CHANNELS.ORDER_CHANNELS_HINT') }}</p>
+          <p v-if="form.order_chat && !(form.order_chat_channels || []).length" class="mt-1 mb-0 text-xs text-n-amber-11">{{ t('TOLZAR_SETTINGS.CHANNELS.ORDER_CHANNELS_NONE') }}</p>
+          <p v-if="pickedChannel(WIDGET_CHANNEL)" class="px-2.5 py-2 mt-1.5 mb-0 text-xs font-semibold text-rose-700 rounded-lg border border-rose-300 bg-rose-50 dark:text-rose-300 dark:bg-rose-500/10 dark:border-rose-500/40" role="alert" data-tz-widget-warning>
+            {{ t('TOLZAR_SETTINGS.CHANNELS.WIDGET_WARNING') }}
+          </p>
+          <label :class="LABEL">{{ t('TOLZAR_SETTINGS.CHANNELS.TRACKING_HOSTS') }}</label>
+          <input :value="hostsText" :class="INPUT" placeholder="track.example.com" spellcheck="false" @input="setHosts($event.target.value)" />
+          <p class="mt-1 mb-0 text-xs text-n-slate-10">{{ t('TOLZAR_SETTINGS.CHANNELS.TRACKING_HOSTS_HINT', { max: TRACKING_HOSTS_MAX }) }}</p>
           <label :class="LABEL">{{ t('TOLZAR_SETTINGS.CHANNELS.ORDER_PATTERN') }}</label>
           <input v-model="form.order_pattern" :maxlength="ORDER_PATTERN_MAX" :class="INPUT" placeholder="#?\d{4,8}" spellcheck="false" />
           <p class="mt-1 mb-0 text-xs text-n-slate-10">{{ t('TOLZAR_SETTINGS.CHANNELS.ORDER_PATTERN_HINT') }}</p>

@@ -1333,7 +1333,25 @@
       "ORDER_CHAT_HINT": "Permet à l'IA de lire le statut d'une commande quand la boutique confirme qu'elle appartient à l'e-mail ou au téléphone de ce contact. Un visiteur du chat web saisit lui-même son e-mail : n'activez cette option que si les coordonnées de vos contacts viennent d'un canal de confiance.",
       "ORDER_PATTERN": "Format du numéro de commande (expression régulière, facultatif)",
       "ORDER_PATTERN_HINT": "Laissez vide pour le format par défaut. 200 caractères maximum ; Tolzar le vérifie à l'enregistrement.",
-      "ORDER_LOOKUPS": "Recherches de commandes par jour"
+      "ORDER_LOOKUPS": "Recherches de commandes par jour",
+      "ORDER_CHANNELS": "Canaux où le chat de commande peut répondre",
+      "ORDER_CHANNELS_HINT": "Seules les conversations sur ces canaux reçoivent le statut de commande ; sans sélection, le chat de commande ne répond nulle part.",
+      "ORDER_CHANNELS_NONE": "Le chat de commande est activé mais aucun canal n'est choisi : il ne fait donc encore rien.",
+      "WIDGET_WARNING": "Un visiteur du chat du site peut saisir l'e-mail de n'importe qui ; le statut de commande pourrait atteindre la mauvaise personne.",
+      "TRACKING_HOSTS": "Hôtes supplémentaires des liens de suivi (facultatif)",
+      "TRACKING_HOSTS_HINT": "Noms d'hôte des liens de suivi de votre transporteur, en plus de votre boutique et des transporteurs connus ; jusqu'à {max}.",
+      "ORDER_CHANNEL": {
+        "Whatsapp": "WhatsApp",
+        "Sms": "SMS",
+        "TwilioSms": "SMS Twilio",
+        "Email": "E-mail",
+        "Api": "API",
+        "Telegram": "Telegram",
+        "Line": "LINE",
+        "FacebookPage": "Messenger",
+        "Instagram": "Instagram",
+        "WebWidget": "Chat du site"
+      }
     },
     "AI": {
       "NEGOTIATE": "L'IA peut négocier dans ces limites",
@@ -1393,7 +1411,11 @@
     },
     "WORKSPACE": {
       "TITLE": "Votre espace de travail",
-      "NAME": "Nom de l'entreprise"
+      "NAME": "Nom de l'entreprise",
+      "TIMEZONE": "Fuseau horaire",
+      "HOURS": "Heures d'ouverture",
+      "CLOSED": "Fermé le",
+      "LANGUAGES": "Codes des langues de vos clients (p. ex. en, ar, de)"
     },
     "AGENT": {
       "TITLE": "Laissez votre agent IA apprendre votre activité",
@@ -1402,7 +1424,12 @@
       "PACK": "Partir de",
       "NAME": "Nom de l'agent",
       "LANGUAGES": "Langues de vos clients",
-      "CREATE": "Créer mon agent"
+      "CREATE": "Créer mon agent",
+      "HINT_INACTIVE": "Choisissez un modèle prêt à l'emploi pour démarrer. L'agent est créé désactivé : vous le vérifiez dans Agents IA et l'activez quand vous êtes prêt ; il fonctionne alors en mode Shadow.",
+      "NO_TEMPLATE": "Pas d'agent de départ",
+      "NO_TEMPLATE_HINT": "Créez des agents plus tard dans Agents IA.",
+      "INDUSTRY_PACK": "Pack sectoriel (facultatif)",
+      "NO_PACK": "Aucun"
     },
     "PACK": {
       "general": "Toute entreprise",
@@ -1427,6 +1454,48 @@
       "TITLE": "Le voir travailler",
       "HINT": "Votre agent démarre en mode fantôme : il traite chaque conversation dans Tolzar et vous voyez ce qu'il aurait fait à côté de ce qu'a fait l'équipe. Activez-le quand le tableau de bord indique qu'il est prêt.",
       "OPEN": "Ouvrir le tableau de bord"
+    },
+    "STEP2": {
+      "1": "Espace de travail",
+      "2": "Votre agent IA",
+      "3": "Premiers pas"
+    },
+    "BACK": "Retour",
+    "SET_UP": "Configurer mon espace de travail",
+    "ALREADY": "Cet espace de travail est déjà configuré.",
+    "OPEN_SETTINGS": "Ouvrir les paramètres",
+    "OWNER_ONLY": "Seul l'Owner de l'espace de travail peut lancer la configuration.",
+    "FAILED": "La configuration n'a pas abouti. Réessayez.",
+    "DAY": {
+      "0": "Lun",
+      "1": "Mar",
+      "2": "Mer",
+      "3": "Jeu",
+      "4": "Ven",
+      "5": "Sam",
+      "6": "Dim"
+    },
+    "CHECKLIST": {
+      "TITLE": "Premiers pas",
+      "PROGRESS": "{done} sur {total} terminés",
+      "HINT": "Tout fonctionne en mode Shadow : Tolzar montre ce qu'il ferait et n'envoie rien aux clients.",
+      "CREATED": "Configuré. {name} est prêt (désactivé, {chunks} passages lus sur votre site).",
+      "CREATED_NO_AGENT": "Configuré. Créez ensuite votre premier agent IA.",
+      "FAILED": "Impossible de charger la liste.",
+      "OPTIONAL": "(facultatif)",
+      "FIX": "Ouvrir",
+      "REFRESH": "Actualiser"
+    },
+    "CHECK": {
+      "settings": "Paramètres de l'espace de travail",
+      "pack": "Pack sectoriel",
+      "agent": "Un agent IA actif",
+      "knowledge": "Connaissances",
+      "prices": "Prix",
+      "channel": "Un canal connecté",
+      "ai_disclosure": "Mention IA",
+      "owner": "Owner de l'espace de travail",
+      "live_ready": "Prêt pour le direct"
     }
   },
   "TOLZAR_AGENCY": {
@@ -1632,7 +1701,7 @@
       "FETCH_FAILED": "La lecture a échoué : {detail}",
       "TEST_FIRST": "Testez la lecture avant d'enregistrer.",
       "SAVED": "Source de prix enregistrée",
-      "OWNER_SAVE": "Seul un Owner peut enregistrer la source de prix. Vous pouvez la tester.",
+      "OWNER_SAVE": "Seul un Owner peut tester ou enregistrer la source de prix.",
       "COMMERCE_HINT": "Les prix viennent de la synchronisation du catalogue de votre boutique (Réglages, Boutique).",
       "PROBLEM": {
         "url_required": "Saisissez l'adresse.",
@@ -1644,10 +1713,60 @@
   },
   "TOLZAR_HONEST": {
     "COMING_SOON": "Bientôt disponible",
-    "SKILLS_SOON": "Enregistrées avec l’agent, mais pas encore utilisées : les réponses n’exécutent pas ces compétences aujourd’hui. Ce que vous avez enregistré est conservé.",
+    "SKILLS_SOON": "Le cerveau lit les skills uniquement comme des propositions, dès que « Laisser cet agent proposer des skills » est activé. Ce que vous avez enregistré est conservé.",
     "SMS": "Aperçu uniquement — rien n’est envoyé",
     "CRM": "Simulation — rien n’est écrit dans votre CRM",
     "SHOP": "Lecture seule",
     "BROADCASTS": "Envoi simulé uniquement (Shadow)"
+  },
+  "TOLZAR_SKILLS": {
+    "TITLE": "Skills IA",
+    "BADGE": "Aperçu : propositions uniquement",
+    "BANNER": "Les skills ne sont que des propositions : Tolzar écrit des notes « ferait » ; rien n'est exécuté.",
+    "ADD": "Ajouter un skill",
+    "REMOVE": "Retirer le skill",
+    "ENABLED": "Laisser cet agent proposer des skills",
+    "ENABLED_HINT": "Désactivé : le cerveau ignore tous les skills ci-dessous. Activé : quand une réponse correspond à un skill, Tolzar ajoute une note privée « ferait » pour votre équipe.",
+    "DRY_RUN": "Workflows : noter seulement quel workflow démarrerait (toujours activé)",
+    "EMPTY": "Aucun skill pour l'instant : ajoutez-en un.",
+    "WHEN": "Quand l'utiliser",
+    "WHEN_PLACEHOLDER": "Avec vos mots : quand l'agent doit-il proposer ceci ?",
+    "NONE_AVAILABLE": "Rien à choisir dans cet espace de travail pour l'instant.",
+    "MISSING": "N'existe plus dans cet espace de travail : cliquez pour retirer",
+    "TAGS_PLACEHOLDER": "vip, relance",
+    "CLOSE_HINT": "Propose de clôturer la conversation quand la tâche est terminée.",
+    "SAVE_BLOCKED": "Corrigez les skills IA ci-dessus avant d'enregistrer (ou désactivez les skills pour garder un brouillon).",
+    "PICK": {
+      "TEAMS": "Équipes qu'il peut proposer",
+      "AGENTS": "Personnes qu'il peut proposer (membres d'équipe)",
+      "CONTACT_FIELDS": "Champs de contact qu'il peut remplir",
+      "CONVERSATION_FIELDS": "Champs de conversation qu'il peut remplir",
+      "STAGES": "Étapes qu'il peut proposer",
+      "TAGS": "Tags qu'il peut ajouter (séparés par des virgules)",
+      "WORKFLOWS": "Workflows qu'il peut proposer"
+    },
+    "TYPE": {
+      "assign": "Attribuer à une équipe ou une personne",
+      "update_fields": "Mettre à jour des champs",
+      "change_stage": "Changer l'étape du cycle de vie",
+      "close": "Clôturer la conversation",
+      "add_tag": "Ajouter un tag",
+      "trigger_workflow": "Démarrer un workflow"
+    },
+    "TYPE_HINT": {
+      "assign": "Propose de confier la conversation à une équipe ou à un membre d'équipe.",
+      "update_fields": "Propose d'enregistrer des informations du chat dans des champs de contact ou de conversation.",
+      "change_stage": "Propose de faire avancer le contact dans votre pipeline.",
+      "close": "Propose de résoudre la conversation quand la tâche est terminée.",
+      "add_tag": "Propose une étiquette pour la conversation.",
+      "trigger_workflow": "Propose de démarrer l'un de vos workflows."
+    },
+    "ERROR": {
+      "too_many_skills": "Au plus {max} skills par agent.",
+      "duplicate": "Ce skill est déjà dans la liste.",
+      "when_too_long": "« Quand l'utiliser » : {max} caractères au plus.",
+      "too_many_values": "Choisissez au plus {max} valeurs.",
+      "needs_values": "Choisissez au moins une valeur, ou décochez ce skill."
+    }
   }
 }

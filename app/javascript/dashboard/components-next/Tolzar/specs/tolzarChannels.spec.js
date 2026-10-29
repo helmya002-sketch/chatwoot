@@ -11,6 +11,11 @@ import {
   saveCommerce,
   syncCatalogue,
   orderStatus,
+  ORDER_CHAT_CHANNELS,
+  WIDGET_CHANNEL,
+  channelLabelKey,
+  parseHosts,
+  orderChatSettings,
 } from '../tolzarChannels';
 
 const url = f => `/api/v1/accounts/2/tolzar/brain/${f}`;
@@ -222,5 +227,58 @@ describe('tolzarChannels', () => {
       url('commerce_order_status'),
       { order_number: '1001' }
     );
+  });
+
+  it('order chat: channel picker, widget only with allow_widget, tracking hosts', async () => {
+    expect(ORDER_CHAT_CHANNELS).toContain(WIDGET_CHANNEL);
+    expect(channelLabelKey('Channel::FacebookPage')).toBe(
+      'TOLZAR_SETTINGS.CHANNELS.ORDER_CHANNEL.FacebookPage'
+    );
+    expect(
+      parseHosts('Track.Example.com, https://x.example/a  track.example.com')
+    ).toEqual(['track.example.com', 'x.example']);
+    expect(
+      orderChatSettings({
+        order_chat_channels: [
+          'Channel::Whatsapp',
+          WIDGET_CHANNEL,
+          'Channel::Bogus',
+        ],
+        allow_widget: false,
+        tracking_hosts: 'a.example',
+      })
+    ).toEqual({
+      order_chat_channels: ['Channel::Whatsapp'],
+      allow_widget: false,
+      tracking_hosts: ['a.example'],
+    });
+    expect(
+      orderChatSettings({
+        order_chat_channels: [WIDGET_CHANNEL],
+        allow_widget: true,
+      })
+    ).toEqual({
+      order_chat_channels: [WIDGET_CHANNEL],
+      allow_widget: true,
+      tracking_hosts: [],
+    });
+    expect(orderChatSettings({ allow_widget: true })).toEqual({
+      order_chat_channels: [],
+      allow_widget: false,
+      tracking_hosts: [],
+    });
+    await saveCommerce(2, {
+      provider: 'shopify',
+      shop_domain: 'a.myshopify.com',
+      order_chat: true,
+      order_chat_channels: ['Channel::Email'],
+      tracking_hosts: ['t.example'],
+    });
+    expect(window.axios.post.mock.calls.at(-1)[1]).toMatchObject({
+      order_chat: true,
+      order_chat_channels: ['Channel::Email'],
+      allow_widget: false,
+      tracking_hosts: ['t.example'],
+    });
   });
 });

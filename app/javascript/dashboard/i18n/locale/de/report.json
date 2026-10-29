@@ -1333,7 +1333,25 @@
       "ORDER_CHAT_HINT": "Erlaubt der KI, den Status einer Bestellung zu lesen, wenn der Shop bestätigt, dass sie zur E-Mail oder Telefonnummer dieses Kontakts gehört. Im Web-Chat tippt der Besucher seine E-Mail selbst ein, also nur dort einschalten, wo die Kontaktdaten aus einem vertrauenswürdigen Kanal stammen.",
       "ORDER_PATTERN": "Muster der Bestellnummer (optional, regulärer Ausdruck)",
       "ORDER_PATTERN_HINT": "Leer lassen für den Standard. Bis zu 200 Zeichen; Tolzar prüft es beim Speichern.",
-      "ORDER_LOOKUPS": "Bestellabfragen pro Tag"
+      "ORDER_LOOKUPS": "Bestellabfragen pro Tag",
+      "ORDER_CHANNELS": "Kanäle, in denen der Bestell-Chat antworten darf",
+      "ORDER_CHANNELS_HINT": "Nur Konversationen in diesen Kanälen erhalten den Bestellstatus; ohne Auswahl antwortet der Bestell-Chat nirgends.",
+      "ORDER_CHANNELS_NONE": "Der Bestell-Chat ist an, aber kein Kanal ist gewählt, daher tut er noch nichts.",
+      "WIDGET_WARNING": "Ein Website-Chat-Besucher kann jede beliebige E-Mail eintippen; der Bestellstatus könnte die falsche Person erreichen.",
+      "TRACKING_HOSTS": "Zusätzliche Hosts für Tracking-Links (optional)",
+      "TRACKING_HOSTS_HINT": "Hostnamen der Tracking-Links deines Versanddienstes, zusätzlich zu deinem Shop und den bekannten Versanddiensten; bis zu {max}.",
+      "ORDER_CHANNEL": {
+        "Whatsapp": "WhatsApp",
+        "Sms": "SMS",
+        "TwilioSms": "Twilio-SMS",
+        "Email": "E-Mail",
+        "Api": "API",
+        "Telegram": "Telegram",
+        "Line": "LINE",
+        "FacebookPage": "Messenger",
+        "Instagram": "Instagram",
+        "WebWidget": "Website-Chat"
+      }
     },
     "AI": {
       "NEGOTIATE": "Die KI darf innerhalb dieser Grenzen verhandeln",
@@ -1393,7 +1411,11 @@
     },
     "WORKSPACE": {
       "TITLE": "Dein Arbeitsbereich",
-      "NAME": "Name des Unternehmens"
+      "NAME": "Name des Unternehmens",
+      "TIMEZONE": "Zeitzone",
+      "HOURS": "Arbeitszeiten",
+      "CLOSED": "Geschlossen am",
+      "LANGUAGES": "Sprachcodes deiner Kunden (z. B. en, ar, de)"
     },
     "AGENT": {
       "TITLE": "Lass deinen KI-Agenten dein Geschäft lernen",
@@ -1402,7 +1424,12 @@
       "PACK": "Starten mit",
       "NAME": "Name des Agenten",
       "LANGUAGES": "Sprachen deiner Kunden",
-      "CREATE": "Agenten erstellen"
+      "CREATE": "Agenten erstellen",
+      "HINT_INACTIVE": "Wähle eine fertige Vorlage als Start. Der Agent wird ausgeschaltet angelegt: du prüfst ihn unter KI-Agenten und schaltest ihn ein, wenn du so weit bist; dann läuft er im Shadow-Modus.",
+      "NO_TEMPLATE": "Kein Start-Agent",
+      "NO_TEMPLATE_HINT": "Agenten später unter KI-Agenten anlegen.",
+      "INDUSTRY_PACK": "Branchenpaket (optional)",
+      "NO_PACK": "Keins"
     },
     "PACK": {
       "general": "Jedes Unternehmen",
@@ -1427,6 +1454,48 @@
       "TITLE": "Zusehen",
       "HINT": "Dein Agent startet im Schattenbetrieb: Er bearbeitet jedes Gespräch in Tolzar, und du siehst neben der Arbeit deines Teams, was er getan hätte. Schalte ihn ein, wenn die Anzeigetafel sagt, dass er bereit ist.",
       "OPEN": "Anzeigetafel öffnen"
+    },
+    "STEP2": {
+      "1": "Workspace",
+      "2": "Dein KI-Agent",
+      "3": "Erste Schritte"
+    },
+    "BACK": "Zurück",
+    "SET_UP": "Workspace einrichten",
+    "ALREADY": "Dieser Workspace ist bereits eingerichtet.",
+    "OPEN_SETTINGS": "Einstellungen öffnen",
+    "OWNER_ONLY": "Nur der Owner des Workspace kann die Einrichtung starten.",
+    "FAILED": "Die Einrichtung hat nicht geklappt. Versuche es erneut.",
+    "DAY": {
+      "0": "Mo",
+      "1": "Di",
+      "2": "Mi",
+      "3": "Do",
+      "4": "Fr",
+      "5": "Sa",
+      "6": "So"
+    },
+    "CHECKLIST": {
+      "TITLE": "Erste Schritte",
+      "PROGRESS": "{done} von {total} erledigt",
+      "HINT": "Alles läuft im Shadow-Modus: Tolzar zeigt, was es tun würde, und sendet nichts an Kunden.",
+      "CREATED": "Eingerichtet. {name} ist bereit (ausgeschaltet, {chunks} Abschnitte deiner Website gelesen).",
+      "CREATED_NO_AGENT": "Eingerichtet. Lege als Nächstes deinen ersten KI-Agenten an.",
+      "FAILED": "Die Checkliste konnte nicht geladen werden.",
+      "OPTIONAL": "(optional)",
+      "FIX": "Öffnen",
+      "REFRESH": "Aktualisieren"
+    },
+    "CHECK": {
+      "settings": "Workspace-Einstellungen",
+      "pack": "Branchenpaket",
+      "agent": "Ein aktiver KI-Agent",
+      "knowledge": "Wissen",
+      "prices": "Preise",
+      "channel": "Ein verbundener Kanal",
+      "ai_disclosure": "KI-Hinweis",
+      "owner": "Owner des Workspace",
+      "live_ready": "Bereit für Live"
     }
   },
   "TOLZAR_AGENCY": {
@@ -1632,7 +1701,7 @@
       "FETCH_FAILED": "Der Abruf ist fehlgeschlagen: {detail}",
       "TEST_FIRST": "Teste den Abruf, bevor du speicherst.",
       "SAVED": "Preisquelle gespeichert",
-      "OWNER_SAVE": "Nur ein Owner kann die Preisquelle speichern. Du kannst sie testen.",
+      "OWNER_SAVE": "Nur ein Owner kann die Preisquelle testen oder speichern.",
       "COMMERCE_HINT": "Die Preise kommen aus dem Katalogabgleich deines Shops (Einstellungen, Shop).",
       "PROBLEM": {
         "url_required": "Gib die Adresse ein.",
@@ -1644,10 +1713,60 @@
   },
   "TOLZAR_HONEST": {
     "COMING_SOON": "Demnächst",
-    "SKILLS_SOON": "Wird mit dem Agenten gespeichert, aber noch nicht genutzt: Antworten führen diese Skills heute nicht aus. Was du gespeichert hast, bleibt erhalten.",
+    "SKILLS_SOON": "Das Brain liest Skills nur als Vorschläge, sobald „Diesen Agenten Skills vorschlagen lassen“ an ist. Gespeichertes bleibt erhalten.",
     "SMS": "Nur Vorschau — es wird nichts gesendet",
     "CRM": "Probelauf — in dein CRM wird nichts geschrieben",
     "SHOP": "Nur lesen",
     "BROADCASTS": "Nur „würde senden“ (Shadow)"
+  },
+  "TOLZAR_SKILLS": {
+    "TITLE": "KI-Skills",
+    "BADGE": "Vorschau: nur Vorschläge",
+    "BANNER": "Skills sind nur Vorschläge: Tolzar schreibt „würde tun“-Notizen; nichts wird ausgeführt.",
+    "ADD": "Skill hinzufügen",
+    "REMOVE": "Skill entfernen",
+    "ENABLED": "Diesen Agenten Skills vorschlagen lassen",
+    "ENABLED_HINT": "Aus: das Brain ignoriert alle Skills unten. An: passt eine Antwort zu einem Skill, fügt Tolzar eine private „würde tun“-Notiz für dein Team hinzu.",
+    "DRY_RUN": "Workflows: nur notieren, welcher Workflow starten würde (immer an)",
+    "EMPTY": "Noch keine Skills: füge einen hinzu.",
+    "WHEN": "Wann einsetzen",
+    "WHEN_PLACEHOLDER": "In deinen Worten: wann soll der Agent das vorschlagen?",
+    "NONE_AVAILABLE": "In diesem Workspace gibt es noch nichts zur Auswahl.",
+    "MISSING": "Nicht mehr in diesem Workspace: zum Entfernen klicken",
+    "TAGS_PLACEHOLDER": "vip, nachfassen",
+    "CLOSE_HINT": "Schlägt vor, die Konversation zu schließen, wenn die Aufgabe erledigt ist.",
+    "SAVE_BLOCKED": "Korrigiere die KI-Skills oben vor dem Speichern (oder schalte Skills aus, um einen Entwurf zu behalten).",
+    "PICK": {
+      "TEAMS": "Teams, die er vorschlagen darf",
+      "AGENTS": "Personen, die er vorschlagen darf (Teammitglieder)",
+      "CONTACT_FIELDS": "Kontaktfelder, die er füllen darf",
+      "CONVERSATION_FIELDS": "Konversationsfelder, die er füllen darf",
+      "STAGES": "Phasen, die er vorschlagen darf",
+      "TAGS": "Tags, die er setzen darf (kommagetrennt)",
+      "WORKFLOWS": "Workflows, die er vorschlagen darf"
+    },
+    "TYPE": {
+      "assign": "Einem Team oder einer Person zuweisen",
+      "update_fields": "Felder aktualisieren",
+      "change_stage": "Lifecycle-Phase ändern",
+      "close": "Konversation schließen",
+      "add_tag": "Tag hinzufügen",
+      "trigger_workflow": "Workflow starten"
+    },
+    "TYPE_HINT": {
+      "assign": "Schlägt vor, die Konversation an ein Team oder ein Teammitglied zu geben.",
+      "update_fields": "Schlägt vor, Angaben aus dem Chat in Kontakt- oder Konversationsfelder zu speichern.",
+      "change_stage": "Schlägt vor, den Kontakt in der Pipeline weiterzuschieben.",
+      "close": "Schlägt vor, die Konversation zu lösen, wenn die Aufgabe erledigt ist.",
+      "add_tag": "Schlägt ein Label für die Konversation vor.",
+      "trigger_workflow": "Schlägt vor, einen deiner Workflows zu starten."
+    },
+    "ERROR": {
+      "too_many_skills": "Höchstens {max} Skills pro Agent.",
+      "duplicate": "Dieser Skill ist schon in der Liste.",
+      "when_too_long": "„Wann einsetzen“ höchstens {max} Zeichen.",
+      "too_many_values": "Höchstens {max} Werte auswählen.",
+      "needs_values": "Wähle mindestens einen Wert oder hake diesen Skill ab."
+    }
   }
 }
