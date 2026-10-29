@@ -22,6 +22,8 @@ export const saveRetention = (accountId, cfg) =>
   brainPost(accountId, 'retention', {
     decisions_days: Number(cfg.decisions_days),
     kv_days: Number(cfg.kv_days),
+    // The audit field was shown but never sent (29 Oct QA): every save reset it in the brain.
+    ...(cfg.audit_days === undefined ? {} : { audit_days: Number(cfg.audit_days) }),
   });
 
 export const exportContact = (accountId, contactId) =>

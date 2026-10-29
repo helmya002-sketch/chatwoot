@@ -37,10 +37,11 @@ describe('tolzarTrust', () => {
   });
 
   it('saves retention days as numbers', async () => {
-    await saveRetention(1, { decisions_days: '90', kv_days: 30 });
+    await saveRetention(1, { decisions_days: '90', kv_days: 30, audit_days: '730' });
     expect(window.axios.post.mock.calls[0][1]).toEqual({
       decisions_days: 90,
       kv_days: 30,
+      audit_days: 730,
     });
   });
 
