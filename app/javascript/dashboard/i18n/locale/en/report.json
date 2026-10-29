@@ -1419,6 +1419,20 @@
       "VERIFY_TOKEN": "Verify token",
       "OWNER_ONLY": "Only the workspace owner can connect a number.",
       "FAILED": "Could not connect. Check the IDs and the token."
+    },
+    "PRICE_UPLOAD": {
+      "TITLE": "Or upload a price file (private)",
+      "WHAT": "A CSV or Excel file with the columns item, price, currency (and optionally category, where, url). It stays private: it is never published. One wrong row rejects the file, so a good price list is never half replaced.",
+      "CURRENT": "In use: version {version}, {rows} prices from {file} ({at}).",
+      "CHOOSE": "Price file (.csv or .xlsx, up to 1 MB)",
+      "UPLOAD": "Upload",
+      "ACCEPTED": "Accepted as version {version}: {rows} prices.",
+      "REJECTED": "The file was not accepted. Fix these rows and upload again:",
+      "ROW": "Row {row}: {error}",
+      "VERSIONS": "Earlier files (the last 10 are kept)",
+      "VERSION_ROW": "Version {version}: {rows} prices, {at}",
+      "RESTORE": "Use this one",
+      "OWNER_ONLY": "Only the workspace owner can upload a price file."
     }
   },
   "TOLZAR_ONBOARDING": {

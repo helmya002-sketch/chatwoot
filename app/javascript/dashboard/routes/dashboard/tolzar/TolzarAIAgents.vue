@@ -5,6 +5,7 @@ import { useMapGetter } from 'dashboard/composables/store';
 import CredentialInput from 'dashboard/components-next/Tolzar/settings/CredentialInput.vue';
 import BrainNotice from 'dashboard/components-next/Tolzar/settings/BrainNotice.vue';
 import PriceSourcePanel from 'dashboard/components-next/Tolzar/settings/PriceSourcePanel.vue';
+import PriceUploadPanel from 'dashboard/components-next/Tolzar/settings/PriceUploadPanel.vue';
 import SkillsPanel from 'dashboard/components-next/Tolzar/settings/SkillsPanel.vue';
 import {
   skillsFromAgent,
@@ -448,6 +449,7 @@ onMounted(() => {
 
           <!-- Price source (type, address, refresh; test fetch; Owner saves) -->
           <PriceSourcePanel :agent-id="draft.id" @saved="onPriceSourceSaved" />
+          <PriceUploadPanel :agent-id="draft.id" @saved="onPriceSourceSaved" />
 
           <!-- Price feed key -->
           <section class="p-[18px] rounded-2xl border shadow-sm bg-n-solid-1 border-n-weak" data-tz-price-key>
