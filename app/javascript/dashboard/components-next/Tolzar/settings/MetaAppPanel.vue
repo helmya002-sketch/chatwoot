@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMapGetter, useStore } from 'dashboard/composables/store';
 import BrainNotice from './BrainNotice.vue';
@@ -18,7 +18,15 @@ const view = ref(null);
 const pages = ref([]);
 const form = ref({ app_id: '', app_secret: '' });
 const page = ref({ page_id: '', access_token: '', inbox_name: '' });
+// The verify token, shown once right after the app is first saved; removed from the page when the
+// Owner says it is copied, after 5 minutes, or when the panel closes.
 const verifyToken = ref('');
+let tokenTimer = null;
+function hideToken() {
+  verifyToken.value = '';
+  clearTimeout(tokenTimer);
+}
+onBeforeUnmount(hideToken);
 const result = ref(null);
 const saved = ref('');
 const busy = ref(false);
@@ -60,7 +68,11 @@ async function saveApp() {
   );
   if (!data) return;
   form.value.app_secret = '';
-  if (data.verify_token) verifyToken.value = data.verify_token;
+  if (data.verify_token) {
+    verifyToken.value = data.verify_token;
+    // Off the page after 5 minutes at most; it is never fetched again (the API returns it once).
+    tokenTimer = setTimeout(hideToken, 5 * 60 * 1000);
+  }
   await load();
 }
 
@@ -105,6 +117,9 @@ onMounted(load);
         {{ t('TOLZAR_META_APP.VERIFY_TOKEN') }}
         <code class="block mt-1 break-all">{{ verifyToken }}</code>
         <span class="text-xs text-n-amber-11">{{ t('TOLZAR_META_APP.VERIFY_ONCE') }}</span>
+        <button type="button" :class="BTN_GHOST" class="ml-2 !mt-1 !h-7" @click="hideToken">
+          {{ t('TOLZAR_META_APP.VERIFY_DONE') }}
+        </button>
       </div>
     </div>
 

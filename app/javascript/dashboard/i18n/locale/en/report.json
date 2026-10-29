@@ -1640,7 +1640,7 @@
     "SAVED": "Saved",
     "WEBHOOK_URL": "Webhook callback URL (paste it in your app: Webhooks, for Page and Instagram)",
     "VERIFY_TOKEN": "Verify token",
-    "VERIFY_ONCE": "Shown once: paste it into Meta now.",
+    "VERIFY_ONCE": "Shown once: paste it into Meta now.", "VERIFY_DONE": "Copied: hide it",
     "PAGES": "Listen-only pages",
     "NO_PAGES": "No page connected yet.",
     "PAGE_ID": "Facebook Page ID",
