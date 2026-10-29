@@ -15,8 +15,10 @@ RSpec.describe 'No dependency on Chatwoot services' do
 
   it 'does not relay mobile push through Chatwoot by default' do
     with_modified_env ENABLE_PUSH_RELAY_SERVER: nil do
-      service = Notification::PushNotificationService.new(notification: build(:notification))
-      expect(service.send(:chatwoot_hub_enabled?)).to be(false)
+      # The switch reads only the env, so no notification (and no factory chain) is needed.
+      [Notification::PushNotificationService, Notification::PushTestService].each do |klass|
+        expect(klass.allocate.send(:chatwoot_hub_enabled?)).to be(false)
+      end
     end
   end
 end
