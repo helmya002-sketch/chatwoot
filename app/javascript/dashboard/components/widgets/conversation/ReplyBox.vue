@@ -275,7 +275,7 @@ export default {
       );
     },
     isOnPrivateNote() {
-      if (this.isInstagramReplyRestricted) {
+      if (this.isInstagramReplyRestricted || this.isListenOnlyInbox) {
         return true;
       }
 
@@ -564,7 +564,7 @@ export default {
         }
       }
 
-      if (this.isInstagramReplyRestricted) {
+      if (this.isInstagramReplyRestricted || this.isListenOnlyInbox) {
         this.replyType = REPLY_EDITOR_MODES.NOTE;
         return;
       }
