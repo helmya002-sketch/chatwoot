@@ -9,6 +9,11 @@ RSpec.describe 'Tolzar pipeline settings', type: :request do
   let!(:manager) { create(:user, account: account, role: :administrator) }
   let(:url) { "/api/v1/accounts/#{account.id}/tolzar/pipeline" }
 
+  # A Manager's role is looked up in the brain (Tolzar roles); no brain in tests.
+  before do
+    allow_any_instance_of(Api::V1::Accounts::TolzarController).to receive(:get_from_brain).and_return({ 'ok' => true, 'roles' => {} })
+  end
+
   it 'saves stages, stage fields, the deal value field and currency for the Owner' do
     settings = { pipeline_stages: [{ key: 'New', label: 'New' }, 'Qualified', { key: 'Won', tone: 'teal' }],
                  stage_attributes: %w[lifecycle_stage imported_stage], deal_value_attribute: 'deal_value',
