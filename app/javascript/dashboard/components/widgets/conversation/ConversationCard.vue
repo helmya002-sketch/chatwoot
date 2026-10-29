@@ -22,6 +22,7 @@ import Checkbox from 'dashboard/components-next/checkbox/Checkbox.vue';
 import {
   contactStage,
   DEFAULT_STAGE,
+  stageOf,
 } from 'dashboard/components-next/Tolzar/tolzarStages';
 
 const props = defineProps({
@@ -120,7 +121,7 @@ const lifecycleChipStyle = computed(() => {
   }
   return { backgroundColor: bg, color: fg };
 });
-const lifecycleLabel = computed(() => lifecycleStage.value);
+const lifecycleLabel = computed(() => stageOf(lifecycleStage.value).label);
 
 const voiceCallData = computed(() => {
   const last = lastMessageInChat.value;

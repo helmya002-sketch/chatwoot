@@ -18,6 +18,7 @@ import CardPriorityIcon from './CardPriorityIcon.vue';
 import {
   contactStage,
   DEFAULT_STAGE,
+  stageOf,
 } from 'dashboard/components-next/Tolzar/tolzarStages';
 
 const props = defineProps({
@@ -127,7 +128,7 @@ const lifecycleChipStyle = computed(() => {
   };
 });
 const lifecycleLabel = computed(
-  () => LIFECYCLE_LABELS[lifecycleStage.value] || lifecycleStage.value
+  () => LIFECYCLE_LABELS[lifecycleStage.value] || stageOf(lifecycleStage.value).label
 );
 
 // Tolzar: a quiet "why" line on the card (the brain's lead hint).
