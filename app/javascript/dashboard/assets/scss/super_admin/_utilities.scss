@@ -1,6 +1,6 @@
 // Utilities only the super admin uses, next to Tailwind's own and the shared typography ones.
 @layer utilities {
-  // The square mosaic from chatwoot.com, drawn with gradients so it needs no image
+  // The square mosaic, drawn with gradients so it needs no image
   // and follows the theme tokens.
   .bg-pixel-band {
     background-image: linear-gradient(to right, rgb(var(--solid-1)) 0.0625rem, transparent 0.0625rem),

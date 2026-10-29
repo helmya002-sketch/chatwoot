@@ -67,7 +67,7 @@ export const ONGOING_CAMPAIGN_EMPTY_STATE_CONTENT = [
     enabled: false,
     campaign_type: 'ongoing',
     trigger_rules: {
-      url: 'https://{*.}?chatwoot.com/apps/account/*/settings/inboxes/new/',
+      url: 'https://{*.}?shop.example.com/apps/account/*/settings/inboxes/new/',
       time_on_page: 10,
     },
     trigger_only_during_business_hours: false,

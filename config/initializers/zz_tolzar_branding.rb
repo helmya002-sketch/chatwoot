@@ -13,7 +13,7 @@ Rails.application.config.after_initialize do
   begin
     if ActiveRecord::Base.connection.table_exists?('installation_configs')
       # Every "Powered by" / legal link points at Tolzar's own address (TOLZAR_PUBLIC_URL), never
-      # chatwoot.com: the widget footer (WIDGET_BRAND_URL), e-mails (BRAND_URL), sign-up terms/privacy.
+      # Chatwoot's site: the widget footer (WIDGET_BRAND_URL), e-mails (BRAND_URL), sign-up terms/privacy.
       # The domain is one switch: TOLZAR_PUBLIC_URL, else FRONTEND_URL (deploy/ops/DOMAIN-SWITCH.md).
       base = (ENV['TOLZAR_PUBLIC_URL'].presence || ENV['FRONTEND_URL'].presence).to_s.chomp('/')
       links = %w[BRAND_URL WIDGET_BRAND_URL TERMS_URL PRIVACY_URL]
@@ -24,7 +24,7 @@ Rails.application.config.after_initialize do
         'WIDGET_BRAND_URL' => base,
         'TERMS_URL' => base,
         'PRIVACY_URL' => base,
-        'CAPTAIN_TOOLS_CATALOG_URL' => ''            # never fetched from chatwoot.com (Captain unused)
+        'CAPTAIN_TOOLS_CATALOG_URL' => ''            # never fetched from Chatwoot (Captain unused)
       }.each do |name, value|
         # No address configured: leave the links alone. (CAPTAIN_TOOLS_CATALOG_URL is blanked on purpose.)
         next if value.blank? && links.include?(name)

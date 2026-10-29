@@ -191,7 +191,7 @@
 - name: CAPTAIN_TOOLS_CATALOG_URL
   display_title: 'Captain Tools Catalog URL'
   description: 'Base URL of the Captain tools catalog. The dashboard loads this URL with .json appended to list toolsets, so it must allow cross-origin requests.'
-  value: ''   # Tolzar: no catalogue fetched from chatwoot.com (Captain is not used; the AI is the brain)
+  value: ''   # Tolzar: no catalogue fetched from Chatwoot (Captain is not used; the AI is the brain)
   locked: false
 - name: CAPTAIN_TOOLS_GITHUB_TOKEN
   display_title: 'Captain Tools GitHub Token'

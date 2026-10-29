@@ -430,7 +430,7 @@
         "SLUG": {
           "LABEL": "שבלול",
           "PLACEHOLDER": "שבלול קטגוריה עבור כתובות אתרים",
-          "HELP_TEXT": "app.tolzar.com/hc/my-portal/en-US/categories/my-slug",
+          "HELP_TEXT": "chat.example.com/hc/my-portal/en-US/categories/my-slug",
           "ERROR": "נדרש שבלול"
         },
         "DESCRIPTION": {
@@ -461,7 +461,7 @@
         "SLUG": {
           "LABEL": "שבלול",
           "PLACEHOLDER": "שבלול קטגוריה עבור כתובות אתרים",
-          "HELP_TEXT": "app.tolzar.com/hc/my-portal/en-US/categories/my-slug",
+          "HELP_TEXT": "chat.example.com/hc/my-portal/en-US/categories/my-slug",
           "ERROR": "נדרש שבלול"
         },
         "DESCRIPTION": {
@@ -698,7 +698,7 @@
             "LABEL": "שבלול",
             "PLACEHOLDER": "שבלול קטגוריה עבור כתובות אתרים",
             "ERROR": "נדרש שבלול",
-            "HELP_TEXT": "app.tolzar.com/hc/{portalSlug}/{localeCode}/categories/{categorySlug}"
+            "HELP_TEXT": "chat.example.com/hc/{portalSlug}/{localeCode}/categories/{categorySlug}"
           },
           "DESCRIPTION": {
             "LABEL": "תיאור",
@@ -941,7 +941,7 @@
           },
           "DNS_CONFIGURATION_DIALOG": {
             "HEADER": "הגדרת DNS",
-            "DESCRIPTION": "היכנס לחשבון שלך אצל ספק ה-DNS שלך, והוסף רשומת CNAME עבור תת-הדומיין המצביע על chatwoot.help",
+            "DESCRIPTION": "היכנס לחשבון שלך אצל ספק ה-DNS שלך, והוסף רשומת CNAME עבור תת-הדומיין המצביע על the domain this Tolzar dashboard runs on",
             "COPY": "CNAME הועתק בהצלחה",
             "SEND_INSTRUCTIONS": {
               "HEADER": "שלח הוראות",
