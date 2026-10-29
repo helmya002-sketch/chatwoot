@@ -1,0 +1,5 @@
+{"_note": "A message sent from a click-to-Messenger ad: the referral is inside the message; ad text and media are not kept.",
+ "messaging": {"sender": {"id": "3383290475046708"}, "recipient": {"id": "117172741761305"}, "timestamp": 1761700020000,
+   "message": {"mid": "m_ad_referral_1", "text": "Hi, is the course still on?",
+     "referral": {"ref": "AD-SPRING-1", "source": "ADS", "type": "OPEN_THREAD", "ad_id": "120200000000",
+       "ads_context_data": {"ad_title": "Learn to dive", "photo_url": "https://scontent.example/x.jpg"}}}}}

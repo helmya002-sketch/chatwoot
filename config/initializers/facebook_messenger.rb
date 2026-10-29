@@ -70,4 +70,10 @@ Rails.application.reloader.to_prepare do
   Facebook::Messenger::Bot.on :postback do |postback|
     Webhooks::FacebookEventsJob.perform_later(postback.to_json)
   end
+
+  # Tolzar: a standalone referral (an existing thread opened from m.me/<page>?ref=CODE, an ad or the
+  # chat plugin). The builder stores the ref code for attribution; it never creates a message.
+  Facebook::Messenger::Bot.on :referral do |referral|
+    Webhooks::FacebookEventsJob.perform_later(referral.to_json)
+  end
 end

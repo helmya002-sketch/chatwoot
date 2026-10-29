@@ -7,6 +7,10 @@
 class Messages::Facebook::MessageBuilder < Messages::Messenger::MessageBuilder
   attr_reader :response
 
+  # Tolzar: a standalone referral that found no conversation waits here for the contact's next message.
+  PENDING_REFERRAL_KEY = 'TOLZAR_FB_PENDING_REFERRAL::%<inbox_id>s::%<sender_id>s'.freeze
+  PENDING_REFERRAL_TTL = 1.day
+
   def initialize(response, inbox, outgoing_echo: false)
     super()
     @response = response
@@ -23,7 +27,7 @@ class Messages::Facebook::MessageBuilder < Messages::Messenger::MessageBuilder
 
     ActiveRecord::Base.transaction do
       build_contact_inbox
-      build_message
+      response.standalone_referral? ? store_standalone_referral : build_message
     end
   rescue Koala::Facebook::AuthenticationError => e
     Rails.logger.warn("Facebook authentication error for inbox: #{@inbox.id} with error: #{e.message}")
@@ -46,10 +50,62 @@ class Messages::Facebook::MessageBuilder < Messages::Messenger::MessageBuilder
 
   def build_message
     @message = conversation.messages.create!(message_params)
+    store_conversation_referral(conversation, @referral) if @referral.present?
 
     @attachments.each do |attachment|
       process_attachment(attachment)
     end
+  end
+
+  # Tolzar (Messenger attribution): an incoming message carries the referral it came with (inside a
+  # postback / message), else one a standalone referral event left for this contact.
+  def incoming_referral
+    return if @outgoing_echo
+
+    response.referral_attributes || pop_pending_referral
+  end
+
+  # A standalone referral event creates no message: it goes on the contact's open conversation
+  # (additional_attributes.referral / referral_ref), or waits for the contact's next message.
+  def store_standalone_referral
+    referral = response.referral_attributes
+    return if referral.blank?
+
+    existing = existing_conversation
+    if existing
+      store_conversation_referral(existing, referral, overwrite: true)
+    else
+      Redis::Alfred.setex(pending_referral_key, referral.to_json, PENDING_REFERRAL_TTL)
+    end
+  end
+
+  # First touch wins on a conversation unless a standalone referral event says otherwise.
+  def store_conversation_referral(target, referral, overwrite: false)
+    attrs = (target.additional_attributes || {}).dup
+    return if attrs['referral'].present? && !overwrite
+
+    target.update!(additional_attributes: attrs.merge('referral' => referral, 'referral_ref' => referral['ref']))
+  end
+
+  def existing_conversation
+    scope = Conversation.where(conversation_params)
+    scope = scope.where.not(status: :resolved) unless @inbox.lock_to_single_conversation
+    scope.order(created_at: :desc).first
+  end
+
+  def pending_referral_key
+    format(PENDING_REFERRAL_KEY, inbox_id: @inbox.id, sender_id: @sender_id)
+  end
+
+  def pop_pending_referral
+    raw = Redis::Alfred.get(pending_referral_key)
+    return if raw.blank?
+
+    Redis::Alfred.delete(pending_referral_key)
+    parsed = JSON.parse(raw)
+    parsed.is_a?(Hash) && parsed['ref'].present? ? parsed.slice(*Integrations::Facebook::MessageParser::REFERRAL_KEYS) : nil
+  rescue JSON::ParserError
+    nil
   end
 
   def conversation
@@ -119,6 +175,8 @@ class Messages::Facebook::MessageBuilder < Messages::Messenger::MessageBuilder
       in_reply_to_external_id: response.in_reply_to_external_id
     }
     content_attributes[:external_echo] = true if @outgoing_echo
+    @referral = incoming_referral
+    content_attributes[:referral] = @referral if @referral.present?
 
     {
       account_id: conversation.account_id,

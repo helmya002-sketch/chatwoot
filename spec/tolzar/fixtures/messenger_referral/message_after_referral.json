@@ -1,0 +1,3 @@
+{"_note": "The contact's next plain message (no referral of its own).",
+ "messaging": {"sender": {"id": "3383290475046708"}, "recipient": {"id": "117172741761305"}, "timestamp": 1761700030000,
+   "message": {"mid": "m_after_referral_1", "text": "Hi, do you have a beginner course?"}}}

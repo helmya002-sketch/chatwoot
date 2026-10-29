@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
 class Integrations::Facebook::MessageParser
+  # Tolzar: the referral fields kept (short plain values only, like the WhatsApp path keeps no ad
+  # text or media URLs). The brain's links.ref_of reads `ref`.
+  REFERRAL_KEYS = %w[source type ref].freeze
+  REFERRAL_MAX = 64
+
   def initialize(response_json)
     @response = JSON.parse(response_json)
     @messaging = @response['messaging'] || @response['standby']
@@ -74,6 +79,33 @@ class Integrations::Facebook::MessageParser
 
   def in_reply_to_external_id
     @messaging.dig('message', 'reply_to', 'mid')
+  end
+
+  # Messenger's referral: a standalone `referral` event, or one inside a postback (Get Started on
+  # an m.me ref link) or a message (an ad). Nil unless it is a Hash.
+  def referral
+    ref = @messaging['referral'] || @messaging.dig('postback', 'referral') || @messaging.dig('message', 'referral')
+    ref.is_a?(Hash) ? ref : nil
+  end
+
+  # {'source', 'type', 'ref'} as short plain strings, only when the referral carries a `ref`.
+  def referral_attributes
+    ref = referral
+    return if ref.nil?
+
+    out = REFERRAL_KEYS.each_with_object({}) do |key, attrs|
+      value = ref[key]
+      next unless value.is_a?(String) || value.is_a?(Integer)
+
+      value = value.to_s.strip[0, REFERRAL_MAX]
+      attrs[key] = value if value.present?
+    end
+    out['ref'].present? ? out : nil
+  end
+
+  # A referral event on its own: nothing to show as a message.
+  def standalone_referral?
+    @messaging['referral'].is_a?(Hash) && @messaging['message'].blank? && @messaging['postback'].blank?
   end
 end
 
