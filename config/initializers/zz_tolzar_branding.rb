@@ -14,7 +14,9 @@ Rails.application.config.after_initialize do
     if ActiveRecord::Base.connection.table_exists?('installation_configs')
       # Every "Powered by" / legal link points at Tolzar's own address (TOLZAR_PUBLIC_URL), never
       # chatwoot.com: the widget footer (WIDGET_BRAND_URL), e-mails (BRAND_URL), sign-up terms/privacy.
-      base = ENV.fetch('TOLZAR_PUBLIC_URL', 'https://chat.xplorer-redsea.com').to_s.chomp('/')
+      # The domain is one switch: TOLZAR_PUBLIC_URL, else FRONTEND_URL (deploy/ops/DOMAIN-SWITCH.md).
+      base = (ENV['TOLZAR_PUBLIC_URL'].presence || ENV['FRONTEND_URL'].presence).to_s.chomp('/')
+      links = %w[BRAND_URL WIDGET_BRAND_URL TERMS_URL PRIVACY_URL]
       {
         'INSTALLATION_NAME' => 'Tolzar',
         'BRAND_NAME' => 'Tolzar',
@@ -23,6 +25,7 @@ Rails.application.config.after_initialize do
         'TERMS_URL' => base,
         'PRIVACY_URL' => base
       }.each do |name, value|
+        next if value.blank? && links.include?(name)      # no address configured: leave the links alone
         config = InstallationConfig.find_by(name: name)
         config.update!(value: value) if config && config.value != value
       end
