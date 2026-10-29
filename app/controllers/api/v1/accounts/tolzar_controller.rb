@@ -12,6 +12,7 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
                                         kill_switch_release workspace_bootstrap whatsapp_listen_only_connect
                                         price_upload price_upload_restore pipeline_settings_save
                                         meta_app meta_app_save meta_app_delete meta_page_connect meta_app_rotate_verify_token
+                                        meta_test_send_window meta_test_send
                                         conversation_retention_save]
 
   # Listen-only WhatsApp (Tolzar::ListenOnly): the workspace owner connects the business's own in-house
@@ -307,7 +308,7 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
   def meta_app
     app = Current.account.tolzar_meta_app
     pages = Current.account.facebook_pages.where(tolzar_listen_only: true).includes(:inbox)
-    render json: { ok: true, app: app&.view,
+    render json: { ok: true, app: app&.view, test_open_until: Tolzar::MetaTestSend.open_until(Current.account)&.iso8601,
                    pages: pages.map { |c| { inbox_id: c.inbox&.id, name: c.inbox&.name, page_id: c.page_id, instagram_id: c.instagram_id } } }
   end
 
@@ -341,6 +342,27 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
 
     app&.destroy!
     render json: { ok: true }
+  end
+
+  # App Review: open the 60-minute window for ONE test message to the Owner's own account
+  # (Tolzar::MetaTestSend), send it, or close the window without sending. Owner only.
+  def meta_test_send_window
+    if params[:close].present?
+      Tolzar::MetaTestSend.close!(Current.account, Current.user, 'closed by the Owner')
+      return render(json: { ok: true, open_until: nil })
+    end
+
+    render json: { ok: true, open_until: Tolzar::MetaTestSend.open!(Current.account, Current.user).iso8601 }
+  end
+
+  def meta_test_send
+    message = Tolzar::MetaTestSend.new(account: Current.account, user: Current.user, conversation_id: params[:conversation_id],
+                                       text: params[:text], confirm_name: params[:confirm_name]).perform
+    render json: { ok: true, message_id: message.id, open_until: nil }
+  rescue Tolzar::MetaTestSend::Refused => e
+    render json: { ok: false, error: e.message }, status: :unprocessable_entity
+  rescue Tolzar::MetaGraph::Error => e
+    render json: { ok: false, error: "Meta refused the message: #{e.message}" }, status: :bad_gateway
   end
 
   # A Facebook Page (and its Instagram account) as a listen-only inbox, through the workspace's app.

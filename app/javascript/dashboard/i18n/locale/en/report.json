@@ -1648,7 +1648,20 @@
     "INBOX_NAME": "Inbox name (optional)",
     "CONNECT": "Connect page (listen only)",
     "CONNECTED": "Page connected in listen-only mode",
-    "RELOAD": "Reload"
+    "RELOAD": "Reload",
+    "TEST": {
+      "TITLE": "App Review: one test message to your own account",
+      "HINT": "Meta's review video must show a message sent by the app. This sends ONE message, only to a conversation from your own account (named like you, written in the last 24 hours). Every other send stays refused. It is audited, and the window closes after one message or 60 minutes.",
+      "OPEN": "Open the window (60 minutes, one message)",
+      "OPEN_UNTIL": "Open until {at}. One message.",
+      "CONVERSATION": "Conversation number (from your own test message)",
+      "TEXT": "Message (up to 300 characters)",
+      "CONFIRM": "Type the contact name to confirm (your own name)",
+      "SEND": "Send the one test message",
+      "CLOSE": "Close without sending",
+      "CLOSED": "Window closed.",
+      "SENT": "Sent. The window is closed."
+    }
   },
   "TOLZAR_AGENTS": {
     "BEHAVIOUR": "Behaviour",

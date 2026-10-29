@@ -50,6 +50,14 @@ module Tolzar::MetaGraph
             page_token, app_secret)
   end
 
+  # The one App Review test message (Tolzar::MetaTestSend, Owner's own account only). Nothing else in
+  # Tolzar sends from a listen-only inbox.
+  def send_test_message(recipient_id, text, page_token, app_secret)
+    request(Net::HTTP::Post, '/me/messages',
+            { recipient: { id: recipient_id }.to_json, message: { text: text }.to_json, messaging_type: 'RESPONSE' },
+            page_token, app_secret)
+  end
+
   def unsubscribe(page_id, page_token, app_secret)
     request(Net::HTTP::Delete, "/#{page_id}/subscribed_apps", {}, page_token, app_secret)
   end

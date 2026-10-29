@@ -39,6 +39,7 @@ async function load() {
     view.value = data.app || null;
     pages.value = data.pages || [];
     form.value.app_id = data.app?.app_id || '';
+    testOpenUntil.value = showUntil(data.test_open_until);
   } catch (e) {
     result.value = fail(e);
   }
@@ -82,6 +83,34 @@ async function rotateToken() {
     () => window.axios.post(`${url.value}/verify_token`).then(r => r.data),
     t('TOLZAR_META_APP.ROTATED')
   );
+}
+
+// App Review test send: a 60-minute window for ONE message to the Owner's own account.
+const testOpenUntil = ref('');
+const test = ref({ conversation_id: '', text: '', confirm_name: '' });
+const showUntil = iso => (iso ? new Date(iso).toLocaleTimeString() : '');
+async function openTestWindow() {
+  const data = await run(
+    () => window.axios.post(`${url.value}/test_send/window`).then(r => r.data),
+    ''
+  );
+  testOpenUntil.value = showUntil(data?.open_until);
+}
+async function closeTestWindow() {
+  await run(
+    () => window.axios.post(`${url.value}/test_send/window`, { close: true }).then(r => r.data),
+    t('TOLZAR_META_APP.TEST.CLOSED')
+  );
+  testOpenUntil.value = '';
+}
+async function sendTest() {
+  const data = await run(
+    () => window.axios.post(`${url.value}/test_send`, test.value).then(r => r.data),
+    t('TOLZAR_META_APP.TEST.SENT')
+  );
+  // The server says whether the window is still open: Meta's answer closes it, a failed check does not.
+  if (data) test.value = { conversation_id: '', text: '', confirm_name: '' };
+  await load();
 }
 
 async function connectPage() {
@@ -159,6 +188,30 @@ onMounted(load);
       <button type="button" :class="BTN_GHOST" class="ml-2" :disabled="busy" @click="load">
         {{ t('TOLZAR_META_APP.RELOAD') }}
       </button>
+
+      <!-- App Review: one test message to the Owner's own account (Tolzar::MetaTestSend) -->
+      <details v-if="pages.length" class="p-3 mt-5 rounded-lg border border-n-weak">
+        <summary class="cursor-pointer text-[13px] font-semibold text-n-slate-12">{{ t('TOLZAR_META_APP.TEST.TITLE') }}</summary>
+        <p class="mt-2 text-xs text-n-slate-11">{{ t('TOLZAR_META_APP.TEST.HINT') }}</p>
+        <button v-if="!testOpenUntil" type="button" :class="BTN_GHOST" :disabled="busy" @click="openTestWindow">
+          {{ t('TOLZAR_META_APP.TEST.OPEN') }}
+        </button>
+        <template v-else>
+          <p class="text-xs text-n-amber-11">{{ t('TOLZAR_META_APP.TEST.OPEN_UNTIL', { at: testOpenUntil }) }}</p>
+          <label :class="LABEL">{{ t('TOLZAR_META_APP.TEST.CONVERSATION') }}</label>
+          <input v-model="test.conversation_id" :class="INPUT" inputmode="numeric" />
+          <label :class="LABEL">{{ t('TOLZAR_META_APP.TEST.TEXT') }}</label>
+          <input v-model="test.text" :class="INPUT" maxlength="300" />
+          <label :class="LABEL">{{ t('TOLZAR_META_APP.TEST.CONFIRM') }}</label>
+          <input v-model="test.confirm_name" :class="INPUT" autocomplete="off" />
+          <button type="button" :class="BTN" :disabled="busy || !test.conversation_id || !test.text || !test.confirm_name" @click="sendTest">
+            {{ t('TOLZAR_META_APP.TEST.SEND') }}
+          </button>
+          <button type="button" :class="BTN_GHOST" class="ml-2" :disabled="busy" @click="closeTestWindow">
+            {{ t('TOLZAR_META_APP.TEST.CLOSE') }}
+          </button>
+        </template>
+      </details>
     </template>
     <BrainNotice :result="result" :saved="saved" />
   </div>
