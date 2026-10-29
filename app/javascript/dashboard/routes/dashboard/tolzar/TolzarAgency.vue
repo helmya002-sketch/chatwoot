@@ -1,6 +1,8 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useMapGetter } from 'dashboard/composables/store';
+import { useI18n } from 'vue-i18n';
+import { brainErrors, isOwnerOnly } from 'dashboard/components-next/Tolzar/tolzarBrainApi';
 
 // Agency console (R11, approved mock agency-white-label-v1): every workspace this person
 // administers, with usage and AI quality side by side, and per-workspace branding. Each client
@@ -11,7 +13,9 @@ const rows = ref({});
 const editing = ref(null);
 const brand = ref({});
 const saved = ref('');
+const saveError = ref('');
 
+const { t } = useI18n();
 const tz = id => `/api/v1/accounts/${id}/tolzar`;
 
 async function loadRow(a) {
@@ -34,7 +38,16 @@ async function openBrand(a) {
   brand.value = { product_name: '', color: '#3e63dd', logo_url: '', support_email: '', ...(r.branding || {}) };
 }
 async function saveBrand() {
-  const r = await window.axios.post(`${tz(editing.value.id)}/brain/branding`, brand.value).then(x => x.data);
+  const r = await window.axios
+    .post(`${tz(editing.value.id)}/brain/branding`, brand.value)
+    .then(x => x.data)
+    .catch(e => e?.response?.data || { ok: false, error: 'brain_unreachable' });
+  if (r.ok === false || r.detail !== undefined) {
+    saved.value = '';
+    saveError.value = isOwnerOnly(r) ? t('TOLZAR_SETTINGS.R1.OWNER_ONLY') : brainErrors(r).join(' · ');
+    return;
+  }
+  saveError.value = '';
   brand.value = { ...brand.value, ...(r.branding || {}) };
   saved.value = 'ok';
 }
@@ -91,6 +104,7 @@ onMounted(() => workspaces.value.forEach(loadRow));
           <input v-model="brand.support_email" class="tz-in" />
           <button type="button" class="tz-btn" @click="saveBrand">{{ $t('TOLZAR_SETTINGS.SAVE') }}</button>
           <span v-if="saved" class="ml-2 text-xs text-emerald-600">✓</span>
+          <span v-if="saveError" class="ml-2 text-xs text-rose-600" role="alert">{{ saveError }}</span>
           <p class="text-xs text-n-slate-10">{{ $t('TOLZAR_AGENCY.APPLY_HINT') }}</p>
         </div>
         <div>

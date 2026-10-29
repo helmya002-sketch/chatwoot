@@ -113,5 +113,19 @@ RSpec.describe 'Tolzar workspace bootstrap and checklist', type: :request do
       expect(response).to have_http_status(:unauthorized)
       expect(gets.grep(%r{/workspace/checklist})).to be_empty
     end
+
+    it 'tells the brain the account owner once when its Owner item is open' do
+      open_item = { 'ok' => true, 'items' => [{ 'key' => 'owner', 'done' => false }] }
+      allow_any_instance_of(controller_class).to receive(:get_from_brain) { |_c, path| (gets << path) && open_item }
+      get url('workspace/checklist'), headers: manager.create_new_auth_token
+      expect(response).to have_http_status(:success)
+      expect(posts).to eq([['/workspace/owner', { account_id: account.id, owner_user_id: owner.id }]])
+      expect(gets.size).to eq(2)
+    end
+
+    it 'does not post when the Owner item is done' do
+      get url('workspace/checklist'), headers: manager.create_new_auth_token
+      expect(posts).to be_empty
+    end
   end
 end

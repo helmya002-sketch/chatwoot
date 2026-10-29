@@ -1112,6 +1112,7 @@
       "EXPLAIN": "The text is read for triage only and is never stored."
     },
     "USAGE": {
+      "DAYS": "Last {n} days",
       "conversations": "Conversations",
       "decisions": "AI decisions",
       "model_calls": "Model calls",
@@ -1144,11 +1145,15 @@
     },
     "RECOVERY": {
       "QUIET": "A lead is quiet after (hours)",
-      "PLANNED": "{n} leads planned so far"
+      "PLANNED": "{n} leads planned so far",
+      "TOUCH_DAYS": "Follow-up days after a lead goes quiet (up to three, e.g. 1, 3, 7)",
+      "MAX_PER_RUN": "Most leads planned per run",
+      "PLAN_ROW": "Planned {at} UTC: {n} follow-ups ({lang}), Shadow"
     },
     "LEARNED": {
       "APPROVE": "Approve (Shadow)",
-      "REJECT": "Reject"
+      "REJECT": "Reject",
+      "APPROVE_NOTE": "Approving records your decision for this question type. It does not yet add the staff answer to an agent: copy it into the agent's knowledge (AI Agents → Knowledge sources, Text)."
     },
     "BRIEF": {
       "BUILD": "Build now",
@@ -1552,7 +1557,7 @@
     "LOGO": "Logo URL (https)",
     "SUPPORT": "Support e-mail shown in the app",
     "PREVIEW": "Preview",
-    "APPLY_HINT": "Saved per workspace. Applying it to the whole app (logo, colours, custom domain) comes with the white-label theme."
+    "APPLY_HINT": "Saved per workspace and applied for everyone in it: the name in the browser tab, the colour on buttons and links, the logo (an https image) as the tab icon. The support e-mail is stored for client messages; nothing shows it yet."
   },
   "TOLZAR_RESULTS": {
     "NAV": "Results",
@@ -1790,7 +1795,7 @@
   "TOLZAR_HONEST": {
     "COMING_SOON": "Coming soon",
     "SKILLS_SOON": "Skills are read by the brain as proposals only, once 'Let this agent propose skills' is on. What you saved is kept.",
-    "SMS": "Preview only — nothing is sent",
+    "SMS": "Preview only: nothing is sent, and no fallback uses these settings yet",
     "CRM": "Dry run — nothing is written to your CRM",
     "SHOP": "Read-only",
     "BROADCASTS": "Would-send only (Shadow)"

@@ -1,6 +1,7 @@
 <script setup>
 // Tolzar white-label (R11): applies the current workspace's branding app-wide, for everyone in
-// it: the brand colour on the brand utility classes, and the product name in the browser tab.
+// it: the brand colour on the brand utility classes, the product name in the browser tab, and the
+// logo as the tab icon.
 // Read-only endpoint (no settings, no secrets); nothing changes when a workspace has no branding.
 import { watch, onBeforeUnmount } from 'vue';
 
@@ -21,6 +22,14 @@ function applyColor(color) {
     document.head.appendChild(el);
   }
   el.textContent = `.bg-n-brand{background-color:${color}!important}.text-n-brand{color:${color}!important}.border-n-brand{border-color:${color}!important}.ring-n-brand\\/20{--tw-ring-color:${color}33!important}`;
+}
+// The logo (an https image URL) as the browser-tab icon; the original icon comes back without one.
+let originalIcon = null;
+function applyLogo(url) {
+  const link = document.querySelector('link[rel~="icon"]');
+  if (!link) return;
+  if (originalIcon === null) originalIcon = link.href;
+  link.href = /^https:\/\//.test(url || '') ? url : originalIcon;
 }
 function retitle() {
   if (name && document.title && !document.title.includes(name)) {
@@ -48,9 +57,11 @@ watch(
       const b = data.branding || {};
       applyColor(b.color);
       applyName(b.product_name);
+      applyLogo(b.logo_url);
     } catch (e) {
       applyColor('');
       applyName('');
+      applyLogo('');
     }
   },
   { immediate: true }

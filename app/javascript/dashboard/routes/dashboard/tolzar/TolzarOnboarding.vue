@@ -39,6 +39,7 @@ const created = ref(null); // the starter agent (inactive) or null
 const chunks = ref(null);
 const templates = ref([]);
 const packs = ref([NONE_PACK]);
+const packLabels = ref({});
 const checklist = ref(null);
 const checklistError = ref(false);
 
@@ -79,8 +80,15 @@ onMounted(async () => {
       .catch(() => ({})),
   ]);
   templates.value = tpl.templates || [];
-  if (typeof pack.pack === 'string' && pack.pack && pack.pack !== NONE_PACK)
-    packs.value = [NONE_PACK, pack.pack];
+  // The built-in packs (brain GET /workspace/pack `choices`), and the current one if it is not built in.
+  const choices = Array.isArray(pack.choices) ? pack.choices : [];
+  packLabels.value = Object.fromEntries(
+    choices.map(c => [c.name, (c.label && c.label.en) || c.name])
+  );
+  const names = choices.map(c => c.name);
+  if (typeof pack.pack === 'string' && pack.pack && !names.includes(pack.pack))
+    names.push(pack.pack);
+  packs.value = [NONE_PACK, ...names.filter(n => n !== NONE_PACK)];
   await loadChecklist();
   // Already set up: straight to the checklist.
   if (checklist.value && checklist.value.bootstrapped) {
@@ -117,6 +125,7 @@ async function addWebsite(agent) {
     });
     chunks.value = r.data.total ?? null;
   } catch (e) {
+    // Unknown: the save or the indexing failed (a saved site is indexed by the daily job).
     chunks.value = null;
   }
 }
@@ -321,7 +330,7 @@ const linkFor = hint => checklistLink(hint, accountId.value);
           }}</label>
           <select v-model="form.pack" class="tz-in !w-auto">
             <option v-for="p in packs" :key="p" :value="p">
-              {{ p === 'none' ? t('TOLZAR_ONBOARDING.AGENT.NO_PACK') : p }}
+              {{ p === 'none' ? t('TOLZAR_ONBOARDING.AGENT.NO_PACK') : packLabels[p] || p }}
             </option>
           </select>
           <p v-if="outcome === 'owner_only'" class="text-sm text-rose-600">

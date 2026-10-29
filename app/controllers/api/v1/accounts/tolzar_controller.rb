@@ -288,7 +288,16 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
   # reasons for this account's inboxes.
   def workspace_checklist
     ids = Current.account.inboxes.order(:id).limit(50).pluck(:id).join(',')
-    render_brain(get_from_brain("/workspace/checklist?account_id=#{account_scope_id}&inbox_ids=#{ids}"))
+    path = "/workspace/checklist?account_id=#{account_scope_id}&inbox_ids=#{ids}"
+    res = get_from_brain(path)
+    # The account owner is known here (Tolzar::AccountOwner); a workspace set up from config files never
+    # ran the bootstrap that tells the brain. Tell it once, so the checklist's Owner item can complete.
+    owner_id = Tolzar::AccountOwner.user_id(Current.account)
+    if owner_open?(res) && owner_id
+      post_to_brain('/workspace/owner', { account_id: account_scope_id, owner_user_id: owner_id })
+      res = get_from_brain(path)
+    end
+    render_brain(res)
   end
 
   # The workspace's pipeline (Tolzar::PipelineSettings): stages, stage fields, deal value field and
@@ -398,6 +407,12 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
   end
 
   private
+
+  # The checklist's Owner item is not done yet.
+  def owner_open?(checklist)
+    items = checklist.is_a?(Hash) ? Array(checklist['items']) : []
+    items.any? { |i| i.is_a?(Hash) && i['key'] == 'owner' && !i['done'] }
+  end
 
   # A member's Tolzar role (H3), decided here, not by the brain's default: Chatwoot agents are agents;
   # the account owner is always an Owner; any other administrator is a Manager unless the brain's role

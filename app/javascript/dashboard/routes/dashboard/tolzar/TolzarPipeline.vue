@@ -62,14 +62,15 @@ function colValue(key) {
   return (cols.value[key]?.contacts || []).reduce((a, c) => a + cardValue(c), 0);
 }
 
-async function fetchStage(stage) {
+async function fetchStage(stage, page = 1) {
   const conditions = stageConditions(stage.key);
-  if (!conditions) return { count: 0, contacts: [], loading: false };
-  const { data } = await ContactAPI.filter(1, 'name', { payload: conditions });
+  if (!conditions) return { count: 0, contacts: [], loading: false, page };
+  const { data } = await ContactAPI.filter(page, 'name', { payload: conditions });
   const payload = data?.payload || [];
   return {
     count: data?.meta?.count ?? payload.length,
     loading: false,
+    page,
     contacts: payload.map(c => ({
       id: c.id,
       name: c.name || 'Unknown',
@@ -80,6 +81,22 @@ async function fetchStage(stage) {
       assignee: c.custom_attributes?.assignee,
     })),
   };
+}
+
+// The next page of a column (15 cards a page), added below the cards already shown.
+async function loadMore(stage) {
+  const col = cols.value[stage.key];
+  if (!col || col.more) return;
+  col.more = true;
+  try {
+    const next = await fetchStage(stage, (col.page || 1) + 1);
+    const seen = new Set(col.contacts.map(c => c.id));
+    col.contacts = [...col.contacts, ...next.contacts.filter(c => !seen.has(c.id))];
+    col.count = next.count;
+    col.page = next.page;
+  } finally {
+    col.more = false;
+  }
 }
 
 const totalValue = computed(() =>
@@ -248,8 +265,11 @@ function otherStages(key) {
             </div>
             <div v-if="!cols[s.key].contacts.length" class="pt-8 text-xs text-center text-n-slate-10">No contacts</div>
             <div v-else-if="cols[s.key].count > cols[s.key].contacts.length" class="pt-1 text-[11px] text-center text-n-slate-10">
-              <button type="button" class="underline hover:text-n-slate-12" @click="openStageInContacts(s.key)">
-                +{{ cols[s.key].count - cols[s.key].contacts.length }} more: open in Contacts
+              <button type="button" class="underline hover:text-n-slate-12" :disabled="cols[s.key].more" @click="loadMore(s)">
+                {{ cols[s.key].more ? 'Loading…' : `Show more (${cols[s.key].count - cols[s.key].contacts.length} left)` }}
+              </button>
+              <button type="button" class="ml-2 underline hover:text-n-slate-12" @click="openStageInContacts(s.key)">
+                Open in Contacts
               </button>
             </div>
           </template>

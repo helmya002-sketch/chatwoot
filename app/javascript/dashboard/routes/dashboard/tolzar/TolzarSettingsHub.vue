@@ -47,6 +47,7 @@ const TRUST = ['disclosure', 'retention', 'privacy'];
 const CHANNELS = ['sms', 'crm', 'commerce'];
 const AI_LIMITS = ['negotiation', 'agent_teams', 'tuning'];
 const current = ref('usage');
+const usageDays = ref(30);
 const data = ref({});
 const busy = ref(false);
 const note = ref('');
@@ -56,7 +57,7 @@ async function open(key) {
   note.value = '';
   busy.value = true;
   try {
-    if (key === 'usage') data.value = await get('usage', { days: 30 });
+    if (key === 'usage') data.value = await get('usage', { days: usageDays.value });
     if (key === 'audit') data.value = (await window.axios.get(`${base.value}/audit`)).data;
     if (key === 'export') data.value = (await window.axios.get(`${base.value}/export`)).data;
     if (key === 'sla') data.value = await get('sla');
@@ -125,8 +126,20 @@ async function saveMedia() {
   const errors = brainErrors(r);
   done(errors.length ? errors.join(' · ') : $t('TOLZAR_SETTINGS.R1.SAVED'));
 }
+// Recovery touch days as typed ("1, 3, 7"): up to three day counts.
+const touchDays = computed({
+  get: () => (data.value.config?.touch_days || [1, 3, 7]).join(', '),
+  set: v => {
+    data.value.config.touch_days = String(v)
+      .split(',')
+      .map(x => parseInt(x, 10))
+      .filter(n => Number.isFinite(n) && n >= 0)
+      .slice(0, 3);
+  },
+});
 async function saveRecovery() {
-  report(await post('recovery', data.value.config));
+  const r = await post('recovery', data.value.config);
+  if (report(r) && r.config) data.value.config = r.config;
 }
 async function startExport() {
   const r = await window.axios
@@ -247,6 +260,18 @@ onMounted(() => {
           <p v-if="busy" class="text-n-slate-10">…</p>
 
           <!-- usage -->
+          <div v-if="current === 'usage'" class="flex gap-1 mb-3">
+            <button
+              v-for="d in [7, 30, 90]"
+              :key="d"
+              type="button"
+              class="px-2.5 py-1 text-xs rounded-full border"
+              :class="usageDays === d ? 'border-n-brand bg-n-brand text-white' : 'border-n-weak text-n-slate-11'"
+              @click="usageDays = d; open('usage')"
+            >
+              {{ $t('TOLZAR_SETTINGS.USAGE.DAYS', { n: d }) }}
+            </button>
+          </div>
           <div v-if="current === 'usage' && data.total" class="grid grid-cols-2 gap-2 md:grid-cols-5">
             <div v-for="(v, k) in data.total" :key="k" class="p-3 rounded-lg bg-n-alpha-1">
               <div class="text-xl font-bold text-n-slate-12">{{ v.toLocaleString() }}</div>
@@ -355,12 +380,22 @@ onMounted(() => {
             <label class="flex gap-2 items-center text-sm"><input v-model="data.config.enabled" type="checkbox" /> {{ $t('TOLZAR_SETTINGS.ON_SHADOW') }}</label>
             <label class="tz-lab">{{ $t('TOLZAR_SETTINGS.RECOVERY.QUIET') }}</label>
             <input v-model.number="data.config.quiet_hours" type="number" min="6" class="tz-in" />
+            <label class="tz-lab">{{ $t('TOLZAR_SETTINGS.RECOVERY.TOUCH_DAYS') }}</label>
+            <input v-model="touchDays" class="tz-in" placeholder="1, 3, 7" />
+            <label class="tz-lab">{{ $t('TOLZAR_SETTINGS.RECOVERY.MAX_PER_RUN') }}</label>
+            <input v-model.number="data.config.max_per_run" type="number" min="1" max="50" class="tz-in" />
             <p class="text-xs text-n-slate-10">{{ $t('TOLZAR_SETTINGS.RECOVERY.PLANNED', { n: data.planned || 0 }) }}</p>
+            <ul v-if="(data.recent || []).length" class="pl-4 mt-1 text-xs text-n-slate-11">
+              <li v-for="(r, i) in data.recent.slice(0, 10)" :key="i">
+                {{ $t('TOLZAR_SETTINGS.RECOVERY.PLAN_ROW', { at: (r.planned_at || '').slice(0, 16).replace('T', ' '), n: (r.touches || []).length, lang: r.language || '' }) }}
+              </li>
+            </ul>
             <button type="button" class="tz-btn" @click="saveRecovery">{{ $t('TOLZAR_SETTINGS.SAVE') }}</button>
           </div>
 
           <!-- learned -->
           <div v-if="current === 'learned'">
+            <p class="mt-0 mb-2 text-xs text-n-slate-10">{{ $t('TOLZAR_SETTINGS.LEARNED.APPROVE_NOTE') }}</p>
             <div v-for="t in data.types || []" :key="t.question_type" class="p-3 mb-2 rounded-lg border border-n-weak">
               <div class="flex flex-wrap gap-2 justify-between items-center">
                 <b class="text-[13.5px]">{{ t.question_type }}</b>
