@@ -1,8 +1,8 @@
 import Cookies from 'js-cookie';
-import { IFrameHelper } from '../sdk/IFrameHelper';
-import './sdk';
+import { IFrameHelper } from '../IFrameHelper';
+import '../../entrypoints/sdk';
 
-vi.mock('../sdk/IFrameHelper', () => ({
+vi.mock('../IFrameHelper', () => ({
   IFrameHelper: {
     createFrame: vi.fn(),
     sendMessage: vi.fn(),
@@ -17,7 +17,7 @@ describe('$chatwoot.setUser', () => {
     vi.spyOn(Cookies, 'set').mockImplementation(() => {});
 
     window.chatwootSDK.run({
-      baseUrl: 'https://app.chatwoot.com',
+      baseUrl: 'https://chat.example.com',
       websiteToken: 'website-token',
     });
   });
