@@ -72,14 +72,19 @@ RSpec.describe 'Tolzar Meta app, listen-only Facebook and Instagram' do
     before { Tolzar::MetaApp.create!(account: other, app_id: '2234567890123', app_secret: 'b' * 32) }
 
     it 'reads the page once, creates a quiet inbox and subscribes only our app' do
+      # The token travels in the Authorization header only, never in a URL.
       read = stub_request(:get, %r{graph\.facebook\.com/v26\.0/2002002\?})
+             .with(headers: { 'Authorization' => 'Bearer sut' })
              .to_return(body: { id: '2002002', name: 'Shop', access_token: 'pt',
                                 instagram_business_account: { id: '1785' } }.to_json)
-      sub = stub_request(:post, %r{graph\.facebook\.com/v26\.0/2002002/subscribed_apps\?.*subscribed_fields=messages%2Cmessage_echoes})
+      sub = stub_request(:post, 'https://graph.facebook.com/v26.0/2002002/subscribed_apps')
+            .with(headers: { 'Authorization' => 'Bearer pt' },
+                  body: hash_including('subscribed_fields' => Tolzar::MetaGraph::PAGE_FIELDS.join(',')))
             .to_return(body: { success: true }.to_json)
       setup = described_class.new(account: other, page_id: '2002002', access_token: 'sut').perform
       expect(read).to have_been_requested.once
       expect(sub).to have_been_requested.once
+      expect(a_request(:any, /access_token=/)).not_to have_been_made
       expect(setup.channel).to have_attributes(tolzar_listen_only: true, instagram_id: '1785', page_access_token: 'pt')
       expect(setup.inbox).to have_attributes(greeting_enabled: false, csat_survey_enabled: false)
       expect(setup.webhook_error).to be_nil

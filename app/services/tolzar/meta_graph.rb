@@ -36,14 +36,20 @@ module Tolzar::MetaGraph
     OpenSSL::HMAC.hexdigest('SHA256', app_secret.to_s, token.to_s)
   end
 
+  # The token goes in the Authorization header, never in the URL (URLs end up in logs and error
+  # trackers). A POST carries its fields form-encoded in the body; GET and DELETE in the query.
   def request(klass, path, params, token, app_secret)
     uri = URI("#{BASE}#{path}")
-    uri.query = URI.encode_www_form(params.merge(access_token: token, appsecret_proof: proof(token, app_secret)))
+    fields = params.merge(appsecret_proof: proof(token, app_secret))
+    uri.query = URI.encode_www_form(fields) unless klass == Net::HTTP::Post
+    req = klass.new(uri)
+    req['Authorization'] = "Bearer #{token}"
+    req.set_form_data(fields) if klass == Net::HTTP::Post
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
     http.open_timeout = 5
     http.read_timeout = 15
-    res = http.request(klass.new(uri))
+    res = http.request(req)
     body = JSON.parse(res.body.presence || '{}')
     raise Error, body.dig('error', 'message').to_s.first(200).presence || "Meta answered #{res.code}" unless res.is_a?(Net::HTTPSuccess)
 
