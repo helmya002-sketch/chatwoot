@@ -7,7 +7,7 @@ require 'rails_helper'
 RSpec.describe 'Tolzar Meta app, listen-only Facebook and Instagram' do
   let(:account) { create(:account) }
   let(:secret) { 'a' * 32 }
-  let!(:app) { Tolzar::MetaApp.create!(account: account, app_id: '1234567890123', app_secret: secret) }
+  let!(:meta_app) { Tolzar::MetaApp.create!(account: account, app_id: '1234567890123', app_secret: secret) }
   let(:channel) do
     Channel::FacebookPage.create!(account: account, page_id: '1001', page_access_token: 'page-token',
                                   user_access_token: 'system-user-token', instagram_id: '1784', tolzar_listen_only: true)
@@ -20,12 +20,12 @@ RSpec.describe 'Tolzar Meta app, listen-only Facebook and Instagram' do
 
   describe Tolzar::MetaApp do
     it 'makes its own tokens and checks Meta signatures with its own secret only' do
-      expect(app.webhook_token).to match(/\A\h{32}\z/)
-      expect(app.verify_token).to match(/\A\h{32}\z/)
-      expect(app.valid_signature?('{"a":1}', sign('{"a":1}'))).to be(true)
-      expect(app.valid_signature?('{"a":1}', sign('{"a":2}'))).to be(false)
-      expect(app.valid_signature?('{"a":1}', nil)).to be(false)
-      expect(app.view.keys).not_to include(:app_secret, :verify_token)
+      expect(meta_app.webhook_token).to match(/\A\h{32}\z/)
+      expect(meta_app.verify_token).to match(/\A\h{32}\z/)
+      expect(meta_app.valid_signature?('{"a":1}', sign('{"a":1}'))).to be(true)
+      expect(meta_app.valid_signature?('{"a":1}', sign('{"a":2}'))).to be(false)
+      expect(meta_app.valid_signature?('{"a":1}', nil)).to be(false)
+      expect(meta_app.view.keys).not_to include(:app_secret, :verify_token)
     end
 
     it 'refuses a malformed app id or secret' do
@@ -36,14 +36,14 @@ RSpec.describe 'Tolzar Meta app, listen-only Facebook and Instagram' do
   end
 
   describe 'webhook', type: :request do
-    let(:url) { "/tolzar/meta/hook/#{app.webhook_token}" }
+    let(:url) { "/tolzar/meta/hook/#{meta_app.webhook_token}" }
 
     it 'answers the verify handshake only with the right token' do
-      get url, params: { 'hub.mode' => 'subscribe', 'hub.verify_token' => app.verify_token, 'hub.challenge' => '42' }
+      get url, params: { 'hub.mode' => 'subscribe', 'hub.verify_token' => meta_app.verify_token, 'hub.challenge' => '42' }
       expect(response.body).to eq('42')
       get url, params: { 'hub.mode' => 'subscribe', 'hub.verify_token' => 'wrong', 'hub.challenge' => '42' }
       expect(response).to have_http_status(:not_found)
-      get "/tolzar/meta/hook/#{'b' * 32}", params: { 'hub.mode' => 'subscribe', 'hub.verify_token' => app.verify_token }
+      get "/tolzar/meta/hook/#{'b' * 32}", params: { 'hub.mode' => 'subscribe', 'hub.verify_token' => meta_app.verify_token }
       expect(response).to have_http_status(:not_found)
     end
 
@@ -72,12 +72,12 @@ RSpec.describe 'Tolzar Meta app, listen-only Facebook and Instagram' do
     before { Tolzar::MetaApp.create!(account: other, app_id: '2234567890123', app_secret: 'b' * 32) }
 
     it 'reads the page once, creates a quiet inbox and subscribes only our app' do
-      read = stub_request(:get, %r{graph\.facebook\.com/v26\.0/2002\?})
-             .to_return(body: { id: '2002', name: 'Shop', access_token: 'pt',
+      read = stub_request(:get, %r{graph\.facebook\.com/v26\.0/2002002\?})
+             .to_return(body: { id: '2002002', name: 'Shop', access_token: 'pt',
                                 instagram_business_account: { id: '1785' } }.to_json)
-      sub = stub_request(:post, %r{graph\.facebook\.com/v26\.0/2002/subscribed_apps\?.*subscribed_fields=messages%2Cmessage_echoes})
+      sub = stub_request(:post, %r{graph\.facebook\.com/v26\.0/2002002/subscribed_apps\?.*subscribed_fields=messages%2Cmessage_echoes})
             .to_return(body: { success: true }.to_json)
-      setup = described_class.new(account: other, page_id: '2002', access_token: 'sut').perform
+      setup = described_class.new(account: other, page_id: '2002002', access_token: 'sut').perform
       expect(read).to have_been_requested.once
       expect(sub).to have_been_requested.once
       expect(setup.channel).to have_attributes(tolzar_listen_only: true, instagram_id: '1785', page_access_token: 'pt')
@@ -86,7 +86,7 @@ RSpec.describe 'Tolzar Meta app, listen-only Facebook and Instagram' do
     end
 
     it 'needs the workspace app first' do
-      expect { described_class.new(account: create(:account), page_id: '2002', access_token: 't').perform }
+      expect { described_class.new(account: create(:account), page_id: '2002002', access_token: 't').perform }
         .to raise_error(ArgumentError, /Meta app/)
     end
   end
@@ -161,7 +161,7 @@ RSpec.describe 'Tolzar Meta app, listen-only Facebook and Instagram' do
       expect(response.parsed_body['pages'].pluck('page_id')).to eq(['1001'])
       post base, params: { app_id: '1234567890124' }, headers: owner.create_new_auth_token, as: :json
       expect(response.parsed_body).not_to have_key('verify_token') # only on create
-      expect(app.reload.app_secret).to eq(secret)
+      expect(meta_app.reload.app_secret).to eq(secret)
     end
   end
 end

@@ -56,7 +56,7 @@ class TolzarNoProxyCache
 
   def browser_only?(headers)
     value = (headers['Cache-Control'] || headers['cache-control']).to_s
-    value.include?('private') && !value.include?('public') && value.match?(/max-age=[1-9]\d{0,2}/)
+    value.include?('private') && !value.include?('public') && value.match?(/max-age=[1-9]\d*/)
   end
 end
 
