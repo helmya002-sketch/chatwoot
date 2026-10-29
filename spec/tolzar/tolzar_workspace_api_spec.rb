@@ -106,17 +106,24 @@ RSpec.describe 'Tolzar workspace settings, price source, go-live', type: :reques
       expect(gets.last).to eq("/agents/a1_b/price-source?account_id=#{account.id}")
     end
 
-    it 'lets a Manager test-fetch but not save' do
+    # Pass 8: a test fetch can reach any https host, so it is Owner-only like the save.
+    it 'refuses a Manager both the test fetch and the save' do
       post url('agents/a1/price_source/test'), params: { type: 'table', url: 'https://x.example/p.csv' },
                                                 headers: manager.create_new_auth_token, as: :json
-      expect(response).to have_http_status(:success)
-      expect(posts.last).to eq(['/agents/a1/price-source/test',
-                                { account_id: account.id, type: 'table', url: 'https://x.example/p.csv' }])
+      expect(response).to have_http_status(:forbidden)
 
       post url('agents/a1/price_source'), params: { type: 'table', url: 'https://x.example/p.csv', refresh_hours: 24 },
                                            headers: manager.create_new_auth_token, as: :json
       expect(response).to have_http_status(:forbidden)
-      expect(posts.length).to eq(1)
+      expect(posts).to be_empty
+    end
+
+    it 'lets the Owner test-fetch with only the allowed fields' do
+      post url('agents/a1/price_source/test'), params: { type: 'table', url: 'https://x.example/p.csv' },
+                                                headers: owner.create_new_auth_token, as: :json
+      expect(response).to have_http_status(:success)
+      expect(posts.last).to eq(['/agents/a1/price-source/test',
+                                { account_id: account.id, type: 'table', url: 'https://x.example/p.csv' }])
     end
 
     it 'saves for the Owner with only the allowed fields' do

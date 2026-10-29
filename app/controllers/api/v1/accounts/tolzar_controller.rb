@@ -8,7 +8,7 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
   # reads stay open to every administrator.
   before_action :ensure_owner, only: %i[export_start export_download meta_connect_url meta_disconnect meta_select
                                         agent_save agent_delete agent_default workflow_save workflow_delete
-                                        workspace_settings_save price_source_save go_live kill_switch]
+                                        workspace_settings_save price_source_save price_source_test go_live kill_switch]
 
   def agent_test
     body = {
