@@ -23,9 +23,11 @@ Rails.application.config.after_initialize do
         'BRAND_URL' => base,
         'WIDGET_BRAND_URL' => base,
         'TERMS_URL' => base,
-        'PRIVACY_URL' => base
+        'PRIVACY_URL' => base,
+        'CAPTAIN_TOOLS_CATALOG_URL' => ''            # never fetched from chatwoot.com (Captain unused)
       }.each do |name, value|
-        next if value.blank? && links.include?(name)      # no address configured: leave the links alone
+        # No address configured: leave the links alone. (CAPTAIN_TOOLS_CATALOG_URL is blanked on purpose.)
+        next if value.blank? && links.include?(name)
         config = InstallationConfig.find_by(name: name)
         config.update!(value: value) if config && config.value != value
       end

@@ -41,8 +41,8 @@ export default {
   DOCS_URL: 'https://www.chatwoot.com/docs/product/',
   HELP_CENTER_DOCS_URL:
     'https://www.chatwoot.com/docs/product/others/help-center',
-  TESTIMONIAL_URL:
-    'https://testimonials.cdn.chatwoot.com/testimonial-content.json',
+  // Tolzar: no testimonials feed from Chatwoot's CDN (never depend on Chatwoot).
+  TESTIMONIAL_URL: '',
   WHATSAPP_EMBEDDED_SIGNUP_DOCS_URL:
     'https://developers.facebook.com/docs/whatsapp/embedded-signup/custom-flows/onboarding-business-app-users#limitations',
   SMALL_SCREEN_BREAKPOINT: 768,
@@ -78,5 +78,5 @@ export default {
   },
 };
 export const DEFAULT_REDIRECT_URL = '/app/';
-export const META_RESTRICTION_STATUS_URL =
-  'https://status.chatwoot.com/incidents';
+// Tolzar: Meta's own status page (the restriction is Meta's), not Chatwoot's.
+export const META_RESTRICTION_STATUS_URL = 'https://metastatus.com/';

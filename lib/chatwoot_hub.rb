@@ -1,6 +1,6 @@
 # TODO: lets use HTTParty instead of RestClient
 class ChatwootHub
-  DEFAULT_BASE_URL = 'https://hub.2.chatwoot.com'.freeze
+  DEFAULT_BASE_URL = ''.freeze   # Tolzar: no Chatwoot hub (never called; see sync_with_hub)
 
   def self.base_url
     DEFAULT_BASE_URL
@@ -82,61 +82,34 @@ class ChatwootHub
     model.last&.id || 0
   end
 
-  # Tolzar: DISABLE_TELEMETRY means no call home at all (not just fewer metrics): no version
-  # ping and no instance registration. Mobile push still relays through the hub (send_push).
+  # Kept for callers that still ask; Tolzar never calls the hub whatever it says (see below).
   def self.telemetry_disabled?
     ActiveModel::Type::Boolean.new.cast(ENV.fetch('DISABLE_TELEMETRY', false))
   end
 
+  # Tolzar: no network call to Chatwoot's hub, ever (owner rule, 29 Oct 2026: never depend on
+  # Chatwoot). No version ping, no instance registration, no events, no push relay: mobile push goes
+  # through the install's own Firebase project (FIREBASE_PROJECT_ID + FIREBASE_CREDENTIALS), web push
+  # through its own VAPID keys. The URL helpers stay only so old call sites keep compiling.
   def self.sync_with_hub
-    return nil if telemetry_disabled?
-
-    begin
-      info = instance_config
-      info = info.merge(instance_metrics) unless ENV['DISABLE_TELEMETRY']
-      response = RestClient.post(ping_url, info.to_json, { content_type: :json, accept: :json })
-      parsed_response = JSON.parse(response)
-    rescue *ExceptionList::REST_CLIENT_EXCEPTIONS => e
-      Rails.logger.error "Exception: #{e.message}"
-    rescue StandardError => e
-      ChatwootExceptionTracker.new(e).capture_exception
-    end
-    parsed_response
+    nil
   end
 
-  def self.register_instance(company_name, owner_name, owner_email)
-    return if telemetry_disabled?
-
-    info = { company_name: company_name, owner_name: owner_name, owner_email: owner_email, subscribed_to_mailers: true }
-    RestClient.post(registration_url, info.merge(instance_config).to_json, { content_type: :json, accept: :json })
-  rescue *ExceptionList::REST_CLIENT_EXCEPTIONS => e
-    Rails.logger.error "Exception: #{e.message}"
-  rescue StandardError => e
-    ChatwootExceptionTracker.new(e).capture_exception
+  def self.register_instance(_company_name, _owner_name, _owner_email)
+    nil
   end
 
-  def self.send_push(fcm_options)
-    send_push_with_response(fcm_options)
-  rescue *ExceptionList::REST_CLIENT_EXCEPTIONS => e
-    Rails.logger.error "Exception: #{e.message}"
-  rescue StandardError => e
-    ChatwootExceptionTracker.new(e).capture_exception
+  def self.send_push(_fcm_options)
+    Rails.logger.warn('[Tolzar] mobile push needs FIREBASE_PROJECT_ID + FIREBASE_CREDENTIALS (no Chatwoot relay)')
+    nil
   end
 
-  def self.send_push_with_response(fcm_options)
-    info = { fcm_options: fcm_options }
-    RestClient.post(push_notification_url, info.merge(instance_config).to_json, { content_type: :json, accept: :json })
+  def self.send_push_with_response(_fcm_options)
+    raise 'Tolzar has no push relay: set FIREBASE_PROJECT_ID and FIREBASE_CREDENTIALS for mobile push'
   end
 
-  def self.emit_event(event_name, event_data)
-    return if ENV['DISABLE_TELEMETRY']
-
-    info = { event_name: event_name, event_data: event_data }
-    RestClient.post(events_url, info.merge(instance_config).to_json, { content_type: :json, accept: :json })
-  rescue *ExceptionList::REST_CLIENT_EXCEPTIONS => e
-    Rails.logger.error "Exception: #{e.message}"
-  rescue StandardError => e
-    ChatwootExceptionTracker.new(e).capture_exception
+  def self.emit_event(_event_name, _event_data)
+    nil
   end
 end
 
