@@ -56,6 +56,9 @@ RSpec.describe Tolzar::ConversationRetention do
       post url, params: { days: 730 }, headers: owner.create_new_auth_token, as: :json
       expect(response.parsed_body).to include('ok' => true, 'days' => 730)
       expect(account.reload.settings[described_class::KEY]).to eq(730)
+      audit = Audited::Audit.where(auditable: account, comment: 'Tolzar conversation retention').last
+      expect(audit.audited_changes).to eq(described_class::KEY => [nil, 730])
+      expect(audit.user).to eq(owner)
       post url, params: { days: 10 }, headers: owner.create_new_auth_token, as: :json
       expect(response).to have_http_status(:bad_request)
       post url, params: { days: 900 }, headers: manager.create_new_auth_token, as: :json

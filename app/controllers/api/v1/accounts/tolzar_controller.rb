@@ -354,9 +354,14 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
     valid = days.nil? || days.between?(Tolzar::ConversationRetention::MIN_DAYS, Tolzar::ConversationRetention::MAX_DAYS)
     return render(json: { ok: false, error: 'invalid_settings', detail: ['days: empty (keep) or 365 to 3650'] }, status: :bad_request) unless valid
 
+    old = Tolzar::ConversationRetention.days(Current.account)
     settings = (Current.account.settings || {}).except(Tolzar::ConversationRetention::KEY)
     settings[Tolzar::ConversationRetention::KEY] = days if days
     Current.account.update!(settings: settings)
+    # The Account model is not audited here, and this setting deletes data: record who changed it.
+    Audited::Audit.create!(auditable: Current.account, associated: Current.account, user: Current.user, action: 'update',
+                           audited_changes: { Tolzar::ConversationRetention::KEY => [old, days] },
+                           comment: 'Tolzar conversation retention')
     conversation_retention
   end
 
