@@ -43,11 +43,20 @@ class TolzarNoProxyCache
       content_type = (headers['Content-Type'] || headers['content-type']).to_s
       if content_type.include?('text/html') || content_type.include?('application/json')
         headers['X-LiteSpeed-Cache-Control'] = 'no-cache'
-        headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0, private'
+        # A response the app itself marked for the user's own browser only (private, short max-age,
+        # e.g. /api/v1/accounts/:id/cache_keys every 10 s) keeps that; the proxy still never stores it.
+        headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0, private' unless browser_only?(headers)
       end
     end
 
     [status, headers, body]
+  end
+
+  private
+
+  def browser_only?(headers)
+    value = (headers['Cache-Control'] || headers['cache-control']).to_s
+    value.include?('private') && !value.include?('public') && value.match?(/max-age=[1-9]\d{0,2}/)
   end
 end
 

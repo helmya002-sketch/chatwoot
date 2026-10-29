@@ -119,6 +119,15 @@ RSpec.describe TolzarNoProxyCache do
     expect(call('/tolzarish', 'application/gzip')['X-LiteSpeed-Cache-Control']).to be_nil
     expect(call('/api/v1/accounts/1/agents', 'application/json')['X-LiteSpeed-Cache-Control']).to eq('no-cache')
   end
+
+  it "keeps the app's own short browser-only cache (cache_keys) but still tells the proxy not to store it" do
+    app = ->(_env) { [200, { 'Content-Type' => 'application/json', 'Cache-Control' => 'max-age=10, private, stale-while-revalidate=300' }, ['x']] }
+    headers = described_class.new(app).call(Rack::MockRequest.env_for('/api/v1/accounts/1/cache_keys'))[1]
+    expect(headers['Cache-Control']).to include('max-age=10', 'private')
+    expect(headers['X-LiteSpeed-Cache-Control']).to eq('no-cache')
+    public_app = ->(_env) { [200, { 'Content-Type' => 'application/json', 'Cache-Control' => 'max-age=10, public' }, ['x']] }
+    expect(described_class.new(public_app).call(Rack::MockRequest.env_for('/api/v1/x'))[1]['Cache-Control']).to include('no-store')
+  end
 end
 
 RSpec.describe Tolzar::WorkspaceExportJob, '(M6 CSV formula injection)' do
