@@ -92,3 +92,10 @@ remove_orphan_conversations_job:
   cron: '0 */12 * * *'
   class: 'Internal::RemoveOrphanConversationsJob'
   queue: housekeeping
+
+# Tolzar: executed daily at 0315 UTC
+# deletes conversations past a workspace's retention period (only workspaces whose Owner set one)
+tolzar_conversation_retention_job:
+  cron: '15 3 * * *'
+  class: 'Tolzar::ConversationRetentionJob'
+  queue: housekeeping

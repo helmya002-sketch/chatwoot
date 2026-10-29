@@ -11,7 +11,8 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
                                         workspace_settings_save price_source_save price_source_test go_live kill_switch
                                         kill_switch_release workspace_bootstrap whatsapp_listen_only_connect
                                         price_upload price_upload_restore pipeline_settings_save
-                                        meta_app meta_app_save meta_app_delete meta_page_connect]
+                                        meta_app meta_app_save meta_app_delete meta_page_connect
+                                        conversation_retention_save]
 
   # Listen-only WhatsApp (Tolzar::ListenOnly): the workspace owner connects the business's own in-house
   # Meta app to a number another provider runs. The token and the app secret are write-only: stored on
@@ -337,6 +338,26 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
                    instagram_id: setup.channel.instagram_id, error: setup.webhook_error }.compact, status: :created
   rescue ArgumentError, Tolzar::MetaGraph::Error, ActiveRecord::RecordInvalid => e
     render json: { ok: false, error: e.message.to_s.first(300) }, status: :unprocessable_entity
+  end
+
+  # How long this workspace keeps its conversations (Tolzar::ConversationRetention; off = kept).
+  # Every administrator reads it and how many conversations are past it; only an Owner sets it.
+  def conversation_retention
+    render json: { ok: true, days: Tolzar::ConversationRetention.days(Current.account),
+                   min: Tolzar::ConversationRetention::MIN_DAYS, max: Tolzar::ConversationRetention::MAX_DAYS,
+                   expired: Tolzar::ConversationRetention.new(Current.account).expired.count }
+  end
+
+  def conversation_retention_save
+    raw = params[:days].to_s.strip
+    days = raw.empty? ? nil : Integer(raw, exception: false)
+    valid = days.nil? || days.between?(Tolzar::ConversationRetention::MIN_DAYS, Tolzar::ConversationRetention::MAX_DAYS)
+    return render(json: { ok: false, error: 'invalid_settings', detail: ['days: empty (keep) or 365 to 3650'] }, status: :bad_request) unless valid
+
+    settings = (Current.account.settings || {}).except(Tolzar::ConversationRetention::KEY)
+    settings[Tolzar::ConversationRetention::KEY] = days if days
+    Current.account.update!(settings: settings)
+    conversation_retention
   end
 
   # The workspace's pipeline (Tolzar::PipelineSettings): stages, stage fields, deal value field and

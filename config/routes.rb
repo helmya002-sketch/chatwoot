@@ -91,6 +91,8 @@ Rails.application.routes.draw do
           post   'tolzar/workspace/bootstrap',   to: 'tolzar#workspace_bootstrap'
           get    'tolzar/workspace/checklist',   to: 'tolzar#workspace_checklist'
           get    'tolzar/pipeline',              to: 'tolzar#pipeline_settings'
+          get    'tolzar/conversation_retention', to: 'tolzar#conversation_retention'
+          post   'tolzar/conversation_retention', to: 'tolzar#conversation_retention_save'
           get    'tolzar/meta_app',              to: 'tolzar#meta_app'
           post   'tolzar/meta_app',              to: 'tolzar#meta_app_save'
           delete 'tolzar/meta_app',              to: 'tolzar#meta_app_delete'

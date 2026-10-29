@@ -46,11 +46,18 @@ async function load() {
       defaults: r.defaults || {},
     };
   } else if (props.section === 'retention') {
-    const r = await getRetention(accountId.value);
+    const [r, conv] = await Promise.all([
+      getRetention(accountId.value),
+      window.axios
+        .get(`/api/v1/accounts/${accountId.value}/tolzar/conversation_retention`)
+        .then(x => x.data)
+        .catch(() => ({})),
+    ]);
     data.value = {
       config: { ...(r.config || r.defaults || {}) },
       defaults: r.defaults || {},
       next: r.next_purge || {},
+      conv: { days: conv.days ?? '', expired: conv.expired ?? null },
     };
   } else {
     data.value = {};
@@ -74,6 +81,23 @@ async function saveRetentionNow() {
   busy.value = true;
   try {
     after(await saveRetention(accountId.value, data.value.config), t('TOLZAR_SETTINGS.R1.SAVED'));
+  } finally {
+    busy.value = false;
+  }
+}
+
+// The workspace's own conversations (Tolzar::ConversationRetention): empty = kept, Owner only.
+async function saveConversationRetention() {
+  busy.value = true;
+  try {
+    const r = await window.axios
+      .post(`/api/v1/accounts/${accountId.value}/tolzar/conversation_retention`, {
+        days: data.value.conv.days,
+      })
+      .then(x => x.data)
+      .catch(e => e?.response?.data || { ok: false, error: 'brain_unreachable' });
+    after(r, t('TOLZAR_SETTINGS.R1.SAVED'));
+    if (r && r.ok) data.value.conv = { days: r.days ?? '', expired: r.expired };
   } finally {
     busy.value = false;
   }
@@ -144,6 +168,8 @@ onMounted(load);
       <input v-model.number="data.config.decisions_days" type="number" min="1" max="3650" :class="INPUT" />
       <label :class="LABEL">{{ t('TOLZAR_SETTINGS.TRUST.KV_DAYS') }}</label>
       <input v-model.number="data.config.kv_days" type="number" min="1" max="3650" :class="INPUT" />
+      <label :class="LABEL">{{ t('TOLZAR_SETTINGS.TRUST.AUDIT_DAYS') }}</label>
+      <input v-model.number="data.config.audit_days" type="number" min="1" max="3650" :class="INPUT" />
       <p class="text-xs text-n-slate-10">{{ t('TOLZAR_SETTINGS.TRUST.RETENTION_SCOPE') }}</p>
       <div class="p-3 mt-3 rounded-lg bg-n-alpha-1 text-[13px]">
         <div class="text-xs font-semibold text-n-slate-11">{{ t('TOLZAR_SETTINGS.TRUST.NEXT_PURGE') }}</div>
@@ -153,6 +179,15 @@ onMounted(load);
         <p v-if="!Object.keys(data.next).length" class="mt-1 mb-0 text-xs text-n-slate-10">{{ t('TOLZAR_SETTINGS.NONE_YET') }}</p>
       </div>
       <button type="button" :class="BTN" :disabled="busy" @click="saveRetentionNow">{{ t('TOLZAR_SETTINGS.SAVE') }}</button>
+
+      <h3 class="mt-6 mb-0 text-[14px] font-semibold text-n-slate-12">{{ t('TOLZAR_SETTINGS.TRUST.CONV_TITLE') }}</h3>
+      <p class="mt-1 text-xs text-n-slate-10">{{ t('TOLZAR_SETTINGS.TRUST.CONV_HINT') }}</p>
+      <label :class="LABEL">{{ t('TOLZAR_SETTINGS.TRUST.CONV_DAYS') }}</label>
+      <input v-model="data.conv.days" type="number" min="365" max="3650" :class="INPUT" :placeholder="t('TOLZAR_SETTINGS.TRUST.CONV_OFF')" />
+      <p v-if="data.conv.days && data.conv.expired !== null" class="text-xs text-n-amber-11">
+        {{ t('TOLZAR_SETTINGS.TRUST.CONV_EXPIRED', { n: data.conv.expired }) }}
+      </p>
+      <button type="button" :class="BTN" :disabled="busy" @click="saveConversationRetention">{{ t('TOLZAR_SETTINGS.SAVE') }}</button>
     </div>
 
     <!-- One contact's data: export / erase (Owner only) -->
