@@ -994,6 +994,7 @@
       "LAST": "Last step"
     },
     "NO_RUNS": "No runs yet.",
+    "SAVE_FIRST": "Save the workflow first, then you can test it and see its runs.",
     "TEST_HINT": "Walks the whole workflow once for one conversation. Waits are skipped and nothing is written.",
     "CONVERSATION_ID": "Conversation id (optional)",
     "PRETEND_REPLY": "Pretend the customer replied",

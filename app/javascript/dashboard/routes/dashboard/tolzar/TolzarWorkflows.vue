@@ -256,7 +256,8 @@ onMounted(load);
         <select v-model="draft.status" class="tz-in !w-[170px]">
           <option value="draft">{{ $t('TOLZAR_WORKFLOWS.STATUS.draft') }}</option>
           <option value="shadow">{{ $t('TOLZAR_WORKFLOWS.STATUS.shadow') }}</option>
-          <option value="live" disabled>{{ $t('TOLZAR_WORKFLOWS.STATUS.live') }}</option>
+          <!-- Shadow only (owner rule): live is not offered; a workflow that is live already still shows it. -->
+          <option v-if="draft.status === 'live'" value="live" disabled>{{ $t('TOLZAR_WORKFLOWS.STATUS.live') }}</option>
         </select>
         <button type="button" class="tz-btn-primary" :disabled="saving" @click="save">
           <span class="i-lucide-check size-4" /> {{ $t('TOLZAR_WORKFLOWS.SAVE') }}
@@ -273,6 +274,7 @@ onMounted(load);
           class="px-3 py-2.5 text-sm border-b-2"
           :class="tab === t ? 'font-semibold border-n-brand text-n-slate-12' : 'border-transparent text-n-slate-10'"
           :disabled="t !== 'flow' && isNew"
+          :title="t !== 'flow' && isNew ? $t('TOLZAR_WORKFLOWS.SAVE_FIRST') : ''"
           @click="t === 'runs' ? loadRuns() : (tab = t)"
         >
           {{ $t(`TOLZAR_WORKFLOWS.TAB.${t}`) }}
