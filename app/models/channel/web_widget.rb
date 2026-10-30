@@ -42,6 +42,8 @@ class Channel::WebWidget < ApplicationRecord
   before_validation :validate_pre_chat_options
   validates :website_url, presence: true
   validates :widget_color, presence: true
+  # Tolzar debrand (#9): new widgets default to Tolzar's colour, not the database's upstream blue (#1f93ff).
+  attribute :widget_color, :string, default: '#3E63DD'
   has_many :portals, foreign_key: 'channel_web_widget_id', dependent: :nullify, inverse_of: :channel_web_widget
 
   has_secure_token :website_token
