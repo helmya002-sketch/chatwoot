@@ -153,6 +153,9 @@ Rails.application.routes.draw do
           get    'tolzar/pack',             to: 'tolzar#pack_view'
           post   'tolzar/brain/:feature',   to: 'tolzar#brain_post'
           post   'tolzar/export',           to: 'tolzar#export_start'
+          # Tolzar data deletion (Owner-only): one person's data, or the whole workspace.
+          post   'tolzar/data/contact_erase',   to: 'tolzar_data#contact_erase'
+          post   'tolzar/data/workspace_purge', to: 'tolzar_data#workspace_purge'
           get    'tolzar/export',           to: 'tolzar#export_status'
           get    'tolzar/export/download',  to: 'tolzar#export_download'
           post   'tolzar/meta/connect_url', to: 'tolzar#meta_connect_url'
