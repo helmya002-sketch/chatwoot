@@ -1,1 +1,135 @@
-{}
+{
+  "TOLZAR_DASHBOARD": {
+    "TITLE": "Overview",
+    "GREETING": {
+      "MORNING": "Good morning, {name}",
+      "AFTERNOON": "Good afternoon, {name}",
+      "EVENING": "Good evening, {name}"
+    },
+    "FALLBACK_NAME": "there",
+    "SUMMARY": "{open} open · {won} won · {rate}% win rate",
+    "LOADING": "Loading your overview…",
+    "UPDATED": "Updated {time}",
+    "REFRESH": "Refresh",
+    "REFRESHING": "Refreshing…",
+    "TO_ASSIGN": "{n} to assign",
+    "OPEN_INBOX": "Open inbox",
+    "KPI": {
+      "TOTAL_CONTACTS": "Total contacts",
+      "IN_PROGRESS": "{n} in progress",
+      "OTHER_STAGES": "{n} in other stages",
+      "OPEN_CONVERSATIONS": "Open conversations",
+      "UNASSIGNED": "{n} unassigned",
+      "WIN_RATE": "Win rate",
+      "WIN_RATE_SUB": "of decided contacts",
+      "WIN_RATE_HINT": "won ÷ (won + lost)"
+    },
+    "FUNNEL": "Lifecycle funnel",
+    "CONTACTS_N": "{n} contacts",
+    "BY_TEAM": "Conversations by team",
+    "NO_TEAM": "No team",
+    "NO_CONVERSATIONS": "No conversations yet.",
+    "PRESENCE": {
+      "TITLE": "Team presence",
+      "ONLINE_OF": "{online}/{total} online",
+      "ONLINE": "Online",
+      "BUSY": "Busy",
+      "OFFLINE": "Offline",
+      "NONE": "No teammates yet."
+    },
+    "ATTENTION": {
+      "TITLE": "Needs attention",
+      "HOT": "Hot",
+      "WAITING": "Waiting for first reply",
+      "UNASSIGNED": "Unassigned",
+      "HOT_N": "{n} hot",
+      "WAITING_N": "{n} waiting for first reply",
+      "UNASSIGNED_N": "{n} unassigned",
+      "SCORE": "Score {n}",
+      "EMPTY": "Nothing needs you right now.",
+      "EMPTY_HINT": "Unassigned, unanswered and hot conversations show up here, one click to open."
+    },
+    "RECENT": "Recent conversations",
+    "VIEW_ALL": "View all",
+    "UNKNOWN": "Unknown",
+    "NO_MESSAGES": "No messages yet",
+    "LINKS": {
+      "AI_AGENTS": "AI Agents",
+      "AI_AGENTS_SUB": "Set up your AI agents",
+      "WORKFLOWS": "Workflows",
+      "WORKFLOWS_SUB": "Automate conversations",
+      "INBOX": "Inbox",
+      "INBOX_SUB": "All conversations"
+    }
+  },
+  "TOLZAR_PIPELINE_UI": {
+    "TITLE": "Pipeline",
+    "SUBTITLE": "Where every contact stands, stage by stage. Drag a card or use its move button.",
+    "VALUE": "Pipeline value",
+    "VALUE_PARTIAL": "≥ {value} ({n} of {m} loaded)",
+    "VALUE_FULL": "{value}",
+    "NO_CONTACTS": "No contacts",
+    "NO_CONTACT_INFO": "No contact details",
+    "MOVE": "Move {name} to another stage",
+    "MOVE_TO": "Move to",
+    "OPEN_IN_CONTACTS": "Open in Contacts",
+    "DROP_HERE": "Drop here to move",
+    "FILTER": {
+      "LABEL": "Show",
+      "ALL": "All",
+      "MINE": "Mine",
+      "INBOX": "Inbox",
+      "ANY_INBOX": "Any inbox",
+      "HINT": "Filters the cards loaded so far."
+    },
+    "ASSIGNEE": "Assigned to {name}",
+    "SCORE": "Lead score {n}"
+  },
+  "TOLZAR_REPORTS_UI": {
+    "DOWNLOAD_CSV": "Download CSV",
+    "CSV": {
+      "FUNNEL": "contacts-by-stage",
+      "WEEKLY": "new-contacts-by-week",
+      "PEOPLE": "team-members",
+      "PIPELINE": "deal-value-by-stage",
+      "BY_MODEL": "ai-by-model",
+      "DAILY": "ai-daily",
+      "DISAGREE": "ai-disagreements"
+    }
+  },
+  "TOLZAR_RESULTS_UI": {
+    "WHAT_IS_SHADOW": "What Shadow means",
+    "WOULD_BE_HINT": "Values marked would-be are what customers would have seen."
+  },
+  "TOLZAR_ONBOARDING_UI": {
+    "TIMEZONE_FILTER": "Find a time zone…",
+    "TIMEZONE_NONE": "No time zone matches.",
+    "LANGUAGES_HINT": "Pick every language your customers write in.",
+    "PROBLEM": {
+      "required": "Required.",
+      "hours": "Enter both times as HH:MM."
+    },
+    "PACK_FIRST_HINT": "A pack adds the contact fields and starter knowledge for your kind of business. You can change it later in Settings.",
+    "PACK_NONE_HINT": "Generic fields only.",
+    "SETTING_UP": "Setting up…",
+    "CHECK_HINT": {
+      "settings": "Name, time zone, working hours and languages. About a minute.",
+      "pack": "Optional: fields and starter knowledge for your kind of business.",
+      "agent": "Create one from a template, review it, then switch it on. It runs in Shadow.",
+      "knowledge": "Paste your website or upload documents so the agent answers from your own pages.",
+      "prices": "Optional: a price source so the agent never guesses a price.",
+      "channel": "Connect the inbox your customers write to (website chat, email, WhatsApp).",
+      "ai_disclosure": "The sentence that tells customers an AI took part. Required before live.",
+      "owner": "The person who can switch an inbox live or use the kill switch.",
+      "live_ready": "Shown when every go-live check passes. Nothing goes live on its own."
+    }
+  },
+  "TOLZAR_AGENCY_UI": {
+    "SAVED": "Branding saved.",
+    "ROW_FAILED": "Could not load",
+    "ROW_FAILED_HINT": "Usage or scoreboard did not answer for this workspace. Reload to try again.",
+    "CONTRAST_WARN": "White text would be hard to read on this colour. Pick a darker shade.",
+    "PREVIEW_NAV": "Inbox · Contacts · Workflows · Reports",
+    "DEFAULT_NAME": "Tolzar"
+  }
+}

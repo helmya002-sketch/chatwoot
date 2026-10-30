@@ -134,3 +134,17 @@ export const roiFacts = r => {
   if (r.mode_note) out.push({ key: 'SHADOW_NOTE', params: {} });
   return out;
 };
+
+// The brain's /roi with every block the page reads present (an older brain or a partial answer
+// may omit one), so the template never reads `first_reply.would_be` off undefined.
+export const roiView = r => {
+  const d = r && typeof r === 'object' ? r : {};
+  return {
+    ...d,
+    first_reply: d.first_reply && typeof d.first_reply === 'object' ? d.first_reply : {},
+    ai_handled: d.ai_handled && typeof d.ai_handled === 'object' ? d.ai_handled : {},
+    off_hours: d.off_hours && typeof d.off_hours === 'object' ? d.off_hours : {},
+    won_rule: d.won_rule && typeof d.won_rule === 'object' ? d.won_rule : {},
+    campaigns: Array.isArray(d.campaigns) ? d.campaigns.filter(Boolean) : [],
+  };
+};

@@ -141,3 +141,57 @@ export const checklistProgress = data => {
   const req = checklistItems(data).filter(i => i.required !== false);
   return { done: req.filter(i => i.done).length, total: req.length };
 };
+
+// ---- Pickers for step 1 ------------------------------------------------------------------------
+// Time zones the browser knows (the same approach as WorkspacePanel), the current one kept even
+// when the list does not have it; `filter` narrows by a case-insensitive substring.
+export const timezoneOptions = (current = '', filter = '', all = null) => {
+  let known = all;
+  if (!known) {
+    try {
+      known = Intl.supportedValuesOf('timeZone');
+    } catch (e) {
+      known = [];
+    }
+  }
+  const list = ['UTC', ...known.filter(z => z !== 'UTC')];
+  if (current && !list.includes(current)) list.unshift(current);
+  const q = String(filter || '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '_');
+  const hits = q ? list.filter(z => z.toLowerCase().includes(q)) : list;
+  // The chosen zone stays selectable while the person types.
+  return current && !hits.includes(current) ? [current, ...hits] : hits;
+};
+
+// Languages offered as chips (ISO 639-1); any other code the form already holds is kept.
+export const LANGUAGES = Object.freeze([
+  'en', 'ar', 'de', 'fr', 'es', 'it', 'pt', 'nl', 'tr', 'ru', 'pl', 'uk', 'el',
+  'he', 'hi', 'id', 'ja', 'ko', 'zh', 'sv', 'da', 'no', 'fi', 'cs', 'ro', 'hu',
+]);
+
+// Adds or removes one code in the comma-separated form value, keeping the order and case rules
+// of parseLanguages ("en, ar" + 'de' -> "en, ar, de"; the last language cannot be removed).
+export const toggleLanguage = (text, code) => {
+  const list = parseLanguages(text);
+  const c = String(code || '')
+    .trim()
+    .toLowerCase();
+  if (!c) return list.join(', ');
+  if (list.includes(c)) {
+    const rest = list.filter(x => x !== c);
+    return (rest.length ? rest : list).join(', ');
+  }
+  return [...list, c].slice(0, 30).join(', ');
+};
+
+// The one problem for a form field, or '' (formProblems' `path` -> `error`).
+export const problemFor = (problems, path) =>
+  (problems || []).find(p => p.path === path)?.error || '';
+
+// Checklist items to show: the go-live review only where live is allowed for this workspace.
+export const visibleChecklistItems = (data, liveAllowed) =>
+  checklistItems(data).filter(
+    i => liveAllowed === true || i.action_hint !== 'go_live_review'
+  );

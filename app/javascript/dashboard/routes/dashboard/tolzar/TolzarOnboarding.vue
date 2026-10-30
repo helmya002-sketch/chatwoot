@@ -2,18 +2,30 @@
 import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMapGetter } from 'dashboard/composables/store';
+import Spinner from 'dashboard/components-next/spinner/Spinner.vue';
+import {
+  BTN,
+  BTN_GHOST,
+  INPUT,
+  LABEL,
+} from 'dashboard/components-next/Tolzar/settings/tzClasses';
 import {
   NONE_PACK,
   WEEKDAYS,
+  LANGUAGES,
   emptyForm,
   bootstrapBody,
   bootstrapWorkspace,
   bootstrapOutcome,
   formProblems,
   getChecklist,
-  checklistItems,
   checklistLink,
   checklistProgress,
+  parseLanguages,
+  problemFor,
+  timezoneOptions,
+  toggleLanguage,
+  visibleChecklistItems,
 } from 'dashboard/components-next/Tolzar/tolzarOnboarding';
 
 // Tolzar onboarding: the brain's one-time workspace bootstrap (first settings, industry pack choice,
@@ -21,15 +33,11 @@ import {
 // Nothing here turns anything live: the agent waits for the owner and then runs in Shadow.
 const accountId = useMapGetter('getCurrentAccountId');
 const getAccount = useMapGetter('accounts/getAccount');
-const { t } = useI18n();
+const { t, te } = useI18n();
 const base = computed(() => `/api/v1/accounts/${accountId.value}/tolzar`);
 
-// Format examples (not translated: a time zone id, language codes, a URL).
-const EXAMPLES = {
-  timezone: 'Europe/Berlin',
-  languages: 'en, ar, de',
-  website: 'https://www.yourbusiness.com',
-};
+// A format example (not translated: a URL).
+const WEBSITE_EXAMPLE = 'https://www.yourbusiness.com';
 const step = ref(1); // 1 workspace, 2 agent, 3 checklist
 const form = ref(emptyForm());
 const busy = ref(false);
@@ -40,12 +48,47 @@ const chunks = ref(null);
 const templates = ref([]);
 const packs = ref([NONE_PACK]);
 const packLabels = ref({});
+const packDescriptions = ref({});
 const checklist = ref(null);
 const checklistError = ref(false);
 
 const problems = computed(() => formProblems(form.value));
-const items = computed(() => checklistItems(checklist.value));
+const problem = path => problemFor(problems.value, path);
+// Going live is locked unless the install turned it on for this workspace (tolzar_live_allowed).
+const liveAllowed = computed(
+  () =>
+    getAccount.value(accountId.value)?.settings?.tolzar_live_allowed === true
+);
+const items = computed(() =>
+  visibleChecklistItems(checklist.value, liveAllowed.value)
+);
 const progress = computed(() => checklistProgress(checklist.value));
+const hintFor = key =>
+  te(`TOLZAR_ONBOARDING_UI.CHECK_HINT.${key}`)
+    ? t(`TOLZAR_ONBOARDING_UI.CHECK_HINT.${key}`)
+    : '';
+
+// Time zone picker (the same list as Settings → Workspace) with a text filter above it.
+const tzFilter = ref('');
+const timezones = computed(() =>
+  timezoneOptions(form.value.timezone, tzFilter.value)
+);
+// Language chips: the short ISO 639-1 list plus any code the form already holds.
+const chosenLanguages = computed(() => parseLanguages(form.value.languages));
+const languageChips = computed(() => [
+  ...LANGUAGES,
+  ...chosenLanguages.value.filter(c => !LANGUAGES.includes(c)),
+]);
+const languageName = code => {
+  try {
+    return new Intl.DisplayNames([code], { type: 'language' }).of(code) || code;
+  } catch (e) {
+    return code;
+  }
+};
+const toggleLang = code => {
+  form.value.languages = toggleLanguage(form.value.languages, code);
+};
 
 async function loadChecklist() {
   checklistError.value = false;
@@ -84,6 +127,17 @@ onMounted(async () => {
   const choices = Array.isArray(pack.choices) ? pack.choices : [];
   packLabels.value = Object.fromEntries(
     choices.map(c => [c.name, (c.label && c.label.en) || c.name])
+  );
+  // A one-line description per pack when the brain's list carries one ({en} or a string).
+  packDescriptions.value = Object.fromEntries(
+    choices
+      .map(c => [
+        c.name,
+        typeof c.description === 'string'
+          ? c.description
+          : (c.description && c.description.en) || '',
+      ])
+      .filter(([, d]) => d)
   );
   const names = choices.map(c => c.name);
   if (typeof pack.pack === 'string' && pack.pack && !names.includes(pack.pack))
@@ -160,12 +214,13 @@ async function runBootstrap() {
 }
 
 const linkFor = hint => checklistLink(hint, accountId.value);
+const PROBLEM = 'mt-1 text-xs text-n-ruby-11';
 </script>
 
 <template>
   <div
     class="overflow-auto flex-1 bg-n-background"
-    data-tz-build="onboarding-2-bootstrap"
+    data-tz-build="onboarding-3-ux"
   >
     <div class="mx-auto max-w-[860px] px-5 pb-16 pt-7">
       <div class="flex flex-wrap gap-2 mb-4">
@@ -178,10 +233,11 @@ const linkFor = hint => checklistLink(hint, accountId.value);
             n === step
               ? 'font-semibold text-n-brand bg-n-brand/10'
               : n < step
-                ? 'text-emerald-600 bg-emerald-500/10'
+                ? 'text-n-teal-11 bg-n-teal-3'
                 : 'text-n-slate-10 bg-n-alpha-1'
           "
           :disabled="!canGo(n)"
+          :aria-current="n === step ? 'step' : undefined"
           @click="goStep(n)"
         >
           {{ n }} {{ t(`TOLZAR_ONBOARDING.STEP2.${n}`) }}
@@ -211,27 +267,71 @@ const linkFor = hint => checklistLink(hint, accountId.value);
           <h2 class="mt-0 text-[17px] font-bold">
             {{ t('TOLZAR_ONBOARDING.WORKSPACE.TITLE') }}
           </h2>
-          <label class="tz-lab">{{
+          <label :class="LABEL" for="tz-onb-name">{{
             t('TOLZAR_ONBOARDING.WORKSPACE.NAME')
           }}</label>
-          <input v-model="form.workspaceName" class="tz-in" maxlength="80" />
-          <label class="tz-lab">{{
+          <input
+            id="tz-onb-name"
+            v-model="form.workspaceName"
+            :class="INPUT"
+            maxlength="80"
+            :aria-invalid="!!problem('workspace_name')"
+          />
+          <p v-if="problem('workspace_name')" :class="PROBLEM">
+            {{ t(`TOLZAR_ONBOARDING_UI.PROBLEM.${problem('workspace_name')}`) }}
+          </p>
+
+          <label :class="LABEL" for="tz-onb-tz">{{
             t('TOLZAR_ONBOARDING.WORKSPACE.TIMEZONE')
           }}</label>
           <input
-            v-model="form.timezone"
-            class="tz-in"
-            :placeholder="EXAMPLES.timezone"
+            v-model="tzFilter"
+            type="search"
+            :class="INPUT"
+            class="mb-1.5"
+            :placeholder="t('TOLZAR_ONBOARDING_UI.TIMEZONE_FILTER')"
+            aria-controls="tz-onb-tz"
           />
-          <label class="tz-lab">{{
+          <select
+            id="tz-onb-tz"
+            v-model="form.timezone"
+            :class="INPUT"
+            :aria-invalid="!!problem('timezone')"
+          >
+            <option v-for="z in timezones" :key="z" :value="z">{{ z }}</option>
+          </select>
+          <p v-if="!timezones.length" class="mt-1 text-xs text-n-slate-10">
+            {{ t('TOLZAR_ONBOARDING_UI.TIMEZONE_NONE') }}
+          </p>
+          <p v-if="problem('timezone')" :class="PROBLEM">
+            {{ t(`TOLZAR_ONBOARDING_UI.PROBLEM.${problem('timezone')}`) }}
+          </p>
+
+          <label :class="LABEL">{{
             t('TOLZAR_ONBOARDING.WORKSPACE.HOURS')
           }}</label>
           <div class="flex gap-2 items-center">
-            <input v-model="form.start" type="time" class="tz-in !w-auto" />
+            <input
+              v-model="form.start"
+              type="time"
+              :class="INPUT"
+              class="!w-auto"
+              :aria-invalid="!!problem('working_hours')"
+            />
             <span class="text-n-slate-10">–</span>
-            <input v-model="form.end" type="time" class="tz-in !w-auto" />
+            <input
+              v-model="form.end"
+              type="time"
+              :class="INPUT"
+              class="!w-auto"
+              :aria-invalid="!!problem('working_hours')"
+            />
           </div>
-          <label class="tz-lab">{{
+          <p v-if="problem('working_hours')" :class="PROBLEM">
+            {{ t(`TOLZAR_ONBOARDING_UI.PROBLEM.${problem('working_hours')}`) }}
+          </p>
+
+          <label :class="LABEL">{{
             t('TOLZAR_ONBOARDING.WORKSPACE.CLOSED')
           }}</label>
           <div class="flex flex-wrap gap-1.5">
@@ -239,7 +339,7 @@ const linkFor = hint => checklistLink(hint, accountId.value);
               v-for="d in WEEKDAYS"
               :key="d"
               type="button"
-              class="px-2 py-0.5 text-xs rounded-full border"
+              class="px-2 py-0.5 text-xs rounded-full border border-solid"
               :class="
                 form.closedDays.includes(d)
                   ? 'text-white border-transparent bg-n-brand'
@@ -251,17 +351,35 @@ const linkFor = hint => checklistLink(hint, accountId.value);
               {{ t(`TOLZAR_ONBOARDING.DAY.${d}`) }}
             </button>
           </div>
-          <label class="tz-lab">{{
-            t('TOLZAR_ONBOARDING.WORKSPACE.LANGUAGES')
+
+          <label :class="LABEL">{{
+            t('TOLZAR_ONBOARDING.AGENT.LANGUAGES')
           }}</label>
-          <input
-            v-model="form.languages"
-            class="tz-in"
-            :placeholder="EXAMPLES.languages"
-          />
+          <div class="flex flex-wrap gap-1.5">
+            <button
+              v-for="code in languageChips"
+              :key="code"
+              type="button"
+              class="px-2 py-0.5 text-xs rounded-full border border-solid"
+              :class="
+                chosenLanguages.includes(code)
+                  ? 'text-white border-transparent bg-n-brand'
+                  : 'border-n-weak text-n-slate-11'
+              "
+              :aria-pressed="chosenLanguages.includes(code)"
+              :title="code"
+              @click="toggleLang(code)"
+            >
+              {{ languageName(code) }}
+            </button>
+          </div>
+          <p class="mt-1 text-xs text-n-slate-10">
+            {{ t('TOLZAR_ONBOARDING_UI.LANGUAGES_HINT') }}
+          </p>
+
           <button
             type="button"
-            class="tz-btn"
+            :class="BTN"
             :disabled="problems.length > 0"
             @click="step = 2"
           >
@@ -273,19 +391,48 @@ const linkFor = hint => checklistLink(hint, accountId.value);
           <h2 class="mt-0 text-[17px] font-bold">
             {{ t('TOLZAR_ONBOARDING.AGENT.TITLE') }}
           </h2>
-          <p class="text-[13px] text-n-slate-10">
+
+          <!-- the pack first: it decides which templates make sense -->
+          <label :class="LABEL" for="tz-onb-pack">{{
+            t('TOLZAR_ONBOARDING.AGENT.INDUSTRY_PACK')
+          }}</label>
+          <select
+            id="tz-onb-pack"
+            v-model="form.pack"
+            :class="INPUT"
+            class="!w-auto"
+          >
+            <option v-for="p in packs" :key="p" :value="p">
+              {{
+                p === NONE_PACK
+                  ? t('TOLZAR_ONBOARDING.AGENT.NO_PACK')
+                  : packLabels[p] || p
+              }}
+            </option>
+          </select>
+          <p class="mt-1 text-xs text-n-slate-10">
+            {{
+              form.pack === NONE_PACK
+                ? t('TOLZAR_ONBOARDING_UI.PACK_NONE_HINT')
+                : packDescriptions[form.pack] ||
+                  t('TOLZAR_ONBOARDING_UI.PACK_FIRST_HINT')
+            }}
+          </p>
+
+          <p class="mt-4 text-[13px] text-n-slate-10">
             {{ t('TOLZAR_ONBOARDING.AGENT.HINT_INACTIVE') }}
           </p>
-          <label class="tz-lab">{{ t('TOLZAR_ONBOARDING.AGENT.PACK') }}</label>
+          <label :class="LABEL">{{ t('TOLZAR_ONBOARDING.AGENT.PACK') }}</label>
           <div class="grid gap-2 md:grid-cols-3">
             <button
               type="button"
-              class="p-3 text-left rounded-lg border"
+              class="p-3 text-start rounded-lg border border-solid"
               :class="
                 !form.template
                   ? 'border-n-brand ring-2 ring-n-brand/20'
                   : 'border-n-weak'
               "
+              :aria-pressed="!form.template"
               @click="form.template = ''"
             >
               <b class="text-[13px]">{{
@@ -299,12 +446,13 @@ const linkFor = hint => checklistLink(hint, accountId.value);
               v-for="tp in templates"
               :key="tp.id"
               type="button"
-              class="p-3 text-left rounded-lg border"
+              class="p-3 text-start rounded-lg border border-solid"
               :class="
                 form.template === tp.id
                   ? 'border-n-brand ring-2 ring-n-brand/20'
                   : 'border-n-weak'
               "
+              :aria-pressed="form.template === tp.id"
               @click="form.template = tp.id"
             >
               <b class="text-[13px]">{{ tp.name }}</b>
@@ -312,49 +460,67 @@ const linkFor = hint => checklistLink(hint, accountId.value);
             </button>
           </div>
           <template v-if="form.template">
-            <label class="tz-lab">{{
+            <label :class="LABEL" for="tz-onb-agent">{{
               t('TOLZAR_ONBOARDING.AGENT.NAME')
             }}</label>
-            <input v-model="form.agentName" class="tz-in" maxlength="80" />
-            <label class="tz-lab">{{
+            <input
+              id="tz-onb-agent"
+              v-model="form.agentName"
+              :class="INPUT"
+              maxlength="80"
+            />
+            <label :class="LABEL" for="tz-onb-site">{{
               t('TOLZAR_ONBOARDING.AGENT.WEBSITE')
             }}</label>
             <input
+              id="tz-onb-site"
               v-model="form.website"
-              class="tz-in"
-              :placeholder="EXAMPLES.website"
+              :class="INPUT"
+              :placeholder="WEBSITE_EXAMPLE"
             />
           </template>
-          <label class="tz-lab">{{
-            t('TOLZAR_ONBOARDING.AGENT.INDUSTRY_PACK')
-          }}</label>
-          <select v-model="form.pack" class="tz-in !w-auto">
-            <option v-for="p in packs" :key="p" :value="p">
-              {{ p === 'none' ? t('TOLZAR_ONBOARDING.AGENT.NO_PACK') : packLabels[p] || p }}
-            </option>
-          </select>
-          <p v-if="outcome === 'owner_only'" class="text-sm text-rose-600">
+
+          <p
+            v-if="outcome === 'owner_only'"
+            class="text-sm text-n-ruby-11"
+            role="alert"
+          >
             {{ t('TOLZAR_ONBOARDING.OWNER_ONLY') }}
           </p>
-          <p v-if="outcome === 'error'" class="text-sm text-rose-600">
+          <p
+            v-if="outcome === 'error'"
+            class="text-sm text-n-ruby-11"
+            role="alert"
+          >
             {{ t('TOLZAR_ONBOARDING.FAILED') }}
           </p>
-          <ul v-if="errors.length" class="pl-4 text-sm text-rose-600">
+          <ul
+            v-if="errors.length"
+            class="pl-4 text-sm text-n-ruby-11"
+            role="alert"
+          >
             <li v-for="e in errors" :key="e.path + e.error">
               {{ e.path }}: {{ e.error }}
             </li>
           </ul>
           <div class="flex gap-2">
-            <button type="button" class="tz-btn-ghost" @click="step = 1">
+            <button type="button" :class="BTN_GHOST" @click="step = 1">
               {{ t('TOLZAR_ONBOARDING.BACK') }}
             </button>
             <button
               type="button"
-              class="tz-btn"
+              :class="BTN"
+              class="gap-2"
               :disabled="busy || problems.length > 0"
+              :aria-busy="busy"
               @click="runBootstrap"
             >
-              {{ busy ? '…' : t('TOLZAR_ONBOARDING.SET_UP') }}
+              <Spinner v-if="busy" :size="16" />
+              {{
+                busy
+                  ? t('TOLZAR_ONBOARDING_UI.SETTING_UP')
+                  : t('TOLZAR_ONBOARDING.SET_UP')
+              }}
             </button>
           </div>
         </template>
@@ -381,8 +547,15 @@ const linkFor = hint => checklistLink(hint, accountId.value);
           <p class="text-[13px] text-n-slate-10">
             {{ t('TOLZAR_ONBOARDING.CHECKLIST.HINT') }}
           </p>
-          <p v-if="checklistError" class="text-sm text-rose-600">
+          <p v-if="checklistError" class="text-sm text-n-ruby-11" role="alert">
             {{ t('TOLZAR_ONBOARDING.CHECKLIST.FAILED') }}
+            <button
+              type="button"
+              class="ml-2 font-semibold underline"
+              @click="loadChecklist"
+            >
+              {{ t('TOLZAR_UI.RETRY') }}
+            </button>
           </p>
           <ul class="p-0 m-0 list-none">
             <li
@@ -395,7 +568,7 @@ const linkFor = hint => checklistLink(hint, accountId.value);
                 class="flex-shrink-0 mt-0.5 size-4"
                 :class="
                   item.done
-                    ? 'i-lucide-circle-check text-emerald-600'
+                    ? 'i-lucide-circle-check text-n-teal-11'
                     : 'i-lucide-circle text-n-slate-9'
                 "
               />
@@ -408,6 +581,9 @@ const linkFor = hint => checklistLink(hint, accountId.value);
                   >
                     {{ t('TOLZAR_ONBOARDING.CHECKLIST.OPTIONAL') }}
                   </span>
+                </div>
+                <div v-if="hintFor(item.key)" class="text-xs text-n-slate-11">
+                  {{ hintFor(item.key) }}
                 </div>
                 <div class="text-xs text-n-slate-10 break-words">
                   {{ item.detail }}
@@ -422,7 +598,7 @@ const linkFor = hint => checklistLink(hint, accountId.value);
               </router-link>
             </li>
           </ul>
-          <button type="button" class="tz-btn-ghost" @click="loadChecklist">
+          <button type="button" :class="BTN_GHOST" @click="loadChecklist">
             {{ t('TOLZAR_ONBOARDING.CHECKLIST.REFRESH') }}
           </button>
         </template>
@@ -430,49 +606,3 @@ const linkFor = hint => checklistLink(hint, accountId.value);
     </div>
   </div>
 </template>
-
-<style scoped>
-.tz-lab {
-  display: block;
-  margin: 0.75rem 0 0.25rem;
-  font-size: 0.75rem;
-  color: rgb(var(--slate-11));
-}
-.tz-btn,
-.tz-btn-ghost {
-  display: inline-flex;
-  align-items: center;
-  height: 2.25rem;
-  margin-top: 1rem;
-  padding: 0 1rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  border-radius: 0.75rem;
-  cursor: pointer;
-}
-.tz-btn {
-  color: #fff;
-  background: #3e63dd;
-  border: 0;
-}
-.tz-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-.tz-btn-ghost {
-  color: rgb(var(--slate-11));
-  background: rgb(var(--solid-1));
-  border: 1px solid rgb(var(--border-weak));
-}
-.tz-in {
-  box-sizing: border-box;
-  width: 100%;
-  padding: 0.5rem 0.625rem;
-  font-size: 0.8125rem;
-  color: rgb(var(--slate-12));
-  background: rgb(var(--solid-1));
-  border: 1px solid rgb(var(--border-weak));
-  border-radius: 0.5rem;
-  outline: none;
-}
-</style>
