@@ -62,6 +62,20 @@ RSpec.describe 'Tolzar forum OAuth', type: :request do
       expect(response.body).to include('name="code_challenge"')
     end
 
+    it 'accepts the click with the CSRF token from the consent page' do
+      sign_in_dashboard(user)
+      ActionController::Base.allow_forgery_protection = true
+      get '/tolzar/oauth/authorize', params: authorize_params
+      token = response.body[/name="authenticity_token" value="([^"]+)"/, 1]
+      expect(token).to be_present
+      post '/tolzar/oauth/authorize', params: authorize_params.merge(authenticity_token: token)
+      expect(response).to have_http_status(:redirect)
+      expect(response.headers['X-Frame-Options']).to eq('DENY')
+      expect(response.headers['Cache-Control']).to include('no-store')
+    ensure
+      ActionController::Base.allow_forgery_protection = false
+    end
+
     it 'refuses the click without the CSRF token (a cross-site auto-submit)' do
       sign_in_dashboard(user)
       ActionController::Base.allow_forgery_protection = true
@@ -79,7 +93,45 @@ RSpec.describe 'Tolzar forum OAuth', type: :request do
     end
   end
 
+  describe 'who may sign in' do
+    it 'refuses a super admin impersonation session of a customer' do
+      token = user.create_token(lifespan: 2.days.to_i, impersonation: true, impersonated_by: 1)
+      user.save!
+      cookies['cw_d_session_info'] = { 'access-token' => token.token, 'client' => token.client, 'uid' => user.uid }.to_json
+      get '/tolzar/oauth/authorize', params: authorize_params
+      expect(response).to have_http_status(:unauthorized)
+    end
+
+    it 'treats a malformed or revoked session cookie as signed out' do
+      cookies['cw_d_session_info'] = '[1,2]'
+      get '/tolzar/oauth/authorize', params: authorize_params
+      expect(response).to have_http_status(:unauthorized)
+      sign_in_dashboard(user)
+      user.update!(tokens: {})
+      get '/tolzar/oauth/authorize', params: authorize_params
+      expect(response).to have_http_status(:unauthorized)
+      expect(response.headers['X-Frame-Options']).to eq('DENY')
+    end
+
+    it 'refuses the token when the workspace was suspended between the click and the exchange' do
+      sign_in_dashboard(user)
+      code = approve
+      account.update!(status: :suspended)
+      exchange(code)
+      expect(response).to have_http_status(:bad_request)
+    end
+  end
+
   describe 'guard 1: PKCE S256 and a constant-time client secret' do
+    it 'accepts the client secret through form-urlencoded Basic auth' do
+      sign_in_dashboard(user)
+      code = approve
+      basic = ActionController::HttpAuthentication::Basic.encode_credentials('forum', CGI.escape(secret))
+      post '/tolzar/oauth/token', params: { grant_type: 'authorization_code', code: code, redirect_uri: redirect,
+                                            code_verifier: code_verifier }, headers: { 'Authorization' => basic }
+      expect(response).to have_http_status(:ok)
+    end
+
     it 'refuses an authorize request without S256 PKCE' do
       sign_in_dashboard(user)
       get '/tolzar/oauth/authorize', params: authorize_params.except(:code_challenge, :code_challenge_method)
@@ -102,6 +154,9 @@ RSpec.describe 'Tolzar forum OAuth', type: :request do
       sign_in_dashboard(user)
       code = approve
       expect(Redis::Alfred.get("tolzar:forum_oauth:code:#{code}")).to be_nil # only the hash is a key
+      hashed = "tolzar:forum_oauth:code:#{Digest::SHA256.hexdigest(code)}"
+      expect(Redis::Alfred.get(hashed)).to be_present
+      expect(Redis::Alfred.with { |conn| conn.ttl(hashed) }).to be_between(1, 60)
       exchange(code)
       expect(response).to have_http_status(:ok)
       expect(response.headers['Cache-Control']).to include('no-store')
@@ -130,7 +185,8 @@ RSpec.describe 'Tolzar forum OAuth', type: :request do
       exchange(approve)
       get '/tolzar/oauth/userinfo', headers: { 'Authorization' => "Bearer #{response.parsed_body['access_token']}" }
       expect(response.parsed_body.keys).to contain_exactly('id', 'username', 'name', 'locale', 'email')
-      expect(response.parsed_body).to include('id' => user.id.to_s, 'username' => "u#{user.id}", 'email' => user.email)
+      expect(response.parsed_body).to include('id' => user.id.to_s, 'email' => user.email)
+      expect(response.parsed_body['username']).to match(/\Am\h{12}\z/) # not the sequential id
     end
 
     it 'refuses a forged, an expired or a newsletter token' do
@@ -149,8 +205,8 @@ RSpec.describe 'Tolzar forum OAuth', type: :request do
   end
 
   describe 'guard 6: rate limit on /token' do
-    it 'answers 429 after 20 token requests a minute from one address' do
-      20.times { exchange('nope') }
+    it 'answers 429 after 60 token requests a minute from one address' do
+      60.times { exchange('nope') }
       expect(response).to have_http_status(:bad_request)
       exchange('nope')
       expect(response).to have_http_status(:too_many_requests)

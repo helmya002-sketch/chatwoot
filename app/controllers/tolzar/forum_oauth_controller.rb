@@ -7,8 +7,9 @@
 #   GET  /tolzar/oauth/userinfo   Bearer access token -> id, username, display name, locale, email
 # Security guard (Oracle, 30 Oct): exact redirect match, state passed through, codes stored only as SHA-256 hashes in
 # Redis for 60 s, access tokens signed (never stored) for 10 min and good for userinfo only, frame-ancestors 'none'.
-# One client, configured by env: TOLZAR_FORUM_OAUTH_CLIENT_ID / _CLIENT_SECRET / _REDIRECT_URI, and
-# TOLZAR_FORUM_OAUTH_REQUIRE_PKCE (default true; false only if the forum's connector cannot send PKCE).
+# One client, configured by env: TOLZAR_FORUM_OAUTH_CLIENT_ID / _CLIENT_SECRET / _REDIRECT_URI. PKCE S256 is
+# always required: without it a client that does not check `state` is open to login CSRF (security review, 30 Oct),
+# so a connector without PKCE must be patched, never this check relaxed. Impersonation sessions are refused.
 # Built in (no provider gem): one first-party client and four endpoints; a gem would need a Gemfile.lock this
 # machine cannot produce. Red-team spec: spec/tolzar/forum_oauth_spec.rb.
 class Tolzar::ForumOauthController < ActionController::Base
@@ -19,7 +20,7 @@ class Tolzar::ForumOauthController < ActionController::Base
   CODE_TTL = 60.seconds
   TOKEN_TTL = 10.minutes
   TOKEN_PURPOSE = :tolzar_forum_userinfo
-  TOKEN_LIMIT_PER_MINUTE = 20
+  TOKEN_LIMIT_PER_MINUTE = 60
 
   before_action :no_framing, only: [:authorize, :approve]
 
@@ -41,7 +42,7 @@ class Tolzar::ForumOauthController < ActionController::Base
     return render(:not_eligible, status: :forbidden) unless eligible?(user)
 
     code = SecureRandom.urlsafe_base64(32)
-    grant = { user_id: user.id, redirect_uri: redirect_uri, code_challenge: params[:code_challenge].presence }
+    grant = { user_id: user.id, redirect_uri: redirect_uri, code_challenge: params[:code_challenge].to_s }
     Redis::Alfred.set(code_key(code), grant.to_json, ex: CODE_TTL.to_i)
     redirect_to "#{redirect_uri}#{redirect_uri.include?('?') ? '&' : '?'}#{{ code: code, state: params[:state] }.compact.to_query}",
                 allow_other_host: true
@@ -59,6 +60,7 @@ class Tolzar::ForumOauthController < ActionController::Base
 
     access_token = verifier.generate(user.id, purpose: TOKEN_PURPOSE, expires_in: TOKEN_TTL)
     response.headers['Cache-Control'] = 'no-store'
+    response.headers['Pragma'] = 'no-cache'
     render json: { access_token: access_token, token_type: 'Bearer', expires_in: TOKEN_TTL.to_i }
   end
 
@@ -70,7 +72,7 @@ class Tolzar::ForumOauthController < ActionController::Base
     return head(:unauthorized) if user.nil? || !eligible?(user)
 
     response.headers['Cache-Control'] = 'no-store'
-    render json: { id: user.id.to_s, username: "u#{user.id}", name: user.display_name.presence || user.name,
+    render json: { id: user.id.to_s, username: forum_username(user), name: user.display_name.presence || user.name,
                    locale: Tolzar::NewsletterAudience.locale_for(user), email: user.email }
   end
 
@@ -79,18 +81,20 @@ class Tolzar::ForumOauthController < ActionController::Base
   def no_framing
     response.headers['X-Frame-Options'] = 'DENY'
     response.headers['Content-Security-Policy'] = "frame-ancestors 'none'"
+    response.headers['Cache-Control'] = 'no-store'
+    response.headers['Referrer-Policy'] = 'no-referrer'
   end
 
   def valid_authorize_request?
     params[:response_type] == 'code' &&
       ActiveSupport::SecurityUtils.secure_compare(params[:client_id].to_s, client_id) &&
       params[:redirect_uri].to_s == redirect_uri &&
-      (!require_pkce? || (params[:code_challenge_method] == 'S256' && params[:code_challenge].to_s.match?(/\A[A-Za-z0-9_-]{43}\z/)))
+      params[:code_challenge_method] == 'S256' && params[:code_challenge].to_s.match?(/\A[A-Za-z0-9_-]{43}\z/)
   end
 
   def pkce_ok?(grant)
-    challenge = grant['code_challenge']
-    return !require_pkce? if challenge.blank?
+    challenge = grant['code_challenge'].to_s
+    return false if challenge.blank?
 
     verifier_param = params[:code_verifier].to_s
     return false unless verifier_param.match?(/\A[A-Za-z0-9._~-]{43,128}\z/)
@@ -100,7 +104,9 @@ class Tolzar::ForumOauthController < ActionController::Base
   end
 
   def valid_client?
-    id, secret = ActionController::HttpAuthentication::Basic.user_name_and_password(request) if request.authorization.to_s.start_with?('Basic ')
+    if request.authorization.to_s.start_with?('Basic ')
+      id, secret = ActionController::HttpAuthentication::Basic.user_name_and_password(request).map { |v| CGI.unescape(v.to_s) }
+    end
     id ||= params[:client_id]
     secret ||= params[:client_secret]
     ActiveSupport::SecurityUtils.secure_compare(id.to_s, client_id) &&
@@ -112,21 +118,27 @@ class Tolzar::ForumOauthController < ActionController::Base
   end
 
   # The dashboard keeps its devise_token_auth credentials in this cookie (app/javascript/dashboard/api/auth.js).
+  # A super admin impersonating a customer must never post on the public forum as that customer.
   def dashboard_user
     info = JSON.parse(cookies['cw_d_session_info'].to_s)
+    return nil unless info.is_a?(Hash)
+
+    client = info['client'].to_s
     user = User.find_by(uid: info['uid'].to_s)
-    user if user&.valid_token?(info['access-token'].to_s, info['client'].to_s)
+    return nil unless user&.valid_token?(info['access-token'].to_s, client)
+
+    user unless (user.tokens || {}).dig(client, 'impersonation')
   rescue JSON::ParserError
     nil
   end
 
-  # Tolzar users only: a confirmed user with at least one workspace (trial workspaces included).
+  # Tolzar users only: a confirmed user of at least one active workspace (trial workspaces included).
   def eligible?(user)
-    user.confirmed? && user.account_users.exists?
+    user.confirmed? && user.accounts.where(status: :active).exists?
   end
 
-  def require_pkce?
-    ActiveModel::Type::Boolean.new.cast(ENV.fetch('TOLZAR_FORUM_OAUTH_REQUIRE_PKCE', 'true'))
+  def forum_username(user)
+    "m#{OpenSSL::HMAC.hexdigest('SHA256', Rails.application.secret_key_base, "tolzar-forum:#{user.id}").first(12)}"
   end
 
   def code_key(code)
