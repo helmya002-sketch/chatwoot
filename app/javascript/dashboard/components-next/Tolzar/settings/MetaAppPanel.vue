@@ -39,7 +39,7 @@ const fail = e => e?.response?.data || { ok: false, error: 'brain_unreachable' }
 
 // App Review test send: a 60-minute window for ONE message to the Owner's own account.
 const testOpenUntil = ref('');
-const test = ref({ conversation_id: '', text: '', confirm_name: '' });
+const test = ref({ conversation_id: '', text: '', confirm_name: '', instagram_username: '' });
 const showUntil = iso => fmtClock(iso, resolvedLocale.value);
 
 async function load() {
@@ -114,7 +114,7 @@ async function sendTest() {
     t('TOLZAR_META_APP.TEST.SENT')
   );
   // The server says whether the window is still open: Meta's answer closes it, a failed check does not.
-  if (data) test.value = { conversation_id: '', text: '', confirm_name: '' };
+  if (data) test.value = { conversation_id: '', text: '', confirm_name: '', instagram_username: '' };
   await load();
 }
 
@@ -210,6 +210,8 @@ onMounted(load);
           <input v-model="test.text" :class="INPUT" maxlength="300" />
           <label :class="LABEL">{{ t('TOLZAR_META_APP.TEST.CONFIRM') }}</label>
           <input v-model="test.confirm_name" :class="INPUT" autocomplete="off" />
+          <label :class="LABEL">{{ t('TOLZAR_META_APP.TEST.INSTAGRAM') }}</label>
+          <input v-model="test.instagram_username" :class="INPUT" autocomplete="off" />
           <button type="button" :class="BTN" :disabled="busy || !test.conversation_id || !test.text || !test.confirm_name" @click="sendTest">
             {{ t('TOLZAR_META_APP.TEST.SEND') }}
           </button>

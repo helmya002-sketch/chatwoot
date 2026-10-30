@@ -1710,6 +1710,7 @@
       "CONVERSATION": "Conversation number (from your own test message)",
       "TEXT": "Message (up to 300 characters)",
       "CONFIRM": "Type the contact name to confirm (your own name)",
+      "INSTAGRAM": "Instagram DM only: your own Instagram username (Meta's profile of the sender must match it)",
       "SEND": "Send the one test message",
       "CLOSE": "Close without sending",
       "CLOSED": "Window closed.",

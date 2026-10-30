@@ -376,7 +376,8 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
 
   def meta_test_send
     message = Tolzar::MetaTestSend.new(account: Current.account, user: Current.user, conversation_id: params[:conversation_id],
-                                       text: params[:text], confirm_name: params[:confirm_name]).perform
+                                       text: params[:text], confirm_name: params[:confirm_name],
+                                       instagram_username: params[:instagram_username]).perform
     render json: { ok: true, message_id: message.id, open_until: nil }
   rescue Tolzar::MetaTestSend::Refused => e
     render json: { ok: false, error: e.message }, status: :unprocessable_entity
