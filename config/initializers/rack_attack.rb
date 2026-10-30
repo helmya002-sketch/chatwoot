@@ -282,6 +282,32 @@ class Rack::Attack
     end
   end
 
+  ###-----------------------------------------------###
+  ###------ Tolzar: public routes and workspace caps -###
+  ###-----------------------------------------------###
+  # Readiness gap 11. Per IP on the public Tolzar POST routes (site contact form, feature board, forum OAuth,
+  # newsletter unsubscribe); the Meta webhook (/tolzar/meta/hook) is Meta's own and is never throttled.
+  # Per WORKSPACE (website token) on the widget, across all IPs: a flood from many addresses cannot use up
+  # the workspace's daily AI allowance (each new conversation or message may arm one brain decision).
+  TOLZAR_PUBLIC_POSTS = %r{\A/(?:tolzar/site/contact|feedback(?:/.*)?|tolzar/oauth/(?:authorize|token)|tolzar/newsletter/unsubscribe/[^/]+)\z}
+  throttle('tolzar/public/ip', limit: ENV.fetch('RATE_LIMIT_TOLZAR_PUBLIC', '30').to_i, period: 1.minute) do |req|
+    req.ip if req.post? && req.path_without_extensions.match?(TOLZAR_PUBLIC_POSTS)
+  end
+
+  throttle('tolzar/widget/conversations/workspace',
+           limit: ENV.fetch('RATE_LIMIT_TOLZAR_WIDGET_CONVERSATIONS_WORKSPACE', '300').to_i, period: 1.hour) do |req|
+    next unless req.path_without_extensions == '/api/v1/widget/conversations' && req.post?
+
+    ActionDispatch::Request.new(req.env).params['website_token'].presence
+  end
+
+  throttle('tolzar/widget/messages/workspace',
+           limit: ENV.fetch('RATE_LIMIT_TOLZAR_WIDGET_MESSAGES_WORKSPACE', '1200').to_i, period: 1.hour) do |req|
+    next unless req.path_without_extensions == '/api/v1/widget/messages' && req.post?
+
+    ActionDispatch::Request.new(req.env).params['website_token'].presence
+  end
+
   ##-----------------------------------------------##
 
   ###-----------------------------------------------###
