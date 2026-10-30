@@ -371,13 +371,13 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
       return render(json: { ok: true, open_until: nil })
     end
 
-    render json: { ok: true, open_until: Tolzar::MetaTestSend.open!(Current.account, Current.user).iso8601 }
+    opened = Tolzar::MetaTestSend.open!(Current.account, Current.user)
+    render json: { ok: true, open_until: opened[:until].iso8601, instagram_code: opened[:code] }
   end
 
   def meta_test_send
     message = Tolzar::MetaTestSend.new(account: Current.account, user: Current.user, conversation_id: params[:conversation_id],
-                                       text: params[:text], confirm_name: params[:confirm_name],
-                                       instagram_username: params[:instagram_username]).perform
+                                       text: params[:text], confirm_name: params[:confirm_name]).perform
     render json: { ok: true, message_id: message.id, open_until: nil }
   rescue Tolzar::MetaTestSend::Refused => e
     render json: { ok: false, error: e.message }, status: :unprocessable_entity

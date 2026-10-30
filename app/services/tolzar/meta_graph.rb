@@ -65,13 +65,6 @@ module Tolzar::MetaGraph
     roles.any? { |r| ids.include?(r['user'].to_s) }
   end
 
-  # The Instagram username of an Instagram-scoped sender (IGSID), from Meta's user profile API for
-  # Instagram messaging (page token, instagram_manage_messages). Used only by the Instagram path of
-  # Tolzar::MetaTestSend; Meta has no ID matching or app-role lookup for Instagram-scoped ids.
-  def instagram_username(igsid, page_token, app_secret)
-    get("/#{igsid}", { fields: 'username' }, page_token, app_secret)['username'].to_s.strip.downcase.presence
-  end
-
   def send_test_message(recipient_id, text, page_token, app_secret)
     request(Net::HTTP::Post, '/me/messages',
             { recipient: { id: recipient_id }.to_json, message: { text: text }.to_json, messaging_type: 'RESPONSE' },

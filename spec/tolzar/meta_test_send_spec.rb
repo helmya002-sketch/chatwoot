@@ -27,13 +27,6 @@ RSpec.describe Tolzar::MetaTestSend do
       .to_return(body: { data: roles.map { |u| { user: u, role: 'administrators' } } }.to_json)
   end
 
-  # Meta's Instagram user profile of an Instagram-scoped sender (IGSID).
-  def meta_says_instagram(igsid, username)
-    stub_request(:get, %r{graph\.facebook\.com/v26\.0/#{igsid}\?.*fields=username})
-      .with(headers: { 'Authorization' => 'Bearer pt' })
-      .to_return(body: { id: igsid, username: username }.to_json)
-  end
-
   def conversation_with(name, psid, attributes = {})
     contact = create(:contact, account: account, name: name)
     contact_inbox = create(:contact_inbox, contact: contact, inbox: inbox, source_id: psid)
@@ -43,9 +36,13 @@ RSpec.describe Tolzar::MetaTestSend do
     conversation
   end
 
-  def send_to(conversation, confirm = conversation.contact.name, instagram: nil)
+  def send_to(conversation, confirm = conversation.contact.name)
     described_class.new(account: account, user: owner, conversation_id: conversation.display_id,
-                        text: 'Thanks, this is our test reply.', confirm_name: confirm, instagram_username: instagram).perform
+                        text: 'Thanks, this is our test reply.', confirm_name: confirm).perform
+  end
+
+  def dm(conversation, content)
+    create(:message, account: account, inbox: inbox, conversation: conversation, message_type: :incoming, content: content)
   end
 
   it 'is refused while the window is closed' do
@@ -86,61 +83,87 @@ RSpec.describe Tolzar::MetaTestSend do
     expect(message.content_attributes['tolzar_app_review_test']).to be(true)
     expect(described_class.open_until(account)).to be_nil
     steps = Audited::Audit.where(auditable: account, comment: 'Tolzar App Review test send').map { |a| a.audited_changes['tolzar_meta_test_send'][0] }
-    expect(steps).to eq(%w[open sent close])
+    expect(steps).to eq(['open', 'code issued', 'sent', 'close'])
     expect { send_to(own) }.to raise_error(described_class::Refused, /window/)
   end
 
-  it 'keeps Messenger on the role check: an Instagram username never stands in for it' do
+  it 'keeps Messenger on the role check: the Instagram code never stands in for it' do
     meta
-    described_class.open!(account, owner)
+    code = described_class.open!(account, owner)[:code]
     meta_says_role('71000000001', '82000000002', roles: ['82000000003'])
-    meta_says_instagram('71000000001', 'ahmed.helmy')
-    expect { send_to(own, instagram: 'ahmed.helmy') }.to raise_error(described_class::Refused, /role on the app/)
-    expect(a_request(:get, %r{v26\.0/71000000001\?})).not_to have_been_made
+    dm(own, code)
+    expect { send_to(own) }.to raise_error(described_class::Refused, /role on the app/)
     expect(meta).not_to have_been_requested
+  end
+
+  it 'never writes the code itself to the settings or the audit log' do
+    code = described_class.open!(account, owner)[:code]
+    expect(code).to match(/\A[ABCDEFGHJKMNPQRSTUVWXYZ23456789]{6}\z/)
+    expect(account.reload.settings.to_json).not_to include(code)
+    expect(Audited::Audit.where(auditable: account).map { |a| a.audited_changes.to_json }.join).not_to include(code)
   end
 
   context 'with an Instagram DM (Instagram-scoped sender id)' do
     let(:ig_own) { conversation_with('Ahmed Helmy', '6010000000000001', { 'type' => 'instagram_direct_message' }) }
 
-    it 'sends when Meta's Instagram profile of the sender carries the username the Owner typed' do
+    it 'sends to that conversation when it has the one-time code from after the window opened' do
       meta
-      meta_says_instagram('6010000000000001', 'Ahmed.Helmy')
-      described_class.open!(account, owner)
-      message = send_to(ig_own, instagram: '@ahmed.helmy')
+      ig_own
+      code = described_class.open!(account, owner)[:code]
+      dm(ig_own, "  #{code.downcase} ")
+      message = send_to(ig_own)
       expect(a_request(:post, 'https://graph.facebook.com/v26.0/me/messages')
              .with(body: hash_including('recipient' => { id: '6010000000000001' }.to_json))).to have_been_made.once
       expect(a_request(:get, %r{/ids_for_apps})).not_to have_been_made
+      expect(message).to have_attributes(conversation_id: ig_own.id, message_type: 'outgoing')
       expect(message.content_attributes['tolzar_app_review_test']).to be(true)
       expect(described_class.open_until(account)).to be_nil
-      sent = Audited::Audit.where(auditable: account, comment: 'Tolzar App Review test send')
-                           .map { |a| a.audited_changes['tolzar_meta_test_send'] }.find { |step, _| step == 'sent' }
-      expect(sent[1]).to include('Instagram @ahmed.helmy')
+      expect(account.reload.settings).not_to have_key(described_class::CODE_KEY)
+      audits = Audited::Audit.where(auditable: account, comment: 'Tolzar App Review test send').map { |a| a.audited_changes['tolzar_meta_test_send'] }
+      expect(audits.map(&:first)).to eq(['open', 'code issued', 'sent', 'close'])
+      expect(audits.find { |step, _| step == 'sent' }[1]).to include('one-time code matched')
     end
 
-    it 'refuses a sender whose Instagram profile Meta does not match, without using the window' do
+    it 'refuses a wrong code, a code from before the window opened, and an expired code, without using the window' do
       meta
-      described_class.open!(account, owner)
-      meta_says_instagram('6010000000000001', 'someone.else')
-      expect { send_to(ig_own, instagram: 'ahmed.helmy') }.to raise_error(described_class::Refused, /Instagram profile/)
-      expect { send_to(ig_own) }.to raise_error(described_class::Refused, /Instagram username/)
-      expect { send_to(ig_own, instagram: 'not a username!') }.to raise_error(described_class::Refused, /Instagram username/)
-      stub_request(:get, %r{v26\.0/6010000000000001\?}).to_return(status: 400, body: { error: { message: 'x' } }.to_json)
-      expect { send_to(ig_own, instagram: 'ahmed.helmy') }.to raise_error(described_class::Refused, /Instagram profile/)
+      ig_own
+      code = described_class.open!(account, owner)[:code]
+      dm(ig_own, 'WRONG1')
+      expect { send_to(ig_own) }.to raise_error(described_class::Refused, /one-time code/)
+      dm(ig_own, code).update!(created_at: 1.minute.ago)
+      expect { send_to(ig_own) }.to raise_error(described_class::Refused, /one-time code/)
+      dm(ig_own, code)
+      travel 11.minutes do
+        expect { send_to(ig_own) }.to raise_error(described_class::Refused, /one-time code/)
+        expect(described_class.open_until(account)).to be_present
+      end
       expect(meta).not_to have_been_requested
-      expect(described_class.open_until(account)).to be_present
+    end
+
+    it 'refuses a code that was already used' do
+      meta
+      ig_own
+      code = described_class.open!(account, owner)[:code]
+      dm(ig_own, code)
+      send_to(ig_own)
+      expect { send_to(ig_own) }.to raise_error(described_class::Refused, /window/)
+      described_class.open!(account, owner)
+      dm(ig_own, code)
+      expect { send_to(ig_own) }.to raise_error(described_class::Refused, /one-time code/)
+      expect(meta).to have_been_requested.once
     end
 
     it 'keeps every other check: window, own name, confirmation, recent incoming' do
       meta
-      meta_says_instagram('6010000000000001', 'ahmed.helmy')
-      expect { send_to(ig_own, instagram: 'ahmed.helmy') }.to raise_error(described_class::Refused, /window/)
-      described_class.open!(account, owner)
+      expect { send_to(ig_own) }.to raise_error(described_class::Refused, /window/)
+      code = described_class.open!(account, owner)[:code]
       customer = conversation_with('Jane Customer', '6010000000000002', { 'type' => 'instagram_direct_message' })
-      expect { send_to(customer, instagram: 'ahmed.helmy') }.to raise_error(described_class::Refused, /your own account/)
-      expect { send_to(ig_own, 'someone else', instagram: 'ahmed.helmy') }.to raise_error(described_class::Refused, /confirm/)
-      ig_own.messages.incoming.first.update!(created_at: 2.days.ago)
-      expect { send_to(ig_own, instagram: 'ahmed.helmy') }.to raise_error(described_class::Refused, /24 hours/)
+      dm(customer, code)
+      expect { send_to(customer) }.to raise_error(described_class::Refused, /your own account/)
+      dm(ig_own, code)
+      expect { send_to(ig_own, 'someone else') }.to raise_error(described_class::Refused, /confirm/)
+      ig_own.messages.incoming.each { |m| m.update!(created_at: 2.days.ago) }
+      expect { send_to(ig_own) }.to raise_error(described_class::Refused, /24 hours/)
       expect(meta).not_to have_been_requested
     end
   end

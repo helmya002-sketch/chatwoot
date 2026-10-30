@@ -39,7 +39,9 @@ const fail = e => e?.response?.data || { ok: false, error: 'brain_unreachable' }
 
 // App Review test send: a 60-minute window for ONE message to the Owner's own account.
 const testOpenUntil = ref('');
-const test = ref({ conversation_id: '', text: '', confirm_name: '', instagram_username: '' });
+// The one-time Instagram code: only in the open answer (only its HMAC is stored), so a reload hides it.
+const testCode = ref('');
+const test = ref({ conversation_id: '', text: '', confirm_name: '' });
 const showUntil = iso => fmtClock(iso, resolvedLocale.value);
 
 async function load() {
@@ -100,6 +102,7 @@ async function openTestWindow() {
     ''
   );
   testOpenUntil.value = showUntil(data?.open_until);
+  testCode.value = data?.instagram_code || '';
 }
 async function closeTestWindow() {
   await run(
@@ -107,6 +110,7 @@ async function closeTestWindow() {
     t('TOLZAR_META_APP.TEST.CLOSED')
   );
   testOpenUntil.value = '';
+  testCode.value = '';
 }
 async function sendTest() {
   const data = await run(
@@ -114,7 +118,10 @@ async function sendTest() {
     t('TOLZAR_META_APP.TEST.SENT')
   );
   // The server says whether the window is still open: Meta's answer closes it, a failed check does not.
-  if (data) test.value = { conversation_id: '', text: '', confirm_name: '', instagram_username: '' };
+  if (data) {
+    test.value = { conversation_id: '', text: '', confirm_name: '' };
+    testCode.value = '';
+  }
   await load();
 }
 
@@ -204,14 +211,16 @@ onMounted(load);
         </button>
         <template v-else>
           <p class="text-xs text-n-amber-11">{{ t('TOLZAR_META_APP.TEST.OPEN_UNTIL', { at: testOpenUntil }) }}</p>
+          <p v-if="testCode" class="mt-2 text-xs text-n-slate-11">
+            {{ t('TOLZAR_META_APP.TEST.CODE_HINT') }}
+            <span class="font-mono text-sm font-semibold text-n-slate-12">{{ testCode }}</span>
+          </p>
           <label :class="LABEL">{{ t('TOLZAR_META_APP.TEST.CONVERSATION') }}</label>
           <input v-model="test.conversation_id" :class="INPUT" inputmode="numeric" />
           <label :class="LABEL">{{ t('TOLZAR_META_APP.TEST.TEXT') }}</label>
           <input v-model="test.text" :class="INPUT" maxlength="300" />
           <label :class="LABEL">{{ t('TOLZAR_META_APP.TEST.CONFIRM') }}</label>
           <input v-model="test.confirm_name" :class="INPUT" autocomplete="off" />
-          <label :class="LABEL">{{ t('TOLZAR_META_APP.TEST.INSTAGRAM') }}</label>
-          <input v-model="test.instagram_username" :class="INPUT" autocomplete="off" />
           <button type="button" :class="BTN" :disabled="busy || !test.conversation_id || !test.text || !test.confirm_name" @click="sendTest">
             {{ t('TOLZAR_META_APP.TEST.SEND') }}
           </button>
