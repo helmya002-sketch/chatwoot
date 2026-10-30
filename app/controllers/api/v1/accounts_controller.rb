@@ -11,6 +11,7 @@ class Api::V1::AccountsController < Api::BaseController
   before_action :fetch_account, except: [:create]
   before_action :validate_token_api_access, if: :authenticate_by_access_token?, except: [:create]
   before_action :check_account_mfa_enforcement, if: :authenticate_by_access_token?, except: [:create]
+  include Tolzar::OwnerOnlyAdminGuard
   before_action :check_authorization, except: [:create]
 
   rescue_from CustomExceptions::Account::InvalidEmail,
