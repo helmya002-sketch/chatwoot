@@ -581,7 +581,7 @@
   },
   "BILLING_SETTINGS": {
     "PAYMENT_RECOVERY": {
-      "DESCRIPTION": "Your payment is past due. Update your payment method or pay the outstanding invoice in the billing portal to keep your subscription active.",
+      "DESCRIPTION": "Your payment is past due. Update your payment method or pay the outstanding invoice in the billing help centre to keep your subscription active.",
       "ACTION": "Resolve payment"
     },
     "TITLE": "Billing",
@@ -608,7 +608,7 @@
     "MANAGE_SUBSCRIPTION": {
       "TITLE": "Manage your subscription",
       "DESCRIPTION": "View your previous invoices, edit your billing details, or cancel your subscription.",
-      "BUTTON_TXT": "Go to the billing portal"
+      "BUTTON_TXT": "Go to the billing help centre"
     },
     "CAPTAIN": {
       "TITLE": "Tolzar AI",
