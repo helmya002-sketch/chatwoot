@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_10_30_074440) do
+ActiveRecord::Schema[7.1].define(version: 2026_10_30_193000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1635,6 +1635,26 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_30_074440) do
     t.string "icon_color", default: ""
     t.index ["account_id"], name: "index_teams_on_account_id"
     t.index ["name", "account_id"], name: "index_teams_on_name_and_account_id", unique: true
+  end
+
+  create_table "tolzar_subscriptions", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.string "plan", default: "trial", null: false
+    t.datetime "trial_ends_at"
+    t.datetime "paid_until"
+    t.datetime "paused_at"
+    t.datetime "purge_after"
+    t.datetime "purged_at"
+    t.integer "seat_limit", default: 5, null: false
+    t.string "currency", default: "USD", null: false
+    t.string "provider"
+    t.string "customer_ref"
+    t.string "subscription_ref"
+    t.text "notes"
+    t.bigint "updated_by_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_tolzar_subscriptions_on_account_id", unique: true
   end
 
   create_table "user_sessions", force: :cascade do |t|

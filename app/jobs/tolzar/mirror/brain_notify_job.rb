@@ -51,6 +51,7 @@ class Tolzar::Mirror::BrainNotifyJob < ApplicationJob
     return if message.nil?
     return unless message.incoming? # only a customer turn arms the brain
     return unless Tolzar::MirrorConfig.mirror_inbox?(message.inbox)
+    return if Tolzar::Subscription.ai_paused?(message.account_id)
 
     handle_response(post(url, message.webhook_data.merge(event: 'message_created'), message.account_id), message_id)
   rescue RetryableDelivery

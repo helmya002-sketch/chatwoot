@@ -65,6 +65,9 @@ class Account < ApplicationRecord
   # Tolzar: the optional Social tab (owner 30 Oct). On, public social threads (Facebook / Instagram comments)
   # leave the normal inbox views for their own Social view; off (default), one inbox as before.
   store_accessor :settings, :tolzar_social_tab
+  # Tolzar billing v1: every new workspace starts a 30-day, 5-seat trial (workspaces from before billing v1
+  # were backfilled as internal by the migration).
+  after_create_commit -> { Tolzar::Subscription.for(self) }
   include AccountCaptainAutoResolve
 
   has_many :account_users, dependent: :destroy_async

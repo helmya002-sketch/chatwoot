@@ -37,7 +37,11 @@ describe('tolzarTrust', () => {
   });
 
   it('saves retention days as numbers', async () => {
-    await saveRetention(1, { decisions_days: '90', kv_days: 30, audit_days: '730' });
+    await saveRetention(1, {
+      decisions_days: '90',
+      kv_days: 30,
+      audit_days: '730',
+    });
     expect(window.axios.post.mock.calls[0][1]).toEqual({
       decisions_days: 90,
       kv_days: 30,
@@ -53,8 +57,8 @@ describe('tolzarTrust', () => {
     );
     await eraseContact(1, '42');
     expect(window.axios.post).toHaveBeenCalledWith(
-      '/api/v1/accounts/1/tolzar/brain/dsar_delete',
-      { contact_id: 42 }
+      '/api/v1/accounts/1/tolzar/data/contact_erase',
+      { contact_id: 42, confirm: '42' }
     );
   });
 

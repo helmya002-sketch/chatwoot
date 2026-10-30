@@ -1,0 +1,23 @@
+en:
+  super_admin:
+    billing:
+      title: 'Billing'
+      description: 'Every workspace: plan, trial, paid until and seats. Manual billing until online checkout opens.'
+      enforced: 'Enforced'
+      not_enforced: 'Not enforced yet (TOLZAR_BILLING_ENFORCE)'
+      workspaces: 'Workspaces'
+      col:
+        workspace: 'Workspace'
+        plan: 'Plan'
+        state: 'State'
+        until: 'Until'
+        seats: 'Seats'
+        actions: 'Actions'
+      trial_until: 'Trial until %{date}'
+      paid_until: 'Paid until %{date}'
+      purge_after: 'Data removed after %{date}'
+      seats_default: "Plan's seats"
+      set_plan: 'Set plan'
+      extend_trial: 'Extend trial (days)'
+      saved: 'Saved.'
+      invalid: 'Choose a paid plan and a date (or 1 to 60 trial days).'

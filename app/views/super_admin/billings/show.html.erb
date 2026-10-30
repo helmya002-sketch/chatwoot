@@ -1,0 +1,61 @@
+<% scope = 'super_admin.billing' %>
+<% content_for(:title) { t("#{scope}.title") } %>
+
+<%= render "page_header", title: t("#{scope}.title"), description: t("#{scope}.description") do %>
+  <%= render "badge", label: (@enforced ? t("#{scope}.enforced") : t("#{scope}.not_enforced")), tone: (@enforced ? :success : :warning) %>
+<% end %>
+
+<div class="space-y-6 pb-10">
+  <%= render "card", title: t("#{scope}.workspaces") do %>
+    <div class="overflow-x-auto">
+      <table class="w-full text-body-main">
+        <thead>
+          <tr class="text-start text-label-small text-n-slate-11">
+            <th class="p-3 text-start"><%= t("#{scope}.col.workspace") %></th>
+            <th class="p-3 text-start"><%= t("#{scope}.col.plan") %></th>
+            <th class="p-3 text-start"><%= t("#{scope}.col.state") %></th>
+            <th class="p-3 text-start"><%= t("#{scope}.col.until") %></th>
+            <th class="p-3 text-start"><%= t("#{scope}.col.seats") %></th>
+            <th class="p-3 text-start"><%= t("#{scope}.col.actions") %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @rows.each do |account, sub| %>
+            <% view = sub.view %>
+            <tr class="border-t border-n-weak align-top">
+              <td class="p-3"><%= account.name %> <span class="text-n-slate-10">#<%= account.id %></span></td>
+              <td class="p-3"><%= sub.plan %> · <%= sub.currency %></td>
+              <td class="p-3"><%= render "badge", label: view[:state], tone: (%w[paused purge_scheduled].include?(view[:state]) ? :warning : :success) %></td>
+              <td class="p-3 tabular-nums">
+                <% if sub.plan == 'trial' %>
+                  <%= t("#{scope}.trial_until", date: sub.trial_ends_at&.to_date) %>
+                <% elsif sub.paid_until %>
+                  <%= t("#{scope}.paid_until", date: sub.paid_until.to_date) %>
+                <% end %>
+                <% if sub.purge_after %><br><span class="text-n-ruby-11"><%= t("#{scope}.purge_after", date: sub.purge_after.to_date) %></span><% end %>
+              </td>
+              <td class="p-3 tabular-nums"><%= view[:seats_used] %> / <%= sub.seat_limit %></td>
+              <td class="p-3">
+                <% unless sub.plan == 'internal' %>
+                <%= form_with url: set_plan_super_admin_billing_path, method: :post, class: "flex flex-wrap items-center gap-2" do |f| %>
+                  <%= f.hidden_field :account_id, value: account.id %>
+                  <%= f.select :plan, Tolzar::Subscription::PAID, {}, class: "rounded border border-n-weak px-2 py-1" %>
+                  <%= f.date_field :paid_until, required: true, class: "rounded border border-n-weak px-2 py-1" %>
+                  <%= f.number_field :seat_limit, min: 1, placeholder: t("#{scope}.seats_default"), class: "w-24 rounded border border-n-weak px-2 py-1" %>
+                  <%= f.select :currency, Tolzar::Subscription::CURRENCIES, {}, class: "rounded border border-n-weak px-2 py-1" %>
+                  <%= f.submit t("#{scope}.set_plan"), class: "rounded bg-n-brand px-3 py-1 text-white" %>
+                <% end %>
+                <%= form_with url: extend_trial_super_admin_billing_path, method: :post, class: "mt-2 flex items-center gap-2" do |f| %>
+                  <%= f.hidden_field :account_id, value: account.id %>
+                  <%= f.number_field :days, min: 1, max: 60, value: 7, class: "w-20 rounded border border-n-weak px-2 py-1" %>
+                  <%= f.submit t("#{scope}.extend_trial"), class: "rounded border border-n-weak px-3 py-1" %>
+                <% end %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</div>

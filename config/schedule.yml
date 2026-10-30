@@ -106,3 +106,10 @@ tolzar_mirror_event_prune_job:
   cron: '30 5 * * * UTC'
   class: 'Tolzar::MirrorEventPruneJob'
   queue: housekeeping
+
+# Tolzar: executed daily at 0545 UTC
+# billing v1: purges workspaces paused for the full 30-day hold (only with TOLZAR_BILLING_ENFORCE=true)
+tolzar_subscription_purge_job:
+  cron: '45 5 * * * UTC'
+  class: 'Tolzar::SubscriptionPurgeJob'
+  queue: housekeeping
