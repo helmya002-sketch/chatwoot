@@ -461,6 +461,30 @@
     }
   },
   "ONBOARDING": {
+    "TOLZAR": {
+      "INTRO": "Tolzar answers your customers on every channel with an AI agent that works inside your rules. It starts in shadow mode: it writes private notes, never messages to customers.",
+      "GUIDE": "Open the setup guide",
+      "CHANNEL": {
+        "TITLE": "Connect a channel",
+        "DESCRIPTION": "Bring in WhatsApp, Instagram, Messenger, email or your website chat. Conversations appear here.",
+        "LINK": "Connect a channel"
+      },
+      "TEACH": {
+        "TITLE": "Teach your AI agent",
+        "DESCRIPTION": "Point it to your website, upload documents and your price list, and set what it may and may not say.",
+        "LINK": "Open AI agents"
+      },
+      "SHADOW": {
+        "TITLE": "Watch it in shadow mode",
+        "DESCRIPTION": "It works on your real conversations and writes only private notes. Compare its answers with your team's.",
+        "LINK": "See the results"
+      },
+      "TEAM": {
+        "TITLE": "Invite your team",
+        "DESCRIPTION": "Add the people who answer customers, so the AI hands each conversation to the right person.",
+        "LINK": "Invite people"
+      }
+    },
     "TITLE": "Hey 👋, Welcome to {installationName}!",
     "DESCRIPTION": "Thanks for signing up. We want you to get the most out of {installationName}. Here are a few things you can do in {installationName} to make the experience delightful.",
     "GREETING_MORNING": "👋 Good morning, {name}. Welcome to {installationName}.",

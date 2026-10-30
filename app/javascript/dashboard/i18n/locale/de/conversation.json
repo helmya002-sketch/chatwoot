@@ -461,6 +461,30 @@
     }
   },
   "ONBOARDING": {
+    "TOLZAR": {
+      "INTRO": "Tolzar beantwortet Ihre Kunden auf jedem Kanal mit einem KI-Agenten, der sich an Ihre Regeln hält. Er startet im Schattenmodus: Er schreibt nur private Notizen, nie Nachrichten an Kunden.",
+      "GUIDE": "Einrichtungsleitfaden öffnen",
+      "CHANNEL": {
+        "TITLE": "Kanal verbinden",
+        "DESCRIPTION": "Binden Sie WhatsApp, Instagram, Messenger, E-Mail oder Ihren Website-Chat an. Die Gespräche erscheinen hier.",
+        "LINK": "Kanal verbinden"
+      },
+      "TEACH": {
+        "TITLE": "KI-Agenten anlernen",
+        "DESCRIPTION": "Geben Sie Ihre Website an, laden Sie Dokumente und Ihre Preisliste hoch und legen Sie fest, was er sagen darf und was nicht.",
+        "LINK": "KI-Agenten öffnen"
+      },
+      "SHADOW": {
+        "TITLE": "Im Schattenmodus beobachten",
+        "DESCRIPTION": "Er arbeitet mit Ihren echten Gesprächen und schreibt nur private Notizen. Vergleichen Sie seine Antworten mit denen Ihres Teams.",
+        "LINK": "Ergebnisse ansehen"
+      },
+      "TEAM": {
+        "TITLE": "Team einladen",
+        "DESCRIPTION": "Fügen Sie die Personen hinzu, die Kunden antworten, damit die KI jedes Gespräch an die richtige Person übergibt.",
+        "LINK": "Personen einladen"
+      }
+    },
     "TITLE": "Hallo 👋, Willkommen bei {installationName}!",
     "DESCRIPTION": "Danke für's Registrieren. Wir möchten, dass Sie {installationName} optimal nutzen. Hier sind ein paar Dinge, die Sie in {installationName} tun können, um das Erlebnis angenehm zu gestalten.",
     "GREETING_MORNING": "👋 Guten Morgen, {name}. Willkommen bei {installationName}.",
