@@ -144,6 +144,19 @@ const shouldGroupWithNext = (current, next) => {
   return Math.floor(next.createdAt / 60) === Math.floor(current.createdAt / 60);
 };
 
+// Tolzar: a Facebook / Instagram comment that answers a comment we do not hold (another person's, in
+// another thread) shows that comment as its quote, from content_attributes.tolzar_comment_parent.
+const tolzarCommentParent = message => {
+  const parent =
+    message.contentAttributes?.tolzarCommentParent ??
+    message.content_attributes?.tolzar_comment_parent;
+  if (!parent?.text) return null;
+  return {
+    id: null,
+    content: parent.author ? `${parent.author}: ${parent.text}` : parent.text,
+  };
+};
+
 /**
  * Gets the message that was replied to
  * @param {Object} parentMessage - The message containing the reply reference
@@ -156,7 +169,7 @@ const getInReplyToMessage = parentMessage => {
     parentMessage.contentAttributes?.inReplyTo ??
     parentMessage.content_attributes?.in_reply_to;
 
-  if (!inReplyToMessageId) return null;
+  if (!inReplyToMessageId) return tolzarCommentParent(parentMessage);
 
   // Try to find in current messages first
   let replyMessage = props.messages?.find(msg => msg.id === inReplyToMessageId);

@@ -651,5 +651,27 @@
   },
   "GALLERY_VIEW": {
     "ERROR_DOWNLOADING": "Unable to download attachment. Please try again"
+  },
+  "TOLZAR_COMMENT_CONTEXT": {
+    "HEADING": "تعليق على {type} في {platform}",
+    "LOADING": "جارٍ تحميل المنشور…",
+    "UNAVAILABLE": "لم تعد ميتا تعرض هذا المنشور (محذوف أو بلا صلاحية).",
+    "NO_TEXT": "لا يحتوي هذا المنشور على نص.",
+    "MORE": "عرض المزيد",
+    "LESS": "عرض أقل",
+    "OPEN": "فتح في {platform}",
+    "PICTURE_ALT": "صورة المنشور",
+    "PLATFORM": {
+      "FACEBOOK": "فيسبوك",
+      "INSTAGRAM": "إنستغرام"
+    },
+    "TYPE": {
+      "POST": "منشور",
+      "PHOTO": "صورة",
+      "VIDEO": "فيديو",
+      "REEL": "ريل",
+      "STORY": "قصة",
+      "AD": "إعلان"
+    }
   }
 }

@@ -651,5 +651,27 @@
   },
   "GALLERY_VIEW": {
     "ERROR_DOWNLOADING": "Impossible de télécharger la pièce jointe. Veuillez réessayer"
+  },
+  "TOLZAR_COMMENT_CONTEXT": {
+    "HEADING": "Commentaire sur {type} {platform}",
+    "LOADING": "Chargement de la publication…",
+    "UNAVAILABLE": "Meta n'affiche plus cette publication (supprimée ou sans autorisation).",
+    "NO_TEXT": "Cette publication n'a pas de texte.",
+    "MORE": "Afficher plus",
+    "LESS": "Afficher moins",
+    "OPEN": "Ouvrir sur {platform}",
+    "PICTURE_ALT": "Image de la publication",
+    "PLATFORM": {
+      "FACEBOOK": "Facebook",
+      "INSTAGRAM": "Instagram"
+    },
+    "TYPE": {
+      "POST": "une publication",
+      "PHOTO": "une photo",
+      "VIDEO": "une vidéo",
+      "REEL": "un reel",
+      "STORY": "une story",
+      "AD": "une publicité"
+    }
   }
 }
