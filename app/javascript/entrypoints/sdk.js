@@ -86,15 +86,15 @@ const runSDK = ({ baseUrl, websiteToken }) => {
     },
 
     toggleBubbleVisibility(visibility) {
-      let widgetElm = document.querySelector('.woot--bubble-holder');
-      let widgetHolder = document.querySelector('.woot-widget-holder');
+      let widgetElm = document.querySelector('.tz--bubble-holder');
+      let widgetHolder = document.querySelector('.tz-widget-holder');
       if (visibility === 'hide') {
-        addClasses(widgetHolder, 'woot-widget--without-bubble');
-        addClasses(widgetElm, 'woot-hidden');
+        addClasses(widgetHolder, 'tz-widget--without-bubble');
+        addClasses(widgetElm, 'tz-hidden');
         window.$chatwoot.hideMessageBubble = true;
       } else if (visibility === 'show') {
-        removeClasses(widgetElm, 'woot-hidden');
-        removeClasses(widgetHolder, 'woot-widget--without-bubble');
+        removeClasses(widgetElm, 'tz-hidden');
+        removeClasses(widgetHolder, 'tz-widget--without-bubble');
         window.$chatwoot.hideMessageBubble = false;
       }
       IFrameHelper.sendMessage(SDK_SET_BUBBLE_VISIBILITY, {
