@@ -19,6 +19,8 @@ class AgentBots::WebhookJob < WebhookJob
   retry_on Webhooks::Trigger::TolzarBrainRetryableError, wait: TOLZAR_BRAIN_BACKOFF, attempts: TOLZAR_BRAIN_ATTEMPTS, &RETRIES_EXHAUSTED
 
   def perform(url, payload, webhook_type = :agent_bot_webhook, secret: nil, delivery_id: nil)
+    return if Tolzar::Subscription.ai_paused?(payload.dig('account', 'id') || payload.dig(:account, :id))
+
     super(url, payload, webhook_type, secret: secret, delivery_id: delivery_id)
   rescue Webhooks::Trigger::RetryableError => e
     # Tolzar: ids only; the payload carries the customer's message, name, phone and e-mail.

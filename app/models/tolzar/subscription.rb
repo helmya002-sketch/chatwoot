@@ -29,6 +29,14 @@ class Tolzar::Subscription < ApplicationRecord
   validates :currency, inclusion: { in: CURRENCIES }
   validates :seat_limit, numericality: { only_integer: true, greater_than: 0 }
 
+  # A paused workspace's AI is off: its events are not delivered to the brain (AgentBots::WebhookJob, the
+  # mirror's BrainNotifyJob), so no model call is made and no note is written. Only with enforcement on.
+  def self.ai_paused?(account_id)
+    return false unless enforced? && account_id
+
+    find_by(account_id: account_id)&.paused? || false
+  end
+
   # The row for a workspace, created on first use: a new workspace starts a trial.
   def self.for(account, now = Time.current)
     find_by(account_id: account.id) ||

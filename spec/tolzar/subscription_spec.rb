@@ -103,3 +103,21 @@ RSpec.describe 'Tolzar billing v1 enforcement', type: :request do
     expect(response).to have_http_status(:success)
   end
 end
+
+RSpec.describe 'Tolzar billing v1: AI off while paused' do
+  let(:account) { create(:account) }
+
+  around { |example| with_modified_env(TOLZAR_BILLING_ENFORCE: 'true') { example.run } }
+
+  it 'does not deliver a paused workspace event to the brain, and delivers again once active' do
+    sub = Tolzar::Subscription.find_by(account_id: account.id)
+    sub.update!(trial_ends_at: 1.day.ago)
+    payload = { 'event' => 'message_created', 'account' => { 'id' => account.id } }
+    expect(Webhooks::Trigger).not_to receive(:new)
+    AgentBots::WebhookJob.perform_now('http://tolzar-brain:8080/hooks/chatwoot', payload)
+    expect(Tolzar::Subscription.ai_paused?(account.id)).to be(true)
+
+    sub.activate!(plan: 'team', paid_until: 30.days.from_now)
+    expect(Tolzar::Subscription.ai_paused?(account.id)).to be(false)
+  end
+end
