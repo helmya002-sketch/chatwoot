@@ -243,38 +243,20 @@ const openMetaFor = async (params = '') => {
   return data?.meta || {};
 };
 
-// One conversations/meta call per team is an N+1 (10 teams = 10 requests per visit). Until the
-// proxy offers a pooled summary (GET /api/v1/accounts/:id/tolzar/team_summary -> [{team_id,
-// open}], handed to the Tolzar lane), the rows are cached here for 60 s per account, so a
-// refresh or a quick return to the page does not repeat them.
-const TEAM_CACHE_MS = 60_000;
-const teamCache = { account: null, at: 0, rows: [] };
-async function loadTeams(openTotal) {
-  const fresh =
-    teamCache.account === accountId.value &&
-    Date.now() - teamCache.at < TEAM_CACHE_MS;
-  let rows = teamCache.rows;
-  if (!fresh) {
-    await store.dispatch('teams/get');
-    const teams = store.getters['teams/getTeams'] || [];
-    rows = await Promise.all(
-      teams.map(async x => ({
-        name: x.name,
-        n: (await openMetaFor(`&team_id=${x.id}`)).all_count || 0,
-      }))
-    );
-    Object.assign(teamCache, {
-      account: accountId.value,
-      at: Date.now(),
-      rows,
-    });
-  }
-  const inTeams = rows.reduce((a, r) => a + r.n, 0);
+// Every team's open conversations in one request (tolzar/team_summary), not one per team (N+1).
+async function loadTeams() {
+  const { data } = await window.axios.get(
+    `/api/v1/accounts/${accountId.value}/tolzar/team_summary`
+  );
+  const rows = (data?.teams || []).map(team => ({
+    name: team.name,
+    n: team.open || 0,
+  }));
   teamCounts.value = [
     ...rows,
     {
       name: t('TOLZAR_DASHBOARD.NO_TEAM'),
-      n: Math.max(0, openTotal - inTeams),
+      n: Math.max(0, data?.no_team?.open || 0),
     },
   ];
 }
@@ -311,7 +293,7 @@ async function load() {
     totalContacts.value = contactsTotal;
     openMeta.value = meta;
     await Promise.all([
-      loadTeams(meta.all_count || 0).catch(() => {}),
+      loadTeams().catch(() => {}),
       window.axios
         .get(`/api/v1/accounts/${accountId.value}/conversations?status=open`)
         .then(({ data }) => {

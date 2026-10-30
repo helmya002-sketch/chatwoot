@@ -8,10 +8,21 @@ class Tolzar::PipelineSettings
   ATTRIBUTE = /\A[a-z0-9_]{1,60}\z/
   CURRENCY = /\A[A-Z]{3}\z/
 
+  # The stage list when the workspace has none (the same defaults as tolzarStages.js DEFAULT_STAGES), and
+  # the contact attribute a stage change writes (the Pipeline board and the contact pane write this one).
+  DEFAULT_STAGE_KEYS = ['New Lead', 'Active', 'Offer Sent Follow up', 'Customer Won', 'Customer Lost'].freeze
+  STAGE_ATTRIBUTE = 'lifecycle_stage'.freeze
+
   Result = Struct.new(:values, :errors)
 
   def self.view(account)
     (account.settings || {}).slice(*KEYS)
+  end
+
+  # The workspace's stage keys, in order (saved through validate, so each stage is a {key, label, tone} hash).
+  def self.stage_keys(account)
+    Array((account.settings || {})['pipeline_stages']).filter_map { |stage| stage['key'] if stage.is_a?(Hash) }.presence ||
+      DEFAULT_STAGE_KEYS
   end
 
   # Only the keys sent are checked and returned; an empty value clears that key (back to the default).
