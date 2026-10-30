@@ -188,21 +188,23 @@ describe('tolzarChannels', () => {
     expect(mapFromRows(rows)).toEqual({ email: 'Email' });
   });
 
-  it('summarises a dry run', () => {
-    expect(
-      runSummary({
+  it('summarises a dry run with the time in the viewer\'s locale, never the raw ISO slice', () => {
+    const s = runSummary(
+      {
         at: '2026-10-28T09:00:00+00:00',
         contacts_checked: 4,
         changes: [{}, {}],
         crm_read: false,
-      })
-    ).toEqual({
-      at: '2026-10-28 09:00',
-      checked: 4,
-      changes: 2,
-      crmRead: false,
-    });
+      },
+      'en'
+    );
+    expect(s).toMatchObject({ checked: 4, changes: 2, crmRead: false });
+    expect(s.at).toContain('2026');
+    expect(s.at).not.toBe('2026-10-28 09:00');
+    expect(s.at).not.toContain('T09');
+    expect(runSummary({ at: '2026-10-28T09:00:00+00:00' }, 'de').at).toContain('2026');
     expect(runSummary(null).checked).toBe(0);
+    expect(runSummary(null).at).toBe('');
   });
 
   it('connects a shop, syncs the catalogue and looks up an order', async () => {

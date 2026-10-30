@@ -1,0 +1,128 @@
+{
+  "TOLZAR_SETTINGS_UI": {
+    "NAV": {
+      "SECTION": "Setting",
+      "ARIA": "Tolzar settings sections",
+      "SEARCH": "Search settings…",
+      "NO_MATCH": "No setting matches. Try another word."
+    },
+    "ENABLED": "On",
+    "QUOTED": "“{text}”",
+    "SHADOW_DETAIL": {
+      "sla": "Late conversations get a label and a private note. Customers see nothing.",
+      "recovery": "Follow-ups are drafted as private notes. Nothing is sent to the lead.",
+      "broadcasts": "Preview and runs show exactly who would receive it. Nothing is sent.",
+      "sms": "Tolzar shows the exact SMS it would send through your provider. No SMS leaves.",
+      "crm": "Every run lists what would change in your CRM. Nothing is written there.",
+      "commerce": "Tolzar reads your catalogue and order status only. Nothing is changed in the shop.",
+      "order_chat": "Order status is read for this channel and answered in Shadow: the AI drafts, nothing is sent.",
+      "documents": "The text is read for triage only and never stored.",
+      "tuning": "Proposals only: nothing in the agent changes until you copy an approved edit yourself.",
+      "meta_app": "Pages connect listen-only: Tolzar receives, your team keeps answering in Meta Business Suite.",
+      "whatsapp_listen": "Tolzar only receives this number's messages. It never sends on it."
+    },
+    "EXPORT": {
+      "PREPARING": "Preparing your export. It will appear in the list below when it is ready.",
+      "POLLING": "Checking every 15 seconds…",
+      "READY": "Your export is ready to download.",
+      "TIMED_OUT": "Still preparing after 10 minutes. Come back later and reload this section.",
+      "DOWNLOAD_FAILED": "Could not download this file. The link may have expired (7 days): prepare a new export.",
+      "SIZE_MB": "{n} MB"
+    },
+    "AUDIT": {
+      "WHEN": "When",
+      "WHO": "Who",
+      "ACTION": "Action",
+      "CHANGES": "Changes"
+    },
+    "ROLES": {
+      "ROLE_OF": "Tolzar role of {name}"
+    },
+    "QA": {
+      "SCORE_LINE": "{score}/100 · {n} conversations",
+      "STRENGTHS": "Strengths: {list}",
+      "WORK_ON": "Work on: {list}",
+      "WEIGHT": "weight {n}",
+      "RUBRIC_ROW": "{description} (weight {n})"
+    },
+    "MEDIA": {
+      "FIELD_KEY": "Field key",
+      "FIELD_KEY_PLACEHOLDER": "e.g. order_number",
+      "FIELD_DESC": "What to read from the photo",
+      "FIELD_DESC_PLACEHOLDER": "What to read from the photo",
+      "REMOVE_FIELD": "Remove this field",
+      "ADD_FIELD": "Add a field"
+    },
+    "RECOVERY": {
+      "PLAN_ROW": "Planned {at}: {n} follow-ups ({lang}), Shadow",
+      "TOUCH_DAYS_PLACEHOLDER": "e.g. 1, 3, 7"
+    },
+    "LEARNED": {
+      "STATS": "{n} answers · {pct}% consistent · {status}"
+    },
+    "LINKS": {
+      "WHATSAPP": "WhatsApp number",
+      "WHATSAPP_PLACEHOLDER": "WhatsApp number, with country code",
+      "MESSENGER": "Messenger page",
+      "MESSENGER_PLACEHOLDER": "Messenger page name",
+      "INSTAGRAM": "Instagram account",
+      "INSTAGRAM_PLACEHOLDER": "Instagram account name",
+      "CODE": "Code"
+    },
+    "BROADCASTS": {
+      "AUDIENCE_FIELD": "Audience: field",
+      "AUDIENCE_VALUE": "Audience: value",
+      "PICK_STAGE": "Pick a stage…",
+      "PICK_VALUE": "Pick a value…",
+      "VALUE_PLACEHOLDER": "The value the field must have",
+      "SHADOW_RUN": "Shadow run: {n} contacts would have received it. Nothing was sent.",
+      "LAST_RUN": "last Shadow run: {n} would have received it",
+      "NO_RUN": "not run yet"
+    },
+    "CHANNELS": {
+      "PH": {
+        "SMS_FROM": "e.g. +4917012345678",
+        "SMS_TO": "e.g. +49 170 1234567",
+        "ZOHO_DOMAIN": "e.g. https://www.zohoapis.eu",
+        "SHOP_DOMAIN": "e.g. myshop.myshopify.com",
+        "CURRENCY": "e.g. EUR",
+        "TRACKING_HOSTS": "e.g. track.example.com",
+        "ORDER_PATTERN": "e.g. #?\\d{4,8}",
+        "ORDER_NUMBER": "e.g. 1001"
+      }
+    },
+    "TRUST": {
+      "CONTACT_ID_PLACEHOLDER": "e.g. 1234"
+    },
+    "CONNECTIONS": {
+      "DISCONNECTED": "Disconnected.",
+      "INSTAGRAM": "Instagram: {name}"
+    },
+    "MCP": {
+      "CREATED": "Token created. Copy it now: it is not shown again.",
+      "REVOKED": "Token revoked.",
+      "SHOWN_ONCE": "Shown once. Copy it now; Tolzar does not store it in a readable form."
+    },
+    "GO_LIVE": {
+      "KILL_TITLE": "Kill switch",
+      "KILL_CONFIRM_BUTTON": "Yes, everything back to Shadow",
+      "RELEASE_TITLE": "Release the kill switch?"
+    },
+    "PIPELINE": {
+      "TONE": "Colour",
+      "MOVE_UP": "Move this stage up",
+      "MOVE_DOWN": "Move this stage down",
+      "REMOVE": "Remove this stage",
+      "DELETE_TITLE": "Remove the stage “{name}”?",
+      "DELETE_TITLE_EMPTY": "Remove this stage?",
+      "DELETE_BODY": "Contacts in this stage are not moved: they keep a stage that is no longer in your list and show as an unknown stage until someone moves them. Remove it only once they are moved.",
+      "STAGE_FIELDS_PLACEHOLDER": "e.g. lifecycle_stage",
+      "DEAL_FIELD_PLACEHOLDER": "e.g. deal_value",
+      "CURRENCY_PLACEHOLDER": "e.g. EUR"
+    },
+    "WORKSPACE": {
+      "SEARCH_TIMEZONE": "Search a city or region…",
+      "NO_TIMEZONE": "No time zone matches."
+    }
+  }
+}

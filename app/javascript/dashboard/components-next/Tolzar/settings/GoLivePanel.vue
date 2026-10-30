@@ -2,8 +2,21 @@
 import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMapGetter, useStore } from 'dashboard/composables/store';
+import { useLocale } from 'shared/composables/useLocale';
+import Dialog from 'dashboard/components-next/dialog/Dialog.vue';
+import ConfirmDialog from '../ConfirmDialog.vue';
+import ShadowBadge from '../ShadowBadge.vue';
 import BrainNotice from './BrainNotice.vue';
-import { BTN_DANGER, BTN_GHOST, INPUT } from './tzClasses';
+import {
+  BTN_DANGER,
+  BTN_GHOST,
+  INPUT,
+  LABEL,
+  TONE_WARN,
+  TONE_OK,
+  TONE_MUTED,
+} from './tzClasses';
+import { fmtAt } from '../tolzarTime';
 import {
   getWorkspaceSettings,
   goLive,
@@ -20,6 +33,7 @@ import {
 // needs the workspace name typed exactly, and the brain refuses (422) unless every live check is
 // clear; its reasons are shown in plain words. The kill switch puts everything back to Shadow.
 const { t } = useI18n();
+const { resolvedLocale } = useLocale();
 const store = useStore();
 const accountId = useMapGetter('getCurrentAccountId');
 const inboxes = useMapGetter('inboxes/getInboxes');
@@ -29,6 +43,8 @@ const result = ref(null);
 const saved = ref('');
 const busy = ref(false);
 const dialog = ref(null); // the inbox row being confirmed
+const liveDialog = ref(null); // the Dialog component (focus trap, Esc, themed)
+const confirmRef = ref(null); // ConfirmDialog for the kill switch and its release
 const typed = ref('');
 const refused = ref(null); // {inbox, reasons}
 
@@ -67,15 +83,14 @@ function reasonText(r) {
     ? t('TOLZAR_WORKSPACE.GO_LIVE.TEAM_REASON', { team: r.team, reason: base })
     : t('TOLZAR_WORKSPACE.GO_LIVE.TEAM_AGENT_REASON', { reason: base });
 }
-const MODE_CLASS = {
-  live: 'text-white bg-n-ruby-9',
-  eval: 'text-n-slate-11 bg-n-alpha-2',
+// One badge for the state everyone must read the same way: Shadow / Live / Off. The mirror
+// (read-only) mode is not a Tolzar state, so it keeps a plain muted pill.
+const badgeState = mode => {
+  if (mode === 'live') return 'live';
+  if (mode === 'off') return 'off';
+  return 'shadow';
 };
-const modeClass = mode => MODE_CLASS[mode] || 'text-amber-700 bg-amber-500/10';
-const at = s =>
-  String(s || '')
-    .slice(0, 16)
-    .replace('T', ' ');
+const at = s => fmtAt(s, resolvedLocale.value);
 
 function openDialog(row) {
   dialog.value = row;
@@ -83,6 +98,11 @@ function openDialog(row) {
   refused.value = null;
   result.value = null;
   saved.value = '';
+  liveDialog.value?.open();
+}
+function closeDialog() {
+  dialog.value = null;
+  liveDialog.value?.close();
 }
 async function run(fn, after) {
   busy.value = true;
@@ -95,7 +115,7 @@ async function run(fn, after) {
       await load();
     } else if (r && r.error === 'not_live_ready') {
       refused.value = { inbox: dialog.value, reasons: parseReasons(r) };
-      dialog.value = null;
+      closeDialog();
     } else {
       result.value = r;
     }
@@ -107,10 +127,11 @@ async function run(fn, after) {
 }
 const confirmLive = () => {
   const row = dialog.value;
+  if (!row || !canConfirm.value || busy.value) return undefined;
   return run(
     () => goLive(accountId.value, row.id, 'live', typed.value),
     () => {
-      dialog.value = null;
+      closeDialog();
       return t('TOLZAR_WORKSPACE.GO_LIVE.DONE_LIVE', { inbox: row.name });
     }
   );
@@ -120,9 +141,17 @@ const backToShadow = row =>
     () => goLive(accountId.value, row.id, 'shadow'),
     () => t('TOLZAR_WORKSPACE.GO_LIVE.DONE_SHADOW', { inbox: row.name })
   );
-function kill() {
-  // eslint-disable-next-line no-alert
-  if (!window.confirm(t('TOLZAR_WORKSPACE.GO_LIVE.KILL_CONFIRM'))) return;
+// The kill switch stays one click + one confirm: the confirm is the themed ConfirmDialog, never a
+// native browser prompt (translatable, keyboard-reachable, does not block the tab).
+async function kill() {
+  const ok = await confirmRef.value?.ask({
+    title: t('TOLZAR_SETTINGS_UI.GO_LIVE.KILL_TITLE'),
+    description: t('TOLZAR_WORKSPACE.GO_LIVE.KILL_CONFIRM'),
+    confirmLabel: t('TOLZAR_SETTINGS_UI.GO_LIVE.KILL_CONFIRM_BUTTON'),
+    cancelLabel: t('TOLZAR_WORKSPACE.GO_LIVE.CANCEL'),
+    danger: true,
+  });
+  if (!ok) return;
   const none = t('TOLZAR_WORKSPACE.GO_LIVE.NONE');
   run(
     () => killSwitch(accountId.value),
@@ -134,9 +163,15 @@ function kill() {
   );
 }
 
-function release() {
-  // eslint-disable-next-line no-alert
-  if (!window.confirm(t('TOLZAR_WORKSPACE.GO_LIVE.RELEASE_CONFIRM'))) return;
+async function release() {
+  const ok = await confirmRef.value?.ask({
+    title: t('TOLZAR_SETTINGS_UI.GO_LIVE.RELEASE_TITLE'),
+    description: t('TOLZAR_WORKSPACE.GO_LIVE.RELEASE_CONFIRM'),
+    confirmLabel: t('TOLZAR_WORKSPACE.GO_LIVE.RELEASE'),
+    cancelLabel: t('TOLZAR_WORKSPACE.GO_LIVE.CANCEL'),
+    danger: true,
+  });
+  if (!ok) return;
   run(
     () => releaseKillSwitch(accountId.value),
     () => t('TOLZAR_WORKSPACE.GO_LIVE.RELEASE_DONE')
@@ -157,13 +192,14 @@ onMounted(() => {
       :class="
         anyLive(rows)
           ? 'text-white bg-n-ruby-9 border-n-ruby-9'
-          : 'text-emerald-800 bg-emerald-500/10 border-emerald-500/30'
+          : `${TONE_OK} border-n-teal-6`
       "
       data-tz-live-state
     >
       <span
         class="size-5 shrink-0"
         :class="anyLive(rows) ? 'i-lucide-radio' : 'i-lucide-shield-check'"
+        aria-hidden="true"
       />
       <b class="text-[14px]">{{
         anyLive(rows)
@@ -174,10 +210,7 @@ onMounted(() => {
     <p class="p-2 mt-3 text-xs rounded-lg text-n-ruby-11 bg-n-ruby-9/10">
       {{ t('TOLZAR_WORKSPACE.GO_LIVE.WARNING') }}
     </p>
-    <p
-      v-if="view && !owner"
-      class="p-2 mt-2 text-xs rounded-lg text-amber-700 bg-amber-500/10"
-    >
+    <p v-if="view && !owner" class="p-2 mt-2 text-xs rounded-lg" :class="TONE_WARN">
       {{ t('TOLZAR_WORKSPACE.GO_LIVE.OWNER_ONLY') }}
     </p>
 
@@ -200,20 +233,26 @@ onMounted(() => {
             <span class="text-xs text-n-slate-10">#{{ r.id }}</span>
           </td>
           <td>
+            <ShadowBadge
+              v-if="r.mode !== 'eval'"
+              :state="badgeState(r.mode)"
+              :hint="t(`TOLZAR_WORKSPACE.GO_LIVE.MODES.${r.mode}`)"
+            />
             <span
+              v-else
               class="inline-flex items-center px-2 py-0.5 text-[11px] font-semibold rounded-full"
-              :class="modeClass(r.mode)"
+              :class="TONE_MUTED"
             >
-              {{ t(`TOLZAR_WORKSPACE.GO_LIVE.MODES.${r.mode}`) }}
+              {{ t('TOLZAR_WORKSPACE.GO_LIVE.MODES.eval') }}
             </span>
             <span
               v-if="r.mode === 'live' && r.since"
-              class="ml-1 text-xs text-n-slate-10"
+              class="ms-1 text-xs text-n-slate-10"
             >
               {{ t('TOLZAR_WORKSPACE.GO_LIVE.SINCE', { at: at(r.since.at) }) }}
             </span>
           </td>
-          <td class="text-right">
+          <td class="text-end">
             <button
               v-if="r.mode === 'live'"
               type="button"
@@ -260,48 +299,37 @@ onMounted(() => {
       </ul>
     </div>
 
-    <!-- confirm dialog: the workspace name, typed exactly -->
-    <div
-      v-if="dialog"
-      class="flex fixed inset-0 z-50 justify-center items-center p-4 bg-black/50"
-      @click.self="dialog = null"
+    <!-- confirm dialog: the workspace name, typed exactly (the app's Dialog: focus trap, Esc) -->
+    <Dialog
+      ref="liveDialog"
+      type="alert"
+      :title="
+        t('TOLZAR_WORKSPACE.GO_LIVE.CONFIRM_TITLE', {
+          inbox: dialog ? dialog.name : '',
+        })
+      "
+      :description="t('TOLZAR_WORKSPACE.GO_LIVE.CONFIRM_BODY')"
+      :confirm-button-label="t('TOLZAR_WORKSPACE.GO_LIVE.CONFIRM_GO')"
+      :cancel-button-label="t('TOLZAR_WORKSPACE.GO_LIVE.CANCEL')"
+      :disable-confirm-button="!canConfirm"
+      :is-loading="busy"
+      @confirm="confirmLive"
+      @close="dialog = null"
     >
-      <div
-        class="p-5 w-full max-w-[440px] rounded-2xl border-2 border-solid shadow-xl bg-n-solid-1 border-n-ruby-9"
-        role="dialog"
-        aria-modal="true"
-      >
-        <h3 class="m-0 text-[16px] font-bold text-n-ruby-11">
-          {{
-            t('TOLZAR_WORKSPACE.GO_LIVE.CONFIRM_TITLE', { inbox: dialog.name })
-          }}
-        </h3>
-        <p class="mt-2 text-[13px] text-n-slate-12">
-          {{ t('TOLZAR_WORKSPACE.GO_LIVE.CONFIRM_BODY') }}
-        </p>
+      <div>
+        <label :class="LABEL" class="!mt-0" for="tz-go-live-name">
+          {{ t('TOLZAR_WORKSPACE.GO_LIVE.CONFIRM_PLACEHOLDER') }}
+        </label>
         <input
+          id="tz-go-live-name"
           v-model="typed"
           :class="INPUT"
           :placeholder="t('TOLZAR_WORKSPACE.GO_LIVE.CONFIRM_PLACEHOLDER')"
           autocomplete="off"
           data-tz-confirm-name
-          @keyup.enter="canConfirm && !busy && confirmLive()"
         />
-        <div class="flex gap-2 justify-end">
-          <button type="button" :class="BTN_GHOST" @click="dialog = null">
-            {{ t('TOLZAR_WORKSPACE.GO_LIVE.CANCEL') }}
-          </button>
-          <button
-            type="button"
-            :class="BTN_DANGER"
-            :disabled="!canConfirm || busy"
-            @click="confirmLive"
-          >
-            {{ t('TOLZAR_WORKSPACE.GO_LIVE.CONFIRM_GO') }}
-          </button>
-        </div>
       </div>
-    </div>
+    </Dialog>
 
     <!-- kill switch -->
     <div class="p-4 mt-6 rounded-xl border-2 border-dashed border-n-ruby-9/50">
@@ -313,7 +341,7 @@ onMounted(() => {
         data-tz-kill-switch
         @click="kill"
       >
-        <span class="mr-2 i-lucide-power size-4" />{{
+        <span class="me-2 i-lucide-power size-4" aria-hidden="true" />{{
           t('TOLZAR_WORKSPACE.GO_LIVE.KILL')
         }}
       </button>
@@ -343,7 +371,8 @@ onMounted(() => {
         </p>
         <button
           type="button"
-          class="!mt-0 !h-9 !px-4 text-sm rounded-lg border border-n-weak"
+          :class="BTN_GHOST"
+          class="!mt-0"
           :disabled="!owner || busy"
           data-tz-kill-release
           @click="release"
@@ -352,6 +381,7 @@ onMounted(() => {
         </button>
       </div>
     </div>
+    <ConfirmDialog ref="confirmRef" />
     <BrainNotice :result="result" :saved="saved" />
   </div>
 </template>

@@ -147,3 +147,92 @@ export const stageValue = async (stage, maxPages = 10) => {
   }
   return { stage, total, count, capped };
 };
+
+// The brain's /scoreboard, in one safe shape: an older brain or a partial answer may omit any
+// block, and the page reads `checks.length`, `guards.price_guard`, `disagreements.length`
+// without further guards. `ok` is kept so the page can still say the board is unavailable.
+export const EMPTY_SCOREBOARD = Object.freeze({
+  ok: false,
+  measured: 0,
+  scored: 0,
+  passing: 0,
+  days: 0,
+  awaiting_staff: 0,
+  model_latest: '',
+  models: {},
+  checks: [],
+  guards: { price_guard: 0, output_policy: {}, llm_errors: 0 },
+  disagreements: [],
+  daily: [],
+  by_model: [],
+});
+const num = (v, d = 0) => (Number.isFinite(Number(v)) && v !== null && v !== '' ? Number(v) : d);
+const list = v => (Array.isArray(v) ? v.filter(Boolean) : []);
+export const normalizeScoreboard = raw => {
+  const r = raw && typeof raw === 'object' ? raw : {};
+  const guards = r.guards && typeof r.guards === 'object' ? r.guards : {};
+  return {
+    ...r,
+    ok: r.ok === true,
+    measured: num(r.measured),
+    scored: num(r.scored),
+    passing: num(r.passing),
+    days: num(r.days),
+    awaiting_staff: num(r.awaiting_staff),
+    model_latest: typeof r.model_latest === 'string' ? r.model_latest : '',
+    models: r.models && typeof r.models === 'object' ? r.models : {},
+    checks: list(r.checks)
+      .filter(c => typeof c.key === 'string' && c.key)
+      .map(c => ({
+        key: c.key,
+        value: c.value === null || c.value === undefined ? null : num(c.value, null),
+        target: num(c.target),
+        pass: typeof c.pass === 'boolean' ? c.pass : null,
+        higher_is_better: c.higher_is_better !== false,
+      })),
+    guards: {
+      price_guard: num(guards.price_guard),
+      llm_errors: num(guards.llm_errors),
+      output_policy:
+        guards.output_policy && typeof guards.output_policy === 'object'
+          ? guards.output_policy
+          : {},
+    },
+    disagreements: list(r.disagreements).filter(d => d.conversation_id),
+    daily: list(r.daily).filter(d => d.day),
+    by_model: list(r.by_model).filter(m => m.model),
+  };
+};
+
+// ---- CSV (client-side, no dependency) -------------------------------------------------------
+// `rows` is an array of arrays; `headers` the first line. Fields with a comma, a quote or a line
+// break are quoted; quotes are doubled. UTF-8 BOM so spreadsheets read accents; CRLF lines.
+const csvField = v => {
+  if (v === null || v === undefined) return '';
+  const s = String(v);
+  return /[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+};
+export const toCsv = (headers, rows) =>
+  `\uFEFF${[headers, ...rows].map(r => r.map(csvField).join(',')).join('\r\n')}\r\n`;
+
+// Hands the browser a file to save (a Blob URL on a hidden link). Injectable for tests.
+export const downloadCsv = (
+  name,
+  headers,
+  rows,
+  { doc = typeof document === 'undefined' ? null : document, win = typeof window === 'undefined' ? null : window } = {}
+) => {
+  const text = toCsv(headers, rows);
+  if (!doc || !win || !win.URL || typeof win.URL.createObjectURL !== 'function') return text;
+  const blob = new Blob([text], { type: 'text/csv;charset=utf-8' });
+  const url = win.URL.createObjectURL(blob);
+  const a = doc.createElement('a');
+  a.href = url;
+  a.download = `${String(name || 'export').replace(/[^\w.-]+/g, '-')}.csv`;
+  a.style.display = 'none';
+  doc.body.appendChild(a);
+  a.click();
+  doc.body.removeChild(a);
+  win.URL.revokeObjectURL(url);
+  return text;
+};

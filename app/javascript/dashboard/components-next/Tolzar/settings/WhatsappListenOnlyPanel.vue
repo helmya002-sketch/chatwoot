@@ -2,7 +2,8 @@
 import { ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMapGetter } from 'dashboard/composables/store';
-import { BTN, INPUT, LABEL, SHADOW_BADGE } from './tzClasses';
+import ShadowBadge from '../ShadowBadge.vue';
+import { BTN, INPUT, LABEL } from './tzClasses';
 
 // Settings hub → Channels → WhatsApp (listen-only): the workspace owner connects the business's own
 // in-house Meta app to a number another provider already runs (Tolzar::ListenOnly). Tolzar only
@@ -53,9 +54,10 @@ async function connect() {
 
 <template>
   <div class="max-w-[620px]">
-    <span :class="SHADOW_BADGE">{{
-      t('TOLZAR_SETTINGS.WA_LISTEN.BADGE')
-    }}</span>
+    <ShadowBadge state="shadow" :hint="t('TOLZAR_SETTINGS.WA_LISTEN.BADGE')" />
+    <p class="mt-1 mb-0 text-xs text-n-slate-10">
+      {{ t('TOLZAR_SETTINGS_UI.SHADOW_DETAIL.whatsapp_listen') }}
+    </p>
     <p class="mt-2 mb-0 text-[13px] text-n-slate-11">
       {{ t('TOLZAR_SETTINGS.WA_LISTEN.WHAT') }}
     </p>
@@ -90,8 +92,8 @@ async function connect() {
       t('TOLZAR_SETTINGS.WA_LISTEN.INBOX_NAME')
     }}</label>
     <input v-model="form.inbox_name" :class="INPUT" autocomplete="off" />
-    <button :class="BTN" :disabled="!ready || busy" @click="connect">
-      {{ t('TOLZAR_SETTINGS.WA_LISTEN.CONNECT') }}
+    <button type="button" :class="BTN" :disabled="!ready || busy" @click="connect">
+      {{ busy ? t('TOLZAR_UI.SAVING') : t('TOLZAR_SETTINGS.WA_LISTEN.CONNECT') }}
     </button>
     <p v-if="error" class="mt-3 mb-0 text-[13px] text-n-ruby-11">{{ error }}</p>
     <div

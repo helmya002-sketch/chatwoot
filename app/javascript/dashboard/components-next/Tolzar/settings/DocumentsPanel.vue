@@ -2,8 +2,9 @@
 import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMapGetter } from 'dashboard/composables/store';
+import ShadowBadge from '../ShadowBadge.vue';
 import BrainNotice from './BrainNotice.vue';
-import { BTN, INPUT, LABEL, SHADOW_BADGE } from './tzClasses';
+import { BTN, INPUT, LABEL } from './tzClasses';
 import { MEDIA_MODES, getDocuments, saveDocuments } from '../tolzarMedia';
 
 // Settings hub → AI: read attachments customers send (PDFs) in Shadow. The text is read for
@@ -38,9 +39,15 @@ onMounted(load);
 
 <template>
   <div v-if="mode" class="max-w-[520px]">
-    <span :class="SHADOW_BADGE">{{ t('TOLZAR_SETTINGS.R1.SHADOW_ONLY') }}</span>
-    <label :class="LABEL">{{ t('TOLZAR_SETTINGS.DOCUMENTS.MODE') }}</label>
-    <select v-model="mode" :class="INPUT">
+    <ShadowBadge
+      :state="mode === 'off' ? 'off' : 'shadow'"
+      :hint="t('TOLZAR_SETTINGS_UI.SHADOW_DETAIL.documents')"
+    />
+    <p class="mt-1 mb-0 text-xs text-n-slate-10">
+      {{ t('TOLZAR_SETTINGS_UI.SHADOW_DETAIL.documents') }}
+    </p>
+    <label :class="LABEL" for="tz-documents-mode">{{ t('TOLZAR_SETTINGS.DOCUMENTS.MODE') }}</label>
+    <select id="tz-documents-mode" v-model="mode" :class="INPUT">
       <option v-for="m in MEDIA_MODES" :key="m" :value="m">
         {{ t(`TOLZAR_SETTINGS.MODES.${m}`) }}
       </option>
@@ -49,7 +56,7 @@ onMounted(load);
       {{ t('TOLZAR_SETTINGS.DOCUMENTS.EXPLAIN') }}
     </p>
     <button type="button" :class="BTN" :disabled="busy" @click="save">
-      {{ t('TOLZAR_SETTINGS.SAVE') }}
+      {{ busy ? t('TOLZAR_UI.SAVING') : t('TOLZAR_SETTINGS.SAVE') }}
     </button>
     <BrainNotice :result="result" :saved="saved" />
   </div>

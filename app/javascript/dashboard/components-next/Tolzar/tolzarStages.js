@@ -88,20 +88,61 @@ export const dealValue = attrs => {
   return Number.isFinite(n) ? n : 0;
 };
 
+// Is `code` a currency Intl can format? Uses Intl.supportedValuesOf when the runtime has it,
+// else a trial format. The answer is cached per code.
+const currencyKnown = new Map();
+export const isKnownCurrency = code => {
+  if (!/^[A-Z]{3}$/.test(code || '')) return false;
+  if (!currencyKnown.has(code)) {
+    let ok;
+    try {
+      ok =
+        typeof Intl.supportedValuesOf === 'function'
+          ? Intl.supportedValuesOf('currency').includes(code)
+          : !!new Intl.NumberFormat('en', {
+              style: 'currency',
+              currency: code,
+            });
+    } catch (e) {
+      ok = false;
+    }
+    currencyKnown.set(code, ok);
+  }
+  return currencyKnown.get(code);
+};
+
 // 1234 -> "€1,234" (or "1,234" with no currency); `short` gives "€12.3k" from 10,000 up.
-export const money = (v, { short = false } = {}) => {
+// `locale` is the app locale (useLocale().resolvedLocale), not the browser's. A currency code
+// Intl does not know is never dropped silently: the number is shown with the code appended
+// ("1,234 XTS"), so the Owner sees the setting is wrong.
+export const money = (v, { short = false, locale = 'en' } = {}) => {
   const n = Number(v) || 0;
   const compact = short && Math.abs(n) >= 10000;
   const opts = compact
     ? { notation: 'compact', maximumFractionDigits: 1 }
     : { maximumFractionDigits: 0 };
+  const code = DEAL.currency;
+  const plain = () => {
+    let s;
+    try {
+      s = new Intl.NumberFormat(locale || undefined, opts).format(n);
+    } catch (e) {
+      s = new Intl.NumberFormat('en', opts).format(n);
+    }
+    return code ? `${s} ${code}` : s;
+  };
+  if (!code || !isKnownCurrency(code)) return plain();
+  const asCurrency = loc =>
+    new Intl.NumberFormat(loc, { ...opts, style: 'currency', currency: code });
   try {
-    return new Intl.NumberFormat(undefined, {
-      ...opts,
-      ...(DEAL.currency ? { style: 'currency', currency: DEAL.currency } : {}),
-    }).format(n);
+    return asCurrency(locale || undefined).format(n);
   } catch (e) {
-    return Math.round(n).toLocaleString();
+    // A bad locale tag: English keeps the currency symbol rather than dropping it.
+    try {
+      return asCurrency('en').format(n);
+    } catch (e2) {
+      return plain();
+    }
   }
 };
 
@@ -186,8 +227,10 @@ export const stageOfConditions = list => {
   return eq ? [eq.values].flat()[0] || '' : '';
 };
 
-// Static class strings so Tailwind keeps them in the build.
-const TONE_CLASSES = {
+// The one stage colour map for every chip, dot and pill (Contacts table, preview pane, bulk menu,
+// stage filter, conversation list card, conversation header): theme tokens, so light, dark and
+// white-label all read. Static class strings so Tailwind keeps them in the build.
+export const TONE_CLASSES = {
   slate: 'bg-n-slate-3 text-n-slate-11',
   amber: 'bg-n-amber-3 text-n-amber-11',
   iris: 'bg-n-iris-3 text-n-iris-11',
@@ -218,7 +261,8 @@ const TONE_ICON = {
 };
 export const stageColor = key => TONE_HEX[stageOf(key).tone];
 export const stageIcon = key => TONE_ICON[stageOf(key).tone];
-// A stage chip's colours (inline style), from the stage's tone: the same in every list and header.
+// Inline-style chip colours for the places that still paint with hex (Pipeline / Dashboard charts).
+// Components use stageClass(key) instead (theme tokens).
 export const stageChipStyle = key => {
   const hex = stageColor(key);
   return { backgroundColor: `${hex}1f`, color: hex };

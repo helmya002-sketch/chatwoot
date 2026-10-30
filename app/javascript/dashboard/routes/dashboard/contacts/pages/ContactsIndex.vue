@@ -466,28 +466,36 @@ const applyStage = async key => {
   await fetchSavedOrAppliedFilteredContact(filterQueryGenerator(filters));
 };
 
+// Bulk stage: there is no bulk stage endpoint on the proxy yet (the Tolzar lane owns
+// `POST /tolzar/contacts/bulk_stage`); until then it is one update per contact, each
+// re-read first because custom_attributes is replaced as a whole. The requests run together
+// (Promise.allSettled), a progress count shows while they do, and the final notice says
+// "n of m" whenever any failed.
+const bulkStageProgress = ref(null); // { done, count } while a bulk stage runs
 const setStageForSelected = async key => {
   const ids = [...selectedContactIds.value];
   if (!ids.length) return;
   isBulkActionLoading.value = true;
-  let failed = 0;
-  // One contact at a time, each re-read first: custom_attributes is replaced as a whole.
-  // eslint-disable-next-line no-restricted-syntax
-  for (const id of ids) {
+  bulkStageProgress.value = { done: 0, count: ids.length };
+  const one = async id => {
     try {
-      // eslint-disable-next-line no-await-in-loop
       const { data } = await ContactAPI.show(id);
       const fresh = data?.payload?.custom_attributes || {};
-      // eslint-disable-next-line no-await-in-loop
       await store.dispatch('contacts/update', {
         id,
         customAttributes: { ...fresh, [STAGE_KEY]: key },
       });
-    } catch (e) {
-      failed += 1;
+    } finally {
+      bulkStageProgress.value = {
+        done: (bulkStageProgress.value?.done || 0) + 1,
+        count: ids.length,
+      };
     }
-  }
+  };
+  const results = await Promise.allSettled(ids.map(one));
+  const failed = results.filter(r => r.status === 'rejected').length;
   isBulkActionLoading.value = false;
+  bulkStageProgress.value = null;
   const stage = stageOf(key).label;
   useAlert(
     failed
@@ -625,6 +633,15 @@ onMounted(async () => {
           @delete-selected="openBulkDeleteDialog"
           @set-stage="setStageForSelected"
         />
+        <!-- Tolzar: bulk stage progress (one request per contact until the bulk endpoint lands). -->
+        <p
+          v-if="bulkStageProgress"
+          class="mt-2 mb-0 text-xs text-n-slate-11"
+          role="status"
+          aria-live="polite"
+        >
+          {{ t('TOLZAR_CONTACTS.STAGES.BULK_PROGRESS', bulkStageProgress) }}
+        </p>
         <StageFilterBar
           v-if="
             !activeSegmentId && !isSearchView && !activeLabel && !isActiveView

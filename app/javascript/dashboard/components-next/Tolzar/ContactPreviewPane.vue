@@ -8,6 +8,7 @@ import { computed, ref, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useStore, useMapGetter } from 'dashboard/composables/store';
 import { useAlert } from 'dashboard/composables';
+import { useLocale } from 'shared/composables/useLocale';
 import { dynamicTime } from 'shared/helpers/timeHelper';
 import { conversationUrl, frontendURL } from 'dashboard/helper/URLHelper';
 import ContactAPI from 'dashboard/api/contacts';
@@ -29,6 +30,7 @@ import {
 } from './tolzarStages';
 import { contactChannel, conversationChannel } from './tolzarChannel';
 import { EMPTY_PACK, fetchPack, packRows } from './tolzarPack';
+import { tolzarBrand } from './TolzarBranding.vue';
 
 const props = defineProps({
   contactId: { type: Number, required: true },
@@ -37,9 +39,11 @@ const emit = defineEmits(['close']);
 
 const store = useStore();
 const { t, locale } = useI18n();
+const { resolvedLocale } = useLocale();
 const router = useRouter();
 const route = useRoute();
 const accountId = useMapGetter('getCurrentAccountId');
+const product = computed(() => tolzarBrand.productName);
 
 const raw = computed(
   () => store.getters['contacts/getContact'](props.contactId) || {}
@@ -69,7 +73,10 @@ const subline = computed(() =>
     .join(' · ')
 );
 
-// Generic core rows plus the workspace pack's own fields (labels from the brain).
+// Generic core rows plus the workspace pack's own fields (labels from the brain, through
+// GET /tolzar/pack -> tolzarPack.fetchPack). Industry-specific attributes such as a party or
+// group size are NOT listed here: a pack that defines them (fields[].key) shows them through
+// packRows, with the pack's own label; a workspace without that pack never sees the row.
 const pack = ref(EMPTY_PACK);
 watch(
   accountId,
@@ -90,10 +97,11 @@ const details = computed(() =>
       attrs.value.location || raw.value.additional_attributes?.city,
     ],
     ...packed.value.others,
-    [t('TOLZAR_CONTACTS.PANE.GROUP_SIZE'), attrs.value.group_size],
     [
-      t('TOLZAR_CONTACTS.PANE.BOOKING_VALUE'),
-      dealValue(attrs.value) ? money(dealValue(attrs.value)) : '',
+      t('TOLZAR_CONTACTS.PANE.DEAL_VALUE'),
+      dealValue(attrs.value)
+        ? money(dealValue(attrs.value), { locale: resolvedLocale.value })
+        : '',
     ],
     [t('TOLZAR_CONTACTS.PANE.LANGUAGE'), attrs.value.preferred_language],
     [t('TOLZAR_CONTACTS.PANE.PHONE'), raw.value.phone_number],
@@ -167,6 +175,7 @@ const openConversation = conv => {
 <template>
   <aside
     class="flex flex-col w-80 flex-shrink-0 h-full overflow-y-auto border-s border-n-weak bg-n-background"
+    @keydown.esc="stageOpen = false"
   >
     <div class="p-4 border-b border-n-weak">
       <div class="flex items-start gap-3">
@@ -192,6 +201,7 @@ const openConversation = conv => {
           variant="ghost"
           color="slate"
           size="xs"
+          :aria-label="t('TOLZAR_UI.CLOSE')"
           @click="emit('close')"
         />
       </div>
@@ -214,6 +224,8 @@ const openConversation = conv => {
             color="slate"
             size="sm"
             :disabled="saving"
+            aria-haspopup="menu"
+            :aria-expanded="stageOpen ? 'true' : 'false'"
             @click="stageOpen = !stageOpen"
           />
           <div
@@ -223,12 +235,15 @@ const openConversation = conv => {
           />
           <div
             v-if="stageOpen"
+            role="menu"
             class="absolute z-50 p-1 mt-1 border shadow-lg min-w-44 rounded-xl border-n-weak bg-n-alpha-3 backdrop-blur-[100px]"
           >
             <button
               v-for="s in STAGES"
               :key="s.key"
               type="button"
+              role="menuitemradio"
+              :aria-checked="s.key === stage ? 'true' : 'false'"
               class="flex items-center w-full gap-2 px-2 py-1.5 text-sm rounded-lg text-start text-n-slate-12 hover:bg-n-alpha-2"
               :class="{ 'font-semibold': s.key === stage }"
               @click="setStage(s.key)"
@@ -278,7 +293,7 @@ const openConversation = conv => {
       <h3
         class="mb-2 text-xs font-medium tracking-wide uppercase text-n-slate-10"
       >
-        {{ t('TOLZAR_CONTACTS.PANE.SUMMARY') }}
+        {{ t('TOLZAR_CONTACTS.PANE.SUMMARY', { product }) }}
       </h3>
       <p
         v-if="summary"
@@ -287,7 +302,7 @@ const openConversation = conv => {
         {{ summary }}
       </p>
       <p v-else class="mb-0 text-sm text-n-slate-10">
-        {{ t('TOLZAR_CONTACTS.PANE.NO_SUMMARY') }}
+        {{ t('TOLZAR_CONTACTS.PANE.NO_SUMMARY', { product }) }}
       </p>
       <p v-if="score !== null" class="mt-2 mb-0 text-xs text-n-slate-11">
         {{ t('TOLZAR_CONTACTS.PANE.LEAD_SCORE') }}

@@ -1,0 +1,75 @@
+{
+  "TOLZAR_INBOX": {
+    "COPILOT": {
+      "TITLE": "{product} copilot",
+      "INTENT": {
+        "LEAD": "Lead",
+        "JOB": "Job application",
+        "SPAM": "Spam",
+        "OTHER": "Needs routing"
+      },
+      "SCORE": "score {score}",
+      "CONFIDENCE": "confidence",
+      "CONFIDENCE_ARIA": "Confidence {pct}%",
+      "SUGGESTED_REPLY": "Suggested reply",
+      "AI_DRAFT": "AI draft",
+      "AI_DRAFT_HINT": "Written by {product}. Nothing is sent until you send it.",
+      "USE_REPLY": "Use reply",
+      "USE_REPLY_HINT": "Puts the draft in your composer to review before you send.",
+      "COPY_REPLY": "Copy reply",
+      "COPY_REPLY_HINT": "This inbox is listen-only: paste the draft into the tool you reply from.",
+      "COPIED": "Copied",
+      "COPY_FAILED": "Could not copy. Select the text and copy it yourself."
+    },
+    "BRIEFING": {
+      "GREETING": {
+        "MORNING": "Good morning, {name} 👋",
+        "AFTERNOON": "Good afternoon, {name} 👋",
+        "EVENING": "Good evening, {name} 👋",
+        "MORNING_ANON": "Good morning 👋",
+        "AFTERNOON_ANON": "Good afternoon 👋",
+        "EVENING_ANON": "Good evening 👋"
+      },
+      "HOT_LEADS": "{n} hot lead waiting | {n} hot leads waiting",
+      "ALL_CAUGHT_UP": "You're all caught up ✨",
+      "SEE_BRIEFING": "See briefing",
+      "DISMISS": "Dismiss the briefing for today",
+      "CLOSE": "Close",
+      "WHAT_NEEDS_YOU": "What needs you",
+      "NO_NAME": "Unnamed contact",
+      "OPEN_LEAD": "Open the conversation with {name} (score {score})",
+      "EMPTY": "No urgent leads right now. {product} will flag the moment a hot one comes in."
+    },
+    "BELL": {
+      "TITLE": "Notifications",
+      "SEE_ALL": "See all",
+      "EMPTY": "You have no notifications"
+    },
+    "LEAD_SCORE": {
+      "LABEL": "Lead score",
+      "ARIA": "Lead score {score} of 100",
+      "TOOLTIP": "{product} lead score"
+    },
+    "HEADER": {
+      "SET_STAGE": "Set the stage"
+    },
+    "CARD": {
+      "NO_REPLY_YET": "No reply yet",
+      "NO_REPLY_FOR": "No reply for {time}",
+      "AI_DRAFTED": "AI drafted",
+      "AI_DRAFTED_HINT": "{product} drafted a reply for you to review."
+    }
+  },
+  "TOLZAR_SIDEBAR": {
+    "DASHBOARD": "Dashboard",
+    "PIPELINE": "Pipeline",
+    "INBOX": "Inbox",
+    "AI_AGENTS": "AI Agents",
+    "BROADCASTS": "Broadcasts",
+    "REPORTS_OVERVIEW": "Tolzar overview",
+    "RESULTS": "Results",
+    "WORKSPACE_SETTINGS": "Workspace",
+    "ALL_WORKSPACES": "All workspaces",
+    "COLLAPSE_PANEL": "Collapse panel"
+  }
+}

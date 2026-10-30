@@ -1,9 +1,10 @@
 <script setup>
-// Tolzar Reports (UI pass 2 + roadmap #2): one overview of leads, bookings, team speed and
+// Tolzar Reports (UI pass 2 + roadmap #2): one overview of contacts, deals, team speed and
 // the shadow-eval scoreboard. Live data only: Chatwoot's reports API, contact filters, and the
 // brain's /scoreboard through the admin-only Rails proxy. Numbers that can't be known yet say so.
 import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useLocale } from 'shared/composables/useLocale';
 import { useStore, useMapGetter } from 'dashboard/composables/store';
 import ReportsAPI from 'dashboard/api/reports';
 import SummaryReportsAPI from 'dashboard/api/summaryReports';
@@ -13,10 +14,16 @@ import {
   loadStageAttributes,
 } from 'dashboard/components-next/Tolzar/tolzarStages';
 import {
+  duration as fmtDuration,
+  fmtClock,
+  fmtDay,
+} from 'dashboard/components-next/Tolzar/tolzarTime';
+import {
   delta,
-  duration,
+  downloadCsv,
   euro,
   newContacts,
+  normalizeScoreboard,
   pct,
   rangeFor,
   stageCounts,
@@ -25,9 +32,14 @@ import {
 } from './tolzarReportsData';
 
 const { t } = useI18n();
+const { resolvedLocale } = useLocale();
 const store = useStore();
 const accountId = useMapGetter('getCurrentAccountId');
 const agents = useMapGetter('agents/getAgents');
+
+// One formatter path: Intl units in the viewer's language; "—" when there is nothing to show.
+const duration = s => fmtDuration(s, resolvedLocale.value) || '—';
+const day = iso => fmtDay(iso, resolvedLocale.value) || iso || '';
 
 const RANGES = [7, 30, 90];
 const days = ref(30);
@@ -59,10 +71,27 @@ const stageVar = key => {
 
 const getAccount = useMapGetter('accounts/getAccount');
 
-async function load() {
-  loading.value = true;
+// Two loaders: the stage counts, the weekly series and the stage values do not depend on the
+// range, so they run once; a range change re-runs only the range-dependent jobs.
+async function loadStages() {
   applyPipelineStages(getAccount.value(accountId.value)?.settings);
   await loadStageAttributes(accountId.value);
+  await Promise.allSettled([
+    stageCounts().then(c => {
+      counts.value = c;
+    }),
+    weeklyNewContacts().then(w => {
+      weekly.value = w;
+    }),
+    // Value in every stage but the first (no deal yet) and the last (lost).
+    Promise.all(STAGES.slice(1, -1).map(s => stageValue(s.key))).then(v => {
+      values.value = v;
+    }),
+  ]);
+}
+
+async function loadRange() {
+  loading.value = true;
   const r = rangeFor(days.value);
   const id = accountId.value;
   const jobs = [
@@ -78,28 +107,19 @@ async function load() {
     newContacts(r.prevSince, r.since).then(n => {
       newPrev.value = n;
     }),
-    stageCounts().then(c => {
-      counts.value = c;
-    }),
-    weeklyNewContacts().then(w => {
-      weekly.value = w;
-    }),
     SummaryReportsAPI.getAgentReports({ since: r.since, until: r.until }).then(
       x => {
         people.value = (x.data || []).filter(p => p.conversations_count > 0);
       }
     ),
-    // Value in every stage but the first (no deal yet) and the last (lost).
-    Promise.all(STAGES.slice(1, -1).map(s => stageValue(s.key))).then(v => {
-      values.value = v;
-    }),
     window.axios
       .get(`/api/v1/accounts/${id}/tolzar/scoreboard`, {
         params: { days: days.value },
       })
       .then(x => {
-        sb.value = x.data;
-        sbError.value = !x.data?.ok;
+        const board = normalizeScoreboard(x.data);
+        sb.value = board;
+        sbError.value = !board.ok;
       })
       .catch(() => {
         sbError.value = true;
@@ -110,13 +130,16 @@ async function load() {
   updatedAt.value = new Date();
 }
 
-onMounted(() => {
+onMounted(async () => {
   store.dispatch('agents/get').catch(() => {});
-  load();
+  await Promise.allSettled([loadStages(), loadRange()]);
 });
-watch(days, load);
+watch(days, loadRange);
 
 // ---- KPIs ------------------------------------------------------------------------------
+// The workspace's list ends with won, lost (Settings → Pipeline).
+const wonKey = computed(() => STAGES[STAGES.length - 2]?.key);
+const lostKey = computed(() => STAGES[STAGES.length - 1]?.key);
 const wonValue = computed(
   () => values.value.find(v => v.stage === wonKey.value) || null
 );
@@ -190,9 +213,6 @@ const toneOf = k => {
 };
 
 // ---- Funnel ----------------------------------------------------------------------------
-// The workspace's list ends with won, lost (Settings → Pipeline).
-const wonKey = computed(() => STAGES[STAGES.length - 2]?.key);
-const lostKey = computed(() => STAGES[STAGES.length - 1]?.key);
 // A stage's share is of the contacts that reached at least the stage before it (that stage and
 // every later one but lost), so it can never pass 100%.
 const funnel = computed(() => {
@@ -298,26 +318,101 @@ const onLineMove = e => {
   hover.value = { i, x: e.clientX, y: e.clientY };
 };
 
-// Generic hover tooltip for bars.
+// Generic hover tooltip for bars. On touch a tap would leave it stuck: touchend clears both.
 const tip = ref(null);
 const showTip = (e, title, body) => {
   tip.value = { x: e.clientX, y: e.clientY, title, body };
+};
+const clearTips = () => {
+  tip.value = null;
+  hover.value = null;
 };
 
 const updatedLabel = computed(() =>
   updatedAt.value
     ? t('TOLZAR_REPORTS.UPDATED', {
-        time: updatedAt.value.toLocaleTimeString([], {
-          hour: '2-digit',
-          minute: '2-digit',
-        }),
+        time: fmtClock(updatedAt.value, resolvedLocale.value),
       })
     : ''
 );
+
+// ---- CSV: every table, client-side -------------------------------------------------------
+const col = k => t(`TOLZAR_REPORTS.COL.${k}`);
+const CSV = {
+  funnel: () => [
+    [col('STAGE'), col('CONTACTS')],
+    STAGES.map(s => [s.label, counts.value[s.key] || 0]),
+  ],
+  weekly: () => [
+    [col('WEEK'), col('NEW')],
+    weekly.value.map(w => [w.week, w.count]),
+  ],
+  people: () => [
+    [
+      col('PERSON'),
+      col('CONVERSATIONS'),
+      col('FIRST_REPLY'),
+      col('RESOLVE'),
+      col('RESOLVED'),
+    ],
+    peopleRows.value.map(p => [
+      p.name,
+      p.conversations_count,
+      p.avg_first_response_time ?? '',
+      p.avg_resolution_time ?? '',
+      p.resolved_conversations_count,
+    ]),
+  ],
+  pipeline: () => [
+    [col('STAGE'), col('CONTACTS'), col('VALUE')],
+    values.value.map(v => [stageLabel(v.stage), v.count, v.total]),
+  ],
+  by_model: () => [
+    [
+      t('TOLZAR_REPORTS.COL_MODEL'),
+      t('TOLZAR_REPORTS.COL_SCORED'),
+      col('AGREES'),
+      col('ASKS'),
+      t('TOLZAR_REPORTS.COL_P95'),
+      t('TOLZAR_REPORTS.COL_PERIOD'),
+    ],
+    byModel.value.map(m => [
+      m.model,
+      m.scored,
+      m.agreement ?? '',
+      m.ask_share ?? '',
+      m.latency_p95_ms ?? '',
+      `${m.first || ''} – ${m.last || ''}`,
+    ]),
+  ],
+  daily: () => [
+    [col('DAY'), col('AGREES'), col('ASKS')],
+    daily.value.map(d => [d.day, d.agreement ?? '', d.ask_share ?? '']),
+  ],
+  disagree: () => [
+    [col('CONVERSATION'), col('WOULD'), col('STAFF')],
+    (sb.value?.disagreements || []).map(d => [
+      d.conversation_id,
+      d.would || '',
+      [d.staff, d.staff_name].filter(Boolean).join(' · '),
+    ]),
+  ],
+};
+const csv = key => {
+  const [headers, rows] = CSV[key]();
+  downloadCsv(
+    `${t(`TOLZAR_REPORTS_UI.CSV.${key.toUpperCase()}`)}-${days.value}d`,
+    headers,
+    rows
+  );
+};
 </script>
 
 <template>
-  <div class="tz-rep flex-1 overflow-auto bg-n-background">
+  <div
+    class="tz-rep flex-1 overflow-auto bg-n-background"
+    @touchend.passive="clearTips"
+  >
     <div class="mx-auto max-w-[1200px] px-5 pb-16 pt-6 md:px-7">
       <div class="flex flex-wrap items-center gap-3 mb-5">
         <div class="min-w-0">
@@ -382,17 +477,26 @@ const updatedLabel = computed(() =>
                 {{ t('TOLZAR_REPORTS.FUNNEL_SUB') }}
               </p>
             </div>
-            <button
-              type="button"
-              class="text-xs text-n-blue-11"
-              @click="tables.funnel = !tables.funnel"
-            >
-              {{
-                tables.funnel
-                  ? t('TOLZAR_REPORTS.HIDE_TABLE')
-                  : t('TOLZAR_REPORTS.SHOW_TABLE')
-              }}
-            </button>
+            <div class="flex gap-3 items-start">
+              <button
+                type="button"
+                class="text-xs text-n-blue-11"
+                @click="csv('funnel')"
+              >
+                {{ t('TOLZAR_REPORTS_UI.DOWNLOAD_CSV') }}
+              </button>
+              <button
+                type="button"
+                class="text-xs text-n-blue-11"
+                @click="tables.funnel = !tables.funnel"
+              >
+                {{
+                  tables.funnel
+                    ? t('TOLZAR_REPORTS.HIDE_TABLE')
+                    : t('TOLZAR_REPORTS.SHOW_TABLE')
+                }}
+              </button>
+            </div>
           </div>
           <div v-if="!tables.funnel" class="flex flex-col gap-2.5">
             <div
@@ -470,17 +574,26 @@ const updatedLabel = computed(() =>
                 {{ t('TOLZAR_REPORTS.WEEKLY_SUB') }}
               </p>
             </div>
-            <button
-              type="button"
-              class="text-xs text-n-blue-11"
-              @click="tables.weekly = !tables.weekly"
-            >
-              {{
-                tables.weekly
-                  ? t('TOLZAR_REPORTS.HIDE_TABLE')
-                  : t('TOLZAR_REPORTS.SHOW_TABLE')
-              }}
-            </button>
+            <div class="flex gap-3 items-start">
+              <button
+                type="button"
+                class="text-xs text-n-blue-11"
+                @click="csv('weekly')"
+              >
+                {{ t('TOLZAR_REPORTS_UI.DOWNLOAD_CSV') }}
+              </button>
+              <button
+                type="button"
+                class="text-xs text-n-blue-11"
+                @click="tables.weekly = !tables.weekly"
+              >
+                {{
+                  tables.weekly
+                    ? t('TOLZAR_REPORTS.HIDE_TABLE')
+                    : t('TOLZAR_REPORTS.SHOW_TABLE')
+                }}
+              </button>
+            </div>
           </div>
           <div v-if="!tables.weekly" class="flex items-end h-40 gap-3 px-1">
             <div
@@ -491,7 +604,7 @@ const updatedLabel = computed(() =>
                 e =>
                   showTip(
                     e,
-                    w.week,
+                    day(w.week),
                     t('TOLZAR_REPORTS.CONTACTS_N', { n: w.count })
                   )
               "
@@ -506,9 +619,7 @@ const updatedLabel = computed(() =>
                   height: `${Math.max(2, (w.count / weekMax) * 100)}%`,
                 }"
               />
-              <span class="text-[11px] text-n-slate-10">{{
-                w.week.slice(5)
-              }}</span>
+              <span class="text-[11px] text-n-slate-10">{{ day(w.week) }}</span>
             </div>
           </div>
           <table v-else class="w-full text-sm">
@@ -528,7 +639,7 @@ const updatedLabel = computed(() =>
                 :key="w.week"
                 class="border-t border-n-weak"
               >
-                <td class="py-1.5">{{ w.week }}</td>
+                <td class="py-1.5">{{ day(w.week) }}</td>
                 <td class="py-1.5 text-end tabular-nums">{{ w.count }}</td>
               </tr>
             </tbody>
@@ -542,12 +653,23 @@ const updatedLabel = computed(() =>
       </h2>
       <div class="grid gap-3 xl:grid-cols-[1.25fr_1fr]">
         <div class="p-4 border rounded-xl border-n-weak bg-n-solid-1">
-          <h3 class="m-0 text-sm font-semibold text-n-slate-12">
-            {{ t('TOLZAR_REPORTS.PEOPLE') }}
-          </h3>
-          <p class="mt-0.5 mb-3 text-xs text-n-slate-11">
-            {{ t('TOLZAR_REPORTS.PEOPLE_SUB') }}
-          </p>
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <h3 class="m-0 text-sm font-semibold text-n-slate-12">
+                {{ t('TOLZAR_REPORTS.PEOPLE') }}
+              </h3>
+              <p class="mt-0.5 mb-3 text-xs text-n-slate-11">
+                {{ t('TOLZAR_REPORTS.PEOPLE_SUB') }}
+              </p>
+            </div>
+            <button
+              type="button"
+              class="text-xs text-n-blue-11"
+              @click="csv('people')"
+            >
+              {{ t('TOLZAR_REPORTS_UI.DOWNLOAD_CSV') }}
+            </button>
+          </div>
           <table class="w-full text-sm">
             <thead>
               <tr class="text-xs text-n-slate-10">
@@ -602,17 +724,26 @@ const updatedLabel = computed(() =>
                 {{ t('TOLZAR_REPORTS.PIPELINE_SUB') }}
               </p>
             </div>
-            <button
-              type="button"
-              class="text-xs text-n-blue-11"
-              @click="tables.pipeline = !tables.pipeline"
-            >
-              {{
-                tables.pipeline
-                  ? t('TOLZAR_REPORTS.HIDE_TABLE')
-                  : t('TOLZAR_REPORTS.SHOW_TABLE')
-              }}
-            </button>
+            <div class="flex gap-3 items-start">
+              <button
+                type="button"
+                class="text-xs text-n-blue-11"
+                @click="csv('pipeline')"
+              >
+                {{ t('TOLZAR_REPORTS_UI.DOWNLOAD_CSV') }}
+              </button>
+              <button
+                type="button"
+                class="text-xs text-n-blue-11"
+                @click="tables.pipeline = !tables.pipeline"
+              >
+                {{
+                  tables.pipeline
+                    ? t('TOLZAR_REPORTS.HIDE_TABLE')
+                    : t('TOLZAR_REPORTS.SHOW_TABLE')
+                }}
+              </button>
+            </div>
           </div>
           <div v-if="!tables.pipeline" class="flex flex-col gap-3">
             <div
@@ -793,12 +924,23 @@ const updatedLabel = computed(() =>
           v-if="byModel.length > 1"
           class="p-4 mt-3 border rounded-xl border-n-weak bg-n-solid-1"
         >
-          <h3 class="m-0 text-sm font-semibold text-n-slate-12">
-            {{ t('TOLZAR_REPORTS.BY_MODEL') }}
-          </h3>
-          <p class="mt-0.5 mb-3 text-xs text-n-slate-11">
-            {{ t('TOLZAR_REPORTS.BY_MODEL_SUB') }}
-          </p>
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <h3 class="m-0 text-sm font-semibold text-n-slate-12">
+                {{ t('TOLZAR_REPORTS.BY_MODEL') }}
+              </h3>
+              <p class="mt-0.5 mb-3 text-xs text-n-slate-11">
+                {{ t('TOLZAR_REPORTS.BY_MODEL_SUB') }}
+              </p>
+            </div>
+            <button
+              type="button"
+              class="text-xs text-n-blue-11"
+              @click="csv('by_model')"
+            >
+              {{ t('TOLZAR_REPORTS_UI.DOWNLOAD_CSV') }}
+            </button>
+          </div>
           <table class="w-full text-sm">
             <thead>
               <tr class="text-xs text-n-slate-10">
@@ -845,7 +987,7 @@ const updatedLabel = computed(() =>
                   {{ duration(m.latency_p95_ms / 1000) }}
                 </td>
                 <td class="py-1.5 text-end tabular-nums text-n-slate-11">
-                  {{ m.first.slice(5, 10) }} – {{ m.last.slice(5, 10) }}
+                  {{ day(m.first) }} – {{ day(m.last) }}
                 </td>
               </tr>
             </tbody>
@@ -863,17 +1005,26 @@ const updatedLabel = computed(() =>
                   {{ t('TOLZAR_REPORTS.AI_TREND_SUB') }}
                 </p>
               </div>
-              <button
-                type="button"
-                class="text-xs text-n-blue-11"
-                @click="tables.ai = !tables.ai"
-              >
-                {{
-                  tables.ai
-                    ? t('TOLZAR_REPORTS.HIDE_TABLE')
-                    : t('TOLZAR_REPORTS.SHOW_TABLE')
-                }}
-              </button>
+              <div class="flex gap-3 items-start">
+                <button
+                  type="button"
+                  class="text-xs text-n-blue-11"
+                  @click="csv('daily')"
+                >
+                  {{ t('TOLZAR_REPORTS_UI.DOWNLOAD_CSV') }}
+                </button>
+                <button
+                  type="button"
+                  class="text-xs text-n-blue-11"
+                  @click="tables.ai = !tables.ai"
+                >
+                  {{
+                    tables.ai
+                      ? t('TOLZAR_REPORTS.HIDE_TABLE')
+                      : t('TOLZAR_REPORTS.SHOW_TABLE')
+                  }}
+                </button>
+              </div>
             </div>
             <div class="flex flex-wrap gap-4 mb-1 text-xs text-n-slate-11">
               <span class="inline-flex items-center gap-1.5"
@@ -949,7 +1100,7 @@ const updatedLabel = computed(() =>
                 text-anchor="middle"
                 class="fill-n-slate-10 text-[11px]"
               >
-                {{ d.day.slice(5) }}
+                {{ day(d.day) }}
               </text>
               <line
                 v-if="hover"
@@ -980,7 +1131,7 @@ const updatedLabel = computed(() =>
                   :key="d.day"
                   class="border-t border-n-weak"
                 >
-                  <td class="py-1.5">{{ d.day }}</td>
+                  <td class="py-1.5">{{ day(d.day) }}</td>
                   <td class="py-1.5 text-end tabular-nums">
                     {{ pct(d.agreement) }}
                   </td>
@@ -993,12 +1144,24 @@ const updatedLabel = computed(() =>
           </div>
 
           <div class="p-4 border rounded-xl border-n-weak bg-n-solid-1">
-            <h3 class="m-0 text-sm font-semibold text-n-slate-12">
-              {{ t('TOLZAR_REPORTS.DISAGREE') }}
-            </h3>
-            <p class="mt-0.5 mb-3 text-xs text-n-slate-11">
-              {{ t('TOLZAR_REPORTS.DISAGREE_SUB') }}
-            </p>
+            <div class="flex items-start justify-between gap-2">
+              <div>
+                <h3 class="m-0 text-sm font-semibold text-n-slate-12">
+                  {{ t('TOLZAR_REPORTS.DISAGREE') }}
+                </h3>
+                <p class="mt-0.5 mb-3 text-xs text-n-slate-11">
+                  {{ t('TOLZAR_REPORTS.DISAGREE_SUB') }}
+                </p>
+              </div>
+              <button
+                v-if="sb.disagreements.length"
+                type="button"
+                class="text-xs text-n-blue-11"
+                @click="csv('disagree')"
+              >
+                {{ t('TOLZAR_REPORTS_UI.DOWNLOAD_CSV') }}
+              </button>
+            </div>
             <p
               v-if="!sb.disagreements.length"
               class="mb-0 text-sm text-n-slate-10"
@@ -1059,7 +1222,7 @@ const updatedLabel = computed(() =>
       class="fixed z-50 px-3 py-2 text-xs border rounded-lg shadow-lg pointer-events-none border-n-weak bg-n-solid-1 text-n-slate-12"
       :style="{ left: `${hover.x + 14}px`, top: `${hover.y + 14}px` }"
     >
-      <b class="block mb-0.5">{{ daily[hover.i].day }}</b>
+      <b class="block mb-0.5">{{ day(daily[hover.i].day) }}</b>
       {{ t('TOLZAR_REPORTS.COL.AGREES') }}: {{ pct(daily[hover.i].agreement)
       }}<br />
       {{ t('TOLZAR_REPORTS.COL.ASKS') }}: {{ pct(daily[hover.i].ask_share) }}

@@ -2,14 +2,18 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMapGetter, useStore } from 'dashboard/composables/store';
+import { useLocale } from 'shared/composables/useLocale';
+import ShadowBadge from '../ShadowBadge.vue';
 import BrainNotice from './BrainNotice.vue';
-import { BTN, BTN_GHOST, INPUT, LABEL, SHADOW_BADGE } from './tzClasses';
+import { BTN, BTN_GHOST, INPUT, LABEL } from './tzClasses';
+import { fmtClock } from '../tolzarTime';
 
 // Settings hub → Channels → Meta app (Owner): the workspace's OWN Meta app for Facebook Messenger,
 // Instagram DMs and comments (TolzarController#meta_app*). The app secret is write-only; the verify
 // token is shown once, when the app is first saved. Pages connect listen-only: Tolzar receives, staff
 // keep answering in Meta Business Suite, nothing is sent from Tolzar.
 const { t } = useI18n();
+const { resolvedLocale } = useLocale();
 const store = useStore();
 const accountId = useMapGetter('getCurrentAccountId');
 const url = computed(() => `/api/v1/accounts/${accountId.value}/tolzar/meta_app`);
@@ -32,6 +36,11 @@ const saved = ref('');
 const busy = ref(false);
 
 const fail = e => e?.response?.data || { ok: false, error: 'brain_unreachable' };
+
+// App Review test send: a 60-minute window for ONE message to the Owner's own account.
+const testOpenUntil = ref('');
+const test = ref({ conversation_id: '', text: '', confirm_name: '' });
+const showUntil = iso => fmtClock(iso, resolvedLocale.value);
 
 async function load() {
   try {
@@ -85,10 +94,6 @@ async function rotateToken() {
   );
 }
 
-// App Review test send: a 60-minute window for ONE message to the Owner's own account.
-const testOpenUntil = ref('');
-const test = ref({ conversation_id: '', text: '', confirm_name: '' });
-const showUntil = iso => (iso ? new Date(iso).toLocaleTimeString() : '');
 async function openTestWindow() {
   const data = await run(
     () => window.axios.post(`${url.value}/test_send/window`).then(r => r.data),
@@ -129,7 +134,8 @@ onMounted(load);
 
 <template>
   <div data-tz-meta-app>
-    <span :class="SHADOW_BADGE">{{ t('TOLZAR_META_APP.LISTEN_ONLY') }}</span>
+    <ShadowBadge state="shadow" :hint="t('TOLZAR_META_APP.LISTEN_ONLY')" />
+    <p class="mt-1 mb-0 text-xs text-n-slate-10">{{ t('TOLZAR_SETTINGS_UI.SHADOW_DETAIL.meta_app') }}</p>
     <p class="mt-2 text-[13px] text-n-slate-11">{{ t('TOLZAR_META_APP.INTRO') }}</p>
 
     <h3 class="mt-4 mb-0 text-[14px] font-semibold text-n-slate-12">{{ t('TOLZAR_META_APP.APP') }}</h3>
@@ -167,7 +173,7 @@ onMounted(load);
       <h3 class="mt-5 mb-0 text-[14px] font-semibold text-n-slate-12">{{ t('TOLZAR_META_APP.PAGES') }}</h3>
       <ul v-if="pages.length" class="pl-4 mt-1 text-[13px]">
         <li v-for="p in pages" :key="p.page_id">
-          {{ p.name }} · {{ p.page_id }}<span v-if="p.instagram_id"> · Instagram {{ p.instagram_id }}</span>
+          {{ p.name }} · {{ p.page_id }}<span v-if="p.instagram_id"> · {{ t('TOLZAR_SETTINGS_UI.CONNECTIONS.INSTAGRAM', { name: p.instagram_id }) }}</span>
         </li>
       </ul>
       <p v-else class="mt-1 text-xs text-n-slate-10">{{ t('TOLZAR_META_APP.NO_PAGES') }}</p>
@@ -185,7 +191,7 @@ onMounted(load);
       >
         {{ t('TOLZAR_META_APP.CONNECT') }}
       </button>
-      <button type="button" :class="BTN_GHOST" class="ml-2" :disabled="busy" @click="load">
+      <button type="button" :class="BTN_GHOST" class="ms-2" :disabled="busy" @click="load">
         {{ t('TOLZAR_META_APP.RELOAD') }}
       </button>
 

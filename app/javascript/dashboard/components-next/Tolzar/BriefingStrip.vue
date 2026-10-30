@@ -4,29 +4,59 @@
  * and surfaces what needs them (hot leads, from the lead scores the brain writes as
  * contact custom_attributes). The pulsing "See briefing" invites the click, then quiets.
  * Real data only: when nothing is hot it says "all caught up" — never a fake number.
+ * Dismissing hides it for the rest of the calendar day on this browser (localStorage,
+ * a per-viewer convenience; a blocked store simply means it comes back on reload).
  */
-import { computed, ref } from 'vue';
+import { computed, ref, watch, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import { useMapGetter } from 'dashboard/composables/store';
 import { frontendURL } from 'dashboard/helper/URLHelper';
+import { tolzarBrand } from './TolzarBranding.vue';
 
+const { t } = useI18n();
 const router = useRouter();
 const currentUser = useMapGetter('getCurrentUser');
 const accountId = useMapGetter('getCurrentAccountId');
 const allConversations = useMapGetter('getAllConversations');
 
-const dismissed = ref(false);
+const DISMISS_KEY = 'tolzar_briefing_dismissed';
+const today = () => new Date().toISOString().slice(0, 10);
+const readDismissed = () => {
+  try {
+    return window.localStorage.getItem(DISMISS_KEY) === today();
+  } catch (e) {
+    return false;
+  }
+};
+const dismissed = ref(readDismissed());
+const dismiss = () => {
+  dismissed.value = true;
+  try {
+    window.localStorage.setItem(DISMISS_KEY, today());
+  } catch (e) {
+    // Storage blocked or full: the strip simply returns on the next load.
+  }
+};
+
 const open = ref(false);
 const seen = ref(false);
+const product = computed(() => tolzarBrand.productName);
+const mark = computed(() => (product.value || 'T').charAt(0).toUpperCase());
 
 const firstName = computed(
   () => (currentUser.value?.name || '').trim().split(' ')[0] || ''
 );
+const dayPart = h => {
+  if (h < 12) return 'MORNING';
+  if (h < 18) return 'AFTERNOON';
+  return 'EVENING';
+};
 const greeting = computed(() => {
-  const h = new Date().getHours();
-  const part =
-    h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
-  return firstName.value ? `${part}, ${firstName.value}` : part;
+  const part = dayPart(new Date().getHours());
+  return firstName.value
+    ? t(`TOLZAR_INBOX.BRIEFING.GREETING.${part}`, { name: firstName.value })
+    : t(`TOLZAR_INBOX.BRIEFING.GREETING.${part}_ANON`);
 });
 
 const scoreOf = c => {
@@ -38,7 +68,7 @@ const hotLeads = computed(() =>
     .filter(c => c.status === 'open' && scoreOf(c) >= 70)
     .map(c => ({
       id: c.id,
-      name: c?.meta?.sender?.name || 'Guest',
+      name: c?.meta?.sender?.name || t('TOLZAR_INBOX.BRIEFING.NO_NAME'),
       score: Math.round(scoreOf(c)),
       hint: c?.meta?.sender?.custom_attributes?.tolzar_lead_hint || '',
     }))
@@ -46,55 +76,92 @@ const hotLeads = computed(() =>
     .slice(0, 5)
 );
 const hotCount = computed(() => hotLeads.value.length);
+const inviting = computed(() => hotCount.value > 0 && !seen.value);
 
 const toggle = () => {
   open.value = !open.value;
   seen.value = true;
 };
-const jump = id => {
+const close = () => {
   open.value = false;
+};
+const onKey = e => {
+  if (e.key === 'Escape') close();
+};
+watch(open, v => {
+  if (v) window.addEventListener('keydown', onKey);
+  else window.removeEventListener('keydown', onKey);
+});
+onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
+
+const jump = id => {
+  close();
   router.push(frontendURL(`accounts/${accountId.value}/conversations/${id}`));
 };
 </script>
 
 <template>
-  <div v-if="!dismissed && firstName" class="tz-brief">
-    <span class="tz-m">T</span>
-    <span class="tz-g">{{ greeting }} 👋</span>
+  <div v-if="!dismissed" class="tz-brief">
+    <span class="tz-m" aria-hidden="true">{{ mark }}</span>
+    <span class="tz-g">{{ greeting }}</span>
     <span class="tz-sep" />
     <span v-if="hotCount" class="tz-nudge">
-      <svg viewBox="0 0 24 24">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M12 2l2.2 6.3L21 10l-6.8 1.7L12 18l-2.2-6.3L3 10z" />
       </svg>
-      <b>{{ hotCount }} hot lead{{ hotCount > 1 ? 's' : '' }}</b>&nbsp;waiting
+      <b>{{
+        t('TOLZAR_INBOX.BRIEFING.HOT_LEADS', { n: hotCount }, hotCount)
+      }}</b>
     </span>
-    <span v-else class="tz-calm">You're all caught up ✨</span>
+    <span v-else class="tz-calm">
+      {{ t('TOLZAR_INBOX.BRIEFING.ALL_CAUGHT_UP') }}
+    </span>
 
     <button
+      id="tz-brief-toggle"
       class="tz-more"
-      :class="{ pulse: hotCount && !seen }"
+      :class="{ pulse: inviting }"
       type="button"
+      aria-controls="tz-brief-pop"
+      :aria-expanded="open ? 'true' : 'false'"
       @click="toggle"
     >
-      See briefing
-      <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" /></svg>
-      <span v-if="hotCount && !seen" class="tz-dot" />
+      {{ t('TOLZAR_INBOX.BRIEFING.SEE_BRIEFING') }}
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M6 9l6 6 6-6" />
+      </svg>
+      <span v-if="inviting" class="tz-dot" aria-hidden="true" />
     </button>
     <button
       class="tz-x"
       type="button"
-      aria-label="Dismiss briefing"
-      @click="dismissed = true"
+      :aria-label="t('TOLZAR_INBOX.BRIEFING.DISMISS')"
+      :title="t('TOLZAR_INBOX.BRIEFING.DISMISS')"
+      @click="dismiss"
     >
-      ✕
+      <span class="i-lucide-x size-3.5" aria-hidden="true" />
     </button>
 
-    <div v-if="open" class="tz-pop">
+    <div
+      v-if="open"
+      id="tz-brief-pop"
+      class="tz-pop"
+      role="dialog"
+      aria-labelledby="tz-brief-title"
+      @keydown.esc.stop="close"
+    >
       <div class="tz-pop-h">
-        <span class="tz-m2">T</span>
-        <b>What needs you</b>
-        <button class="tz-x" type="button" aria-label="Close" @click="open = false">
-          ✕
+        <span class="tz-m2" aria-hidden="true">{{ mark }}</span>
+        <b id="tz-brief-title">{{
+          t('TOLZAR_INBOX.BRIEFING.WHAT_NEEDS_YOU')
+        }}</b>
+        <button
+          class="tz-x"
+          type="button"
+          :aria-label="t('TOLZAR_INBOX.BRIEFING.CLOSE')"
+          @click="close"
+        >
+          <span class="i-lucide-x size-3.5" aria-hidden="true" />
         </button>
       </div>
       <template v-if="hotCount">
@@ -103,21 +170,26 @@ const jump = id => {
           :key="l.id"
           class="tz-lead"
           type="button"
+          :aria-label="
+            t('TOLZAR_INBOX.BRIEFING.OPEN_LEAD', {
+              name: l.name,
+              score: l.score,
+            })
+          "
           @click="jump(l.id)"
         >
-          <span class="tz-score">{{ l.score }}</span>
+          <span class="tz-score" aria-hidden="true">{{ l.score }}</span>
           <span class="tz-lead-t">
             <b>{{ l.name }}</b>
             <i v-if="l.hint">{{ l.hint }}</i>
           </span>
-          <svg class="tz-arrow" viewBox="0 0 24 24">
+          <svg class="tz-arrow" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M5 12h14M13 6l6 6-6 6" />
           </svg>
         </button>
       </template>
       <div v-else class="tz-empty">
-        No urgent leads right now — nice work. Tolzar will flag the moment a hot
-        one comes in.
+        {{ t('TOLZAR_INBOX.BRIEFING.EMPTY', { product }) }}
       </div>
     </div>
   </div>
@@ -135,11 +207,7 @@ const jump = id => {
   font-size: 12.5px;
   color: rgb(var(--slate-11));
   border-bottom: 1px solid rgb(var(--slate-5));
-  background: linear-gradient(
-      90deg,
-      rgb(var(--blue-9) / 0.07),
-      transparent 42%
-    ),
+  background: linear-gradient(90deg, rgb(var(--blue-9) / 0.07), transparent 42%),
     rgb(var(--surface-1));
   z-index: 5;
 }
@@ -153,7 +221,11 @@ const jump = id => {
   color: #fff;
   font-weight: 800;
   font-size: 10px;
-  background: linear-gradient(145deg, rgb(var(--blue-9) / 0.85), rgb(var(--blue-9)));
+  background: linear-gradient(
+    145deg,
+    rgb(var(--blue-9) / 0.85),
+    rgb(var(--blue-9))
+  );
 }
 .tz-brief .tz-g {
   color: rgb(var(--slate-12));
@@ -190,14 +262,18 @@ const jump = id => {
   white-space: nowrap;
 }
 .tz-brief .tz-more {
-  margin-left: auto;
+  margin-inline-start: auto;
   display: inline-flex;
   align-items: center;
   gap: 6px;
   font-size: 12px;
   font-weight: 650;
   color: #fff;
-  background: linear-gradient(180deg, rgb(var(--blue-9) / 0.9), rgb(var(--blue-9)));
+  background: linear-gradient(
+    180deg,
+    rgb(var(--blue-9) / 0.9),
+    rgb(var(--blue-9))
+  );
   border: 0;
   border-radius: 8px;
   padding: 5px 11px;
@@ -212,6 +288,7 @@ const jump = id => {
   fill: none;
   stroke-width: 1.8;
 }
+/* Owner-approved: the CTA pulses (~2.8s) while there is something new, and quiets once seen. */
 .tz-brief .tz-more.pulse {
   animation: tzpulse 2.8s ease-out infinite;
 }
@@ -234,7 +311,7 @@ const jump = id => {
 .tz-brief .tz-dot {
   position: absolute;
   top: -4px;
-  right: -4px;
+  inset-inline-end: -4px;
   width: 9px;
   height: 9px;
   border-radius: 50%;
@@ -259,13 +336,15 @@ const jump = id => {
 .tz-pop {
   position: absolute;
   top: calc(100% + 8px);
-  right: 16px;
+  inset-inline-end: 16px;
   width: 320px;
   z-index: 30;
   border-radius: 14px;
   border: 1px solid rgb(var(--slate-5));
   background: rgb(var(--surface-1));
-  box-shadow: 0 2px 6px rgb(0 0 0 / 0.14), 0 18px 44px -20px rgb(0 0 0 / 0.4);
+  box-shadow:
+    0 2px 6px rgb(0 0 0 / 0.14),
+    0 18px 44px -20px rgb(0 0 0 / 0.4);
   padding: 12px 13px;
 }
 .tz-pop .tz-pop-h {
@@ -283,14 +362,18 @@ const jump = id => {
   color: #fff;
   font-weight: 800;
   font-size: 10px;
-  background: linear-gradient(145deg, rgb(var(--blue-9) / 0.85), rgb(var(--blue-9)));
+  background: linear-gradient(
+    145deg,
+    rgb(var(--blue-9) / 0.85),
+    rgb(var(--blue-9))
+  );
 }
 .tz-pop .tz-pop-h b {
   font-size: 13px;
   color: rgb(var(--slate-12));
 }
 .tz-pop .tz-pop-h .tz-x {
-  margin-left: auto;
+  margin-inline-start: auto;
 }
 .tz-pop .tz-lead {
   width: 100%;
@@ -302,9 +385,10 @@ const jump = id => {
   border-radius: 9px;
   background: 0;
   cursor: pointer;
-  text-align: left;
+  text-align: start;
 }
-.tz-pop .tz-lead:hover {
+.tz-pop .tz-lead:hover,
+.tz-pop .tz-lead:focus-visible {
   background: rgb(var(--blue-9) / 0.07);
 }
 .tz-pop .tz-score {
@@ -339,7 +423,7 @@ const jump = id => {
   color: rgb(var(--slate-11));
 }
 .tz-pop .tz-arrow {
-  margin-left: auto;
+  margin-inline-start: auto;
   width: 14px;
   height: 14px;
   flex: 0 0 14px;

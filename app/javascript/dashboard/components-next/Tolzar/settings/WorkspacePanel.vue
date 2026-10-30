@@ -2,8 +2,11 @@
 import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMapGetter } from 'dashboard/composables/store';
+import { useLocale } from 'shared/composables/useLocale';
+import ComboBox from 'dashboard/components-next/combobox/ComboBox.vue';
 import BrainNotice from './BrainNotice.vue';
-import { BTN, BTN_GHOST, INPUT, LABEL } from './tzClasses';
+import { BTN, BTN_GHOST, INPUT, LABEL, TONE_WARN } from './tzClasses';
+import { fmtAt } from '../tolzarTime';
 import {
   WEEKDAYS,
   getWorkspaceSettings,
@@ -23,6 +26,7 @@ import {
 // showing its default and whether it is changed here. Saving sends only the difference; a 409
 // (someone saved in between) asks to reload; a 400 puts the brain's errors on their fields.
 const { t } = useI18n();
+const { resolvedLocale } = useLocale();
 const accountId = useMapGetter('getCurrentAccountId');
 
 const view = ref(null);
@@ -63,6 +67,14 @@ const timezones = computed(() => {
     ? [cur, 'UTC', ...list]
     : ['UTC', ...list.filter(z => z !== 'UTC')];
 });
+// ~400 zones: a searchable combobox instead of a bare <select>. Picking the chosen zone again
+// would clear it in ComboBox, so an empty value is ignored (a timezone is never "none").
+const timezoneOptions = computed(() =>
+  timezones.value.map(z => ({ value: z, label: z.replace(/_/g, ' ') }))
+);
+function pickTimezone(path, v) {
+  if (v) form.value[path] = v;
+}
 
 function apply(v) {
   view.value = v;
@@ -185,9 +197,7 @@ onMounted(load);
           view.version
             ? t('TOLZAR_WORKSPACE.VERSION', {
                 version: view.version,
-                at: String(view.updated_at || '')
-                  .slice(0, 16)
-                  .replace('T', ' '),
+                at: fmtAt(view.updated_at, resolvedLocale),
                 by: String(view.updated_by || '')
                   .split(':')
                   .pop(),
@@ -195,10 +205,7 @@ onMounted(load);
             : t('TOLZAR_WORKSPACE.NEVER_CHANGED')
         }}
       </p>
-      <p
-        v-if="!owner"
-        class="p-2 mt-2 text-xs rounded-lg text-amber-700 bg-amber-500/10"
-      >
+      <p v-if="!owner" class="p-2 mt-2 text-xs rounded-lg" :class="TONE_WARN">
         {{ t('TOLZAR_WORKSPACE.OWNER_ONLY_EDIT') }}
       </p>
       <div
@@ -233,21 +240,22 @@ onMounted(load);
               </span>
               <span
                 v-if="resetting(f)"
-                class="px-1.5 py-px text-[10px] font-semibold rounded-full text-amber-700 bg-amber-500/10"
+                class="px-1.5 py-px text-[10px] font-semibold rounded-full"
+                :class="TONE_WARN"
               >
                 {{ t('TOLZAR_WORKSPACE.WILL_RESET') }}
               </span>
             </label>
-            <select
+            <ComboBox
               v-if="f.kind === 'select'"
-              v-model="form[f.path]"
-              :class="INPUT"
+              :model-value="form[f.path] || ''"
+              :options="timezoneOptions"
               :disabled="!owner || resetting(f)"
-            >
-              <option v-for="z in timezones" :key="z" :value="z">
-                {{ z }}
-              </option>
-            </select>
+              :search-placeholder="t('TOLZAR_SETTINGS_UI.WORKSPACE.SEARCH_TIMEZONE')"
+              :empty-state="t('TOLZAR_SETTINGS_UI.WORKSPACE.NO_TIMEZONE')"
+              data-tz-timezone
+              @update:model-value="pickTimezone(f.path, $event)"
+            />
             <input
               v-else-if="f.kind === 'time'"
               v-model="form[f.path]"
@@ -322,7 +330,9 @@ onMounted(load);
 
       <div
         v-if="conflict"
-        class="flex flex-wrap gap-3 items-center p-3 mt-4 text-[13px] rounded-lg text-amber-800 bg-amber-500/10"
+        class="flex flex-wrap gap-3 items-center p-3 mt-4 text-[13px] rounded-lg"
+        :class="TONE_WARN"
+        role="alert"
       >
         <span class="flex-1">{{ t('TOLZAR_WORKSPACE.CONFLICT') }}</span>
         <button type="button" :class="BTN_GHOST" class="!mt-0" @click="load">

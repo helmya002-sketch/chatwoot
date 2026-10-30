@@ -19,12 +19,16 @@ import UnreadBadge from 'dashboard/components-next/Conversation/ConversationCard
 import SLACardLabel from './components/SLACardLabel.vue';
 import VoiceCallStatus from './VoiceCallStatus.vue';
 import Checkbox from 'dashboard/components-next/checkbox/Checkbox.vue';
+import { useI18n } from 'vue-i18n';
+import { useLocale } from 'shared/composables/useLocale';
 import {
   contactStage,
   defaultStage,
   stageOf,
-  stageChipStyle,
+  stageClass,
 } from 'dashboard/components-next/Tolzar/tolzarStages';
+import { duration } from 'dashboard/components-next/Tolzar/tolzarTime';
+import { tolzarBrand } from 'dashboard/components-next/Tolzar/TolzarBranding.vue';
 
 const props = defineProps({
   chat: { type: Object, required: true },
@@ -49,7 +53,7 @@ const emit = defineEmits([
 const hovered = ref(false);
 
 const unreadCount = computed(() => props.chat.unread_count);
-// Tolzar: mirror conversations all sit in one API inbox; show the guest's real channel
+// Tolzar: mirror conversations all sit in one API inbox; show the contact's real channel
 // (WhatsApp / Instagram / email ...) from the mirror's rio_channel_source.
 const badgeInbox = computed(() => {
   const real = channelFromSource(
@@ -78,30 +82,41 @@ const lastTimeDisplay = computed(() => {
   return sameDay ? messageStamp(ts, 'h:mm a') : shortTimestamp(dynamicTime(ts));
 });
 // Tolzar #14: "no reply till now" — how long the thread has waited for an agent
-// reply (Chatwoot's waiting_since). Only while the thread is open.
-const compactAgo = secs => {
-  if (secs < 60) return `${Math.max(1, secs)}s`;
-  const m = Math.floor(secs / 60);
-  if (m < 60) return `${m}m`;
-  const h = Math.floor(m / 60);
-  if (h < 24) return `${h}h`;
-  return `${Math.floor(h / 24)}d`;
-};
+// reply (Chatwoot's waiting_since). Only while the thread is open. Localised through
+// tolzarTime.duration (Intl units) in the viewer's language.
+const { t } = useI18n();
+const { resolvedLocale } = useLocale();
 const noReplyFor = computed(() => {
   const w = Number(props.chat?.waiting_since ?? props.chat?.waitingSince);
   if (!Number.isFinite(w) || w <= 0) return '';
   if (props.chat?.status !== 'open') return '';
   const secs = Math.floor(Date.now() / 1000) - w;
-  return secs > 60 ? compactAgo(secs) : '';
+  return secs > 60 ? duration(secs, resolvedLocale.value) : '';
 });
 
 // Tolzar #9: every card shows a Stage so staff can plan at a glance; un-staged
-// contacts default to the funnel entry "New Lead".
+// contacts default to the workspace's first stage. Colours come from the shared tone
+// map in theme tokens (stageClass), so chips read in dark mode and white-label alike.
 const lifecycleStage = computed(
   () => contactStage(props.currentContact?.custom_attributes) || defaultStage()
 );
-const lifecycleChipStyle = computed(() => stageChipStyle(lifecycleStage.value));
+const lifecycleChipClass = computed(() => stageClass(lifecycleStage.value));
 const lifecycleLabel = computed(() => stageOf(lifecycleStage.value).label);
+
+// Tolzar: the quiet "why" line (the brain's lead hint, already on the contact) and the
+// right-side "AI drafted" signal (a suggested reply already sits on the conversation).
+// Both read what the list already loaded; no extra requests.
+const whyLine = computed(() =>
+  props.compact
+    ? ''
+    : String(props.currentContact?.custom_attributes?.tolzar_lead_hint || '').trim()
+);
+const aiDrafted = computed(
+  () => !!String(props.chat?.custom_attributes?.tolzar_suggested_reply || '').trim()
+);
+const aiDraftedHint = computed(() =>
+  t('TOLZAR_INBOX.CARD.AI_DRAFTED_HINT', { product: tolzarBrand.productName })
+);
 
 const voiceCallData = computed(() => {
   const last = lastMessageInChat.value;
@@ -270,7 +285,7 @@ watch(
       <div v-if="lifecycleLabel" class="flex mx-2 mt-1" data-tz-lifecycle>
         <span
           class="inline-flex items-center text-xxs font-semibold leading-none rounded-full px-1.5 py-1 whitespace-nowrap"
-          :style="lifecycleChipStyle"
+          :class="lifecycleChipClass"
         >
           {{ lifecycleLabel }}
         </span>
@@ -304,6 +319,16 @@ watch(
           {{ $t(`CHAT_LIST.NO_MESSAGES`) }}
         </span>
       </p>
+      <!-- Tolzar: the quiet "why" line (the brain's lead hint) under the preview. -->
+      <p
+        v-if="whyLine"
+        key="tz-why"
+        class="my-0 mx-2 text-xxs leading-4 text-n-slate-10 truncate ltr:pr-16 rtl:pl-16"
+        :title="whyLine"
+        data-tz-why
+      >
+        {{ whyLine }}
+      </p>
       <div
         class="absolute flex flex-col items-end ltr:right-3 rtl:left-3"
         :class="showMetaSection ? 'top-8' : 'top-4'"
@@ -319,12 +344,9 @@ watch(
         </span>
         <span
           v-if="noReplyFor"
-          v-tooltip.left="'No reply yet'"
-          class="inline-flex items-center gap-0.5 mt-1 rounded px-1 py-px text-xxs font-semibold leading-none"
-          :style="{
-            color: 'rgb(var(--amber-11, 166 108 11))',
-            background: 'rgb(var(--amber-9, 255 197 61) / 0.16)',
-          }"
+          v-tooltip.left="t('TOLZAR_INBOX.CARD.NO_REPLY_YET')"
+          class="inline-flex items-center gap-0.5 mt-1 rounded px-1 py-px text-xxs font-semibold leading-none text-n-amber-11 bg-n-amber-3"
+          :aria-label="t('TOLZAR_INBOX.CARD.NO_REPLY_FOR', { time: noReplyFor })"
         >
           <svg
             viewBox="0 0 24 24"
@@ -332,11 +354,21 @@ watch(
             fill="none"
             stroke="currentColor"
             stroke-width="2.2"
+            aria-hidden="true"
           >
             <circle cx="12" cy="12" r="9" />
             <path d="M12 7.5V12l3 2" />
           </svg>
           {{ noReplyFor }}
+        </span>
+        <!-- Tolzar: one right-side signal when the brain already drafted a reply. -->
+        <span
+          v-else-if="aiDrafted"
+          v-tooltip.left="aiDraftedHint"
+          class="inline-flex items-center mt-1 rounded px-1 py-px text-xxs font-semibold leading-none text-n-blue-11 bg-n-blue-3"
+          data-tz-ai-drafted
+        >
+          {{ t('TOLZAR_INBOX.CARD.AI_DRAFTED') }}
         </span>
         <UnreadBadge
           v-if="hasUnread"

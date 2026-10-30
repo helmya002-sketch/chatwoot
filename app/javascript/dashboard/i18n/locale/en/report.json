@@ -943,9 +943,9 @@
     "SAVE": "Save",
     "DELETE": "Delete this workflow",
     "STATUS": {
-      "draft": "Draft: off",
-      "shadow": "Shadow: runs, sends nothing",
-      "live": "Live: needs approval",
+      "draft": "Off",
+      "shadow": "Shadow",
+      "live": "Live",
       "off": "Off"
     },
     "TRIGGER": {
@@ -1720,12 +1720,12 @@
     "BEHAVIOUR": "Behaviour",
     "BEHAVIOUR_HINT": "What this agent may use when it drafts a reply (in Shadow it only drafts; nothing is sent).",
     "SWITCH": {
-      "enabled": "Workspace agent",
+      "enabled": "Use this agent's knowledge, prices and skills (recommended)",
       "answer_from_knowledge": "Answer from knowledge sources",
       "quote_prices": "Quote prices from the price source"
     },
     "SWITCH_HINT": {
-      "enabled": "Uses this agent's knowledge, prices and skills. Off: instructions only.",
+      "enabled": "Off: the agent follows its instructions only, and the knowledge and price switches below are disabled.",
       "answer_from_knowledge": "Cites the links and texts below; says it will check when they don't cover a question.",
       "quote_prices": "Only prices from the saved source or upload. Saving a source switches this on."
     },

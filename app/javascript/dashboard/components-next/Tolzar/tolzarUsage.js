@@ -9,6 +9,18 @@ export const toLimit = v => {
   return Math.max(0, Math.floor(Number(v)));
 };
 
+// A count in the viewer's language ("1,234" / "1.234"); null or undefined is "no limit" (∞).
+export const formatCount = (v, locale = 'en') => {
+  if (v === null || v === undefined || v === '') return '∞';
+  const n = Number(v);
+  if (!Number.isFinite(n)) return String(v);
+  try {
+    return new Intl.NumberFormat(locale || undefined).format(n);
+  } catch {
+    return new Intl.NumberFormat('en').format(n);
+  }
+};
+
 export const getQuotas = accountId => brainGet(accountId, 'quotas');
 export const saveQuotas = (accountId, limits) =>
   brainPost(

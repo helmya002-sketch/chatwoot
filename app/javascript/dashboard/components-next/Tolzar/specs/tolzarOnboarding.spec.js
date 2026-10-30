@@ -10,6 +10,11 @@ import {
   checklistProgress,
   bootstrapWorkspace,
   getChecklist,
+  LANGUAGES,
+  problemFor,
+  timezoneOptions,
+  toggleLanguage,
+  visibleChecklistItems,
 } from '../tolzarOnboarding';
 
 const form = over => ({
@@ -67,6 +72,43 @@ describe('tolzarOnboarding bootstrap body', () => {
   });
 });
 
+describe('tolzarOnboarding pickers', () => {
+  it('lists time zones with UTC first, keeps the chosen one and filters by text', () => {
+    const all = ['Europe/Berlin', 'UTC', 'Africa/Cairo', 'America/New_York'];
+    expect(timezoneOptions('', '', all)).toEqual([
+      'UTC',
+      'Europe/Berlin',
+      'Africa/Cairo',
+      'America/New_York',
+    ]);
+    expect(timezoneOptions('Asia/Riyadh', '', all)[0]).toBe('Asia/Riyadh');
+    expect(timezoneOptions('Europe/Berlin', 'cairo', all)).toEqual([
+      'Europe/Berlin',
+      'Africa/Cairo',
+    ]);
+    expect(timezoneOptions('', 'new york', all)).toEqual(['America/New_York']);
+    expect(timezoneOptions('', 'zzz', all)).toEqual([]);
+    expect(timezoneOptions('UTC', 'zzz', all)).toEqual(['UTC']);
+    expect(timezoneOptions()).toContain('UTC');
+  });
+
+  it('toggles language chips in the comma string and never empties it', () => {
+    expect(LANGUAGES).toContain('en');
+    expect(toggleLanguage('en, ar', 'de')).toBe('en, ar, de');
+    expect(toggleLanguage('en, ar, de', 'AR')).toBe('en, de');
+    expect(toggleLanguage('en', 'en')).toBe('en');
+    expect(toggleLanguage('', 'fr')).toBe('fr');
+    expect(toggleLanguage('en', '')).toBe('en');
+  });
+
+  it('finds the problem for one field', () => {
+    const problems = [{ path: 'timezone', error: 'required' }];
+    expect(problemFor(problems, 'timezone')).toBe('required');
+    expect(problemFor(problems, 'workspace_name')).toBe('');
+    expect(problemFor(undefined, 'x')).toBe('');
+  });
+});
+
 describe('tolzarOnboarding outcomes', () => {
   it('maps the brain answers', () => {
     expect(bootstrapOutcome({ ok: true })).toBe('done');
@@ -113,6 +155,30 @@ describe('tolzarOnboarding checklist', () => {
     expect(checklistLink('owner', 7).query.section).toBe('roles');
     expect(checklistLink('go_live_review', 7).query.section).toBe('go_live');
     expect(checklistLink('unknown', 7)).toBeNull();
+  });
+
+  it('hides the go-live review unless live is allowed for the workspace', () => {
+    const data = {
+      items: [
+        { key: 'settings', done: true, action_hint: 'workspace_settings' },
+        {
+          key: 'live_ready',
+          done: false,
+          action_hint: 'go_live_review',
+          required: false,
+        },
+      ],
+    };
+    expect(visibleChecklistItems(data, false).map(i => i.key)).toEqual([
+      'settings',
+    ]);
+    expect(visibleChecklistItems(data, undefined).map(i => i.key)).toEqual([
+      'settings',
+    ]);
+    expect(visibleChecklistItems(data, true).map(i => i.key)).toEqual([
+      'settings',
+      'live_ready',
+    ]);
   });
 
   it('orders required items first and counts only them', () => {

@@ -44,6 +44,11 @@ import mfa from './mfa.json';
 import onboarding from './onboarding.json';
 import sessionLimit from './sessionLimit.json';
 import yearInReview from './yearInReview.json';
+import tolzarUi from './tolzarUi.json';
+import tolzarDashboard from './tolzarDashboard.json';
+import tolzarAgents from './tolzarAgents.json';
+import tolzarInbox from './tolzarInbox.json';
+import tolzarSettingsUi from './tolzarSettingsUi.json';
 
 export default {
   ...advancedFilters,
@@ -92,4 +97,9 @@ export default {
   ...onboarding,
   ...sessionLimit,
   ...yearInReview,
+  ...tolzarUi,
+  ...tolzarDashboard,
+  ...tolzarAgents,
+  ...tolzarInbox,
+  ...tolzarSettingsUi,
 };

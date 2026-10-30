@@ -20,9 +20,11 @@ import {
   contactStage,
   defaultStage,
   stageOf,
-  stageColor as stageHex,
+  stageClass,
   STAGES as SHARED_STAGES,
 } from 'dashboard/components-next/Tolzar/tolzarStages';
+import LeadScoreRing from 'dashboard/components-next/Tolzar/LeadScoreRing.vue';
+import { tolzarBrand } from 'dashboard/components-next/Tolzar/TolzarBranding.vue';
 
 const props = defineProps({
   chat: {
@@ -125,26 +127,30 @@ const tolzarLeadScore = computed(() => {
   return Number.isFinite(n) && n > 0 ? Math.min(100, Math.round(n)) : null;
 });
 const tolzarLeadLabel = computed(
-  () => currentContact.value?.custom_attributes?.tolzar_lead_label || 'Lead score'
+  () =>
+    currentContact.value?.custom_attributes?.tolzar_lead_label ||
+    t('TOLZAR_INBOX.LEAD_SCORE.LABEL')
 );
 const tolzarLeadHint = computed(
   () => currentContact.value?.custom_attributes?.tolzar_lead_hint || ''
 );
-const leadRingStyle = computed(() => ({
-  background: `conic-gradient(rgb(var(--blue-9)) ${tolzarLeadScore.value}%, rgb(var(--slate-5)) 0)`,
-}));
+const tolzarLeadTooltip = computed(
+  () =>
+    tolzarLeadHint.value ||
+    t('TOLZAR_INBOX.LEAD_SCORE.TOOLTIP', { product: tolzarBrand.productName })
+);
 
-// Tolzar #5: set the sales lifecycle Stage from the conversation header. Writes
+// Tolzar #5: set the lifecycle Stage from the conversation header. Writes
 // the contact's `lifecycle_stage` custom attribute — the same field the list-card
 // pill reads, so the card updates instantly. Existing attributes are preserved.
-// The workspace's own stage list (Settings > Pipeline), in order.
+// The workspace's own stage list (Settings > Pipeline), in order; colours from the
+// shared tone map (theme tokens), the same as every other stage chip.
 const STAGES = computed(() => SHARED_STAGES.map(s => s.key));
 const stageOpen = ref(false);
 const currentStage = computed(
   () => contactStage(currentContact.value?.custom_attributes) || defaultStage()
 );
 const stageLabel = computed(() => stageOf(currentStage.value).label);
-const stageColor = stage => stageHex(stage);
 const setStage = stage => {
   stageOpen.value = false;
   const cc = currentContact.value;
@@ -229,15 +235,17 @@ const setStage = stage => {
       <!-- Tolzar #5: per-conversation Stage control (writes contact lifecycle_stage) -->
       <div v-if="currentContact && currentContact.id" class="tz-stage">
         <button
+          v-tooltip="t('TOLZAR_INBOX.HEADER.SET_STAGE')"
           type="button"
           class="tz-stage-btn"
-          v-tooltip="'Set the sales stage'"
+          aria-haspopup="menu"
+          :aria-expanded="stageOpen ? 'true' : 'false'"
           @click="stageOpen = !stageOpen"
+          @keydown.esc="stageOpen = false"
         >
-          <span
-            class="tz-stage-dot"
-            :style="{ background: stageColor(currentStage) }"
-          />
+          <span class="tz-stage-dot" :class="stageClass(currentStage)">
+            <span class="tz-stage-dot-in" />
+          </span>
           <span class="tz-stage-lbl">{{ stageLabel }}</span>
           <svg
             class="tz-stage-caret"
@@ -254,28 +262,35 @@ const setStage = stage => {
           class="tz-stage-backdrop"
           @click="stageOpen = false"
         />
-        <div v-if="stageOpen" class="tz-stage-menu">
+        <div
+          v-if="stageOpen"
+          class="tz-stage-menu"
+          role="menu"
+          @keydown.esc="stageOpen = false"
+        >
           <button
             v-for="s in STAGES"
             :key="s"
             type="button"
+            role="menuitemradio"
+            :aria-checked="s === currentStage ? 'true' : 'false'"
             class="tz-stage-opt"
             :class="{ 'tz-stage-opt-on': s === currentStage }"
             @click="setStage(s)"
           >
-            <span class="tz-stage-dot" :style="{ background: stageColor(s) }" />
+            <span class="tz-stage-dot" :class="stageClass(s)">
+              <span class="tz-stage-dot-in" />
+            </span>
             <span>{{ stageOf(s).label }}</span>
           </button>
         </div>
       </div>
       <div
         v-if="tolzarLeadScore"
-        v-tooltip="tolzarLeadHint || 'Tolzar lead score'"
+        v-tooltip="tolzarLeadTooltip"
         class="tolzar-leadscore hidden md:flex"
       >
-        <span class="tz-ring" :style="leadRingStyle">
-          <i>{{ tolzarLeadScore }}</i>
-        </span>
+        <LeadScoreRing :score="tolzarLeadScore" size="sm" />
         <span class="tz-txt">
           <b>{{ tolzarLeadLabel }}</b>
           <i v-if="tolzarLeadHint">{{ tolzarLeadHint }}</i>
@@ -304,26 +319,6 @@ const setStage = stage => {
   border: 1px solid rgb(var(--blue-9) / 0.2);
   border-radius: 11px;
   padding: 3px 12px 3px 5px;
-}
-.tolzar-leadscore .tz-ring {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  flex: 0 0 30px;
-  display: grid;
-  place-items: center;
-}
-.tolzar-leadscore .tz-ring i {
-  width: 23px;
-  height: 23px;
-  border-radius: 50%;
-  background: rgb(var(--surface-1));
-  display: grid;
-  place-items: center;
-  font-size: 11px;
-  font-weight: 800;
-  font-style: normal;
-  color: rgb(var(--slate-12));
 }
 .tolzar-leadscore .tz-txt {
   display: flex;
@@ -364,11 +359,21 @@ const setStage = stage => {
 .tz-stage-btn:hover {
   border-color: rgb(var(--slate-7));
 }
+/* The stage dot: the tone's text colour (stageClass) through currentColor, so the dot
+   matches the chips in the list and the Contacts table in both themes. */
 .tz-stage-dot {
-  width: 8px;
-  height: 8px;
+  display: inline-grid;
+  place-items: center;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  flex: 0 0 8px;
+  flex: 0 0 12px;
+}
+.tz-stage-dot-in {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
 }
 .tz-stage-caret {
   width: 13px;

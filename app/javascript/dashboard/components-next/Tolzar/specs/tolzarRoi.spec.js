@@ -1,4 +1,10 @@
-import { getRoi, roiTiles, roiFacts, workingHoursLabel } from '../tolzarRoi';
+import {
+  getRoi,
+  roiTiles,
+  roiFacts,
+  roiView,
+  workingHoursLabel,
+} from '../tolzarRoi';
 
 const shadow = {
   first_reply: {
@@ -78,5 +84,27 @@ describe('tolzarRoi', () => {
       mode_note: '',
     });
     expect(empty.map(f => f.key)).toEqual(['NO_FIRST_REPLY']);
+  });
+
+  it('defaults every block the page reads', () => {
+    expect(roiView(null)).toEqual({
+      first_reply: {},
+      ai_handled: {},
+      off_hours: {},
+      won_rule: {},
+      campaigns: [],
+    });
+    const v = roiView({
+      ok: true,
+      first_reply: { would_be: true },
+      campaigns: [null, { campaign: 'A' }],
+    });
+    expect(v.first_reply.would_be).toBe(true);
+    expect(v.campaigns).toEqual([{ campaign: 'A' }]);
+    expect(v.off_hours.working_hours).toBeUndefined();
+    expect(v.ok).toBe(true);
+    expect(roiView({ first_reply: 'x', campaigns: 'y' }).first_reply).toEqual(
+      {}
+    );
   });
 });

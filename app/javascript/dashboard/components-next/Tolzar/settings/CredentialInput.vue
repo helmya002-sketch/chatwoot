@@ -39,7 +39,7 @@ const savedText = computed(() =>
       "
     />
     <div class="flex flex-wrap gap-2 justify-between items-center mt-1 text-xs">
-      <span v-if="status.set" class="text-emerald-600" data-tz-cred-saved>{{
+      <span v-if="status.set" class="text-n-teal-11" data-tz-cred-saved>{{
         savedText
       }}</span>
       <span v-else class="text-n-slate-10">{{
