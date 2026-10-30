@@ -17,6 +17,8 @@
 #  index_labels_on_title_and_account_id  (title,account_id) UNIQUE
 #
 class Label < ApplicationRecord
+  # Tolzar debrand (#9): new labels default to Tolzar's colour, not the database's upstream blue (#1f93ff).
+  attribute :color, :string, default: '#3E63DD'
   include RegexHelper
   include AccountCacheRevalidator
 
