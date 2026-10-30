@@ -84,6 +84,8 @@ class Inbox < ApplicationRecord
   after_destroy :delete_round_robin_agents
 
   after_create_commit :dispatch_create_event
+  # Tolzar B2: a new inbox gets the system brain bot (only with TOLZAR_AUTO_PROVISION; Tolzar::BrainProvisioning).
+  after_create_commit -> { Tolzar::BrainProvisioning.attach(self) }
   after_update_commit :dispatch_update_event
   after_destroy_commit :invalidate_filtered_unread_counts_after_destroy
 
