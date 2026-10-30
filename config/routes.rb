@@ -25,6 +25,8 @@ Rails.application.routes.draw do
   get  'tolzar/newsletter/unsubscribe/:token', to: 'tolzar/newsletter_unsubscribe#show', as: :tolzar_newsletter_unsubscribe
   post 'tolzar/newsletter/unsubscribe/:token', to: 'tolzar/newsletter_unsubscribe#create'
   post 'tolzar/newsletter/postal/:webhook_token', to: 'tolzar/newsletter_postal#create', as: :tolzar_newsletter_postal
+  post    'tolzar/site/contact', to: 'tolzar/site_contact#create', as: :tolzar_site_contact
+  match   'tolzar/site/contact', to: 'tolzar/site_contact#preflight', via: :options
   # Tolzar public feature-request board, roadmap and changelog (read: public; write: Tolzar login + workspace).
   get  'feedback',                              to: 'tolzar/feedback#index', as: :tolzar_feedback
   post 'feedback',                              to: 'tolzar/feedback#create'
