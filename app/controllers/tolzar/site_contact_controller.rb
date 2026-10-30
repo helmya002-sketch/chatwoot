@@ -5,7 +5,8 @@
 # from a contact found or created by email, so trial requests are answered in Tolzar like any other chat.
 # No login, no CSRF token (a static site posts it): the honeypot answers "thanks" and stores nothing, and each IP
 # may send PER_IP_HOUR forms an hour (plus a GLOBAL_DAY cap for the whole form). A plain HTML form gets a 303 to
-# TOLZAR_CONTACT_REDIRECT (the site's thank-you page); fetch() gets JSON, with CORS only for TOLZAR_CONTACT_ORIGINS.
+# the thank-you page of the site it came from (an allowed origin from Origin or Referer, + /thanks/ or
+# /<lang>/thanks/), else to TOLZAR_CONTACT_REDIRECT; fetch() gets JSON, with CORS only for TOLZAR_CONTACT_ORIGINS.
 # Unset TOLZAR_CONTACT_INBOX_ID turns the endpoint off (404).
 class Tolzar::SiteContactController < ActionController::Base
   skip_forgery_protection
@@ -96,8 +97,30 @@ class Tolzar::SiteContactController < ActionController::Base
   def respond_ok
     return render(json: { ok: true }) if json_request?
 
-    redirect = ENV.fetch('TOLZAR_CONTACT_REDIRECT', '').presence
+    redirect = thanks_url
     redirect ? redirect_to(redirect, status: :see_other, allow_other_host: true) : render(plain: 'Thanks! We will reply by email.')
+  end
+
+  # The sending site's own thank-you page (the preview, tolzar.com or www), in the form's language.
+  def thanks_url
+    origin = page_origin
+    return ENV.fetch('TOLZAR_CONTACT_REDIRECT', '').presence unless origin
+
+    lang = params[:lang].to_s.strip.downcase
+    lang.match?(/\A[a-z]{2}\z/) && lang != 'en' ? "#{origin}/#{lang}/thanks/" : "#{origin}/thanks/"
+  end
+
+  def page_origin
+    [request.headers['Origin'], request.referer].each do |value|
+      uri = URI.parse(value.to_s)
+      next unless uri.is_a?(URI::HTTP) && uri.host.present?
+
+      origin = uri.default_port == uri.port ? "#{uri.scheme}://#{uri.host}" : "#{uri.scheme}://#{uri.host}:#{uri.port}"
+      return origin if allowed_origins.include?(origin)
+    rescue URI::InvalidURIError
+      next
+    end
+    nil
   end
 
   def respond_error(status, error)
@@ -108,9 +131,13 @@ class Tolzar::SiteContactController < ActionController::Base
     request.format.json? || request.content_mime_type&.json? || request.xhr?
   end
 
+  def allowed_origins
+    ENV.fetch('TOLZAR_CONTACT_ORIGINS', '').split(',').map(&:strip).compact_blank
+  end
+
   def allowed_origin
     origin = request.headers['Origin'].to_s
-    origin if origin.present? && ENV.fetch('TOLZAR_CONTACT_ORIGINS', '').split(',').map(&:strip).include?(origin)
+    origin if origin.present? && allowed_origins.include?(origin)
   end
 
   def set_cors_headers
