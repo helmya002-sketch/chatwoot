@@ -13,12 +13,14 @@ RSpec.describe 'Tolzar rate limits', type: :request do
     Rack::Attack.cache.store = store
   end
 
-  it 'limits each IP on the public contact form' do
-    with_modified_env(RATE_LIMIT_TOLZAR_PUBLIC: '2') do
-      Rack::Attack.reset!
-      3.times { post '/tolzar/site/contact', params: { email: 'a@b.co' }, headers: { 'REMOTE_ADDR' => '1.2.3.4' } }
-    end
+  it 'limits each IP on the public contact form (30 a minute by default)' do
+    Rack::Attack.reset!
+    30.times { post '/tolzar/site/contact', params: { email: 'a@b.co' }, headers: { 'REMOTE_ADDR' => '1.2.3.4' } }
+    expect(response).not_to have_http_status(:too_many_requests)
+    post '/tolzar/site/contact', params: { email: 'a@b.co' }, headers: { 'REMOTE_ADDR' => '1.2.3.4' }
     expect(response).to have_http_status(:too_many_requests)
+    post '/tolzar/site/contact', params: { email: 'a@b.co' }, headers: { 'REMOTE_ADDR' => '5.6.7.8' }
+    expect(response).not_to have_http_status(:too_many_requests)
   end
 
   it 'never throttles the Meta webhook path' do
