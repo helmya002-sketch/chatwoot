@@ -1,12 +1,12 @@
 # Tolzar deliverability (Oracle, 30 Oct): HTML-only mail scores worse with Gmail. Right before delivery, the
-# app's OWN single-part text/html mail (Devise's confirmation, reset and invitation mails; the administrator
-# notifications, fair use included) becomes multipart/alternative: a text/plain part with the same content, then
+# app's OWN single-part text/html mail to its users (Devise's confirmation, reset, unlock and invitation mails; the
+# administrator notifications, fair use included; the agent notifications) becomes multipart/alternative: a text/plain part with the same content, then
 # the original HTML. Links keep their address ("Change my password (https://…)"). Customer-facing conversation
 # replies (ConversationReplyMailer) and every other mailer are left exactly as they are, as is mail that is
 # already multipart. Registered in config/initializers/zz_tolzar_plain_text_part.rb.
 class Tolzar::PlainTextPart
   BLOCKS = %w[p div h1 h2 h3 h4 h5 h6 tr table ul ol blockquote].freeze
-  MAILERS = %w[Devise::Mailer AdministratorNotifications::BaseMailer].freeze
+  MAILERS = %w[Devise::Mailer AdministratorNotifications::BaseMailer AgentNotifications::ConversationNotificationsMailer].freeze
 
   def self.delivering_email(message)
     return unless app_mail?(message)

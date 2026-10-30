@@ -26,8 +26,8 @@ RSpec.describe AgentNotifications::ConversationNotificationsMailer do
     end
 
     it 'renders the manage notification preferences footer link' do
-      expect(mail.body.encoded).to match('Manage notification preferences')
-      expect(mail.body.encoded).to include("/app/accounts/#{account.id}/profile/settings")
+      expect((mail.html_part || mail).body.decoded).to match('Manage notification preferences')
+      expect((mail.html_part || mail).body.decoded).to include("/app/accounts/#{account.id}/profile/settings")
     end
   end
 
@@ -65,13 +65,13 @@ RSpec.describe AgentNotifications::ConversationNotificationsMailer do
     end
 
     it 'renders the senders name' do
-      expect(mail.body.encoded).to match("You've been mentioned in a conversation. <b>#{another_agent.display_name}</b> wrote:")
+      expect((mail.html_part || mail).body.decoded).to match("You've been mentioned in a conversation. <b>#{another_agent.display_name}</b> wrote:")
     end
 
     it 'renders Customer if contacts name not available in the conversation' do
       expect(contact.name).to be_nil
       expect(conversation.recent_messages).not_to be_empty
-      expect(mail.body.encoded).to match('Incoming Message')
+      expect((mail.html_part || mail).body.decoded).to match('Incoming Message')
     end
   end
 
