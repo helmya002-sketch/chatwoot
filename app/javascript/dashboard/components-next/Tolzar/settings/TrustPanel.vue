@@ -134,7 +134,10 @@ async function erase() {
   try {
     const r = await eraseContact(accountId.value, contactId.value);
     after(r, t('TOLZAR_SETTINGS.TRUST.ERASED'));
-    if (r && r.ok) erased.value = { id: Number(contactId.value), counts: r.deleted || {} };
+    if (r && r.ok) {
+      const counts = { ...(r.brain || {}), conversations: r.chatwoot?.conversations ?? 0 };
+      erased.value = { id: Number(contactId.value), counts };
+    }
     dialogRef.value?.close();
   } finally {
     busy.value = false;
@@ -203,7 +206,6 @@ onMounted(load);
       <div v-if="erased" class="p-3 mt-3 rounded-lg border border-solid border-n-weak text-[13px]">
         <div v-for="(n, k) in erased.counts" :key="k" class="flex justify-between"><span class="text-n-slate-11">{{ t(`TOLZAR_SETTINGS.TRUST.COUNT.${k}`) }}</span><b>{{ n }}</b></div>
         <p class="mt-2 mb-0 text-xs text-n-slate-11">{{ t('TOLZAR_SETTINGS.TRUST.NEXT_STEP') }}</p>
-        <router-link :to="`/app/accounts/${accountId}/contacts/${erased.id}`" class="text-n-brand">{{ t('TOLZAR_SETTINGS.TRUST.OPEN_CONTACT') }}</router-link>
       </div>
       <Dialog
         ref="dialogRef"

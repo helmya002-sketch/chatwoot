@@ -23,13 +23,30 @@ export const saveRetention = (accountId, cfg) =>
     decisions_days: Number(cfg.decisions_days),
     kv_days: Number(cfg.kv_days),
     // The audit field was shown but never sent (29 Oct QA): every save reset it in the brain.
-    ...(cfg.audit_days === undefined ? {} : { audit_days: Number(cfg.audit_days) }),
+    ...(cfg.audit_days === undefined
+      ? {}
+      : { audit_days: Number(cfg.audit_days) }),
   });
 
 export const exportContact = (accountId, contactId) =>
   brainGet(accountId, 'dsar_export', { contact_id: Number(contactId) });
-export const eraseContact = (accountId, contactId) =>
-  brainPost(accountId, 'dsar_delete', { contact_id: Number(contactId) });
+// The full erase (Api::V1::Accounts::TolzarDataController#contact_erase): Tolzar's AI data, then the
+// contact with its conversations, messages and attachments. `confirm` is what the Owner typed.
+export const eraseContact = (
+  accountId,
+  contactId,
+  confirm = String(contactId)
+) =>
+  window.axios
+    .post(`/api/v1/accounts/${accountId}/tolzar/data/contact_erase`, {
+      contact_id: Number(contactId),
+      confirm,
+    })
+    .then(r => r.data)
+    .catch(e => {
+      if (e && e.response && e.response.data) return e.response.data;
+      throw e;
+    });
 
 // The line each language would show: the workspace's own text, else the generic one.
 export const disclosureLine = (lang, texts, defaults) =>

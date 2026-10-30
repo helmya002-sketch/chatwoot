@@ -41,6 +41,6 @@ class Api::V1::Accounts::TolzarDataController < Api::V1::Accounts::TolzarControl
 
   def confirmed?(contact)
     typed = params[:confirm].to_s.strip.downcase
-    typed.present? && [contact.name, contact.email].compact.map { |v| v.to_s.strip.downcase }.include?(typed)
+    typed.present? && [contact.id.to_s, contact.name, contact.email].compact.map { |v| v.to_s.strip.downcase }.include?(typed)
   end
 end
