@@ -2,7 +2,7 @@
   "AGENT_BOTS": {
     "HEADER": "Bots",
     "LOADING_EDITOR": "Chargement de l'éditeur...",
-    "DESCRIPTION": "Les bots agents sont comme les membres les plus formidables de votre équipe. Ils peuvent gérer les petites tâches, vous permettant ainsi de vous concentrer sur ce qui compte vraiment. Essayez-les. Vous pouvez gérer vos bots depuis cette page ou en créer de nouveaux en cliquant sur le bouton 'Ajouter un bot'.",
+    "DESCRIPTION": "Les bots répondent aux questions simples pour que votre équipe se concentre sur le reste. Gérez vos bots ici ou créez-en un nouveau.",
     "LEARN_MORE": "En savoir plus sur les robots des agents",
     "COUNT": "{n} bot | {n} bots",
     "SEARCH_PLACEHOLDER": "Rechercher des bots...",

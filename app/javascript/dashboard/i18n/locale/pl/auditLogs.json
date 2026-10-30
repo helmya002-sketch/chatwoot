@@ -51,7 +51,7 @@
     },
     "API": {
       "SUCCESS_MESSAGE": "Dzienniki Audytu pobrane pomyślnie",
-      "ERROR_MESSAGE": "Nie można połączyć się z serwerem Woot, proszę spróbować później"
+      "ERROR_MESSAGE": "Nie można połączyć się z serwerem Tolzar, proszę spróbować później"
     },
     "DEFAULT_USER": "System",
     "AUTOMATION_RULE": {

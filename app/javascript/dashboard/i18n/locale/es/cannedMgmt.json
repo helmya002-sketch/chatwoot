@@ -1,6 +1,6 @@
 {
   "CANNED_MGMT": {
-    "HEADER": "Respuestas predefinidas",
+    "HEADER": "Respuestas guardadas",
     "LEARN_MORE": "Más información sobre respuestas predefinidas",
     "DESCRIPTION": "Las respuestas predefinidas son plantillas preconfiguradas que le ayudan a responder rápidamente a una conversación. Los agentes pueden escribir el carácter '/' seguido por el código corto para insertar una respuesta predefinida durante una conversación. ",
     "COUNT": "{n} canned response | {n} canned responses",
@@ -38,7 +38,7 @@
       },
       "API": {
         "SUCCESS_MESSAGE": "Respuesta predefinida añadida correctamente.",
-        "ERROR_MESSAGE": "No se pudo conectar al servidor Woot, por favor inténtalo de nuevo más tarde"
+        "ERROR_MESSAGE": "No se pudo conectar al servidor Tolzar, por favor inténtalo de nuevo más tarde"
       }
     },
     "EDIT": {
@@ -60,14 +60,14 @@
       "BUTTON_TEXT": "Editar",
       "API": {
         "SUCCESS_MESSAGE": "Respuesta predefinida actualizada correctamente.",
-        "ERROR_MESSAGE": "No se pudo conectar al servidor Woot, por favor inténtalo de nuevo más tarde"
+        "ERROR_MESSAGE": "No se pudo conectar al servidor Tolzar, por favor inténtalo de nuevo más tarde"
       }
     },
     "DELETE": {
       "BUTTON_TEXT": "Eliminar",
       "API": {
         "SUCCESS_MESSAGE": "Respuesta predefinida eliminada correctamente.",
-        "ERROR_MESSAGE": "No se pudo conectar al servidor Woot, por favor inténtalo de nuevo más tarde"
+        "ERROR_MESSAGE": "No se pudo conectar al servidor Tolzar, por favor inténtalo de nuevo más tarde"
       },
       "CONFIRM": {
         "TITLE": "Confirme eliminación",

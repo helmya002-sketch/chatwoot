@@ -28,7 +28,7 @@
       "CANCEL_BUTTON_TEXT": "Atšaukti",
       "API": {
         "SUCCESS_MESSAGE": "Webhook ištrintas sėkmingai",
-        "ERROR_MESSAGE": "Nepavyko prisijungti prie Woot serverio, bandykite dar kartą vėliau"
+        "ERROR_MESSAGE": "Nepavyko prisijungti prie Tolzar serverio, bandykite dar kartą vėliau"
       }
     },
     "LIST": {
@@ -51,7 +51,7 @@
       },
       "API": {
         "SUCCESS_MESSAGE": "Integravimo kwebhook pridėtas sėkmingai",
-        "ERROR_MESSAGE": "Nepavyko prisijungti prie Woot serverio, bandykite dar kartą vėliau"
+        "ERROR_MESSAGE": "Nepavyko prisijungti prie Tolzar serverio, bandykite dar kartą vėliau"
       }
     },
     "CONNECT": {

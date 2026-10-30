@@ -350,7 +350,7 @@
     "INBOXES": "Caixas de Entrada",
     "WHATSAPP_TEMPLATES": "Templates",
     "NOTIFICATIONS": "Notificaçoes",
-    "CANNED_RESPONSES": "Respostas Prontas",
+    "CANNED_RESPONSES": "Respostas guardadas",
     "INTEGRATIONS": "Integrações",
     "DATA": "Data",
     "PROFILE_SETTINGS": "Configurações do perfil",
@@ -814,7 +814,7 @@
     "API": {
       "SUCCESS_MESSAGE": "Conta criada com sucesso",
       "EXIST_MESSAGE": "Esta conta já existe",
-      "ERROR_MESSAGE": "Não foi possível conectar ao servidor Woot, por favor tente novamente mais tarde"
+      "ERROR_MESSAGE": "Não foi possível conectar ao servidor Tolzar, por favor tente novamente mais tarde"
     },
     "FORM": {
       "NAME": {

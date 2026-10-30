@@ -164,7 +164,7 @@
         "TITLE": "Muuda webhooki",
         "API": {
           "SUCCESS_MESSAGE": "Webhooki seadistus uuendatud edukalt",
-          "ERROR_MESSAGE": "Ei õnnestunud ühenduda Woot serveriga, palun proovi hiljem uuesti"
+          "ERROR_MESSAGE": "Ei õnnestunud ühenduda Tolzar serveriga, palun proovi hiljem uuesti"
         }
       },
       "ADD": {
@@ -172,14 +172,14 @@
         "TITLE": "Lisa uus webhook",
         "API": {
           "SUCCESS_MESSAGE": "Webhooki seadistus lisatud edukalt",
-          "ERROR_MESSAGE": "Ei õnnestunud ühenduda Woot serveriga, palun proovi hiljem uuesti"
+          "ERROR_MESSAGE": "Ei õnnestunud ühenduda Tolzar serveriga, palun proovi hiljem uuesti"
         }
       },
       "DELETE": {
         "BUTTON_TEXT": "Kustuta",
         "API": {
           "SUCCESS_MESSAGE": "Webhook edukalt kustutatud",
-          "ERROR_MESSAGE": "Ei õnnestunud ühenduda Woot serveriga, palun proovi hiljem uuesti"
+          "ERROR_MESSAGE": "Ei õnnestunud ühenduda Tolzar serveriga, palun proovi hiljem uuesti"
         },
         "CONFIRM": {
           "TITLE": "Kustutamise kinnitamine",

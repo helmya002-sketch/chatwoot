@@ -164,7 +164,7 @@
         "TITLE": "Rediģēt webhook",
         "API": {
           "SUCCESS_MESSAGE": "Webhook konfigurācija ir veiksmīgi atjaunināta",
-          "ERROR_MESSAGE": "Nevar izveidot savienojumu ar Woot serveri. Lūdzu, vēlāk pamēģiniet vēlreiz"
+          "ERROR_MESSAGE": "Nevar izveidot savienojumu ar Tolzar serveri. Lūdzu, vēlāk pamēģiniet vēlreiz"
         }
       },
       "ADD": {
@@ -172,14 +172,14 @@
         "TITLE": "Pievienot jaunu webhook",
         "API": {
           "SUCCESS_MESSAGE": "Webhook konfigurācija ir veiksmīgi pievienota",
-          "ERROR_MESSAGE": "Nevar izveidot savienojumu ar Woot serveri. Lūdzu, vēlāk pamēģiniet vēlreiz"
+          "ERROR_MESSAGE": "Nevar izveidot savienojumu ar Tolzar serveri. Lūdzu, vēlāk pamēģiniet vēlreiz"
         }
       },
       "DELETE": {
         "BUTTON_TEXT": "Dzēst",
         "API": {
           "SUCCESS_MESSAGE": "Webhook ir veiksmīgi izdzēsts",
-          "ERROR_MESSAGE": "Nevar izveidot savienojumu ar Woot serveri. Lūdzu, vēlāk pamēģiniet vēlreiz"
+          "ERROR_MESSAGE": "Nevar izveidot savienojumu ar Tolzar serveri. Lūdzu, vēlāk pamēģiniet vēlreiz"
         },
         "CONFIRM": {
           "TITLE": "Apstiprināt Dzēšanu",

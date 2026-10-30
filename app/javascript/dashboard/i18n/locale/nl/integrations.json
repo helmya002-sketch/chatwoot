@@ -164,7 +164,7 @@
         "TITLE": "Webhook bewerken",
         "API": {
           "SUCCESS_MESSAGE": "Webhook configuratie succesvol bijgewerkt",
-          "ERROR_MESSAGE": "Kan geen verbinding maken met Woot Server, probeer het later opnieuw"
+          "ERROR_MESSAGE": "Kan geen verbinding maken met Tolzar Server, probeer het later opnieuw"
         }
       },
       "ADD": {
@@ -172,14 +172,14 @@
         "TITLE": "Nieuwe webhook toevoegen",
         "API": {
           "SUCCESS_MESSAGE": "Webhook configuratie succesvol toegevoegd",
-          "ERROR_MESSAGE": "Kan geen verbinding maken met Woot Server, probeer het later opnieuw"
+          "ERROR_MESSAGE": "Kan geen verbinding maken met Tolzar Server, probeer het later opnieuw"
         }
       },
       "DELETE": {
         "BUTTON_TEXT": "Verwijderen",
         "API": {
           "SUCCESS_MESSAGE": "Webhook succesvol verwijderd",
-          "ERROR_MESSAGE": "Kan geen verbinding maken met Woot Server, probeer het later opnieuw"
+          "ERROR_MESSAGE": "Kan geen verbinding maken met Tolzar Server, probeer het later opnieuw"
         },
         "CONFIRM": {
           "TITLE": "Verwijdering bevestigen",

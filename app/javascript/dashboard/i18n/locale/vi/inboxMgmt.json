@@ -1604,7 +1604,7 @@
         "AGENT_MESSAGE": "Xin chào"
       },
       "BRANDING_TEXT": "CC bởi Tolzar",
-      "SCRIPT_SETTINGS": "\nwindow.chatwootSettings = {options};"
+      "SCRIPT_SETTINGS": "\nwindow.tolzarSettings = {options};"
     },
     "EMAIL_PROVIDERS": {
       "MICROSOFT": {

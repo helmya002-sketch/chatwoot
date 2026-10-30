@@ -28,7 +28,7 @@
       "CANCEL_BUTTON_TEXT": "Hætta við",
       "API": {
         "SUCCESS_MESSAGE": "Hook deleted successfully",
-        "ERROR_MESSAGE": "Náði ekki að tengjast við netþjóna Woot, vinsamlegast reynið aftur"
+        "ERROR_MESSAGE": "Náði ekki að tengjast við netþjóna Tolzar, vinsamlegast reynið aftur"
       }
     },
     "LIST": {
@@ -51,7 +51,7 @@
       },
       "API": {
         "SUCCESS_MESSAGE": "Integration hook added successfully",
-        "ERROR_MESSAGE": "Náði ekki að tengjast við netþjóna Woot, vinsamlegast reynið aftur"
+        "ERROR_MESSAGE": "Náði ekki að tengjast við netþjóna Tolzar, vinsamlegast reynið aftur"
       }
     },
     "CONNECT": {

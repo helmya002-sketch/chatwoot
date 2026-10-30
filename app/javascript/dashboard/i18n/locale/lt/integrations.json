@@ -164,7 +164,7 @@
         "TITLE": "Redaguoti webhook",
         "API": {
           "SUCCESS_MESSAGE": "Webhook konfigūracija sėkmingai atnaujinta",
-          "ERROR_MESSAGE": "Nepavyko prisijungti prie Woot serverio, bandykite dar kartą vėliau"
+          "ERROR_MESSAGE": "Nepavyko prisijungti prie Tolzar serverio, bandykite dar kartą vėliau"
         }
       },
       "ADD": {
@@ -172,14 +172,14 @@
         "TITLE": "Pridėti naują webhook",
         "API": {
           "SUCCESS_MESSAGE": "Webhook konfigūracija pridėta sėkmingai",
-          "ERROR_MESSAGE": "Nepavyko prisijungti prie Woot serverio, bandykite dar kartą vėliau"
+          "ERROR_MESSAGE": "Nepavyko prisijungti prie Tolzar serverio, bandykite dar kartą vėliau"
         }
       },
       "DELETE": {
         "BUTTON_TEXT": "Ištrinti",
         "API": {
           "SUCCESS_MESSAGE": "Webhook ištrintas sėkmingai",
-          "ERROR_MESSAGE": "Nepavyko prisijungti prie Woot serverio, bandykite dar kartą vėliau"
+          "ERROR_MESSAGE": "Nepavyko prisijungti prie Tolzar serverio, bandykite dar kartą vėliau"
         },
         "CONFIRM": {
           "TITLE": "Patvirtinti Ištrynimą",

@@ -814,7 +814,7 @@
     "API": {
       "SUCCESS_MESSAGE": "Matagumpay na nalikha ang account",
       "EXIST_MESSAGE": "Umiiral na ang account",
-      "ERROR_MESSAGE": "Hindi makakonekta sa Woot Server, Pakisubukang muli mamaya"
+      "ERROR_MESSAGE": "Hindi makakonekta sa Tolzar Server, Pakisubukang muli mamaya"
     },
     "FORM": {
       "NAME": {

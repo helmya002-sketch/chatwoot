@@ -46,7 +46,7 @@
     },
     "API": {
       "SUCCESS_MESSAGE": "Cadastro Realizado Com Sucesso",
-      "ERROR_MESSAGE": "Não foi possível conectar ao servidor Woot. Por favor, tente novamente."
+      "ERROR_MESSAGE": "Não foi possível conectar ao servidor Tolzar. Por favor, tente novamente."
     },
     "SUBMIT": "Criar conta",
     "HAVE_AN_ACCOUNT": "Já possui uma conta?",

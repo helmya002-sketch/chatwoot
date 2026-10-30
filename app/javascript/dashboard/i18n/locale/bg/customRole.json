@@ -57,7 +57,7 @@
       },
       "CANCEL_BUTTON_TEXT": "Отмени",
       "API": {
-        "ERROR_MESSAGE": "Не можа да се свърже с Woot сървър. Моля, опитайте отново по-късно"
+        "ERROR_MESSAGE": "Не можа да се свърже с Tolzar сървър. Моля, опитайте отново по-късно"
       }
     },
     "ADD": {
@@ -81,7 +81,7 @@
       "BUTTON_TEXT": "Изтрий",
       "API": {
         "SUCCESS_MESSAGE": "Custom role deleted successfully.",
-        "ERROR_MESSAGE": "Не можа да се свърже с Woot сървър. Моля, опитайте отново по-късно"
+        "ERROR_MESSAGE": "Не можа да се свърже с Tolzar сървър. Моля, опитайте отново по-късно"
       },
       "CONFIRM": {
         "TITLE": "Потвърди изтриването",

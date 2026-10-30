@@ -28,7 +28,7 @@
       "CANCEL_BUTTON_TEXT": "Mégse",
       "API": {
         "SUCCESS_MESSAGE": "Hook törlésre került",
-        "ERROR_MESSAGE": "Nem sikerült csatlakozni a Woot szerverhez, kérjük próbáld később"
+        "ERROR_MESSAGE": "Nem sikerült csatlakozni a Tolzar szerverhez, kérjük próbáld később"
       }
     },
     "LIST": {
@@ -51,7 +51,7 @@
       },
       "API": {
         "SUCCESS_MESSAGE": "Integrációs hookok hozzáadásra kerültek",
-        "ERROR_MESSAGE": "Nem sikerült csatlakozni a Woot szerverhez, kérjük próbáld később"
+        "ERROR_MESSAGE": "Nem sikerült csatlakozni a Tolzar szerverhez, kérjük próbáld később"
       }
     },
     "CONNECT": {

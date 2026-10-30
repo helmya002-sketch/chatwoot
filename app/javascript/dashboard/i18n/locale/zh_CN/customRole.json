@@ -57,7 +57,7 @@
       },
       "CANCEL_BUTTON_TEXT": "取消",
       "API": {
-        "ERROR_MESSAGE": "无法与 Woot 服务器建立连接。请重试。"
+        "ERROR_MESSAGE": "无法与 Tolzar 服务器建立连接。请重试。"
       }
     },
     "ADD": {
@@ -81,7 +81,7 @@
       "BUTTON_TEXT": "删除",
       "API": {
         "SUCCESS_MESSAGE": "自定义角色删除成功。",
-        "ERROR_MESSAGE": "无法与 Woot 服务器建立连接。请重试。"
+        "ERROR_MESSAGE": "无法与 Tolzar 服务器建立连接。请重试。"
       },
       "CONFIRM": {
         "TITLE": "确认删除",

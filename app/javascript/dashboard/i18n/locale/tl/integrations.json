@@ -164,7 +164,7 @@
         "TITLE": "I-edit ang webhook",
         "API": {
           "SUCCESS_MESSAGE": "Matagumpay na na-update ang webhook configuration",
-          "ERROR_MESSAGE": "Hindi makakonekta sa Woot Server, subukan muli mamaya"
+          "ERROR_MESSAGE": "Hindi makakonekta sa Tolzar Server, subukan muli mamaya"
         }
       },
       "ADD": {
@@ -172,14 +172,14 @@
         "TITLE": "Magdagdag ng bagong webhook",
         "API": {
           "SUCCESS_MESSAGE": "Matagumpay na naidagdag ang configuration ng webhook",
-          "ERROR_MESSAGE": "Hindi makakonekta sa Woot Server, pakisubukan muli mamaya"
+          "ERROR_MESSAGE": "Hindi makakonekta sa Tolzar Server, pakisubukan muli mamaya"
         }
       },
       "DELETE": {
         "BUTTON_TEXT": "Tanggalin",
         "API": {
           "SUCCESS_MESSAGE": "Matagumpay na natanggal ang webhook",
-          "ERROR_MESSAGE": "Hindi makakonekta sa Woot Server, subukan muli mamaya"
+          "ERROR_MESSAGE": "Hindi makakonekta sa Tolzar Server, subukan muli mamaya"
         },
         "CONFIRM": {
           "TITLE": "Kumpirmahin ang Pag-delete",

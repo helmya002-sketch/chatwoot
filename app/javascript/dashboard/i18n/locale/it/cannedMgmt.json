@@ -38,7 +38,7 @@
       },
       "API": {
         "SUCCESS_MESSAGE": "Risposta predefinita aggiunta correttamente.",
-        "ERROR_MESSAGE": "Impossibile connettersi al server Woot, riprova più tardi"
+        "ERROR_MESSAGE": "Impossibile connettersi al server Tolzar, riprova più tardi"
       }
     },
     "EDIT": {
@@ -60,14 +60,14 @@
       "BUTTON_TEXT": "Modifica",
       "API": {
         "SUCCESS_MESSAGE": "Risposta predefinita aggiornata correttamente.",
-        "ERROR_MESSAGE": "Impossibile connettersi al server Woot, riprova più tardi"
+        "ERROR_MESSAGE": "Impossibile connettersi al server Tolzar, riprova più tardi"
       }
     },
     "DELETE": {
       "BUTTON_TEXT": "Elimina",
       "API": {
         "SUCCESS_MESSAGE": "Risposta predefinita eliminata correttamente.",
-        "ERROR_MESSAGE": "Impossibile connettersi al server Woot, riprova più tardi"
+        "ERROR_MESSAGE": "Impossibile connettersi al server Tolzar, riprova più tardi"
       },
       "CONFIRM": {
         "TITLE": "Conferma eliminazione",

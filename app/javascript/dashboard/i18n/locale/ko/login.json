@@ -12,7 +12,7 @@
     },
     "API": {
       "SUCCESS_MESSAGE": "로그인 성공",
-      "ERROR_MESSAGE": "Woot 서버에 연결할 수 없습니다. 다시 시도하십시오.",
+      "ERROR_MESSAGE": "Tolzar 서버에 연결할 수 없습니다. 다시 시도하십시오.",
       "UNAUTH": "이름 또는 비밀번호가 올바르지 않습니다. 다시 시도하십시오."
     },
     "OAUTH": {

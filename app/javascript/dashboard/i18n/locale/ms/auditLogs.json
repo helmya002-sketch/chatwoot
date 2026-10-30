@@ -51,7 +51,7 @@
     },
     "API": {
       "SUCCESS_MESSAGE": "AuditLogs retrieved successfully",
-      "ERROR_MESSAGE": "Masalah untuk hubungi Woot Server, Sila cuba sebentar lagi"
+      "ERROR_MESSAGE": "Masalah untuk hubungi Tolzar Server, Sila cuba sebentar lagi"
     },
     "DEFAULT_USER": "System",
     "AUTOMATION_RULE": {

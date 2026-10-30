@@ -51,7 +51,7 @@
     },
     "API": {
       "SUCCESS_MESSAGE": "Audito Žurnalai parsiųsti sėkmingai",
-      "ERROR_MESSAGE": "Nepavyko prisijungti prie Woot serverio, bandykite dar kartą vėliau"
+      "ERROR_MESSAGE": "Nepavyko prisijungti prie Tolzar serverio, bandykite dar kartą vėliau"
     },
     "DEFAULT_USER": "Sistema",
     "AUTOMATION_RULE": {

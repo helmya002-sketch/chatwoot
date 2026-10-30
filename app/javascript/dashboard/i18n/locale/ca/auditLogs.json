@@ -51,7 +51,7 @@
     },
     "API": {
       "SUCCESS_MESSAGE": "Els registres d'auditoria s'han recuperat correctament",
-      "ERROR_MESSAGE": "No s'ha pogut connectar amb el servidor Woot. Torna-ho a provar més endavant"
+      "ERROR_MESSAGE": "No s'ha pogut connectar amb el servidor Tolzar. Torna-ho a provar més endavant"
     },
     "DEFAULT_USER": "Sistema",
     "AUTOMATION_RULE": {

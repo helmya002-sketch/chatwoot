@@ -1604,7 +1604,7 @@
         "AGENT_MESSAGE": "您好"
       },
       "BRANDING_TEXT": "由 Tolzar 支持",
-      "SCRIPT_SETTINGS": "\n      window.chatwootSettings = {options};"
+      "SCRIPT_SETTINGS": "\n      window.tolzarSettings = {options};"
     },
     "EMAIL_PROVIDERS": {
       "MICROSOFT": {

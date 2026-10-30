@@ -3,8 +3,8 @@
     "TRY_WOOT": "تسجيل حساب",
     "GET_STARTED": "Get started with Tolzar",
     "TITLE": "تسجيل",
-    "TESTIMONIAL_HEADER": "إن كل ما يلزم هو خطوة واحدة للمضي قدما",
-    "TESTIMONIAL_CONTENT": "You're one step away from engaging your customers, retaining them and finding new ones.",
+    "TESTIMONIAL_HEADER": "صندوق وارد واحد لكل المحادثات",
+    "TESTIMONIAL_CONTENT": "أجب عملاءك على كل القنوات من مكان واحد.",
     "TERMS_ACCEPT": "من خلال التسجيل، فإنك توافق على <a href=\"{termsURL}\">شروط الخدمة</a> و <a href=\"{privacyURL}\">سياسة الخصوصية</a>",
     "OAUTH": {
       "GOOGLE_SIGNUP": "Sign up with Google"

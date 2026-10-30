@@ -164,7 +164,7 @@
         "TITLE": "Sunting webhook",
         "API": {
           "SUCCESS_MESSAGE": "Konfigurasi webhook berjaya dikemas kini",
-          "ERROR_MESSAGE": "Masalah untuk hubungi Woot Server, Sila cuba sebentar lagi"
+          "ERROR_MESSAGE": "Masalah untuk hubungi Tolzar Server, Sila cuba sebentar lagi"
         }
       },
       "ADD": {
@@ -172,14 +172,14 @@
         "TITLE": "Tambah webhook baharu",
         "API": {
           "SUCCESS_MESSAGE": "Konfigurasi webhook berjaya ditambah",
-          "ERROR_MESSAGE": "Masalah untuk hubungi Woot Server, Sila cuba sebentar lagi"
+          "ERROR_MESSAGE": "Masalah untuk hubungi Tolzar Server, Sila cuba sebentar lagi"
         }
       },
       "DELETE": {
         "BUTTON_TEXT": "Padamkan",
         "API": {
           "SUCCESS_MESSAGE": "Webhook berjaya dipadamkan",
-          "ERROR_MESSAGE": "Masalah untuk hubungi Woot Server, Sila cuba sebentar lagi"
+          "ERROR_MESSAGE": "Masalah untuk hubungi Tolzar Server, Sila cuba sebentar lagi"
         },
         "CONFIRM": {
           "TITLE": "Pasti Padamkan",

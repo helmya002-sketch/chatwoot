@@ -46,7 +46,7 @@
     },
     "API": {
       "SUCCESS_MESSAGE": "Registration Successful",
-      "ERROR_MESSAGE": "Не вдалося підключитися до Woot сервера. Будь ласка, спробуйте ще раз."
+      "ERROR_MESSAGE": "Не вдалося підключитися до Tolzar сервера. Будь ласка, спробуйте ще раз."
     },
     "SUBMIT": "Створити акаунт",
     "HAVE_AN_ACCOUNT": "Вже маєте обліковий запис?",

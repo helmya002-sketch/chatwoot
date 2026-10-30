@@ -51,7 +51,7 @@
     },
     "API": {
       "SUCCESS_MESSAGE": "AuditLogs retrieved successfully",
-      "ERROR_MESSAGE": "Αδυναμία σύνδεσης με τον Woot Server, Παρακαλώ προσπαθήστε αργότερα"
+      "ERROR_MESSAGE": "Αδυναμία σύνδεσης με τον Tolzar Server, Παρακαλώ προσπαθήστε αργότερα"
     },
     "DEFAULT_USER": "System",
     "AUTOMATION_RULE": {

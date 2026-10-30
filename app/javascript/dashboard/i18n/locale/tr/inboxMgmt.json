@@ -1604,7 +1604,7 @@
         "AGENT_MESSAGE": "Merhaba"
       },
       "BRANDING_TEXT": "Tolzar tarafından desteklenmektedir",
-      "SCRIPT_SETTINGS": "\nwindow.chatwootSettings = {options};"
+      "SCRIPT_SETTINGS": "\nwindow.tolzarSettings = {options};"
     },
     "EMAIL_PROVIDERS": {
       "MICROSOFT": {

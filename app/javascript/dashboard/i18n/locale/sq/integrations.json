@@ -164,7 +164,7 @@
         "TITLE": "Ndrysho webhook",
         "API": {
           "SUCCESS_MESSAGE": "Konfigurimi i webhook u përditësua me sukses",
-          "ERROR_MESSAGE": "Nuk u mundua të lidhet me Serverin Woot, Ju lutemi provoni përsëri më vonë"
+          "ERROR_MESSAGE": "Nuk u mundua të lidhet me Serverin Tolzar, Ju lutemi provoni përsëri më vonë"
         }
       },
       "ADD": {
@@ -172,14 +172,14 @@
         "TITLE": "Shto webhook të ri",
         "API": {
           "SUCCESS_MESSAGE": "Konfigurimi i Webhook u shtua me sukses",
-          "ERROR_MESSAGE": "Nuk u mund të lidhet me Serverin Woot, Ju lutemi provoni përsëri më vonë"
+          "ERROR_MESSAGE": "Nuk u mund të lidhet me Serverin Tolzar, Ju lutemi provoni përsëri më vonë"
         }
       },
       "DELETE": {
         "BUTTON_TEXT": "Fshi",
         "API": {
           "SUCCESS_MESSAGE": "Webhook u fshi me sukses",
-          "ERROR_MESSAGE": "Nuk u mund të lidhet me Serverin Woot, Ju lutemi provoni përsëri më vonë"
+          "ERROR_MESSAGE": "Nuk u mund të lidhet me Serverin Tolzar, Ju lutemi provoni përsëri më vonë"
         },
         "CONFIRM": {
           "TITLE": "Konfirmo Fshirjen",

@@ -814,7 +814,7 @@
     "API": {
       "SUCCESS_MESSAGE": "አካውንት በተሳካ ሁኔታ ተፈጥሯል",
       "EXIST_MESSAGE": "አካውንት አስቀድሞ አለ",
-      "ERROR_MESSAGE": "ከWoot አገልግሎት አልተገናኘም፣ እባክዎ በኋላ ደግመው ይሞክሩ"
+      "ERROR_MESSAGE": "ከTolzar አገልግሎት አልተገናኘም፣ እባክዎ በኋላ ደግመው ይሞክሩ"
     },
     "FORM": {
       "NAME": {

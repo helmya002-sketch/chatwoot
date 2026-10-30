@@ -164,7 +164,7 @@
         "TITLE": "Edita el webhook",
         "API": {
           "SUCCESS_MESSAGE": "La configuració del webhook s'ha actualitzat correctament",
-          "ERROR_MESSAGE": "No s'ha pogut connectar amb el servidor Woot. Torna-ho a provar més endavant"
+          "ERROR_MESSAGE": "No s'ha pogut connectar amb el servidor Tolzar. Torna-ho a provar més endavant"
         }
       },
       "ADD": {
@@ -172,14 +172,14 @@
         "TITLE": "Afegir un nou webhook",
         "API": {
           "SUCCESS_MESSAGE": "La configuració del webhook s'ha afegit correctament",
-          "ERROR_MESSAGE": "No s'ha pogut connectar amb el servidor Woot. Torna-ho a provar més endavant"
+          "ERROR_MESSAGE": "No s'ha pogut connectar amb el servidor Tolzar. Torna-ho a provar més endavant"
         }
       },
       "DELETE": {
         "BUTTON_TEXT": "Suprimeix",
         "API": {
           "SUCCESS_MESSAGE": "S'ha esborrat el Webhook correctament",
-          "ERROR_MESSAGE": "No s'ha pogut connectar amb el servidor Woot. Torna-ho a provar més endavant"
+          "ERROR_MESSAGE": "No s'ha pogut connectar amb el servidor Tolzar. Torna-ho a provar més endavant"
         },
         "CONFIRM": {
           "TITLE": "Confirma l'esborrat",

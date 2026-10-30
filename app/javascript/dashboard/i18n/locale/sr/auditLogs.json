@@ -51,7 +51,7 @@
     },
     "API": {
       "SUCCESS_MESSAGE": "AuditLogs retrieved successfully",
-      "ERROR_MESSAGE": "Nije moguće se povezati sa Woot serverom, pokušajte ponovo kasnije"
+      "ERROR_MESSAGE": "Nije moguće se povezati sa Tolzar serverom, pokušajte ponovo kasnije"
     },
     "DEFAULT_USER": "System",
     "AUTOMATION_RULE": {

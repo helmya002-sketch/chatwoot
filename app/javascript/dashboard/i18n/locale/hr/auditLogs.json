@@ -51,7 +51,7 @@
     },
     "API": {
       "SUCCESS_MESSAGE": "Audit Logovi su uspješno dohvaćeni",
-      "ERROR_MESSAGE": "Neuspješno spajanje na Woot Server, Molimo pokušajte kasnije"
+      "ERROR_MESSAGE": "Neuspješno spajanje na Tolzar Server, Molimo pokušajte kasnije"
     },
     "DEFAULT_USER": "System",
     "AUTOMATION_RULE": {
