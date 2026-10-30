@@ -1,0 +1,81 @@
+<% content_for(:title) { t('tolzar.feedback.titles.index') } %>
+<% content_for(:canonical) { tolzar_feedback_url } %>
+<% scope = 'tolzar.feedback' %>
+<% language_names = LANGUAGES_CONFIG.values.to_h { |l| [l[:iso_639_1_code].to_s, l[:name]] } %>
+<% filters = { q: @query.presence, status: @status, tag: @tag, language: @language, sort: @sort }.compact %>
+
+<h1><%= t("#{scope}.index.heading") %></h1>
+<p class="muted"><%= t("#{scope}.index.intro") %></p>
+
+<div class="card">
+  <%= form_with url: tolzar_feedback_path, method: :get, local: true, class: 'filters' do |f| %>
+    <%= f.search_field :q, value: @query, placeholder: t("#{scope}.index.search"), 'aria-label': t("#{scope}.index.search") %>
+    <%= f.select :status, [[t("#{scope}.index.all_statuses"), '']] +
+                          Tolzar::Idea::STATUSES.map { |s| ["#{t("#{scope}.statuses.#{s}.label")} (#{@status_counts.fetch(s, 0)})", s] },
+                 { selected: @status }, 'aria-label': t("#{scope}.index.status") %>
+    <%= f.select :tag, [[t("#{scope}.index.all_tags"), '']] + Tolzar::Idea::TAGS.map { |tag| [t("#{scope}.tags.#{tag}"), tag] },
+                 { selected: @tag }, 'aria-label': t("#{scope}.index.tag") %>
+    <%= f.select :language, [[t("#{scope}.index.all_languages"), '']] + @languages.map { |l| [language_names.fetch(l, l), l] },
+                 { selected: @language }, 'aria-label': t("#{scope}.index.language") %>
+    <%= f.select :sort, Tolzar::FeedbackController::SORTS.map { |s| [t("#{scope}.sorts.#{s}"), s] },
+                 { selected: @sort }, 'aria-label': t("#{scope}.index.sort") %>
+    <button type="submit" class="btn light"><%= t("#{scope}.index.apply") %></button>
+  <% end %>
+</div>
+
+<div class="card">
+  <% if @ideas.empty? %>
+    <p class="muted"><%= t("#{scope}.index.empty") %></p>
+  <% end %>
+  <% @ideas.each do |idea| %>
+    <div class="row">
+      <div class="votes">
+        <%= render 'tolzar/feedback/vote_button', idea: idea, voted: @voted_ids.include?(idea.id) %>
+      </div>
+      <div class="grow">
+        <a class="title" href="<%= tolzar_feedback_idea_path(idea) %>"><%= idea.title %></a>
+        <div class="small muted">
+          #<%= idea.id %>
+          <span class="pill s-<%= idea.status %>"><%= t("#{scope}.statuses.#{idea.status}.label") %></span>
+          <% if idea.tag %><span class="chip"><%= t("#{scope}.tags.#{idea.tag}") %></span><% end %>
+          <span class="chip"><%= idea.locale %></span>
+        </div>
+      </div>
+    </div>
+  <% end %>
+  <p class="small">
+    <% if @page > 1 %>
+      <%= link_to t("#{scope}.index.previous"), tolzar_feedback_path(filters.merge(page: @page - 1)) %>
+    <% end %>
+    <% if @ideas.size == Tolzar::FeedbackController::PER_PAGE %>
+      <%= link_to t("#{scope}.index.next"), tolzar_feedback_path(filters.merge(page: @page + 1)) %>
+    <% end %>
+  </p>
+</div>
+
+<div class="card" id="post">
+  <h2><%= t("#{scope}.form.heading") %></h2>
+  <% if member? %>
+    <%= form_with url: tolzar_feedback_path, scope: :idea, method: :post, local: true do |f| %>
+      <div class="field">
+        <%= f.label :title, t("#{scope}.form.title") %>
+        <%= f.text_field :title, maxlength: Tolzar::Idea::TITLE_MAX, required: true, class: 'wide' %>
+      </div>
+      <div class="field">
+        <%= f.label :body, t("#{scope}.form.body") %>
+        <%= f.text_area :body, maxlength: Tolzar::Idea::BODY_MAX, required: true %>
+      </div>
+      <div class="field">
+        <%= f.label :tag, t("#{scope}.form.tag") %>
+        <%= f.select :tag, [[t("#{scope}.form.no_tag"), '']] + Tolzar::Idea::TAGS.map { |tag| [t("#{scope}.tags.#{tag}"), tag] } %>
+        <%= f.label :locale, t("#{scope}.form.language") %>
+        <%= f.select :locale, I18n.available_locales.map { |l| [language_names.fetch(l.to_s, l.to_s), l.to_s] }, selected: I18n.locale.to_s %>
+      </div>
+      <%= render 'tolzar/feedback/spam_fields' %>
+      <p class="small muted"><%= t("#{scope}.form.rules") %></p>
+      <button type="submit" class="btn"><%= t("#{scope}.form.submit") %></button>
+    <% end %>
+  <% else %>
+    <%= render 'tolzar/feedback/sign_in_note' %>
+  <% end %>
+</div>

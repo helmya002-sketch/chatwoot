@@ -1,0 +1,30 @@
+<% scope = 'tolzar.feedback' %>
+<% content_for(:title) { t("#{scope}.titles.changelog") } %>
+<% content_for(:canonical) { tolzar_feedback_changelog_url } %>
+
+<h1><%= t("#{scope}.changelog.heading") %></h1>
+<p class="muted">
+  <%= t("#{scope}.changelog.intro") %>
+  <a href="<%= tolzar_feedback_changelog_path(format: :rss) %>"><%= t("#{scope}.changelog.rss") %></a>
+</p>
+
+<% if @entries.empty? %>
+  <p class="muted"><%= t("#{scope}.changelog.empty") %></p>
+<% end %>
+<% @entries.each do |entry| %>
+  <article class="card" id="<%= entry.anchor %>">
+    <h2><a class="title" href="#<%= entry.anchor %>"><%= entry.title %></a></h2>
+    <p class="small muted"><%= l(entry.published_at.to_date, format: :long) %></p>
+    <div class="entry-body">
+      <%= sanitize entry.body_html, tags: %w[p br h2 h3 h4 strong em del a ul ol li blockquote code pre hr table thead tbody tr th td img],
+                                    attributes: %w[href src alt title] %>
+    </div>
+    <% if entry.public_ideas.any? %>
+      <p class="small"><%= t("#{scope}.changelog.from_ideas") %>
+        <% entry.public_ideas.each do |idea| %>
+          <a href="<%= tolzar_feedback_idea_path(idea) %>">#<%= idea.id %> <%= idea.title %></a>
+        <% end %>
+      </p>
+    <% end %>
+  </article>
+<% end %>

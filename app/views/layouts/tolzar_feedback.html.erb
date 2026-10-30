@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="<%= I18n.locale %>" dir="<%= I18n.locale.to_s == 'ar' ? 'rtl' : 'ltr' %>">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <%# Not indexed until launch, like the rest of the site (community plan §5). %>
+  <meta name="robots" content="noindex">
+  <title><%= content_for(:title).presence || t('tolzar.feedback.titles.index') %></title>
+  <% if content_for?(:canonical) %>
+    <link rel="canonical" href="<%= content_for(:canonical) %>">
+  <% end %>
+  <link rel="alternate" type="application/rss+xml" title="<%= t('tolzar.feedback.changelog.feed_title') %>" href="<%= tolzar_feedback_changelog_url(format: :rss) %>">
+  <%= yield :head %>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:#f6f7f9;color:#1c2024;font-size:15px;line-height:1.55}
+    a{color:#1d4ed8}
+    .wrap{max-width:860px;margin:0 auto;padding:0 16px}
+    header.top{background:#fff;border-bottom:1px solid #e8e8ec}
+    header.top .wrap{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center;justify-content:space-between;padding-top:12px;padding-bottom:12px}
+    header.top nav{display:flex;flex-wrap:wrap;gap:4px 16px}
+    header.top nav a{color:#1c2024;text-decoration:none;font-weight:500}
+    header.top nav a.on{color:#1d4ed8}
+    .brand{font-weight:700;font-size:17px;color:#1c2024;text-decoration:none}
+    main{padding:24px 0 48px}
+    h1{font-size:24px;line-height:1.25;margin:0 0 8px}
+    h2{font-size:18px;margin:0 0 8px}
+    .muted{color:#60646c}
+    .small{font-size:13px}
+    .card{background:#fff;border:1px solid #e8e8ec;border-radius:10px;padding:16px;margin:0 0 16px}
+    .flash{padding:10px 14px;border-radius:8px;margin:0 0 16px;background:#ecfdf3;border:1px solid #b7ebc6}
+    .flash.alert{background:#fff1f0;border-color:#ffccc7}
+    .pill{display:inline-block;padding:1px 8px;border-radius:999px;font-size:12px;font-weight:600;border:1px solid transparent;white-space:nowrap}
+    .s-under_review{background:#f1f3f5;color:#495057}
+    .s-planned{background:#e7f0ff;color:#1d4ed8}
+    .s-building{background:#fff4e5;color:#b45309}
+    .s-shipped{background:#e6f7ee;color:#047857}
+    .s-already_possible{background:#f3e8ff;color:#7e22ce}
+    .s-not_planned{background:#f8e7e7;color:#b42318}
+    .chip{display:inline-block;padding:1px 8px;border-radius:6px;font-size:12px;background:#f1f3f5;color:#495057}
+    .staff{background:#1c2024;color:#fff}
+    .row{display:flex;gap:14px;align-items:flex-start;padding:12px 0;border-top:1px solid #f0f0f3}
+    .row:first-child{border-top:0}
+    .votes{min-width:56px;text-align:center}
+    .votes button,.votes a.vote{display:block;width:56px;padding:6px 0;border:1px solid #d0d4da;border-radius:8px;background:#fff;color:#1c2024;font:inherit;font-weight:700;cursor:pointer;text-decoration:none}
+    .votes button.on{border-color:#1d4ed8;background:#e7f0ff;color:#1d4ed8}
+    .grow{flex:1;min-width:0}
+    .title{font-weight:600;color:#1c2024;text-decoration:none}
+    form.filters{display:flex;flex-wrap:wrap;gap:8px}
+    input[type=text],input[type=search],textarea,select{font:inherit;padding:7px 10px;border:1px solid #d0d4da;border-radius:8px;background:#fff;color:#1c2024;max-width:100%}
+    textarea{width:100%;min-height:110px}
+    input.wide{width:100%}
+    .btn{font:inherit;padding:7px 14px;border-radius:8px;border:1px solid #1c2024;background:#1c2024;color:#fff;cursor:pointer}
+    .btn.light{background:#fff;color:#1c2024;border-color:#d0d4da}
+    .link{background:none;border:0;padding:0;color:#60646c;font:inherit;font-size:13px;cursor:pointer;text-decoration:underline}
+    .hp{position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden}
+    .banner{padding:12px 14px;border-radius:8px;margin:0 0 16px;background:#fff8e6;border:1px solid #f5d48a}
+    .pinned{border-left:4px solid #1d4ed8}
+    ol.history{list-style:none;padding:0;margin:0}
+    ol.history li{padding:8px 0;border-top:1px solid #f0f0f3}
+    .field{margin:0 0 12px}
+    .field label{display:block;font-size:13px;color:#60646c;margin:0 0 4px}
+    .entry-body img{max-width:100%}
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="wrap">
+      <a class="brand" href="<%= tolzar_feedback_path %>"><%= t('tolzar.feedback.brand') %></a>
+      <nav>
+        <a href="<%= tolzar_feedback_path %>" class="<%= 'on' if action_name.in?(%w[index show]) %>"><%= t('tolzar.feedback.nav.ideas') %></a>
+        <a href="<%= tolzar_feedback_roadmap_path %>" class="<%= 'on' if action_name == 'roadmap' %>"><%= t('tolzar.feedback.nav.roadmap') %></a>
+        <a href="<%= tolzar_feedback_changelog_path %>" class="<%= 'on' if action_name == 'changelog' %>"><%= t('tolzar.feedback.nav.changelog') %></a>
+        <% if viewer %>
+          <span class="muted small"><%= t('tolzar.feedback.nav.signed_in', name: viewer.available_name) %></span>
+        <% else %>
+          <a href="/app/login"><%= t('tolzar.feedback.nav.sign_in') %></a>
+        <% end %>
+      </nav>
+    </div>
+  </header>
+  <main>
+    <div class="wrap">
+      <% if notice %><p class="flash"><%= notice %></p><% end %>
+      <% if alert %><p class="flash alert"><%= alert %></p><% end %>
+      <%= yield %>
+    </div>
+  </main>
+</body>
+</html>

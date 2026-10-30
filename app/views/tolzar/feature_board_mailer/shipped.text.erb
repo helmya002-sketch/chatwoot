@@ -1,0 +1,15 @@
+<%= t('tolzar.feedback.mail.shipped.intro', title: @idea.title) %>
+
+<% if @explanation.present? %>
+<%= @explanation %>
+
+<% end %>
+<%= t('tolzar.feedback.mail.see_idea') %>: <%= @idea_url %>
+<% if @changelog_url %>
+<%= t('tolzar.feedback.mail.shipped.changelog') %>: <%= @changelog_url %>
+<% end %>
+
+--
+<%= t('tolzar.feedback.mail.why') %>
+<%= t('tolzar.newsletter.footer.unsubscribe') %>: <%= @unsubscribe_url %>
+<%= @postal_address %>

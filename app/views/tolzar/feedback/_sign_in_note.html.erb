@@ -1,0 +1,5 @@
+<% if viewer %>
+  <p class="muted"><%= t('tolzar.feedback.errors.no_workspace') %></p>
+<% else %>
+  <p class="muted"><%= t('tolzar.feedback.form.sign_in_html', url: '/app/login') %></p>
+<% end %>

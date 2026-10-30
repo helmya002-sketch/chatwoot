@@ -1,0 +1,6 @@
+<%# The honeypot (people never see or fill it) and the signed time the form was shown (3-second minimum). -%>
+<div class="hp" aria-hidden="true">
+  <label for="website"><%= t('tolzar.feedback.form.honeypot') %></label>
+  <input type="text" id="website" name="website" value="" tabindex="-1" autocomplete="off">
+</div>
+<input type="hidden" name="form_token" value="<%= @form_token %>">

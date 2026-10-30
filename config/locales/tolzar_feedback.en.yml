@@ -1,0 +1,178 @@
+en:
+  tolzar:
+    feedback:
+      brand: 'Tolzar feature requests'
+      staff: 'Tolzar team'
+      report: 'Report'
+      deleted_user: 'Former user'
+      nav:
+        ideas: 'Ideas'
+        roadmap: 'Roadmap'
+        changelog: 'Changelog'
+        signed_in: 'Signed in as %{name}'
+        sign_in: 'Sign in to Tolzar'
+      titles:
+        index: 'Feature requests | Tolzar'
+        idea: '%{idea} — %{status} | Tolzar feature requests'
+        roadmap: 'Roadmap | Tolzar feature requests'
+        changelog: 'Changelog | Tolzar feature requests'
+      index:
+        heading: 'Feature requests'
+        intro: 'Suggest an idea, vote for the ones you need and follow them to release. Write in your own language.'
+        search: 'Search ideas'
+        status: 'Status'
+        all_statuses: 'All statuses'
+        tag: 'Area'
+        all_tags: 'All areas'
+        language: 'Language'
+        all_languages: 'All languages'
+        sort: 'Sort'
+        apply: 'Apply'
+        empty: 'No ideas match these filters yet.'
+        previous: 'Previous'
+        next: 'Next'
+      sorts:
+        top: 'Top'
+        new: 'New'
+        trending: 'Trending'
+      statuses:
+        under_review:
+          label: 'Under review'
+          definition: 'New ideas we have not decided on yet. Votes and comments help us decide.'
+        planned:
+          label: 'Planned'
+          definition: 'We decided to build it. Work has not started.'
+        building:
+          label: 'Building'
+          definition: 'We are working on it now.'
+        shipped:
+          label: 'Shipped'
+          definition: 'Released and available. See the changelog for details.'
+        already_possible:
+          label: 'Already possible'
+          definition: 'Tolzar can already do this; the explanation says how.'
+        not_planned:
+          label: 'Not planned'
+          definition: 'We do not plan to build it; the explanation says why.'
+      tags:
+        inbox: 'Inbox'
+        channels: 'Channels'
+        ai_agents: 'AI agents'
+        workflows: 'Workflows'
+        contacts: 'Contacts and pipeline'
+        reports: 'Reports'
+        integrations: 'Integrations'
+        other: 'Other'
+      form:
+        heading: 'Suggest an idea'
+        title: 'Title (one sentence)'
+        body: 'What do you need, and why?'
+        tag: 'Area'
+        no_tag: 'Choose an area'
+        language: 'Language'
+        honeypot: 'Leave this field empty'
+        rules: 'Your first post is checked by our team before it appears. Links work after your first approved post.'
+        submit: 'Post idea'
+        sign_in_html: '<a href="%{url}">Sign in to Tolzar</a> to post, vote and comment.'
+        comment: 'Your comment'
+        comment_submit: 'Comment'
+      vote:
+        add: 'Vote for this idea'
+        remove: 'Remove your vote'
+        sign_in: 'Sign in to vote'
+      show:
+        merged_html: 'This idea was merged into %{link}. Its votes were carried over.'
+        held: 'Only you can see this post until our team has checked it.'
+        shipped_in_html: 'Shipped in %{link}.'
+        official: 'Official response'
+        duplicates: 'Merged into this idea'
+        history: 'Status history'
+        comments: 'Comments (%{count})'
+        awaiting_review: 'Waiting for review'
+      roadmap:
+        heading: 'Roadmap'
+        intro: 'What we plan, what we are building and what shipped, ordered by votes. No dates: we only promise what is released.'
+        empty: 'Nothing here yet.'
+        see_changelog: 'See the changelog'
+        other_heading: 'Other statuses'
+      changelog:
+        heading: 'Changelog'
+        intro: 'What is new in Tolzar, linked to the ideas that asked for it.'
+        rss: 'RSS feed'
+        empty: 'No entries yet.'
+        from_ideas: 'From ideas:'
+        feed_title: 'Tolzar changelog'
+      errors:
+        not_found: 'This idea does not exist or is not public.'
+        sign_in: 'Sign in to Tolzar to post, vote and comment.'
+        no_workspace: 'Posting, voting and commenting need a Tolzar workspace (a trial workspace is enough).'
+        too_fast: 'That did not go through. Please reload the page and try again.'
+        rate_limited: 'You have reached the hourly limit. Please try again later.'
+        no_links_yet: 'Links are allowed after your first approved post. Please remove the link and post again.'
+      flash:
+        held: 'Thank you. Our team checks first posts before they appear; only you can see it until then.'
+        posted: 'Your idea is posted.'
+        commented: 'Your comment is posted.'
+        reported: 'Thank you. Our team will look at it.'
+      mail:
+        why: 'You receive this because you posted or voted for this idea on the Tolzar feature board.'
+        see_idea: 'See the idea'
+        shipped:
+          subject: 'Shipped: %{title}'
+          intro: 'Good news: "%{title}", an idea you asked for, is now available in Tolzar.'
+          changelog: 'Read the changelog'
+        merged:
+          subject: 'Your idea was merged: %{title}'
+          intro: '"%{duplicate}" was merged with "%{idea}", which asks for the same thing. The votes were carried over and you keep following it.'
+  super_admin:
+    feedback:
+      title: 'Feature board'
+      description: 'Moderate the public feature board, change idea statuses with an explanation, merge duplicates and write the changelog.'
+      open_board: 'Open the board'
+      mail_on: 'Ship emails on'
+      mail_off: 'Ship emails off (NEWSLETTER_ENABLED)'
+      queue:
+        title: 'Moderation queue'
+        empty: 'Nothing to check.'
+        idea: 'Idea'
+        comment: 'Comment'
+        held: 'First post'
+        reports:
+          one: '1 report'
+          other: '%{count} reports'
+        on_idea: 'On #%{id} %{title}'
+      idea:
+        title: 'Idea #%{id}'
+        votes:
+          one: '1 vote'
+          other: '%{count} votes'
+        merged_into: 'Merged into #%{id}'
+        new_status: 'New status'
+        explanation: 'Explanation (public, pinned as the official response)'
+        explanation_help: 'Required. It is shown on the idea, kept in the dated history and sent to voters when the idea ships.'
+        merge_into: 'Merge into idea #'
+        merge_help: 'This idea becomes a duplicate: its votes move to the other idea (one per user) and both authors get an email.'
+      ideas:
+        title: 'Ideas'
+      changelog:
+        new_title: 'New changelog entry'
+        edit_title: 'Changelog entry #%{id}'
+        entry_title: 'Title'
+        body: 'Body (Markdown)'
+        idea_ids: 'Ideas it shipped (numbers, comma-separated)'
+        publish: 'Publish now'
+        published: 'Published %{at}'
+        live: 'Published'
+        draft: 'Draft'
+      actions:
+        approve: 'Approve'
+        hide: 'Hide'
+        change_status: 'Change status'
+        merge: 'Merge'
+        save: 'Save'
+      saved: 'Saved.'
+      merged: 'Merged. Both authors will be told by email.'
+      invalid: 'That action is not available.'
+      invalid_status: 'Choose a different, valid status.'
+      explanation_needed: 'An explanation is required.'
+      invalid_merge: 'Choose another idea that exists and is not itself merged.'

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_10_30_044158) do
+ActiveRecord::Schema[7.1].define(version: 2026_10_30_053234) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1825,6 +1825,76 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_30_044158) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["status"], name: "index_tolzar_newsletters_on_status"
+  end
+
+  create_table "tolzar_changelog_entries", force: :cascade do |t|
+    t.string "title", null: false
+    t.text "body_markdown", null: false
+    t.datetime "published_at"
+    t.bigint "created_by_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["published_at"], name: "index_tolzar_changelog_entries_on_published_at"
+  end
+
+  create_table "tolzar_idea_comments", force: :cascade do |t|
+    t.bigint "idea_id", null: false
+    t.bigint "user_id"
+    t.text "body", null: false
+    t.boolean "staff", default: false, null: false
+    t.boolean "pinned", default: false, null: false
+    t.boolean "held", default: false, null: false
+    t.boolean "hidden", default: false, null: false
+    t.integer "reports_count", default: 0, null: false
+    t.jsonb "reporter_ids", default: [], null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["idea_id", "created_at"], name: "index_tolzar_idea_comments_on_idea_id_and_created_at"
+    t.index ["user_id"], name: "index_tolzar_idea_comments_on_user_id"
+  end
+
+  create_table "tolzar_idea_status_changes", force: :cascade do |t|
+    t.bigint "idea_id", null: false
+    t.string "from_status"
+    t.string "to_status", null: false
+    t.text "explanation", null: false
+    t.bigint "changed_by_id"
+    t.datetime "created_at", null: false
+    t.index ["idea_id", "created_at"], name: "index_tolzar_idea_status_changes_on_idea_id_and_created_at"
+  end
+
+  create_table "tolzar_idea_votes", force: :cascade do |t|
+    t.bigint "idea_id", null: false
+    t.bigint "user_id", null: false
+    t.datetime "shipped_notified_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_tolzar_idea_votes_on_created_at"
+    t.index ["idea_id", "user_id"], name: "index_tolzar_idea_votes_on_idea_id_and_user_id", unique: true
+    t.index ["user_id"], name: "index_tolzar_idea_votes_on_user_id"
+  end
+
+  create_table "tolzar_ideas", force: :cascade do |t|
+    t.string "title", null: false
+    t.text "body", null: false
+    t.string "status", default: "under_review", null: false
+    t.string "tag"
+    t.string "locale", null: false
+    t.bigint "user_id"
+    t.bigint "account_id"
+    t.integer "votes_count", default: 0, null: false
+    t.bigint "merged_into_id"
+    t.bigint "changelog_entry_id"
+    t.boolean "held", default: false, null: false
+    t.boolean "hidden", default: false, null: false
+    t.integer "reports_count", default: 0, null: false
+    t.jsonb "reporter_ids", default: [], null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["changelog_entry_id"], name: "index_tolzar_ideas_on_changelog_entry_id"
+    t.index ["merged_into_id"], name: "index_tolzar_ideas_on_merged_into_id"
+    t.index ["status", "votes_count"], name: "index_tolzar_ideas_on_status_and_votes_count"
+    t.index ["user_id"], name: "index_tolzar_ideas_on_user_id"
   end
 
   create_trigger("camp_dpid_before_insert", :generated => true, :compatibility => 1).

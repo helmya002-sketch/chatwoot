@@ -1,0 +1,9 @@
+<% content_for(:title) { t('tolzar.feedback.titles.index') } %>
+
+<div class="card">
+  <p><%= @message %></p>
+  <% if viewer.nil? %>
+    <p><a class="btn" href="/app/login"><%= t('tolzar.feedback.nav.sign_in') %></a></p>
+  <% end %>
+  <p class="small"><a href="<%= tolzar_feedback_path %>">&larr; <%= t('tolzar.feedback.nav.ideas') %></a></p>
+</div>

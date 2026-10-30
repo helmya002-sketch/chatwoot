@@ -1,0 +1,126 @@
+es:
+  tolzar:
+    feedback:
+      brand: 'Peticiones de funciones de Tolzar'
+      staff: 'Equipo de Tolzar'
+      report: 'Denunciar'
+      deleted_user: 'Antiguo usuario'
+      nav:
+        ideas: 'Ideas'
+        roadmap: 'Hoja de ruta'
+        changelog: 'Novedades'
+        signed_in: 'Sesión iniciada como %{name}'
+        sign_in: 'Iniciar sesión en Tolzar'
+      titles:
+        index: 'Peticiones de funciones | Tolzar'
+        idea: '%{idea} — %{status} | Peticiones de funciones de Tolzar'
+        roadmap: 'Hoja de ruta | Peticiones de funciones de Tolzar'
+        changelog: 'Novedades | Peticiones de funciones de Tolzar'
+      index:
+        heading: 'Peticiones de funciones'
+        intro: 'Propón una idea, vota las que necesitas y síguelas hasta que salgan. Escribe en tu idioma.'
+        search: 'Buscar ideas'
+        status: 'Estado'
+        all_statuses: 'Todos los estados'
+        tag: 'Área'
+        all_tags: 'Todas las áreas'
+        language: 'Idioma'
+        all_languages: 'Todos los idiomas'
+        sort: 'Orden'
+        apply: 'Aplicar'
+        empty: 'Todavía no hay ideas con estos filtros.'
+        previous: 'Anterior'
+        next: 'Siguiente'
+      sorts:
+        top: 'Más votadas'
+        new: 'Más recientes'
+        trending: 'En tendencia'
+      statuses:
+        under_review:
+          label: 'En estudio'
+          definition: 'Ideas nuevas sobre las que aún no hemos decidido. Los votos y comentarios nos ayudan.'
+        planned:
+          label: 'Planificada'
+          definition: 'Hemos decidido hacerla. El trabajo no ha empezado.'
+        building:
+          label: 'En desarrollo'
+          definition: 'Estamos trabajando en ella ahora.'
+        shipped:
+          label: 'Disponible'
+          definition: 'Publicada y disponible. Los detalles están en las novedades.'
+        already_possible:
+          label: 'Ya es posible'
+          definition: 'Tolzar ya lo hace; la explicación dice cómo.'
+        not_planned:
+          label: 'No planificada'
+          definition: 'No tenemos previsto hacerla; la explicación dice por qué.'
+      tags:
+        inbox: 'Bandeja de entrada'
+        channels: 'Canales'
+        ai_agents: 'Agentes de IA'
+        workflows: 'Flujos de trabajo'
+        contacts: 'Contactos y pipeline'
+        reports: 'Informes'
+        integrations: 'Integraciones'
+        other: 'Otros'
+      form:
+        heading: 'Propón una idea'
+        title: 'Título (una frase)'
+        body: '¿Qué necesitas y por qué?'
+        tag: 'Área'
+        no_tag: 'Elige un área'
+        language: 'Idioma'
+        honeypot: 'Deja este campo vacío'
+        rules: 'Nuestro equipo revisa tu primera publicación antes de que aparezca. Podrás poner enlaces después de tu primera publicación aprobada.'
+        submit: 'Publicar idea'
+        sign_in_html: '<a href="%{url}">Inicia sesión en Tolzar</a> para publicar, votar y comentar.'
+        comment: 'Tu comentario'
+        comment_submit: 'Comentar'
+      vote:
+        add: 'Votar esta idea'
+        remove: 'Quitar tu voto'
+        sign_in: 'Inicia sesión para votar'
+      show:
+        merged_html: 'Esta idea se ha unido a %{link}. Sus votos se han trasladado.'
+        held: 'Solo tú ves esta publicación hasta que nuestro equipo la revise.'
+        shipped_in_html: 'Disponible desde %{link}.'
+        official: 'Respuesta oficial'
+        duplicates: 'Unidas a esta idea'
+        history: 'Historial de estados'
+        comments: 'Comentarios (%{count})'
+        awaiting_review: 'Pendiente de revisión'
+      roadmap:
+        heading: 'Hoja de ruta'
+        intro: 'Lo que planificamos, lo que estamos desarrollando y lo que ya está disponible, ordenado por votos. Sin fechas: solo prometemos lo que ya está publicado.'
+        empty: 'Todavía no hay nada aquí.'
+        see_changelog: 'Ver las novedades'
+        other_heading: 'Otros estados'
+      changelog:
+        heading: 'Novedades'
+        intro: 'Lo nuevo en Tolzar, enlazado con las ideas que lo pidieron.'
+        rss: 'Canal RSS'
+        empty: 'Todavía no hay entradas.'
+        from_ideas: 'De las ideas:'
+        feed_title: 'Novedades de Tolzar'
+      errors:
+        not_found: 'Esta idea no existe o no es pública.'
+        sign_in: 'Inicia sesión en Tolzar para publicar, votar y comentar.'
+        no_workspace: 'Para publicar, votar y comentar necesitas un espacio de trabajo de Tolzar (basta con uno de prueba).'
+        too_fast: 'No se ha podido enviar. Recarga la página y vuelve a intentarlo.'
+        rate_limited: 'Has llegado al límite por hora. Vuelve a intentarlo más tarde.'
+        no_links_yet: 'Podrás poner enlaces después de tu primera publicación aprobada. Quita el enlace y vuelve a publicar.'
+      flash:
+        held: 'Gracias. Nuestro equipo revisa las primeras publicaciones antes de que aparezcan; hasta entonces solo tú la ves.'
+        posted: 'Tu idea está publicada.'
+        commented: 'Tu comentario está publicado.'
+        reported: 'Gracias. Nuestro equipo lo revisará.'
+      mail:
+        why: 'Recibes este correo porque publicaste o votaste esta idea en el tablero de peticiones de Tolzar.'
+        see_idea: 'Ver la idea'
+        shipped:
+          subject: 'Disponible: %{title}'
+          intro: 'Buenas noticias: «%{title}», una idea que pediste, ya está disponible en Tolzar.'
+          changelog: 'Leer las novedades'
+        merged:
+          subject: 'Tu idea se ha unido a otra: %{title}'
+          intro: '«%{duplicate}» se ha unido a «%{idea}», que pide lo mismo. Los votos se han trasladado y sigues recibiendo sus avisos.'

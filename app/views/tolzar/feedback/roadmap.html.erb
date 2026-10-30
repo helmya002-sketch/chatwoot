@@ -1,0 +1,41 @@
+<% scope = 'tolzar.feedback' %>
+<% content_for(:title) { t("#{scope}.titles.roadmap") } %>
+<% content_for(:canonical) { tolzar_feedback_roadmap_url } %>
+
+<h1><%= t("#{scope}.roadmap.heading") %></h1>
+<p class="muted"><%= t("#{scope}.roadmap.intro") %></p>
+
+<% @sections.each do |status, section| %>
+  <section class="card" id="<%= status %>">
+    <h2>
+      <span class="pill s-<%= status %>"><%= t("#{scope}.statuses.#{status}.label") %></span>
+      <span class="muted small"><%= section[:count] %></span>
+    </h2>
+    <p class="small muted"><%= t("#{scope}.statuses.#{status}.definition") %></p>
+    <% if section[:ideas].empty? %>
+      <p class="small muted"><%= t("#{scope}.roadmap.empty") %></p>
+    <% end %>
+    <% section[:ideas].each do |idea| %>
+      <div class="row">
+        <div class="votes"><span class="chip">&#9650; <%= idea.votes_count %></span></div>
+        <div class="grow">
+          <a class="title" href="<%= tolzar_feedback_idea_path(idea) %>"><%= idea.title %></a>
+          <% if idea.tag %><span class="chip"><%= t("#{scope}.tags.#{idea.tag}") %></span><% end %>
+        </div>
+      </div>
+    <% end %>
+    <% if status == 'shipped' %>
+      <p class="small"><a href="<%= tolzar_feedback_changelog_path %>"><%= t("#{scope}.roadmap.see_changelog") %></a></p>
+    <% end %>
+  </section>
+<% end %>
+
+<div class="card">
+  <h2><%= t("#{scope}.roadmap.other_heading") %></h2>
+  <% %w[under_review already_possible not_planned].each do |status| %>
+    <p class="small">
+      <a href="<%= tolzar_feedback_path(status: status) %>"><span class="pill s-<%= status %>"><%= t("#{scope}.statuses.#{status}.label") %></span></a>
+      <span class="muted"><%= t("#{scope}.statuses.#{status}.definition") %></span>
+    </p>
+  <% end %>
+</div>

@@ -25,6 +25,18 @@ Rails.application.routes.draw do
   get  'tolzar/newsletter/unsubscribe/:token', to: 'tolzar/newsletter_unsubscribe#show', as: :tolzar_newsletter_unsubscribe
   post 'tolzar/newsletter/unsubscribe/:token', to: 'tolzar/newsletter_unsubscribe#create'
   post 'tolzar/newsletter/postal/:webhook_token', to: 'tolzar/newsletter_postal#create', as: :tolzar_newsletter_postal
+  # Tolzar public feature-request board, roadmap and changelog (read: public; write: Tolzar login + workspace).
+  get  'feedback',                              to: 'tolzar/feedback#index', as: :tolzar_feedback
+  post 'feedback',                              to: 'tolzar/feedback#create'
+  get  'feedback/roadmap',                      to: 'tolzar/feedback#roadmap', as: :tolzar_feedback_roadmap
+  get  'feedback/changelog',                    to: 'tolzar/feedback#changelog', as: :tolzar_feedback_changelog
+  post 'feedback/comments/:comment_id/report',  to: 'tolzar/feedback#report_comment', as: :tolzar_feedback_comment_report
+  constraints(id: /\d+(-[a-z0-9-]+)?/) do
+    get  'feedback/:id',          to: 'tolzar/feedback#show', as: :tolzar_feedback_idea
+    post 'feedback/:id/vote',     to: 'tolzar/feedback#vote', as: :tolzar_feedback_idea_vote
+    post 'feedback/:id/comments', to: 'tolzar/feedback#comment', as: :tolzar_feedback_idea_comments
+    post 'feedback/:id/report',   to: 'tolzar/feedback#report', as: :tolzar_feedback_idea_report
+  end
   # Tolzar MCP server (F1): public, read-only, per-workspace Bearer token checked by the brain.
   # Held back from the internet until Server ops has reviewed the hardening (28 Oct): enable with
   # TOLZAR_MCP_PUBLIC=true once rate limits + fail2ban logging are confirmed on the box.
@@ -854,6 +866,13 @@ Rails.application.routes.draw do
         post :test_send
         post :deliver
         post :suppression
+      end
+      # Tolzar feature board moderation, statuses, merges and changelog (singular: out of the Administrate list).
+      resource :feedback, only: [:show] do
+        post :moderate
+        post :change_status
+        post :merge_idea
+        post :save_changelog
       end
       resource :user_diagnostics, only: [:show, :create] do
         post :destroy_subscriptions, on: :collection

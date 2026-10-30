@@ -1,0 +1,121 @@
+<% scope = 'tolzar.feedback' %>
+<% status_label = t("#{scope}.statuses.#{@idea.status}.label") %>
+<% canonical = tolzar_feedback_idea_url(@idea) %>
+<% content_for(:title) { t("#{scope}.titles.idea", idea: @idea.title, status: status_label) } %>
+<% content_for(:canonical) { canonical } %>
+<% content_for(:head) do %>
+  <%
+    ld = {
+      '@context' => 'https://schema.org', '@type' => 'DiscussionForumPosting', 'url' => canonical, 'mainEntityOfPage' => canonical,
+      'headline' => @idea.title, 'text' => @idea.body, 'inLanguage' => @idea.locale, 'datePublished' => @idea.created_at.iso8601,
+      'author' => { '@type' => 'Person', 'name' => @idea.user&.available_name || t("#{scope}.deleted_user") },
+      'interactionStatistic' => [
+        { '@type' => 'InteractionCounter', 'interactionType' => 'https://schema.org/LikeAction', 'userInteractionCount' => @idea.votes_count },
+        { '@type' => 'InteractionCounter', 'interactionType' => 'https://schema.org/CommentAction', 'userInteractionCount' => @comments.size + (@pinned ? 1 : 0) }
+      ]
+    }
+  %>
+  <script type="application/ld+json"><%= json_escape(ld.to_json).html_safe %></script>
+<% end %>
+
+<p class="small"><a href="<%= tolzar_feedback_path %>">&larr; <%= t("#{scope}.nav.ideas") %></a></p>
+
+<% if @idea.merged_into %>
+  <p class="banner">
+    <%= t("#{scope}.show.merged_html", link: link_to("##{@idea.merged_into.id} #{@idea.merged_into.title}", tolzar_feedback_idea_path(@idea.merged_into))) %>
+  </p>
+<% end %>
+<% if @idea.held %>
+  <p class="banner"><%= t("#{scope}.show.held") %></p>
+<% end %>
+
+<div class="card">
+  <div class="row">
+    <div class="votes"><%= render 'tolzar/feedback/vote_button', idea: @idea, voted: @voted %></div>
+    <div class="grow">
+      <h1><%= @idea.title %></h1>
+      <p class="small muted">
+        #<%= @idea.id %>
+        <span class="pill s-<%= @idea.status %>"><%= status_label %></span>
+        <% if @idea.tag %><span class="chip"><%= t("#{scope}.tags.#{@idea.tag}") %></span><% end %>
+        <span class="chip"><%= @idea.locale %></span>
+        &middot; <%= @idea.user&.available_name || t("#{scope}.deleted_user") %>
+        &middot; <%= l(@idea.created_at.to_date, format: :long) %>
+      </p>
+      <div lang="<%= @idea.locale %>"><%= simple_format(h(@idea.body)) %></div>
+      <% if @idea.changelog_entry&.published_at %>
+        <p><%= t("#{scope}.show.shipped_in_html", link: link_to(@idea.changelog_entry.title, tolzar_feedback_changelog_path(anchor: @idea.changelog_entry.anchor))) %></p>
+      <% end %>
+      <% if member? && @idea.user_id != viewer.id %>
+        <%= button_to t("#{scope}.report"), tolzar_feedback_idea_report_path(@idea), method: :post, class: 'link' %>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<% if @pinned %>
+  <div class="card pinned">
+    <p class="small"><span class="pill staff"><%= t("#{scope}.staff") %></span> <%= t("#{scope}.show.official") %></p>
+    <%= simple_format(h(@pinned.body)) %>
+  </div>
+<% end %>
+
+<% if @duplicates.any? %>
+  <div class="card">
+    <h2><%= t("#{scope}.show.duplicates") %></h2>
+    <ul>
+      <% @duplicates.each do |dup| %>
+        <li><a href="<%= tolzar_feedback_idea_path(dup) %>">#<%= dup.id %> <%= dup.title %></a></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<% if @history.any? %>
+  <div class="card">
+    <h2><%= t("#{scope}.show.history") %></h2>
+    <ol class="history">
+      <% @history.each do |change| %>
+        <li>
+          <span class="small muted"><%= l(change.created_at.to_date, format: :long) %></span>
+          <span class="pill s-<%= change.to_status %>"><%= t("#{scope}.statuses.#{change.to_status}.label") %></span>
+          <div class="small"><%= simple_format(h(change.explanation)) %></div>
+        </li>
+      <% end %>
+    </ol>
+  </div>
+<% end %>
+
+<div class="card">
+  <h2><%= t("#{scope}.show.comments", count: @comments.size) %></h2>
+  <% @comments.each do |comment| %>
+    <div class="row" id="comment-<%= comment.id %>">
+      <div class="grow">
+        <p class="small muted">
+          <% if comment.staff %><span class="pill staff"><%= t("#{scope}.staff") %></span><% end %>
+          <%= comment.user&.available_name || t("#{scope}.deleted_user") %> &middot; <%= l(comment.created_at.to_date, format: :long) %>
+          <% if comment.held %>&middot; <%= t("#{scope}.show.awaiting_review") %><% end %>
+        </p>
+        <%= simple_format(h(comment.body)) %>
+        <% if member? && comment.user_id != viewer.id && !comment.staff %>
+          <%= button_to t("#{scope}.report"), tolzar_feedback_comment_report_path(comment_id: comment.id), method: :post, class: 'link' %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <% if @idea.merged_into_id.nil? %>
+    <% if member? %>
+      <%= form_with url: tolzar_feedback_idea_comments_path(@idea), scope: :comment, method: :post, local: true do |f| %>
+        <div class="field">
+          <%= f.label :body, t("#{scope}.form.comment") %>
+          <%= f.text_area :body, maxlength: Tolzar::IdeaComment::BODY_MAX, required: true %>
+        </div>
+        <%= render 'tolzar/feedback/spam_fields' %>
+        <button type="submit" class="btn"><%= t("#{scope}.form.comment_submit") %></button>
+      <% end %>
+    <% else %>
+      <%= render 'tolzar/feedback/sign_in_note' %>
+    <% end %>
+  <% end %>
+</div>

@@ -1,0 +1,9 @@
+<%# locals: (idea:, voted:) -%>
+<% if member? && idea.merged_into_id.nil? && !idea.held %>
+  <%= button_to tolzar_feedback_idea_vote_path(idea), method: :post, class: ('on' if voted),
+                'aria-pressed': voted.to_s, title: t(voted ? 'tolzar.feedback.vote.remove' : 'tolzar.feedback.vote.add') do %>
+    &#9650; <%= idea.votes_count %>
+  <% end %>
+<% else %>
+  <a class="vote" href="<%= tolzar_feedback_idea_path(idea) %>" title="<%= t('tolzar.feedback.vote.sign_in') %>">&#9650; <%= idea.votes_count %></a>
+<% end %>

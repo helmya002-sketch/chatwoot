@@ -1,0 +1,133 @@
+<% scope = 'super_admin.feedback' %>
+<% content_for(:title) { t("#{scope}.title") } %>
+
+<%= render "page_header", title: t("#{scope}.title"), description: t("#{scope}.description") do %>
+  <%= render "button", label: t("#{scope}.open_board"), variant: :secondary, url: tolzar_feedback_path, target: "_blank", rel: "noopener" %>
+  <%= render "badge", label: (@enabled ? t("#{scope}.mail_on") : t("#{scope}.mail_off")), tone: (@enabled ? :success : :warning) %>
+<% end %>
+
+<div class="space-y-6 pb-10">
+  <%= render "card", title: t("#{scope}.queue.title"), count: @held_ideas.size + @held_comments.size do %>
+    <ul class="divide-y divide-n-weak">
+      <% if @held_ideas.empty? && @held_comments.empty? %>
+        <li class="px-4 py-3 text-body-main text-n-slate-11"><%= t("#{scope}.queue.empty") %></li>
+      <% end %>
+      <% [[@held_ideas, "idea"], [@held_comments, "comment"]].each do |records, kind| %>
+        <% records.each do |record| %>
+          <li class="space-y-2 px-4 py-3">
+            <div class="flex flex-wrap items-center gap-2">
+              <%= render "badge", label: t("#{scope}.queue.#{kind}"), tone: :info %>
+              <%= render "badge", label: t("#{scope}.queue.held"), tone: :warning if record.held %>
+              <%= render "badge", label: t("#{scope}.queue.reports", count: record.reports_count), tone: :danger if record.reports_count.positive? %>
+              <span class="text-label-small text-n-slate-11"><%= record.user&.email %></span>
+            </div>
+            <% if kind == "idea" %>
+              <p class="text-body-main font-medium text-n-slate-12"><%= record.title %></p>
+            <% else %>
+              <p class="text-label-small text-n-slate-11"><%= t("#{scope}.queue.on_idea", id: record.idea_id, title: record.idea.title) %></p>
+            <% end %>
+            <p class="whitespace-pre-line text-body-main text-n-slate-12"><%= record.body.truncate(600) %></p>
+            <div class="flex flex-wrap gap-2">
+              <%= render "button", label: t("#{scope}.actions.approve"), variant: :secondary,
+                                   post_to: moderate_super_admin_feedback_path(kind: kind, record_id: record.id, op: "approve") %>
+              <%= render "button", label: t("#{scope}.actions.hide"), variant: :danger,
+                                   post_to: moderate_super_admin_feedback_path(kind: kind, record_id: record.id, op: "hide") %>
+            </div>
+          </li>
+        <% end %>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <% if @idea %>
+    <%= render "card", title: t("#{scope}.idea.title", id: @idea.id) do %>
+      <div class="space-y-4 p-4">
+        <p class="text-body-main text-n-slate-12">
+          <%= link_to @idea.title, tolzar_feedback_idea_path(@idea), class: "font-medium hover:underline", target: "_blank", rel: "noopener" %>
+          <%= render "badge", label: t("tolzar.feedback.statuses.#{@idea.status}.label") %>
+          <%= render "badge", label: t("#{scope}.idea.votes", count: @idea.votes_count), tone: :info %>
+          <% if @idea.merged_into_id %>
+            <%= render "badge", label: t("#{scope}.idea.merged_into", id: @idea.merged_into_id), tone: :warning %>
+          <% end %>
+        </p>
+
+        <%= form_with url: change_status_super_admin_feedback_path(id: @idea.id), method: :post, local: true, class: "space-y-3" do |f| %>
+          <div>
+            <%= f.label :status, t("#{scope}.idea.new_status"), class: "mb-1 block text-label-small text-n-slate-11" %>
+            <%= f.select :status, (Tolzar::Idea::STATUSES - [@idea.status]).map { |s| [t("tolzar.feedback.statuses.#{s}.label"), s] },
+                         {}, class: ui(:select, "sm:w-72") %>
+          </div>
+          <div>
+            <%= f.label :explanation, t("#{scope}.idea.explanation"), class: "mb-1 block text-label-small text-n-slate-11" %>
+            <%= f.text_area :explanation, rows: 5, required: true, maxlength: Tolzar::IdeaComment::BODY_MAX, class: ui(:input) %>
+            <p class="mt-1 text-label-small text-n-slate-10"><%= t("#{scope}.idea.explanation_help") %></p>
+          </div>
+          <%= render "button", label: t("#{scope}.actions.change_status"), submit: f %>
+        <% end %>
+
+        <% if @idea.merged_into_id.nil? %>
+          <%= form_with url: merge_idea_super_admin_feedback_path(id: @idea.id), method: :post, local: true, class: "flex flex-wrap items-end gap-2" do |f| %>
+            <div>
+              <%= f.label :into_id, t("#{scope}.idea.merge_into"), class: "mb-1 block text-label-small text-n-slate-11" %>
+              <%= f.number_field :into_id, min: 1, required: true, class: ui(:input, "sm:w-40") %>
+            </div>
+            <%= render "button", label: t("#{scope}.actions.merge"), variant: :danger, submit: f %>
+          <% end %>
+          <p class="text-label-small text-n-slate-10"><%= t("#{scope}.idea.merge_help") %></p>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+
+  <%= render "card", title: t("#{scope}.ideas.title"), count: @ideas.size do %>
+    <ul class="divide-y divide-n-weak">
+      <% @ideas.each do |idea| %>
+        <li class="flex flex-wrap items-center justify-between gap-2 px-4 py-2.5">
+          <%= link_to "##{idea.id} #{idea.title}", super_admin_feedback_path(id: idea.id), class: "min-w-0 truncate text-body-main text-n-slate-12 hover:underline" %>
+          <span class="flex items-center gap-2 text-label-small tabular-nums text-n-slate-11">
+            <%= idea.votes_count %>
+            <%= render "badge", label: t("tolzar.feedback.statuses.#{idea.status}.label") %>
+          </span>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <%= render "card", title: (@entry.persisted? ? t("#{scope}.changelog.edit_title", id: @entry.id) : t("#{scope}.changelog.new_title")) do %>
+    <%= form_with model: @entry, scope: :changelog_entry, url: save_changelog_super_admin_feedback_path, method: :post, local: true,
+                  class: "space-y-4 p-4" do |f| %>
+      <%= hidden_field_tag :entry_id, @entry.id if @entry.persisted? %>
+      <div>
+        <%= f.label :title, t("#{scope}.changelog.entry_title"), class: "mb-1 block text-label-small text-n-slate-11" %>
+        <%= f.text_field :title, maxlength: Tolzar::ChangelogEntry::TITLE_MAX, required: true, class: ui(:input) %>
+      </div>
+      <div>
+        <%= f.label :body_markdown, t("#{scope}.changelog.body"), class: "mb-1 block text-label-small text-n-slate-11" %>
+        <%= f.text_area :body_markdown, rows: 10, maxlength: Tolzar::ChangelogEntry::BODY_MAX, required: true, class: ui(:input, "font-mono") %>
+      </div>
+      <div>
+        <%= label_tag :idea_ids, t("#{scope}.changelog.idea_ids"), class: "mb-1 block text-label-small text-n-slate-11" %>
+        <%= text_field_tag :idea_ids, (@entry.persisted? ? @entry.ideas.pluck(:id).join(", ") : ""), class: ui(:input, "sm:w-96") %>
+      </div>
+      <% if @entry.published_at %>
+        <p class="text-label-small text-n-slate-11"><%= t("#{scope}.changelog.published", at: l(@entry.published_at, format: :long)) %></p>
+      <% else %>
+        <label class="flex items-center gap-2 text-body-main text-n-slate-12">
+          <%= check_box_tag :publish, "1", false, class: ui(:checkbox) %>
+          <%= t("#{scope}.changelog.publish") %>
+        </label>
+      <% end %>
+      <%= render "button", label: t("#{scope}.actions.save"), submit: f %>
+    <% end %>
+    <ul class="divide-y divide-n-weak border-t border-n-weak">
+      <% @entries.each do |entry| %>
+        <li class="flex flex-wrap items-center justify-between gap-2 px-4 py-2.5">
+          <%= link_to entry.title, super_admin_feedback_path(entry_id: entry.id), class: "min-w-0 truncate text-body-main text-n-slate-12 hover:underline" %>
+          <%= render "badge", label: (entry.published_at ? t("#{scope}.changelog.live") : t("#{scope}.changelog.draft")),
+                              tone: (entry.published_at ? :success : :neutral) %>
+        </li>
+      <% end %>
+      <li class="px-4 py-2.5"><%= link_to t("#{scope}.changelog.new_title"), super_admin_feedback_path, class: "text-body-main text-n-blue-11 hover:underline" %></li>
+    </ul>
+  <% end %>
+</div>
