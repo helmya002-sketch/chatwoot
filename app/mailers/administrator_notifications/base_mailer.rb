@@ -11,12 +11,17 @@ class AdministratorNotifications::BaseMailer < ApplicationMailer
 
   # Helper method to generate inbox URL
   def inbox_url(inbox)
-    "#{ENV.fetch('FRONTEND_URL', nil)}/app/accounts/#{Current.account.id}/settings/inboxes/#{inbox.id}"
+    "#{mail_link_base}/app/accounts/#{Current.account.id}/settings/inboxes/#{inbox.id}"
   end
 
   # Helper method to generate settings URL
   def settings_url(section)
-    "#{ENV.fetch('FRONTEND_URL', nil)}/app/accounts/#{Current.account.id}/settings/#{section}"
+    "#{mail_link_base}/app/accounts/#{Current.account.id}/settings/#{section}"
+  end
+
+  # Tolzar (item J): the customer-facing address for mail links (TOLZAR_MAIL_LINK_URL), else FRONTEND_URL.
+  def mail_link_base
+    (ENV['TOLZAR_MAIL_LINK_URL'].presence || ENV.fetch('FRONTEND_URL', nil)).to_s.chomp('/')
   end
 
   private

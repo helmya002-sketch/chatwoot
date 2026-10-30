@@ -3,8 +3,11 @@ Rails.application.configure do
   # Configuration Related to Action Mailer
   #########################################
 
-  # We need the application frontend url to be used in our emails
-  config.action_mailer.default_url_options = { host: ENV['FRONTEND_URL'] } if ENV['FRONTEND_URL'].present?
+  # We need the application frontend url to be used in our emails.
+  # Tolzar (queue item J): TOLZAR_MAIL_LINK_URL (e.g. https://app.tolzar.com, a second hostname of the same app)
+  # puts the customer-facing address in every mail link while FRONTEND_URL stays where it is.
+  mail_link_url = ENV['TOLZAR_MAIL_LINK_URL'].presence || ENV['FRONTEND_URL'].presence
+  config.action_mailer.default_url_options = { host: mail_link_url } if mail_link_url
   # We load certain mailer templates from our database. This ensures changes to it is reflected immediately
   config.action_mailer.perform_caching = false
   config.action_mailer.perform_deliveries = true
