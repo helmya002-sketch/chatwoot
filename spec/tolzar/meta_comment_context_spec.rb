@@ -66,15 +66,21 @@ RSpec.describe Tolzar::MetaCommentContextJob do
     expect(context).to include('unavailable' => true, 'permalink' => 'https://www.facebook.com/1001_222')
   end
 
-  it 'quotes a held parent comment natively and reads a foreign one from Meta' do
+  it 'quotes the parent comment: natively in the same thread, from our copy or from Meta otherwise' do
     stub_request(:get, %r{graph\.facebook\.com/v26\.0/1001_222\?}).to_return(body: { message: 'Post' }.to_json)
     perform_enqueued_jobs { ingest(comment) }
     held = inbox.messages.find_by(source_id: 'comment:1001_111')
 
-    # A second fan answers the first fan's comment we hold: a native reply quote.
-    ingest(comment(comment_id: '1001_113', parent_id: '1001_111', from: { id: 'fan-2', name: 'Fan Two' }))
+    # The same fan answers their own comment (same thread): a native reply quote.
+    ingest(comment(comment_id: '1001_116', parent_id: '1001_111'))
+    own = inbox.messages.find_by(source_id: 'comment:1001_116')
+    expect(own.content_attributes['in_reply_to']).to eq(held.id)
+
+    # A second fan answers the first fan's comment we hold (another thread): quoted from our copy, no Graph call.
+    expect { ingest(comment(comment_id: '1001_113', parent_id: '1001_111', from: { id: 'fan-2', name: 'Fan Two' })) }
+      .not_to have_enqueued_job(described_class).with(anything, kind_of(Integer))
     reply = inbox.messages.find_by(source_id: 'comment:1001_113')
-    expect(reply.content_attributes['in_reply_to']).to eq(held.id)
+    expect(reply.content_attributes['tolzar_comment_parent']).to eq('text' => 'How much?', 'author' => 'Fan One')
 
     # A reply to a comment we never received: read from Meta.
     stub_request(:get, %r{graph\.facebook\.com/v26\.0/1001_999\?})
