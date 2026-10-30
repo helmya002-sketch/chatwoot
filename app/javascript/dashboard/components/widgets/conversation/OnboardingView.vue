@@ -84,7 +84,8 @@ const flow = [
         </div>
       </section>
 
-      <div class="grid gap-6 lg:grid-cols-[1fr_18rem]">
+      <!-- One column: this view lives in the narrow conversation pane on every screen size. -->
+      <div class="flex flex-col gap-6">
         <!-- The four steps, as one connected path -->
         <ol class="m-0 flex list-none flex-col gap-3 p-0">
           <li v-for="(step, index) in steps" :key="step.key" class="relative">
@@ -149,7 +150,7 @@ const flow = [
         </ol>
 
         <!-- How shadow mode works -->
-        <aside class="h-fit rounded-xl border border-n-weak bg-n-solid-2 p-5">
+        <aside class="rounded-xl border border-n-weak bg-n-solid-2 p-5">
           <p class="text-sm font-semibold text-n-slate-12">
             {{ $t('ONBOARDING.TOLZAR.FLOW.TITLE') }}
           </p>
