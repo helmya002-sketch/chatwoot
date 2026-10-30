@@ -52,3 +52,54 @@ RSpec.describe Tolzar::Subscription do
     expect(described_class.new(account: account, plan: 'team', currency: 'EUR', seat_limit: 1)).not_to be_valid
   end
 end
+
+RSpec.describe 'Tolzar billing v1 enforcement', type: :request do
+  let(:account) { create(:account) }
+  let(:admin) { create(:user, account: account, role: :administrator) }
+  let(:inbox) { create(:inbox, account: account) }
+  let(:conversation) { create(:conversation, account: account, inbox: inbox) }
+
+  around { |example| with_modified_env(TOLZAR_BILLING_ENFORCE: 'true') { example.run } }
+
+  def reply
+    post "/api/v1/accounts/#{account.id}/conversations/#{conversation.display_id}/messages",
+         params: { content: 'Hello' }, headers: admin.create_new_auth_token, as: :json
+  end
+
+  it 'starts a trial for a new workspace and lets it work' do
+    expect(Tolzar::Subscription.find_by(account_id: account.id)).to have_attributes(plan: 'trial', seat_limit: 5)
+    reply
+    expect(response).to have_http_status(:success)
+  end
+
+  it 'makes a paused workspace read-only, keeps reading, and resumes on a plan' do
+    sub = Tolzar::Subscription.find_by(account_id: account.id)
+    sub.update!(trial_ends_at: 1.day.ago)
+    reply
+    expect(response).to have_http_status(:payment_required)
+    expect(response.parsed_body['error']).to eq('workspace_paused')
+    expect(sub.reload.purge_after).to be_within(1.minute).of(Time.current + 30.days)
+
+    get "/api/v1/accounts/#{account.id}/conversations", headers: admin.create_new_auth_token
+    expect(response).to have_http_status(:success)
+
+    sub.activate!(plan: 'starter', paid_until: 30.days.from_now)
+    reply
+    expect(response).to have_http_status(:success)
+  end
+
+  it 'refuses an invite beyond the seat limit' do
+    Tolzar::Subscription.find_by(account_id: account.id).update!(seat_limit: 1)
+    admin
+    post "/api/v1/accounts/#{account.id}/agents", params: { name: 'New', email: 'new@example.com', role: 'agent' },
+                                                  headers: admin.create_new_auth_token, as: :json
+    expect(response).to have_http_status(:payment_required)
+    expect(response.parsed_body['error']).to eq('seat_limit_reached')
+  end
+
+  it 'refuses nothing while enforcement is off' do
+    Tolzar::Subscription.find_by(account_id: account.id).update!(trial_ends_at: 1.day.ago)
+    with_modified_env(TOLZAR_BILLING_ENFORCE: nil) { reply }
+    expect(response).to have_http_status(:success)
+  end
+end

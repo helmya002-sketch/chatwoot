@@ -8,6 +8,12 @@ class Api::V1::Accounts::AgentsController < Api::V1::Accounts::BaseController
   end
 
   def create
+    # Tolzar billing v1: no more members than the plan's seats (a trial has 5).
+    subscription = Tolzar::Subscription.find_by(account_id: Current.account.id)
+    if Tolzar::Subscription.enforced? && subscription && subscription.seats_left <= 0
+      return render json: { error: 'seat_limit_reached', seat_limit: subscription.seat_limit }, status: :payment_required
+    end
+
     builder = AgentBuilder.new(
       email: new_agent_params['email'],
       name: new_agent_params['name'],

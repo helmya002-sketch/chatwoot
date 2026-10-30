@@ -19,6 +19,12 @@ class Tolzar::Subscription < ApplicationRecord
 
   belongs_to :account
 
+  # Pausing and the seat cap act only with TOLZAR_BILLING_ENFORCE=true (set at launch, when trials and
+  # billing open); until then rows are kept and shown, nothing is refused.
+  def self.enforced?
+    ActiveModel::Type::Boolean.new.cast(ENV.fetch('TOLZAR_BILLING_ENFORCE', false))
+  end
+
   validates :plan, inclusion: { in: PLANS }
   validates :currency, inclusion: { in: CURRENCIES }
   validates :seat_limit, numericality: { only_integer: true, greater_than: 0 }
