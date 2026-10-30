@@ -373,18 +373,62 @@ async function refreshKnowledge() {
   knowledgeResult.value = r;
   knowledgeBusy.value = false;
 }
-const knowledgeSaved = computed(() =>
-  knowledgeResult.value && !refused(knowledgeResult.value)
+const knowledgeSaved = computed(() => {
+  const r = knowledgeResult.value;
+  if (r && !refused(r) && r.uploaded) {
+    return t('TOLZAR_AGENTS_UI.DOC_INDEXED', {
+      name: r.uploaded,
+      total: r.total ?? 0,
+    });
+  }
+  return knowledgeResult.value && !refused(knowledgeResult.value)
     ? t(
         'TOLZAR_AGENTS.KNOWLEDGE_INDEXED',
         { total: knowledgeResult.value.total ?? 0 },
         knowledgeResult.value.total ?? 0
       )
-    : ''
-);
+    : '';
+});
 
 function addKnowledge() {
   draft.value.knowledge.push({ type: 'url', label: '', value: '' });
+}
+
+// A knowledge document (PDF, DOCX, TXT/MD, HTML; Owner-only): the agent is saved first, the brain keeps
+// only the extracted text as a source and indexes it, then the page takes the brain's copy of the agent.
+const docInput = ref(null);
+async function uploadDocument(event) {
+  const file = event.target.files && event.target.files[0];
+  event.target.value = '';
+  if (!file || !draft.value) return;
+  knowledgeBusy.value = true;
+  knowledgeResult.value = null;
+  const payload = JSON.parse(JSON.stringify(draft.value));
+  if (payload.generic) payload.generic.instructions = payload.instructions;
+  const saved = await saveToServer(payload);
+  let r = saved;
+  if (!refused(saved)) {
+    const form = new FormData();
+    form.append('file', file);
+    r = await answer(
+      window.axios.post(
+        `${apiBase.value}/agents/${encodeURIComponent(draft.value.id)}/knowledge_upload`,
+        form
+      )
+    );
+    const data = await answer(window.axios.get(`${apiBase.value}/agents`));
+    const fresh =
+      !refused(data) && (data.agents || []).find(a => a.id === draft.value.id);
+    if (fresh) {
+      const i = agents.value.findIndex(a => a.id === fresh.id);
+      if (i >= 0) agents.value[i] = JSON.parse(JSON.stringify(fresh));
+      draft.value.knowledge = JSON.parse(JSON.stringify(fresh.knowledge || []));
+    }
+  }
+  knowledgeResult.value = refused(r)
+    ? r
+    : { ok: true, total: r.chunks ?? 0, uploaded: r.source };
+  knowledgeBusy.value = false;
 }
 function removeKnowledge(i) {
   draft.value.knowledge.splice(i, 1);
@@ -738,6 +782,8 @@ onMounted(async () => {
                   <span v-else class="i-lucide-refresh-cw size-3.5" />
                   {{ knowledgeBusy ? t('TOLZAR_AGENTS.INDEXING') : t('TOLZAR_AGENTS.INDEX_NOW') }}
                 </button>
+                <button type="button" :class="BTN_SOFT" :disabled="knowledgeBusy" @click="docInput && docInput.click()"><span class="i-lucide-file-up size-3.5" /> {{ t('TOLZAR_AGENTS_UI.UPLOAD_DOC') }}</button>
+                <input ref="docInput" type="file" class="hidden" accept=".pdf,.docx,.txt,.md,.html,.htm" @change="uploadDocument" />
                 <button type="button" :class="BTN_SOFT" @click="addKnowledge"><span class="i-lucide-plus size-3.5" /> {{ t('TOLZAR_AGENTS_UI.ADD') }}</button>
               </div>
             </div>
@@ -745,14 +791,20 @@ onMounted(async () => {
             <div v-if="!draft.knowledge.length" class="text-[13px] text-n-slate-10">{{ t('TOLZAR_AGENTS_UI.KNOWLEDGE_EMPTY') }}</div>
             <p v-if="draft.knowledge.length && !behaviour.answer_from_knowledge" class="mt-0 mb-2 text-xs text-n-amber-11">{{ t('TOLZAR_AGENTS.KNOWLEDGE_OFF') }}</p>
             <div v-for="(k, i) in draft.knowledge" :key="i" class="flex flex-wrap gap-2 items-center mb-2">
-              <select v-model="k.type" class="!w-auto" :class="INPUT" :aria-label="t('TOLZAR_AGENTS_UI.SOURCE_TYPE')">
+              <template v-if="k.file">
+                <span class="i-lucide-file-text size-4 text-n-slate-10" />
+                <span class="flex-1 text-[13px] text-n-slate-12 truncate">{{ k.file.name }}</span>
+                <span class="text-xs text-n-slate-10">{{ t('TOLZAR_AGENTS_UI.DOC_META', { chars: k.file.chars || 0 }) }}</span>
+              </template>
+              <select v-if="!k.file" v-model="k.type" class="!w-auto" :class="INPUT" :aria-label="t('TOLZAR_AGENTS_UI.SOURCE_TYPE')">
                 <option value="url">{{ t('TOLZAR_AGENTS_UI.TYPE_URL') }}</option>
                 <option value="text">{{ t('TOLZAR_AGENTS_UI.TYPE_TEXT') }}</option>
                 <!-- File sources are not read by the brain yet; an old row stays visible to remove. -->
                 <option v-if="k.type === 'file'" value="file" disabled>{{ t('TOLZAR_AGENTS_UI.TYPE_FILE') }}</option>
               </select>
-              <input v-model="k.label" :placeholder="t('TOLZAR_AGENTS_UI.LABEL')" :aria-label="t('TOLZAR_AGENTS_UI.LABEL')" class="!w-[120px]" :class="INPUT" />
+              <input v-if="!k.file" v-model="k.label" :placeholder="t('TOLZAR_AGENTS_UI.LABEL')" :aria-label="t('TOLZAR_AGENTS_UI.LABEL')" class="!w-[120px]" :class="INPUT" />
               <input
+                v-if="!k.file"
                 v-model="k.value"
                 :placeholder="k.type === 'text' ? t('TOLZAR_AGENTS_UI.TEXT_PLACEHOLDER') : t('TOLZAR_AGENTS_UI.URL_PLACEHOLDER')"
                 :aria-label="k.type === 'text' ? t('TOLZAR_AGENTS_UI.TYPE_TEXT') : t('TOLZAR_AGENTS_UI.TYPE_URL')"
