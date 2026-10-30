@@ -15,7 +15,8 @@ RSpec.describe 'Tolzar Social tab', type: :request do
 
   def ids(params = {})
     get "/api/v1/accounts/#{account.id}/conversations", params: params, headers: admin.create_new_auth_token
-    response.parsed_body['data']['payload'].pluck('id')
+    # The list returns display ids (Conversation#to_param); map them back to the records.
+    account.conversations.where(display_id: response.parsed_body['data']['payload'].pluck('id')).pluck(:id)
   end
 
   def all_count(params = {})
