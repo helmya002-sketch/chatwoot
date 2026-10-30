@@ -3,7 +3,7 @@
 #   GET  /tolzar/oauth/authorize  checks the request, then shows "Continue as <name>" (an explicit click; never framed)
 #   POST /tolzar/oauth/authorize  the click (Rails CSRF token): issues a code bound to the redirect URI and PKCE
 #   POST /tolzar/oauth/token      code -> access token: client secret (constant-time), PKCE S256, code single-use
-#                                 (atomic GETDEL), rate-limited per IP
+#                                 (GET + DEL in one MULTI), rate-limited per IP
 #   GET  /tolzar/oauth/userinfo   Bearer access token -> id, username, display name, locale, email
 # Security guard (Oracle, 30 Oct): exact redirect match, state passed through, codes stored only as SHA-256 hashes in
 # Redis for 60 s, access tokens signed (never stored) for 10 min and good for userinfo only, frame-ancestors 'none'.
@@ -53,7 +53,15 @@ class Tolzar::ForumOauthController < ActionController::Base
     return render(json: { error: 'invalid_client' }, status: :unauthorized) unless valid_client?
     return render(json: { error: 'unsupported_grant_type' }, status: :bad_request) unless params[:grant_type] == 'authorization_code'
 
-    raw = Redis::Alfred.with { |conn| conn.getdel(code_key(params[:code].to_s)) } # atomic: a code works once
+    # Read and delete in one MULTI, so a code works once. Not GETDEL: Redis::Namespace (the $alfred pool) does not
+    # namespace GETDEL and would look the code up under the wrong key (gate, 30 Oct).
+    key = code_key(params[:code].to_s)
+    raw, = Redis::Alfred.with do |conn|
+      conn.multi do |tx|
+        tx.get(key)
+        tx.del(key)
+      end
+    end
     grant = raw ? JSON.parse(raw) : {}
     user = User.find_by(id: grant['user_id']) if grant['redirect_uri'] == params[:redirect_uri].to_s && pkce_ok?(grant)
     return render(json: { error: 'invalid_grant' }, status: :bad_request) if user.nil? || !eligible?(user)
