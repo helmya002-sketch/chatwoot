@@ -2,8 +2,9 @@
 import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMapGetter } from 'dashboard/composables/store';
+import ShadowBadge from '../ShadowBadge.vue';
 import BrainNotice from './BrainNotice.vue';
-import { BTN, BTN_GHOST, INPUT, LABEL, CHECK, SHADOW_BADGE } from './tzClasses';
+import { BTN, BTN_GHOST, INPUT, LABEL, CHECK } from './tzClasses';
 import {
   allowedDiscount,
   MAX_POLICIES,
@@ -143,16 +144,17 @@ onMounted(load);
         </select>
       </div>
       <p v-if="!data.rows.length" class="text-n-slate-10 text-[13px]">{{ t('TOLZAR_SETTINGS.AI.NO_TEAMS') }}</p>
-      <p v-if="data.missing.length" class="text-xs text-amber-700">{{ t('TOLZAR_SETTINGS.AI.MISSING_AGENT', { teams: data.missing.join(', ') }) }}</p>
+      <p v-if="data.missing.length" class="text-xs text-n-amber-11">{{ t('TOLZAR_SETTINGS.AI.MISSING_AGENT', { teams: data.missing.join(', ') }) }}</p>
       <p class="text-xs text-n-slate-10">{{ t('TOLZAR_SETTINGS.AI.TEAMS_NOTE') }}</p>
       <button type="button" :class="BTN" :disabled="busy" @click="saveTeams">{{ t('TOLZAR_SETTINGS.SAVE') }}</button>
     </div>
 
     <!-- Tuning proposals -->
     <div v-if="section === 'tuning'">
-      <span :class="SHADOW_BADGE">{{ t('TOLZAR_SETTINGS.AI.PROPOSALS_ONLY') }}</span>
+      <ShadowBadge state="shadow" :hint="t('TOLZAR_SETTINGS_UI.SHADOW_DETAIL.tuning')" />
+      <p class="mt-1 mb-0 text-xs text-n-slate-10">{{ t('TOLZAR_SETTINGS_UI.SHADOW_DETAIL.tuning') }}</p>
       <div>
-        <button type="button" :class="BTN_GHOST" :disabled="busy" @click="suggest">{{ busy ? '…' : t('TOLZAR_SETTINGS.AI.SUGGEST_NOW') }}</button>
+        <button type="button" :class="BTN_GHOST" :disabled="busy" @click="suggest">{{ busy ? t('TOLZAR_UI.LOADING') : t('TOLZAR_SETTINGS.AI.SUGGEST_NOW') }}</button>
       </div>
       <div v-for="p in data.proposals" :key="p.date" class="p-3 mt-3 rounded-lg border border-solid border-n-weak">
         <div class="flex flex-wrap gap-2 justify-between items-center">

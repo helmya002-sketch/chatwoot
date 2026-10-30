@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n';
 import { useMapGetter } from 'dashboard/composables/store';
 import Dialog from 'dashboard/components-next/dialog/Dialog.vue';
 import BrainNotice from './BrainNotice.vue';
-import { BTN, BTN_GHOST, BTN_DANGER, INPUT, LABEL } from './tzClasses';
+import { BTN, BTN_GHOST, BTN_DANGER, INPUT, LABEL, TONE_WARN } from './tzClasses';
 import {
   DISCLOSURE_MODES,
   DISCLOSURE_LANGS,
@@ -192,9 +192,9 @@ onMounted(load);
 
     <!-- One contact's data: export / erase (Owner only) -->
     <div v-if="section === 'privacy'" class="max-w-[620px]">
-      <p class="p-2 text-xs rounded-lg text-amber-700 bg-amber-500/10">{{ t('TOLZAR_SETTINGS.TRUST.OWNER_NOTE') }}</p>
-      <label :class="LABEL">{{ t('TOLZAR_SETTINGS.TRUST.CONTACT_ID') }}</label>
-      <input v-model="contactId" inputmode="numeric" :class="INPUT" placeholder="1234" />
+      <p class="p-2 text-xs rounded-lg" :class="TONE_WARN">{{ t('TOLZAR_SETTINGS.TRUST.OWNER_NOTE') }}</p>
+      <label :class="LABEL" for="tz-trust-contact-id">{{ t('TOLZAR_SETTINGS.TRUST.CONTACT_ID') }}</label>
+      <input id="tz-trust-contact-id" v-model="contactId" inputmode="numeric" :class="INPUT" :placeholder="t('TOLZAR_SETTINGS_UI.TRUST.CONTACT_ID_PLACEHOLDER')" />
       <p class="mt-1 text-xs text-n-slate-10">{{ t('TOLZAR_SETTINGS.TRUST.CONTACT_ID_HINT') }}</p>
       <div class="flex flex-wrap gap-2">
         <button type="button" :class="BTN_GHOST" :disabled="busy || !validContactId(contactId)" @click="downloadExport">{{ t('TOLZAR_SETTINGS.TRUST.EXPORT') }}</button>
@@ -215,8 +215,8 @@ onMounted(load);
         :is-loading="busy"
         @confirm="erase"
       >
-        <label :class="LABEL">{{ t('TOLZAR_SETTINGS.TRUST.CONFIRM_TYPE', { id: contactId }) }}</label>
-        <input v-model="confirmText" inputmode="numeric" :class="INPUT" />
+        <label :class="LABEL" for="tz-trust-confirm">{{ t('TOLZAR_SETTINGS.TRUST.CONFIRM_TYPE', { id: contactId }) }}</label>
+        <input id="tz-trust-confirm" v-model="confirmText" inputmode="numeric" :class="INPUT" />
       </Dialog>
     </div>
     <BrainNotice :result="result" :saved="saved" />

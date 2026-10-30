@@ -2,7 +2,9 @@
 import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMapGetter } from 'dashboard/composables/store';
+import { useLocale } from 'shared/composables/useLocale';
 import { BTN, BTN_GHOST, LABEL } from './tzClasses';
+import { fmtAt } from '../tolzarTime';
 
 // AI Agents → one agent → Upload a price file: a private CSV or XLSX (columns item, price, currency,
 // optional category, where, url). Strict: one bad row rejects the file, with every problem listed
@@ -11,6 +13,7 @@ import { BTN, BTN_GHOST, LABEL } from './tzClasses';
 const props = defineProps({ agentId: { type: String, required: true } });
 const emit = defineEmits(['saved']);
 const { t } = useI18n();
+const { resolvedLocale } = useLocale();
 const accountId = useMapGetter('getCurrentAccountId');
 
 const versions = ref([]);
@@ -83,10 +86,14 @@ async function restore(version) {
   }
 }
 
-const at = s =>
-  String(s || '')
-    .slice(0, 16)
-    .replace('T', ' ');
+const at = s => fmtAt(s, resolvedLocale.value);
+const zone = () => {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+  } catch {
+    return 'UTC';
+  }
+};
 
 onMounted(load);
 </script>
@@ -114,10 +121,11 @@ onMounted(load);
       type="file"
       accept=".csv,.xlsx"
       class="text-[13px]"
+      :aria-label="t('TOLZAR_SETTINGS.PRICE_UPLOAD.CHOOSE')"
       @change="file = $event.target.files[0] || null"
     />
-    <button :class="BTN" :disabled="!file || busy" @click="upload">
-      {{ t('TOLZAR_SETTINGS.PRICE_UPLOAD.UPLOAD') }}
+    <button type="button" :class="BTN" :disabled="!file || busy" @click="upload">
+      {{ busy ? t('TOLZAR_UI.SAVING') : t('TOLZAR_SETTINGS.PRICE_UPLOAD.UPLOAD') }}
     </button>
     <p v-if="done" class="mt-3 mb-0 text-[13px] text-n-slate-12">
       {{
@@ -159,6 +167,7 @@ onMounted(load);
         }}</span>
         <button
           v-if="!v.current"
+          type="button"
           :class="BTN_GHOST"
           class="!mt-0 !h-7"
           :disabled="busy"
@@ -167,6 +176,9 @@ onMounted(load);
           {{ t('TOLZAR_SETTINGS.PRICE_UPLOAD.RESTORE') }}
         </button>
       </div>
+      <p class="mt-1 mb-0 text-xs text-n-slate-10">
+        {{ t('TOLZAR_UI.YOUR_TIME_ZONE', { zone: zone() }) }}
+      </p>
     </div>
   </div>
 </template>

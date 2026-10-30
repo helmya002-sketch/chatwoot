@@ -20,6 +20,7 @@ import {
   skillProblems,
   toggleValue,
 } from 'dashboard/components-next/Tolzar/tolzarSkills';
+import { INPUT } from './tzClasses';
 
 const props = defineProps({
   live: { type: Boolean, default: true },
@@ -32,13 +33,15 @@ const accountId = useMapGetter('getCurrentAccountId');
 const getAccount = useMapGetter('accounts/getAccount');
 const api = computed(() => `/api/v1/accounts/${accountId.value}`);
 
+// One dot per skill type, in theme tokens (static strings so Tailwind keeps them; follows the
+// app theme and a white-label brand, unlike a hex).
 const ACCENT = {
-  assign: '#0ea5e9',
-  update_fields: '#8b5cf6',
-  change_stage: '#ec4899',
-  close: '#22c55e',
-  add_tag: '#10b981',
-  trigger_workflow: '#3e63dd',
+  assign: 'bg-n-blue-9',
+  update_fields: 'bg-n-iris-9',
+  change_stage: 'bg-n-ruby-9',
+  close: 'bg-n-teal-9',
+  add_tag: 'bg-n-amber-9',
+  trigger_workflow: 'bg-n-brand',
 };
 
 const teams = ref([]);
@@ -224,7 +227,7 @@ const listProblems = computed(() => problems.value.filter(p => p.index < 0));
         <input
           v-model="form.skills_enabled"
           type="checkbox"
-          class="accent-[#3e63dd]"
+          class="accent-n-brand"
         />
         {{ t('TOLZAR_SKILLS.ENABLED') }}
       </label>
@@ -234,7 +237,7 @@ const listProblems = computed(() => problems.value.filter(p => p.index < 0));
       <label class="flex gap-2 items-center mb-3 text-[12px] text-n-slate-11">
         <input
           type="checkbox"
-          class="accent-[#3e63dd]"
+          class="accent-n-brand"
           :checked="form.skills_dry_run_workflows !== false"
           disabled
         />
@@ -243,7 +246,7 @@ const listProblems = computed(() => problems.value.filter(p => p.index < 0));
       <p
         v-for="p in listProblems"
         :key="p.error"
-        class="mt-0 mb-2 text-xs text-rose-600"
+        class="mt-0 mb-2 text-xs text-n-ruby-11"
       >
         {{ t(`TOLZAR_SKILLS.ERROR.${p.error}`, { max: MAX_SKILLS }) }}
       </p>
@@ -264,12 +267,13 @@ const listProblems = computed(() => problems.value.filter(p => p.index < 0));
           <input
             v-model="sk.enabled"
             type="checkbox"
-            class="accent-[#3e63dd]"
+            class="accent-n-brand"
             :disabled="!props.live"
           />
           <span
             class="inline-block rounded-full size-2"
-            :style="{ background: ACCENT[sk.type] || '#64748b' }"
+            :class="ACCENT[sk.type] || 'bg-n-slate-9'"
+            aria-hidden="true"
           />
           <span class="text-n-slate-12">{{
             t(`TOLZAR_SKILLS.TYPE.${sk.type}`)
@@ -277,7 +281,7 @@ const listProblems = computed(() => problems.value.filter(p => p.index < 0));
         </label>
         <button
           type="button"
-          class="grid place-content-center rounded-lg transition-colors size-6 text-n-slate-10 hover:text-rose-500 hover:bg-n-alpha-2 disabled:pointer-events-none"
+          class="grid place-content-center rounded-lg transition-colors size-6 text-n-slate-10 hover:text-n-ruby-11 hover:bg-n-alpha-2 disabled:pointer-events-none"
           :disabled="!props.live"
           :aria-label="t('TOLZAR_SKILLS.REMOVE')"
           @click="remove(i)"
@@ -341,8 +345,9 @@ const listProblems = computed(() => problems.value.filter(p => p.index < 0));
           </div>
           <input
             :value="tagsOf(sk)"
-            class="tz-in"
+            :class="INPUT"
             :placeholder="t('TOLZAR_SKILLS.TAGS_PLACEHOLDER')"
+            :aria-label="t('TOLZAR_SKILLS.PICK.TAGS')"
             @input="setTags(sk, $event.target.value)"
           />
         </div>
@@ -355,7 +360,7 @@ const listProblems = computed(() => problems.value.filter(p => p.index < 0));
         <p
           v-for="p in problemsAt(i)"
           :key="p.error"
-          class="mt-1.5 mb-0 text-xs text-rose-600"
+          class="mt-1.5 mb-0 text-xs text-n-ruby-11"
         >
           {{
             t(`TOLZAR_SKILLS.ERROR.${p.error}`, {
@@ -381,16 +386,5 @@ const listProblems = computed(() => problems.value.filter(p => p.index < 0));
   border: 0;
   border-radius: 0.5rem;
   cursor: pointer;
-}
-.tz-in {
-  box-sizing: border-box;
-  width: 100%;
-  padding: 0.5rem 0.625rem;
-  font-size: 0.8125rem;
-  color: rgb(var(--slate-12));
-  background: rgb(var(--solid-1));
-  border: 1px solid rgb(var(--border-weak));
-  border-radius: 0.5rem;
-  outline: none;
 }
 </style>

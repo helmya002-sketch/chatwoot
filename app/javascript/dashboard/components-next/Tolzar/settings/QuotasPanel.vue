@@ -2,13 +2,21 @@
 import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMapGetter } from 'dashboard/composables/store';
+import { useLocale } from 'shared/composables/useLocale';
 import BrainNotice from './BrainNotice.vue';
 import { BTN, INPUT, LABEL } from './tzClasses';
-import { QUOTA_LIMITS, getQuotas, saveQuotas, quotaRows } from '../tolzarUsage';
+import {
+  QUOTA_LIMITS,
+  getQuotas,
+  saveQuotas,
+  quotaRows,
+  formatCount,
+} from '../tolzarUsage';
 
 // Settings hub → Usage: model quotas (calls per day, tokens per month, in the timezone the brain
 // reports). Over a limit the AI uses the workspace's safe template, like any budget stop.
 const { t } = useI18n();
+const { resolvedLocale } = useLocale();
 const accountId = useMapGetter('getCurrentAccountId');
 
 const status = ref(null);
@@ -36,7 +44,7 @@ async function save() {
     busy.value = false;
   }
 }
-const fmt = v => (v === null || v === undefined ? '∞' : Number(v).toLocaleString());
+const fmt = v => formatCount(v, resolvedLocale.value);
 
 onMounted(load);
 </script>
@@ -55,11 +63,11 @@ onMounted(load);
         <div class="mt-1 text-xs" :class="r.reached ? 'text-n-ruby-11' : 'text-n-slate-11'">
           {{ r.limit === null ? t('TOLZAR_SETTINGS.QUOTAS.UNLIMITED') : r.reached ? t('TOLZAR_SETTINGS.QUOTAS.REACHED') : t('TOLZAR_SETTINGS.QUOTAS.REMAINING', { n: fmt(r.remaining) }) }}
         </div>
-        <label :class="LABEL">{{ t('TOLZAR_SETTINGS.QUOTAS.LIMIT') }}</label>
-        <input v-model="form[r.key]" type="number" min="0" :class="INPUT" :placeholder="t('TOLZAR_SETTINGS.QUOTAS.EMPTY_UNLIMITED')" />
+        <label :class="LABEL" :for="`tz-quota-${r.key}`">{{ t('TOLZAR_SETTINGS.QUOTAS.LIMIT') }}</label>
+        <input :id="`tz-quota-${r.key}`" v-model="form[r.key]" type="number" min="0" :class="INPUT" :placeholder="t('TOLZAR_SETTINGS.QUOTAS.EMPTY_UNLIMITED')" />
       </div>
     </div>
-    <button type="button" :class="BTN" :disabled="busy" @click="save">{{ t('TOLZAR_SETTINGS.SAVE') }}</button>
+    <button type="button" :class="BTN" :disabled="busy" @click="save">{{ busy ? t('TOLZAR_UI.SAVING') : t('TOLZAR_SETTINGS.SAVE') }}</button>
     <BrainNotice :result="result" :saved="saved" />
   </div>
 </template>

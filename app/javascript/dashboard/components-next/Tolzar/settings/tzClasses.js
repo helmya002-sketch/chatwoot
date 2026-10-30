@@ -9,8 +9,7 @@ export const INPUT =
   'box-border w-full px-2.5 py-2 text-[13px] text-n-slate-12 bg-n-solid-1 border border-solid border-n-weak rounded-lg outline-none';
 export const LABEL = 'block mt-3 mb-1 text-xs text-n-slate-11';
 export const CHECK = 'flex gap-2 items-center mt-3 text-sm text-n-slate-12';
-export const SHADOW_BADGE =
-  'inline-flex items-center px-2 py-0.5 text-[11px] font-semibold rounded-full text-n-amber-11 bg-n-amber-3';
+// The old SHADOW_BADGE span is gone: every "runs, sends nothing" state is <ShadowBadge> now.
 // Status tones in theme tokens (readable in light and dark; white-label safe).
 export const TONE_WARN = 'text-n-amber-11 bg-n-amber-3';
 export const TONE_OK = 'text-n-teal-11 bg-n-teal-3';

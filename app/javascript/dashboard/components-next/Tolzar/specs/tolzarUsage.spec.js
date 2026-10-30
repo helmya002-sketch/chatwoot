@@ -1,4 +1,10 @@
-import { toLimit, saveQuotas, quotaRows, getQuotas } from '../tolzarUsage';
+import {
+  toLimit,
+  saveQuotas,
+  quotaRows,
+  getQuotas,
+  formatCount,
+} from '../tolzarUsage';
 
 describe('tolzarUsage', () => {
   beforeEach(() => {
@@ -26,6 +32,16 @@ describe('tolzarUsage', () => {
       '/api/v1/accounts/5/tolzar/brain/quotas',
       { daily_calls: 500, monthly_tokens: null }
     );
+  });
+
+  it('formats counts in the viewer\'s language and shows no limit as ∞', () => {
+    expect(formatCount(1234, 'en')).toBe('1,234');
+    expect(formatCount(1234, 'de')).toBe('1.234');
+    expect(formatCount(null)).toBe('∞');
+    expect(formatCount(undefined)).toBe('∞');
+    expect(formatCount('')).toBe('∞');
+    expect(formatCount('abc')).toBe('abc');
+    expect(formatCount(7, 'zz-INVALID-!!')).toBe('7');
   });
 
   it('shows used, limit and remaining', () => {

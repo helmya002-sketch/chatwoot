@@ -2,8 +2,10 @@
 import { ref, computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMapGetter } from 'dashboard/composables/store';
+import { useLocale } from 'shared/composables/useLocale';
 import BrainNotice from './BrainNotice.vue';
-import { BTN, BTN_GHOST, INPUT, LABEL } from './tzClasses';
+import { BTN, BTN_GHOST, INPUT, LABEL, TONE_WARN } from './tzClasses';
+import { fmtAt } from '../tolzarTime';
 import {
   PRICE_TYPES,
   defaultRefreshHours,
@@ -23,6 +25,7 @@ import {
 const props = defineProps({ agentId: { type: String, required: true } });
 const emit = defineEmits(['saved']);
 const { t } = useI18n();
+const { resolvedLocale } = useLocale();
 const accountId = useMapGetter('getCurrentAccountId');
 
 const view = ref(null);
@@ -123,9 +126,7 @@ const cell = v => {
         view && view.rows
           ? t('TOLZAR_WORKSPACE.PRICE.LOADED', {
               n: view.rows,
-              at: String(view.fetched_at || '—')
-                .slice(0, 16)
-                .replace('T', ' '),
+              at: fmtAt(view.fetched_at, resolvedLocale) || '—',
             })
           : t('TOLZAR_WORKSPACE.PRICE.NOT_LOADED')
       }}
@@ -247,7 +248,8 @@ const cell = v => {
     <BrainNotice v-else-if="test && !test.ok" :result="test" />
     <p
       v-if="result && result.error === 'owner_only'"
-      class="p-2 mt-3 text-[13px] rounded-lg text-amber-700 bg-amber-500/10"
+      class="p-2 mt-3 text-[13px] rounded-lg"
+      :class="TONE_WARN"
     >
       {{ t('TOLZAR_WORKSPACE.PRICE.OWNER_SAVE') }}
     </p>

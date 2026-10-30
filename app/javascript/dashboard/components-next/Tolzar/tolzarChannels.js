@@ -2,6 +2,7 @@
 // Everything is Shadow / dry run: Tolzar shows what it WOULD send and never sends.
 import { brainGet, brainPost } from './tolzarBrainApi';
 import { credentialBody } from './tolzarCredentials';
+import { fmtAt } from './tolzarTime';
 
 export const SMS_PROVIDERS = ['twilio', 'unifonic', 'vonage'];
 export const CRM_PROVIDERS = ['hubspot', 'zoho', 'pipedrive'];
@@ -140,11 +141,10 @@ export const mapFromRows = rows =>
       .map(r => [r.field, r.crm.trim()])
   );
 
-// A dry run in one line: when, how many contacts were checked, how many would change.
-export const runSummary = run => ({
-  at: String((run && run.at) || '')
-    .slice(0, 16)
-    .replace('T', ' '),
+// A dry run in one line: when (in the viewer's zone and language), how many contacts were
+// checked, how many would change.
+export const runSummary = (run, locale = 'en') => ({
+  at: fmtAt(run && run.at, locale),
   checked: (run && run.contacts_checked) || 0,
   changes: ((run && run.changes) || []).length,
   crmRead: !!(run && run.crm_read),
