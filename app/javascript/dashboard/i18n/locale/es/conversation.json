@@ -113,7 +113,7 @@
     "REPLY_MESSAGE_NOT_FOUND": "Mensaje no disponible",
     "CAPTAIN_GENERATION": {
       "TITLE": "¿Cómo se generó esta respuesta?",
-      "GENERATED_BY": "Generado por Captain",
+      "GENERATED_BY": "Generado por Tolzar AI",
       "LOADING": "Cargando detalles…",
       "EMPTY": "No hay detalles de generación disponibles para este mensaje.",
       "TIMELINE": "Pasos de generación",
@@ -227,7 +227,7 @@
       "CANCEL": "Cancelar"
     },
     "SUGGESTIONS": {
-      "SUGGEST": "Suggest with Captain",
+      "SUGGEST": "Suggest with Tolzar AI",
       "EMPTY": "No new suggestions",
       "ACCEPT": "Accept",
       "APPLY_HINT": "Click to apply",

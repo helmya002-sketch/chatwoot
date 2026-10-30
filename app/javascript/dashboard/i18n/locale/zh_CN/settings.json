@@ -332,7 +332,7 @@
     "ACTIVE": "状态",
     "COMPANIES": "公司",
     "ALL_COMPANIES": "All Companies",
-    "CAPTAIN": "Captain",
+    "CAPTAIN": "Tolzar AI",
     "CALLS": "Calls",
     "CAPTAIN_ASSISTANTS": "助手",
     "CAPTAIN_OVERVIEW": "概览",
@@ -421,7 +421,7 @@
     },
     "DOCS": "阅读文档",
     "SECURITY": "安全",
-    "CAPTAIN_AI": "Captain",
+    "CAPTAIN_AI": "Tolzar AI",
     "CONVERSATION_WORKFLOW": "Conversation Workflow"
   },
   "DATA_IMPORTS": {
@@ -536,11 +536,11 @@
     }
   },
   "CAPTAIN_SETTINGS": {
-    "TITLE": "Captain Settings",
-    "DESCRIPTION": "Configure your AI models and features for Captain. Captain follows a credit based billing, you will be charged credits for every action Captain takes based on the model selected.",
-    "LOADING": "Loading Captain configuration...",
-    "LINK_TEXT": "Learn more about Captain Credits",
-    "NOT_ENABLED": "Captain is not enabled for your account. Please upgrade your plan to access Captain features.",
+    "TITLE": "Tolzar AI Settings",
+    "DESCRIPTION": "Configure your AI models and features for Tolzar AI. Tolzar AI follows a credit based billing, you will be charged credits for every action Tolzar AI takes based on the model selected.",
+    "LOADING": "Loading Tolzar AI configuration...",
+    "LINK_TEXT": "Learn more about Tolzar AI Credits",
+    "NOT_ENABLED": "Tolzar AI is not enabled for your account. Please upgrade your plan to access Tolzar AI features.",
     "MODEL_CONFIG": {
       "TITLE": "Model Configuration",
       "DESCRIPTION": "Select AI models for different features.",
@@ -575,8 +575,8 @@
       }
     },
     "API": {
-      "SUCCESS": "Captain settings updated successfully.",
-      "ERROR": "Failed to update Captain settings. Please try again."
+      "SUCCESS": "Tolzar AI settings updated successfully.",
+      "ERROR": "Failed to update Tolzar AI settings. Please try again."
     }
   },
   "BILLING_SETTINGS": {
@@ -611,12 +611,12 @@
       "BUTTON_TXT": "前往账单门户"
     },
     "CAPTAIN": {
-      "TITLE": "Captain",
-      "DESCRIPTION": "管理 Captain AI 的使用和积分。",
+      "TITLE": "Tolzar AI",
+      "DESCRIPTION": "管理 Tolzar AI AI 的使用和积分。",
       "BUTTON_TXT": "购买更多积分",
       "DOCUMENTS": "文档",
       "RESPONSES": "常见问题",
-      "UPGRADE": "Captain 在免费计划中不可用，立即升级以获取助手、副驾驶等更多功能。",
+      "UPGRADE": "Tolzar AI 在免费计划中不可用，立即升级以获取助手、副驾驶等更多功能。",
       "REFRESH_CREDITS": "刷新"
     },
     "CHAT_WITH_US": {
@@ -660,7 +660,7 @@
     "TOPUP": {
       "BUY_CREDITS": "购买更多积分",
       "MODAL_TITLE": "Buy AI Credits",
-      "MODAL_DESCRIPTION": "Purchase additional credits for Captain AI.",
+      "MODAL_DESCRIPTION": "Purchase additional credits for Tolzar AI AI.",
       "CREDITS": "CREDITS",
       "ONE_TIME": "one-time",
       "POPULAR": "Most Popular",

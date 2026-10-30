@@ -48,7 +48,7 @@
         "TITLE": "Translation",
         "NOTE": "Speak every customer's language, whatever languages your team knows.",
         "CAPTAIN": {
-          "TITLE": "Captain",
+          "TITLE": "Tolzar AI",
           "NOTE": "AI translations that sound natural and keep your tone."
         },
         "GOOGLE": {
@@ -59,7 +59,7 @@
           "NOT_CONNECTED_HINT": "Google Translate isn't connected yet."
         },
         "UPGRADE": {
-          "NOTE": "Upgrade to a paid plan to translate conversations with Captain or Google Translate.",
+          "NOTE": "Upgrade to a paid plan to translate conversations with Tolzar AI or Google Translate.",
           "BUTTON": "Opgrader"
         },
         "AUTO_TRANSLATE": {
@@ -211,7 +211,7 @@
       "GO_TO_MY_INBOX": "Gå til Min indbakke",
       "GO_TO_CONVERSATION_DASHBOARD": "Gå til Konversationspanel",
       "GO_TO_CONTACTS_DASHBOARD": "Gå til Contacts Dashboard",
-      "GO_TO_CAPTAIN": "Gå til Captain",
+      "GO_TO_CAPTAIN": "Gå til Tolzar AI",
       "GO_TO_CALLS_DASHBOARD": "Gå til Opkald Dashboard",
       "GO_TO_CAMPAIGNS": "Gå til Kampagner",
       "GO_TO_HELP_CENTER": "Gå til Hjælpecenter",

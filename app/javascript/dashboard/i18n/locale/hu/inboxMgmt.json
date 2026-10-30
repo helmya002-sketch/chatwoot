@@ -787,7 +787,7 @@
       },
       "TRANSCRIPTION": {
         "LABEL": "Felvételek átírása szöveggé",
-        "DESCRIPTION": "Minden felvételből szöveges átirat készül. A funkció a Captaint használja, és csak akkor működik, ha a fióknál engedélyezve van a hangátírás."
+        "DESCRIPTION": "Minden felvételből szöveges átirat készül. A funkció a Tolzar AIt használja, és csak akkor működik, ha a fióknál engedélyezve van a hangátírás."
       }
     },
     "WHATSAPP_CALLING": {

@@ -48,7 +48,7 @@
         "TITLE": "Traduzione",
         "NOTE": "Parla la lingua di ogni cliente, qualunque lingua conosca il tuo team.",
         "CAPTAIN": {
-          "TITLE": "Captain",
+          "TITLE": "Tolzar AI",
           "NOTE": "Traduzioni con l'IA dal suono naturale, che mantengono il tuo tono."
         },
         "GOOGLE": {
@@ -59,7 +59,7 @@
           "NOT_CONNECTED_HINT": "Google Translate non è ancora connesso."
         },
         "UPGRADE": {
-          "NOTE": "Passa a un piano a pagamento per tradurre le conversazioni con Captain o Google Translate.",
+          "NOTE": "Passa a un piano a pagamento per tradurre le conversazioni con Tolzar AI o Google Translate.",
           "BUTTON": "Aggiorna"
         },
         "AUTO_TRANSLATE": {
@@ -211,7 +211,7 @@
       "GO_TO_MY_INBOX": "Vai alla mia casella",
       "GO_TO_CONVERSATION_DASHBOARD": "Vai alla Dashboard Conversazioni",
       "GO_TO_CONTACTS_DASHBOARD": "Vai alla Dashboard Contatti",
-      "GO_TO_CAPTAIN": "Vai a Captain",
+      "GO_TO_CAPTAIN": "Vai a Tolzar AI",
       "GO_TO_CALLS_DASHBOARD": "Vai alla dashboard delle chiamate",
       "GO_TO_CAMPAIGNS": "Vai alle campagne",
       "GO_TO_HELP_CENTER": "Vai al centro assistenza",

@@ -113,7 +113,7 @@
     "REPLY_MESSAGE_NOT_FOUND": "Message not available",
     "CAPTAIN_GENERATION": {
       "TITLE": "Hvordan blev dette svar genereret?",
-      "GENERATED_BY": "Genereret af Captain",
+      "GENERATED_BY": "Genereret af Tolzar AI",
       "LOADING": "Indlæser detaljer…",
       "EMPTY": "Ingen generationsdetaljer tilgængelig for denne besked.",
       "TIMELINE": "Generering trin",
@@ -227,7 +227,7 @@
       "CANCEL": "Annuller"
     },
     "SUGGESTIONS": {
-      "SUGGEST": "Foreslå med Captain",
+      "SUGGEST": "Foreslå med Tolzar AI",
       "EMPTY": "Ingen nye forslag",
       "ACCEPT": "Accept",
       "APPLY_HINT": "Klik for at anvende",
@@ -404,8 +404,8 @@
       },
       "REPORT_MESSAGE": {
         "LABEL": "Rapportér besked",
-        "TITLE": "Rapporter Captain besked",
-        "DESCRIPTION": "Fundet et problem med denne AI svar? Lad os vide, hvad der gik galt, og vores team vil gennemgå det for at hjælpe med at forbedre Captain's nøjagtighed.",
+        "TITLE": "Rapporter Tolzar AI besked",
+        "DESCRIPTION": "Fundet et problem med denne AI svar? Lad os vide, hvad der gik galt, og vores team vil gennemgå det for at hjælpe med at forbedre Tolzar AI's nøjagtighed.",
         "PROBLEM_TYPE": "Problem type",
         "PROBLEM_TYPE_PLACEHOLDER": "Vælg en problemtype",
         "DESCRIPTION_LABEL": "Beskrivelse",

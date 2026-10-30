@@ -113,7 +113,7 @@
     "REPLY_MESSAGE_NOT_FOUND": "Message indisponible",
     "CAPTAIN_GENERATION": {
       "TITLE": "Comment cette réponse a-t-elle été générée ?",
-      "GENERATED_BY": "Généré par Captain",
+      "GENERATED_BY": "Généré par Tolzar AI",
       "LOADING": "Chargement des détails…",
       "EMPTY": "Aucun détail de génération disponible pour ce message.",
       "TIMELINE": "Étapes de génération",
@@ -227,7 +227,7 @@
       "CANCEL": "Annuler"
     },
     "SUGGESTIONS": {
-      "SUGGEST": "Suggest with Captain",
+      "SUGGEST": "Suggest with Tolzar AI",
       "EMPTY": "No new suggestions",
       "ACCEPT": "Accepter",
       "APPLY_HINT": "Click to apply",
@@ -404,8 +404,8 @@
       },
       "REPORT_MESSAGE": {
         "LABEL": "Signaler un message",
-        "TITLE": "Signaler le message de Captain",
-        "DESCRIPTION": "Vous avez repéré un problème dans cette réponse générée par l’IA ? Expliquez-nous ce qui s’est passé afin que notre équipe puisse l’examiner et améliorer la précision de Captain.",
+        "TITLE": "Signaler le message de Tolzar AI",
+        "DESCRIPTION": "Vous avez repéré un problème dans cette réponse générée par l’IA ? Expliquez-nous ce qui s’est passé afin que notre équipe puisse l’examiner et améliorer la précision de Tolzar AI.",
         "PROBLEM_TYPE": "Type de problème",
         "PROBLEM_TYPE_PLACEHOLDER": "Sélectionnez un type de problème",
         "DESCRIPTION_LABEL": "Description",

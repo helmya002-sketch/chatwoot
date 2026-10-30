@@ -113,7 +113,7 @@
     "REPLY_MESSAGE_NOT_FOUND": "Üzenet nem elérhető",
     "CAPTAIN_GENERATION": {
       "TITLE": "Hogyan készült ez a válasz?",
-      "GENERATED_BY": "A Captain készítette",
+      "GENERATED_BY": "A Tolzar AI készítette",
       "LOADING": "Részletek betöltése…",
       "EMPTY": "Ehhez az üzenethez nem állnak rendelkezésre adatok a generálásról.",
       "TIMELINE": "Generálási lépések",
@@ -227,7 +227,7 @@
       "CANCEL": "Mégse"
     },
     "SUGGESTIONS": {
-      "SUGGEST": "Javaslat kérése a Captain segítségével",
+      "SUGGEST": "Javaslat kérése a Tolzar AI segítségével",
       "EMPTY": "Nincsenek új javaslatok",
       "ACCEPT": "Accept",
       "APPLY_HINT": "Kattintson az alkalmazáshoz",
@@ -404,8 +404,8 @@
       },
       "REPORT_MESSAGE": {
         "LABEL": "Üzenet jelentése",
-        "TITLE": "Captain válaszának jelentése",
-        "DESCRIPTION": "Problémát talált a MI-válaszban? Jelezze, mi történt, csapatunk pedig áttekinti a bejelentést, hogy javíthassuk a Captain pontosságát.",
+        "TITLE": "Tolzar AI válaszának jelentése",
+        "DESCRIPTION": "Problémát talált a MI-válaszban? Jelezze, mi történt, csapatunk pedig áttekinti a bejelentést, hogy javíthassuk a Tolzar AI pontosságát.",
         "PROBLEM_TYPE": "Probléma típusa",
         "PROBLEM_TYPE_PLACEHOLDER": "Válasszon problématípust",
         "DESCRIPTION_LABEL": "Leírás",

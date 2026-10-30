@@ -87,10 +87,10 @@
     "SEARCH_PLACEHOLDER": "Pesquisar integrações...",
     "NO_RESULTS": "Nenhuma integração encontrada correspondente à sua busca",
     "CAPTAIN": {
-      "DISABLED": "O Captain não está ativado na sua conta.",
+      "DISABLED": "O Tolzar AI não está ativado na sua conta.",
       "CLICK_HERE_TO_CONFIGURE": "Clique aqui para configurar",
-      "LOADING_CONSOLE": "Carregando console do Captain...",
-      "FAILED_TO_LOAD_CONSOLE": "Falha ao carregar o Console do Captain. Atualize e tente novamente."
+      "LOADING_CONSOLE": "Carregando console do Tolzar AI...",
+      "FAILED_TO_LOAD_CONSOLE": "Falha ao carregar o Console do Tolzar AI. Atualize e tente novamente."
     },
     "WEBHOOK": {
       "SUBSCRIBED_EVENTS": "Eventos Inscritos",
@@ -493,7 +493,7 @@
         "PROJECT": "Projeto do Google Cloud",
         "SERVICE": "Serviço de tradução",
         "SERVICE_GOOGLE": "O Google Translate processa todas as traduções das suas conversas. Quando a tradução automática está ativada, ele traduz as mensagens recebidas para o idioma de cada agente e envia as respostas no idioma do cliente. Os agentes também o utilizam ao traduzir uma mensagem pelo menu da mensagem.",
-        "SERVICE_OTHER": "O Captain está selecionado como seu serviço de tradução, por isso o Google Translate não está sendo usado no momento. Tanto a tradução automática quanto a ação Traduzir nas mensagens são processadas pelo Captain. Altere o serviço para o Google Translate para usar esta integração.",
+        "SERVICE_OTHER": "O Tolzar AI está selecionado como seu serviço de tradução, por isso o Google Translate não está sendo usado no momento. Tanto a tradução automática quanto a ação Traduzir nas mensagens são processadas pelo Tolzar AI. Altere o serviço para o Google Translate para usar esta integração.",
         "CHANGE": "Trocar"
       }
     },
@@ -508,12 +508,12 @@
     }
   },
   "CAPTAIN": {
-    "NAME": "Captain",
+    "NAME": "Tolzar AI",
     "HEADER_KNOW_MORE": "Saiba mais",
     "OVERVIEW": {
       "HEADER": "Visão geral",
       "WELCOME": {
-        "LABEL": "Resumo do Captain",
+        "LABEL": "Resumo do Tolzar AI",
         "LOADING": "Gerando resumo…"
       },
       "INBOX_BANNER": {
@@ -537,29 +537,29 @@
       "METRICS": {
         "HANDLED": {
           "LABEL": "Conversas atendidas",
-          "HINT": "Conversas em que o Captain respondeu ao cliente ou transferiu a conversa para o seu time."
+          "HINT": "Conversas em que o Tolzar AI respondeu ao cliente ou transferiu a conversa para o seu time."
         },
         "AUTO_RESOLUTION": {
           "LABEL": "Taxa de resolução automática",
-          "HINT": "A proporção de conversas atendidas que o Captain resolveu sem a ajuda do seu time. Quanto maior, mais conversas o Captain resolveu sozinho."
+          "HINT": "A proporção de conversas atendidas que o Tolzar AI resolveu sem a ajuda do seu time. Quanto maior, mais conversas o Tolzar AI resolveu sozinho."
         },
         "HANDOFF": {
           "LABEL": "Taxa de transferência para atendente",
-          "HINT": "A proporção de conversas atendidas que o Captain transferiu para o seu time. Quanto menor, menos conversas precisaram de um agente."
+          "HINT": "A proporção de conversas atendidas que o Tolzar AI transferiu para o seu time. Quanto menor, menos conversas precisaram de um agente."
         },
         "HOURS_SAVED": {
           "LABEL": "Tempo economizado",
-          "HINT": "Uma estimativa de quanto tempo de resposta dos agentes o Captain economizou.",
-          "NOTE": "Com base em uma economia de dois minutos para cada resposta pública do Captain."
+          "HINT": "Uma estimativa de quanto tempo de resposta dos agentes o Tolzar AI economizou.",
+          "NOTE": "Com base em uma economia de dois minutos para cada resposta pública do Tolzar AI."
         },
         "REOPEN": {
           "LABEL": "Taxa de reabertura",
-          "HINT": "A proporção de conversas resolvidas pelo Captain que os clientes retomaram posteriormente.",
+          "HINT": "A proporção de conversas resolvidas pelo Tolzar AI que os clientes retomaram posteriormente.",
           "NOTE": "Quanto menor, mais conversas permaneceram resolvidas."
         },
         "DEPTH": {
           "LABEL": "Mensagens por conversa",
-          "HINT": "O número médio de respostas que o Captain enviou em cada conversa atendida.",
+          "HINT": "O número médio de respostas que o Tolzar AI enviou em cada conversa atendida.",
           "NOTE": "Um número menor pode indicar respostas mais rápidas, mas perguntas complexas podem exigir mais respostas."
         }
       },
@@ -578,8 +578,8 @@
       },
       "LINKS": {
         "DOCS": {
-          "TITLE": "Documentos do Captain",
-          "DESCRIPTION": "Guias e tutoriais para o Captain"
+          "TITLE": "Documentos do Tolzar AI",
+          "DESCRIPTION": "Guias e tutoriais para o Tolzar AI"
         },
         "PLAYGROUND": {
           "TITLE": "Área de testes",
@@ -592,17 +592,17 @@
       },
       "V2": {
         "DRILLDOWN": {
-          "HANDLED": "Episódios em que o Captain participou durante o período selecionado.",
-          "RESOLVED": "Episódios resolvidos pelo Captain sem transferência nem resposta humana antes da resolução.",
-          "HANDED_OFF": "Episódios transferidos após a participação do Captain.",
-          "REOPENED": "Episódios resolvidos pelo Captain que foram reabertos posteriormente.",
-          "DURABLE": "Episódios resolvidos pelo Captain que permaneceram fechados por pelo menos sete dias.",
-          "CLOSED_WITH_TEAM": "Episódios em que o Captain participou, mas não resolveu de forma autônoma nem transferiu.",
-          "REOPENED_WITHIN_7_DAYS": "Episódios resolvidos pelo Captain que foram reabertos em até sete dias.",
-          "STAYED_CLOSED": "Episódios resolvidos pelo Captain sem reabertura registrada em até sete dias. As resoluções recentes estão incluídas.",
+          "HANDLED": "Episódios em que o Tolzar AI participou durante o período selecionado.",
+          "RESOLVED": "Episódios resolvidos pelo Tolzar AI sem transferência nem resposta humana antes da resolução.",
+          "HANDED_OFF": "Episódios transferidos após a participação do Tolzar AI.",
+          "REOPENED": "Episódios resolvidos pelo Tolzar AI que foram reabertos posteriormente.",
+          "DURABLE": "Episódios resolvidos pelo Tolzar AI que permaneceram fechados por pelo menos sete dias.",
+          "CLOSED_WITH_TEAM": "Episódios em que o Tolzar AI participou, mas não resolveu de forma autônoma nem transferiu.",
+          "REOPENED_WITHIN_7_DAYS": "Episódios resolvidos pelo Tolzar AI que foram reabertos em até sete dias.",
+          "STAYED_CLOSED": "Episódios resolvidos pelo Tolzar AI sem reabertura registrada em até sete dias. As resoluções recentes estão incluídas.",
           "HANDOFF_REASON": "Episódios transferidos pelo seguinte motivo: {reason}.",
           "COUNT": "Nenhum episódio | 1 episódio | {count} episódios",
-          "EPISODES_HINT": "Uma conversa pode aparecer mais de uma vez se o Captain a tiver atendido em episódios separados. Os episódios são agrupados pelo momento em que começaram.",
+          "EPISODES_HINT": "Uma conversa pode aparecer mais de uma vez se o Tolzar AI a tiver atendido em episódios separados. Os episódios são agrupados pelo momento em que começaram.",
           "STARTED_AT": "Episódio iniciado em {time}",
           "RETRY": "Tentar novamente"
         },
@@ -610,7 +610,7 @@
         "SUMMARY": {
           "GREETING": "Olá, {name}!",
           "DEFAULT_NAME": "lá",
-          "EMPTY": "O resumo de desempenho do Captain aparecerá aqui quando houver atividade suficiente.",
+          "EMPTY": "O resumo de desempenho do Tolzar AI aparecerá aqui quando houver atividade suficiente.",
           "PREVIOUS": "Ponto anterior do resumo",
           "NEXT": "Próximo ponto do resumo"
         },
@@ -624,14 +624,14 @@
             "LABEL": "Economia de esforço e tempo dos agentes"
           },
           "DURABLE": {
-            "LABEL": "Resoluções do Captain que permaneceram encerradas",
+            "LABEL": "Resoluções do Tolzar AI que permaneceram encerradas",
             "NOT_APPLICABLE_HINT": "Nenhuma resolução deste período completou sete dias de acompanhamento. A durabilidade está indisponível.",
-            "HINT": "A proporção de conversas resolvidas pelo Captain que permaneceram encerradas após sete dias.",
+            "HINT": "A proporção de conversas resolvidas pelo Tolzar AI que permaneceram encerradas após sete dias.",
             "NOTE": "Apenas resoluções com tempo suficiente para serem observadas por sete dias são incluídas."
           },
           "MEDIAN_RESOLUTION": {
             "LABEL": "Tempo mediano de resolução",
-            "HINT": "O tempo típico desde o momento em que uma conversa chegou ao Captain até ser resolvida.",
+            "HINT": "O tempo típico desde o momento em que uma conversa chegou ao Tolzar AI até ser resolvida.",
             "NOTE": "Menor valor significa que, geralmente, os clientes foram resolvidos mais rapidamente."
           },
           "DEPTH": {
@@ -640,10 +640,10 @@
           "OF_TOTAL": "de {total}"
         },
         "RESOLUTION_FLOW": {
-          "ARIA_LABEL": "Fluxo de conversas atendidas pelo Captain e resultados do time",
+          "ARIA_LABEL": "Fluxo de conversas atendidas pelo Tolzar AI e resultados do time",
           "NODES": {
             "HANDLED": "Atendidas",
-            "RESOLVED_BY_CAPTAIN": "Resolvidas pelo Captain",
+            "RESOLVED_BY_CAPTAIN": "Resolvidas pelo Tolzar AI",
             "HANDED_OFF": "Transferidas",
             "CLOSED_WITH_TEAM": "Encerradas com o time",
             "REOPENED": "Reabertas em 7 dias",
@@ -673,16 +673,16 @@
           "CURRENT_PERIOD": "Período atual",
           "PREVIOUS_PERIOD": "Período anterior",
           "HANDLED": "Atendidas",
-          "RESOLVED": "Resolvidas pelo Captain",
-          "ARIA_LABEL": "Conversas atendidas e resolvidas pelo Captain por período do relatório",
-          "RATE_ARIA_LABEL": "Taxas de resolução do Captain no período atual e anterior"
+          "RESOLVED": "Resolvidas pelo Tolzar AI",
+          "ARIA_LABEL": "Conversas atendidas e resolvidas pelo Tolzar AI por período do relatório",
+          "RATE_ARIA_LABEL": "Taxas de resolução do Tolzar AI no período atual e anterior"
         },
         "CSAT": {
-          "TITLE": "CSAT do Captain",
-          "AUTONOMOUS": "Conversas resolvidas pelo Captain",
-          "AUTONOMOUS_HINT": "A avaliação média dos clientes nas conversas que o Captain resolveu sem a ajuda do seu time.",
-          "ASSISTED": "Conversas assistidas pelo Captain",
-          "ASSISTED_HINT": "A avaliação média dos clientes quando o Captain ajudou antes de sua equipe resolver a conversa.",
+          "TITLE": "CSAT do Tolzar AI",
+          "AUTONOMOUS": "Conversas resolvidas pelo Tolzar AI",
+          "AUTONOMOUS_HINT": "A avaliação média dos clientes nas conversas que o Tolzar AI resolveu sem a ajuda do seu time.",
+          "ASSISTED": "Conversas assistidas pelo Tolzar AI",
+          "ASSISTED_HINT": "A avaliação média dos clientes quando o Tolzar AI ajudou antes de sua equipe resolver a conversa.",
           "VS_HUMANS": "{value} vs humanos"
         },
         "USAGE": {
@@ -713,7 +713,7 @@
       "KICK_OFF_MESSAGE": "Precisa de um resumo rápido, quer verificar conversas passadas ou redigir uma resposta melhor? O Copilot está aqui para acelerar as coisas.",
       "SEND_MESSAGE": "Enviar mensagem...",
       "EMPTY_MESSAGE": "Houve um erro ao gerar a resposta. Por favor, tente novamente.",
-      "LOADER": "O Captain está pensando",
+      "LOADER": "O Tolzar AI está pensando",
       "YOU": "Você",
       "USE": "Use isto",
       "RESET": "Reiniciar",
@@ -755,9 +755,9 @@
       "SEND_MESSAGE": "Enviar mensagem",
       "HEADER": "Área de testes",
       "DESCRIPTION": "Use este playground para enviar mensagens para seu assistente e verificar se ele responde com precisão, rápido e no tom que você espera.",
-      "CREDIT_NOTE": "As mensagens enviadas aqui usam os créditos do seu Captain.",
+      "CREDIT_NOTE": "As mensagens enviadas aqui usam os créditos do seu Tolzar AI.",
       "CLEAR_CONVERSATION": "Limpar conversa",
-      "RESPONSE_ERROR": "O Captain não conseguiu concluir esta execução de teste. Revise a configuração e tente novamente.",
+      "RESPONSE_ERROR": "O Tolzar AI não conseguiu concluir esta execução de teste. Revise a configuração e tente novamente.",
       "SETUP": {
         "TITLE": "Configuração do teste",
         "DESCRIPTION": "As alterações feitas aqui valem apenas para esta sessão do playground, a menos que você salve um item explicitamente.",
@@ -812,7 +812,7 @@
         },
         "KNOWLEDGE": {
           "TAB_TITLE": "Conhecimento",
-          "AVAILABLE_TITLE": "Conhecimento disponível para o Captain",
+          "AVAILABLE_TITLE": "Conhecimento disponível para o Tolzar AI",
           "AVAILABLE_DESCRIPTION": "As fontes salvas são resumidas aqui e gerenciadas fora do playground.",
           "DOCUMENTS": "Documentos",
           "FAQS": "FAQs",
@@ -841,20 +841,20 @@
       }
     },
     "PAYWALL": {
-      "TITLE": "Atualize para usar o Captain AI",
-      "AVAILABLE_ON": "O Captain não está disponível no plano gratuito.",
+      "TITLE": "Atualize para usar o Tolzar AI AI",
+      "AVAILABLE_ON": "O Tolzar AI não está disponível no plano gratuito.",
       "UPGRADE_PROMPT": "Atualize seu plano para ter acesso aos nossos assistentes, Copilot e muito mais.",
       "UPGRADE_NOW": "Atualizar agora",
       "CANCEL_ANYTIME": "Você pode alterar ou cancelar seu plano a qualquer momento"
     },
     "ENTERPRISE_PAYWALL": {
-      "AVAILABLE_ON": "O Captain AI está disponível apenas nos planos Enterprise.",
+      "AVAILABLE_ON": "O Tolzar AI AI está disponível apenas nos planos Enterprise.",
       "UPGRADE_PROMPT": "Atualize seu plano para ter acesso aos nossos assistentes, Copilot e muito mais.",
       "ASK_ADMIN": "Entre em contato com seu administrador para fazer a atualização."
     },
     "BANNER": {
-      "RESPONSES": "Você usou mais de 80% do seu limite de respostas. Para continuar usando o Captain AI, faça o upgrade.",
-      "DOCUMENTS": "Limite de documentos atingido. Atualize para continuar usando o Captain AI."
+      "RESPONSES": "Você usou mais de 80% do seu limite de respostas. Para continuar usando o Tolzar AI AI, faça o upgrade.",
+      "DOCUMENTS": "Limite de documentos atingido. Atualize para continuar usando o Tolzar AI AI."
     },
     "FORM": {
       "CANCEL": "Cancelar",
@@ -916,28 +916,28 @@
         },
         "INACTIVITY_RESOLUTION": {
           "TITLE": "Quando os clientes param de responder",
-          "DESCRIPTION": "Escolha como o Captain lida com a conversa.",
+          "DESCRIPTION": "Escolha como o Tolzar AI lida com a conversa.",
           "MODE_LABEL": "Ação quando o cliente para de responder",
           "REVIEW_AFTER": "Revisar após",
           "RESOLVE_AFTER": "Resolver após",
-          "ALWAYS_WARNING": "O Captain resolverá todas as conversas após o tempo selecionado, sem revisá-las. Algumas conversas que ainda precisam de atendimento podem ser encerradas.",
+          "ALWAYS_WARNING": "O Tolzar AI resolverá todas as conversas após o tempo selecionado, sem revisá-las. Algumas conversas que ainda precisam de atendimento podem ser encerradas.",
           "PENDING_INFO": "A conversa permanece pendente até que o cliente responda.",
           "RESOLUTION_MESSAGE": {
             "TITLE": "Enviar uma mensagem ao resolver",
-            "DESCRIPTION": "O Captain envia esta mensagem de encerramento antes de resolver a conversa."
+            "DESCRIPTION": "O Tolzar AI envia esta mensagem de encerramento antes de resolver a conversa."
           },
           "MODES": {
             "DISABLED": {
               "LABEL": "Aguardar o cliente",
-              "DESCRIPTION": "O Captain não resolve a conversa. Ele ainda pode transferi-la para a equipe se o cliente solicitar."
+              "DESCRIPTION": "O Tolzar AI não resolve a conversa. Ele ainda pode transferi-la para a equipe se o cliente solicitar."
             },
             "LEGACY": {
               "LABEL": "Sempre resolver",
-              "DESCRIPTION": "O Captain resolve todas as conversas após o tempo selecionado."
+              "DESCRIPTION": "O Tolzar AI resolve todas as conversas após o tempo selecionado."
             },
             "EVALUATED": {
-              "LABEL": "Permitir que o Captain revise a conversa (recomendado)",
-              "DESCRIPTION": "O Captain decide se deve resolver a conversa ou transferi-la para a equipe."
+              "LABEL": "Permitir que o Tolzar AI revise a conversa (recomendado)",
+              "DESCRIPTION": "O Tolzar AI decide se deve resolver a conversa ou transferi-la para a equipe."
             }
           },
           "DURATION_HOURS_ARIA_LABEL": "Horas antes da ação",
@@ -959,11 +959,11 @@
         "AUDIENCE": {
           "EVERYONE": {
             "LABEL": "Todos",
-            "DESC": "O Captain responde a todas as conversas nas caixas de entrada conectadas."
+            "DESC": "O Tolzar AI responde a todas as conversas nas caixas de entrada conectadas."
           },
           "SPECIFIC": {
             "LABEL": "Público específico",
-            "DESC": "O Captain responde apenas aos clientes que atendem às condições abaixo."
+            "DESC": "O Tolzar AI responde apenas aos clientes que atendem às condições abaixo."
           },
           "ADD_CONDITION": "Adicionar condição",
           "ADD_GROUP": "Adicionar grupo de condições",
@@ -986,15 +986,15 @@
         "SCHEDULE": {
           "ALWAYS": {
             "LABEL": "A qualquer momento",
-            "DESC": "O Captain responde a todas as conversas, independentemente do horário."
+            "DESC": "O Tolzar AI responde a todas as conversas, independentemente do horário."
           },
           "BUSINESS_HOURS": {
             "LABEL": "Durante o horário de atendimento",
-            "DESC": "O Captain responde apenas durante o horário de atendimento de cada caixa de entrada."
+            "DESC": "O Tolzar AI responde apenas durante o horário de atendimento de cada caixa de entrada."
           },
           "OUTSIDE_BUSINESS_HOURS": {
             "LABEL": "Fora do horário de atendimento",
-            "DESC": "O Captain responde apenas quando cada caixa de entrada estiver fechada."
+            "DESC": "O Tolzar AI responde apenas quando cada caixa de entrada estiver fechada."
           },
           "HINT": "Caixas de entrada sem horário de atendimento configurado estão sempre cobertas."
         }
@@ -1014,7 +1014,7 @@
         "SYSTEM_SETTINGS": {
           "TITLE": "Configurações do sistema",
           "DESCRIPTION": "Personalize o que o assistente diz quando termina uma conversa ou transfere para um humano.",
-          "DESCRIPTION_V2": "Gerencie o que o Captain faz quando os clientes param de responder e defina a mensagem de transferência."
+          "DESCRIPTION_V2": "Gerencie o que o Tolzar AI faz quando os clientes param de responder e defina a mensagem de transferência."
         },
         "AUDIENCE": {
           "TITLE": "Público",
@@ -1022,7 +1022,7 @@
         },
         "SCHEDULE": {
           "TITLE": "Horário de atendimento",
-          "DESCRIPTION": "Escolha quando o Captain responde. Fora desse horário, as conversas são encaminhadas para sua equipe."
+          "DESCRIPTION": "Escolha quando o Tolzar AI responde. Fora desse horário, as conversas são encaminhadas para sua equipe."
         },
         "CONTROL_ITEMS": {
           "TITLE": "As Coisas Divertidas",
@@ -1053,8 +1053,8 @@
         "TITLE": "Não há assistentes disponíveis",
         "SUBTITLE": "Crie um assistente para fornecer respostas rápidas e precisas aos seus usuários. Ele pode aprender com seus artigos de ajuda e conversas passadas.",
         "FEATURE_SPOTLIGHT": {
-          "TITLE": "Assistente Captain",
-          "NOTE": "O Assistente Captain interage diretamente com os clientes, aprende com seus documentos de ajuda e conversas anteriores e fornece respostas instantâneas e precisas. Ele lida com as solicitações iniciais, oferecendo resoluções rápidas antes de transferir para um agente quando necessário."
+          "TITLE": "Assistente Tolzar AI",
+          "NOTE": "O Assistente Tolzar AI interage diretamente com os clientes, aprende com seus documentos de ajuda e conversas anteriores e fornece respostas instantâneas e precisas. Ele lida com as solicitações iniciais, oferecendo resoluções rápidas antes de transferir para um agente quando necessário."
         }
       },
       "GUARDRAILS": {
@@ -1360,8 +1360,8 @@
         "FILTERED_TITLE": "Nenhum documento correspondente",
         "FILTERED_SUBTITLE": "Tente alterar a origem, o status ou o termo de pesquisa.",
         "FEATURE_SPOTLIGHT": {
-          "TITLE": "Documento do Captain",
-          "NOTE": "Um documento no Captain serve como um recurso de conhecimento para o assistente. Ao conectar sua central de ajuda ou guias, o Captain pode analisar o conteúdo e fornecer respostas precisas para as dúvidas dos clientes."
+          "TITLE": "Documento do Tolzar AI",
+          "NOTE": "Um documento no Tolzar AI serve como um recurso de conhecimento para o assistente. Ao conectar sua central de ajuda ou guias, o Tolzar AI pode analisar o conteúdo e fornecer respostas precisas para as dúvidas dos clientes."
         }
       }
     },
@@ -1371,10 +1371,10 @@
       "CATALOG": {
         "BUTTON": "Catálogo de Ferramentas",
         "HEADER": "Catálogo de Ferramentas",
-        "DESCRIPTION": "Explore conjuntos de ferramentas do catálogo de ferramentas do Captain e instale-os neste assistente.",
+        "DESCRIPTION": "Explore conjuntos de ferramentas do catálogo de ferramentas do Tolzar AI e instale-os neste assistente.",
         "ALL": "Todos",
         "EMPTY": "Ainda não há conjuntos de ferramentas nesta categoria.",
-        "LOAD_ERROR": "Não foi possível carregar o catálogo de ferramentas. Verifique a URL do catálogo nas configurações do Captain.",
+        "LOAD_ERROR": "Não foi possível carregar o catálogo de ferramentas. Verifique a URL do catálogo nas configurações do Tolzar AI.",
         "TOOL_COUNT": "{n} ferramenta | {n} ferramentas",
         "VERSION": "v{version}",
         "UPDATED": "Atualizado em {time}",
@@ -1394,7 +1394,7 @@
       },
       "INSTALL_MANIFEST": {
         "TITLE": "Instalar um conjunto de ferramentas",
-        "DESCRIPTION": "Instale um conjunto de ferramentas do catálogo de ferramentas do Captain.",
+        "DESCRIPTION": "Instale um conjunto de ferramentas do catálogo de ferramentas do Tolzar AI.",
         "VERSION_LABEL": "v{version} · {revision}",
         "UPDATE_NOTE": "Uma versão diferente está instalada. A atualização substitui as ferramentas e mantém o estado de ativação de cada uma. Insira os segredos novamente.",
         "TOOLS_LABEL": "Ferramentas",
@@ -1472,14 +1472,14 @@
         "ERROR_MESSAGE": "Falha ao excluir a ferramenta personalizada"
       },
       "PAYWALL": {
-        "TITLE": "Atualize para usar ferramentas com o Captain",
-        "AVAILABLE_ON": "As ferramentas do Captain estão disponíveis apenas nos planos Business e Enterprise. Faça upgrade para o plano Business para utilizar esse recurso.",
+        "TITLE": "Atualize para usar ferramentas com o Tolzar AI",
+        "AVAILABLE_ON": "As ferramentas do Tolzar AI estão disponíveis apenas nos planos Business e Enterprise. Faça upgrade para o plano Business para utilizar esse recurso.",
         "UPGRADE_PROMPT": "",
         "UPGRADE_NOW": "Abrir faturamento",
         "CANCEL_ANYTIME": ""
       },
       "ENTERPRISE_PAYWALL": {
-        "AVAILABLE_ON": "Ferramentas do Captain estão disponíveis apenas nos planos pagos.",
+        "AVAILABLE_ON": "Ferramentas do Tolzar AI estão disponíveis apenas nos planos pagos.",
         "UPGRADE_PROMPT": "Por favor, faça o upgrade para um plano pago para utilizar este recurso.",
         "ASK_ADMIN": "Entre em contato com seu administrador para fazer a atualização."
       },
@@ -1513,7 +1513,7 @@
         },
         "EMAIL_VERIFICATION": {
           "LABEL": "Exigir verificação de e-mail",
-          "DESCRIPTION": "O Captain só pode usar esta ferramenta depois que o cliente verificar o e-mail com um código de uso único.",
+          "DESCRIPTION": "O Tolzar AI só pode usar esta ferramenta depois que o cliente verificar o e-mail com um código de uso único.",
           "IMPLIED": "Um parâmetro recebe o e-mail verificado do cliente, portanto a verificação de e-mail é sempre obrigatória."
         },
         "AUTH_TYPES": {
@@ -1584,7 +1584,7 @@
           "ADD": "Adicionar e-mail verificado",
           "EMAIL": "E-mail do contato",
           "EMAIL_DESCRIPTION": "O endereço de e-mail verificado do contato",
-          "HELP": "Preenchido pelo Tolzar com o e-mail que o contato confirmou por meio de um código de uso único. O Captain não pode vê-lo nem alterá-lo nas conversas com clientes."
+          "HELP": "Preenchido pelo Tolzar com o e-mail que o contato confirmou por meio de um código de uso único. O Tolzar AI não pode vê-lo nem alterá-lo nas conversas com clientes."
         },
         "REQUEST_TEMPLATE": {
           "LABEL": "Modelo do Corpo da Requisição (Opcional)",
@@ -1629,7 +1629,7 @@
         "ERROR_MESSAGE": "Ocorreu um erro ao excluir a FAQ, por favor tente novamente."
       },
       "SUGGESTIONS_BANNER": {
-        "TITLE": "O Captain agrupou as perguntas recorrentes dos clientes em sugestões de FAQ.",
+        "TITLE": "O Tolzar AI agrupou as perguntas recorrentes dos clientes em sugestões de FAQ.",
         "ACTION": "Revisar sugestões"
       },
       "FORM_DESCRIPTION": "Adicione uma pergunta e sua resposta correspondente à base de conhecimento e selecione o assistente ao qual deve estar associado.",
@@ -1666,8 +1666,8 @@
         "SUBTITLE": "Perguntas Frequentes ajudam seu assistente a fornecer respostas rápidas e precisas para perguntas de seus clientes. Eles podem ser gerados automaticamente a partir do seu conteúdo ou podem ser adicionados manualmente.",
         "CLEAR_SEARCH": "Limpar filtros ativos",
         "FEATURE_SPOTLIGHT": {
-          "TITLE": "FAQ do Captain",
-          "NOTE": "As FAQs do Captain identificam as perguntas mais comuns dos clientes — tanto as que ainda não existem na sua base de conhecimento quanto as mais recorrentes — e gera FAQs relevantes para melhorar o atendimento. Você pode revisar cada sugestão e decidir se aprova ou rejeita."
+          "TITLE": "FAQ do Tolzar AI",
+          "NOTE": "As FAQs do Tolzar AI identificam as perguntas mais comuns dos clientes — tanto as que ainda não existem na sua base de conhecimento quanto as mais recorrentes — e gera FAQs relevantes para melhorar o atendimento. Você pode revisar cada sugestão e decidir se aprova ou rejeita."
         }
       }
     },
@@ -1684,7 +1684,7 @@
       "SAVE": "Salvar Alterações",
       "DETAILS": {
         "TITLE": "Revisar sugestão de FAQ",
-        "DESCRIPTION": "O Captain agrupou {count} conversa nesta sugestão. Revise as evidências e refine a FAQ antes de aprová-la. | O Captain agrupou {count} conversas nesta sugestão. Revise as evidências e refine a FAQ antes de aprová-la.",
+        "DESCRIPTION": "O Tolzar AI agrupou {count} conversa nesta sugestão. Revise as evidências e refine a FAQ antes de aprová-la. | O Tolzar AI agrupou {count} conversas nesta sugestão. Revise as evidências e refine a FAQ antes de aprová-la.",
         "SOURCES": "Conversas de origem",
         "SOURCE_PROGRESS": "{visible} de {total}",
         "NO_SOURCES": "Nenhuma conversa de origem acessível foi encontrada.",
@@ -1696,7 +1696,7 @@
         "CLEAR_SEARCH": "Limpar busca"
       },
       "SUCCESS": {
-        "APPROVED": "FAQ aprovada e adicionada à base de conhecimento do Captain.",
+        "APPROVED": "FAQ aprovada e adicionada à base de conhecimento do Tolzar AI.",
         "DISMISSED": "Sugestão descartada.",
         "SAVED": "Sugestão atualizada."
       },

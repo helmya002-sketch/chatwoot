@@ -332,7 +332,7 @@
     "ACTIVE": "פעיל",
     "COMPANIES": "Companies",
     "ALL_COMPANIES": "All Companies",
-    "CAPTAIN": "Captain",
+    "CAPTAIN": "Tolzar AI",
     "CALLS": "Calls",
     "CAPTAIN_ASSISTANTS": "עוזרים",
     "CAPTAIN_OVERVIEW": "סקירה כללית",
@@ -536,11 +536,11 @@
     }
   },
   "CAPTAIN_SETTINGS": {
-    "TITLE": "Captain Settings",
-    "DESCRIPTION": "Configure your AI models and features for Captain. Captain follows a credit based billing, you will be charged credits for every action Captain takes based on the model selected.",
-    "LOADING": "Loading Captain configuration...",
-    "LINK_TEXT": "Learn more about Captain Credits",
-    "NOT_ENABLED": "Captain is not enabled for your account. Please upgrade your plan to access Captain features.",
+    "TITLE": "Tolzar AI Settings",
+    "DESCRIPTION": "Configure your AI models and features for Tolzar AI. Tolzar AI follows a credit based billing, you will be charged credits for every action Tolzar AI takes based on the model selected.",
+    "LOADING": "Loading Tolzar AI configuration...",
+    "LINK_TEXT": "Learn more about Tolzar AI Credits",
+    "NOT_ENABLED": "Tolzar AI is not enabled for your account. Please upgrade your plan to access Tolzar AI features.",
     "MODEL_CONFIG": {
       "TITLE": "Model Configuration",
       "DESCRIPTION": "Select AI models for different features.",
@@ -575,8 +575,8 @@
       }
     },
     "API": {
-      "SUCCESS": "Captain settings updated successfully.",
-      "ERROR": "Failed to update Captain settings. Please try again."
+      "SUCCESS": "Tolzar AI settings updated successfully.",
+      "ERROR": "Failed to update Tolzar AI settings. Please try again."
     }
   },
   "BILLING_SETTINGS": {
@@ -612,11 +612,11 @@
     },
     "CAPTAIN": {
       "TITLE": "קפטן",
-      "DESCRIPTION": "נהל שימוש וזיכויים עבור Captain AI.",
+      "DESCRIPTION": "נהל שימוש וזיכויים עבור Tolzar AI AI.",
       "BUTTON_TXT": "קנה עוד זיכויים",
       "DOCUMENTS": "מסמכים",
       "RESPONSES": "תגובות",
-      "UPGRADE": "Captain אינו זמין בתוכנית החינמית, שדרג עכשיו כדי לקבל גישה לעוזרים, ל-Copilot ועוד.",
+      "UPGRADE": "Tolzar AI אינו זמין בתוכנית החינמית, שדרג עכשיו כדי לקבל גישה לעוזרים, ל-Copilot ועוד.",
       "REFRESH_CREDITS": "רענן"
     },
     "CHAT_WITH_US": {
@@ -660,7 +660,7 @@
     "TOPUP": {
       "BUY_CREDITS": "קנה עוד זיכויים",
       "MODAL_TITLE": "Buy AI Credits",
-      "MODAL_DESCRIPTION": "Purchase additional credits for Captain AI.",
+      "MODAL_DESCRIPTION": "Purchase additional credits for Tolzar AI AI.",
       "CREDITS": "CREDITS",
       "ONE_TIME": "one-time",
       "POPULAR": "Most Popular",

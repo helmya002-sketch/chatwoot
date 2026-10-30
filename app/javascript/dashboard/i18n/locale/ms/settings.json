@@ -332,7 +332,7 @@
     "ACTIVE": "Aktif",
     "COMPANIES": "Syarikat",
     "ALL_COMPANIES": "Semua Syarikat",
-    "CAPTAIN": "Captain",
+    "CAPTAIN": "Tolzar AI",
     "CALLS": "Calls",
     "CAPTAIN_ASSISTANTS": "Pembantu",
     "CAPTAIN_OVERVIEW": "Gambaran Keseluruhan",
@@ -421,7 +421,7 @@
     },
     "DOCS": "Baca dokumen",
     "SECURITY": "Keselamatan",
-    "CAPTAIN_AI": "Captain",
+    "CAPTAIN_AI": "Tolzar AI",
     "CONVERSATION_WORKFLOW": "Aliran Kerja Perbualan"
   },
   "DATA_IMPORTS": {
@@ -536,11 +536,11 @@
     }
   },
   "CAPTAIN_SETTINGS": {
-    "TITLE": "Tetapan Captain",
-    "DESCRIPTION": "Konfigurasikan model AI dan ciri untuk Captain anda. Captain menggunakan pengebilan berasaskan kredit, anda akan dikenakan kredit untuk setiap tindakan yang diambil Captain berdasarkan model yang dipilih.",
-    "LOADING": "Memuatkan konfigurasi Captain...",
-    "LINK_TEXT": "Ketahui lebih lanjut tentang Kredit Captain",
-    "NOT_ENABLED": "Captain tidak diaktifkan untuk akaun anda. Sila naik taraf pelan anda untuk mengakses ciri Captain.",
+    "TITLE": "Tetapan Tolzar AI",
+    "DESCRIPTION": "Konfigurasikan model AI dan ciri untuk Tolzar AI anda. Tolzar AI menggunakan pengebilan berasaskan kredit, anda akan dikenakan kredit untuk setiap tindakan yang diambil Tolzar AI berdasarkan model yang dipilih.",
+    "LOADING": "Memuatkan konfigurasi Tolzar AI...",
+    "LINK_TEXT": "Ketahui lebih lanjut tentang Kredit Tolzar AI",
+    "NOT_ENABLED": "Tolzar AI tidak diaktifkan untuk akaun anda. Sila naik taraf pelan anda untuk mengakses ciri Tolzar AI.",
     "MODEL_CONFIG": {
       "TITLE": "Konfigurasi Model",
       "DESCRIPTION": "Pilih model AI untuk ciri yang berbeza.",
@@ -575,8 +575,8 @@
       }
     },
     "API": {
-      "SUCCESS": "Tetapan Captain berjaya dikemas kini.",
-      "ERROR": "Gagal mengemas kini tetapan Captain. Sila cuba lagi."
+      "SUCCESS": "Tetapan Tolzar AI berjaya dikemas kini.",
+      "ERROR": "Gagal mengemas kini tetapan Tolzar AI. Sila cuba lagi."
     }
   },
   "BILLING_SETTINGS": {
@@ -611,12 +611,12 @@
       "BUTTON_TXT": "Pergi ke portal bil"
     },
     "CAPTAIN": {
-      "TITLE": "Captain",
-      "DESCRIPTION": "Urus penggunaan dan kredit untuk Captain AI.",
+      "TITLE": "Tolzar AI",
+      "DESCRIPTION": "Urus penggunaan dan kredit untuk Tolzar AI AI.",
       "BUTTON_TXT": "Beli lebih banyak kredit",
       "DOCUMENTS": "Dokumen",
       "RESPONSES": "Responses",
-      "UPGRADE": "Captain tidak tersedia dalam pelan percuma, naik taraf sekarang untuk mendapatkan akses kepada pembantu, copilot dan lain-lain.",
+      "UPGRADE": "Tolzar AI tidak tersedia dalam pelan percuma, naik taraf sekarang untuk mendapatkan akses kepada pembantu, copilot dan lain-lain.",
       "REFRESH_CREDITS": "Segarkan"
     },
     "CHAT_WITH_US": {
@@ -660,7 +660,7 @@
     "TOPUP": {
       "BUY_CREDITS": "Beli lebih banyak kredit",
       "MODAL_TITLE": "Beli Kredit AI",
-      "MODAL_DESCRIPTION": "Beli kredit tambahan untuk Captain AI.",
+      "MODAL_DESCRIPTION": "Beli kredit tambahan untuk Tolzar AI AI.",
       "CREDITS": "CREDITS",
       "ONE_TIME": "sekali sahaja",
       "POPULAR": "Paling Popular",
