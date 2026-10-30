@@ -30,7 +30,8 @@ RSpec.describe 'Tolzar data deletion', type: :request do
       expect(response).to have_http_status(:success)
       expect(posts.first.first).to eq('/dsar/delete')
       expect(Contact.exists?(contact.id)).to be(false)
-      perform_enqueued_jobs
+      # Only the erase's own jobs: the setup's conversation_created event (queued before the erase) is not part of it.
+      perform_enqueued_jobs(except: EventDispatcherJob)
       expect(Conversation.exists?(conversation.id)).to be(false)
     end
 

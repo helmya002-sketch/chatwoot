@@ -13,6 +13,8 @@ RSpec.describe 'Tolzar account owner (H3)', type: :request do
   let(:posts) { [] }
 
   before do
+    # The Owner-only admin guard asks the brain's role table for non-owner administrators.
+    allow(Tolzar::BrainClient).to receive(:get).and_return({ 'ok' => true, 'roles' => brain_roles })
     allow_any_instance_of(controller_class).to receive(:get_from_brain) do |_controller, _path|
       { 'ok' => true, 'role' => 'owner', 'roles' => brain_roles }
     end

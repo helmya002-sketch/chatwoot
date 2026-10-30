@@ -166,8 +166,10 @@ class MailPresenter < SimpleDelegator
     end
   end
 
+  # Tolzar: bulk and mailing-list mail (Precedence bulk/list/junk, a List-Id header) counts as automated too, so
+  # alerts and newsletters get no greeting, no automation and no AI reply (no reply loops).
   def auto_reply?
-    auto_submitted? || x_auto_reply?
+    auto_submitted? || x_auto_reply? || bulk_or_list?
   end
 
   def bounced?
@@ -192,6 +194,10 @@ class MailPresenter < SimpleDelegator
 
   def auto_submitted?
     @mail['Auto-Submitted'].present? && @mail['Auto-Submitted'].value != 'no'
+  end
+
+  def bulk_or_list?
+    %w[bulk list junk].include?(@mail['Precedence']&.value.to_s.strip.downcase) || @mail['List-Id'].present?
   end
 
   def x_auto_reply?

@@ -204,6 +204,18 @@ RSpec.describe MailPresenter do
         expect(decorated_auto_reply_with_auto_submitted_mail.auto_reply?).to be true
       end
 
+      it 'treats bulk and mailing-list mail as automated' do
+        bulk = Mail.new(from: 'a@example.com', to: 'b@example.com', subject: 'Alert', body: 'Down')
+        bulk['Precedence'] = 'bulk'
+        list = Mail.new(from: 'a@example.com', to: 'b@example.com', subject: 'News', body: 'Hi')
+        list['List-Id'] = '<news.example.com>'
+        normal = Mail.new(from: 'a@example.com', to: 'b@example.com', subject: 'Hi', body: 'Hi')
+        normal['Precedence'] = 'first-class'
+        expect(described_class.new(bulk).auto_reply?).to be true
+        expect(described_class.new(list).auto_reply?).to be true
+        expect(described_class.new(normal).auto_reply?).to be false
+      end
+
       it 'includes auto_reply status in serialized_data' do
         expect(decorated_auto_reply_mail.serialized_data[:auto_reply]).to be true
         expect(decorated_mail.serialized_data[:auto_reply]).to be_falsey

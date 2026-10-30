@@ -2,8 +2,9 @@ require 'rails_helper'
 
 # Tolzar billing v1: trial, paid-until, pause, data hold and seat cap (TOLZAR-TRIAL-BILLING-V1-DESIGN).
 RSpec.describe Tolzar::Subscription do
-  let(:account) { create(:account) }
   let(:now) { Time.zone.parse('2026-11-01 12:00') }
+  # A new account starts its trial when it is created (Account after_create_commit), so create it at `now`.
+  let(:account) { travel_to(now) { create(:account) } }
 
   it 'starts a new workspace on a 30-day, 5-seat trial' do
     sub = described_class.for(account, now)
@@ -33,7 +34,8 @@ RSpec.describe Tolzar::Subscription do
   end
 
   it 'never pauses an internal workspace' do
-    sub = described_class.create!(account: account, plan: 'internal', seat_limit: 1000)
+    sub = described_class.for(account, now)
+    sub.update!(plan: 'internal', seat_limit: 1000)
     expect(sub.state(now + 10.years)).to eq('active')
     expect(sub.paused?(now + 10.years)).to be(false)
   end
@@ -45,6 +47,11 @@ RSpec.describe Tolzar::Subscription do
       expect(sub.reload.trial_ends_at).to be_within(1.second).of(Time.current + 7.days)
       expect(sub.state).to eq('trialing')
     end
+  end
+
+  it 'gives every new account exactly one trial subscription' do
+    expect(described_class.where(account_id: account.id).count).to eq(1)
+    expect(described_class.for(account, now + 5.days).trial_ends_at).to eq(now + 30.days)
   end
 
   it 'refuses an unknown plan or currency' do
