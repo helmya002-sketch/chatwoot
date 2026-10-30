@@ -56,9 +56,10 @@ RSpec.describe 'Tolzar proxy helpers', type: :request do
       expect(gets.last).to eq("/sla?account_id=#{account.id}")
       expect(body['waiting_rule']).to eq('first_reply_pending')
       expect(body['totals']).to eq('open' => 4, 'unassigned' => 3, 'waiting' => 2)
+      # Team names are stored lowercase (Team downcases them before validation).
       expect(body['teams']).to eq([
-                                    { 'id' => alpha.id, 'name' => 'Alpha', 'open' => 2, 'unassigned' => 1, 'waiting' => 0 },
-                                    { 'id' => beta.id, 'name' => 'Beta', 'open' => 1, 'unassigned' => 1, 'waiting' => 1 }
+                                    { 'id' => alpha.id, 'name' => 'alpha', 'open' => 2, 'unassigned' => 1, 'waiting' => 0 },
+                                    { 'id' => beta.id, 'name' => 'beta', 'open' => 1, 'unassigned' => 1, 'waiting' => 1 }
                                   ])
       expect(body['no_team']).to eq('open' => 1, 'unassigned' => 1, 'waiting' => 1)
     end
