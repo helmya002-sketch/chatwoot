@@ -673,5 +673,15 @@
       "STORY": "una historia",
       "AD": "un anuncio"
     }
+  },
+  "TOLZAR_SOCIAL": {
+    "SIDEBAR": "Social",
+    "HEADING": "Social",
+    "SETTING": {
+      "TITLE": "Pestaña Social",
+      "NOTE": "Muestra los comentarios en tus publicaciones de Facebook e Instagram en su propia vista Social, aparte de los mensajes privados. Desactivada: todo queda en una sola bandeja.",
+      "SUCCESS": "Ajuste de la pestaña Social guardado",
+      "ERROR": "No se pudo guardar el ajuste. Inténtalo de nuevo."
+    }
   }
 }

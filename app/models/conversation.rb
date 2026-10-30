@@ -88,6 +88,9 @@ class Conversation < ApplicationRecord
   enum priority: { low: 0, medium: 1, high: 2, urgent: 3 }
 
   scope :unassigned, -> { where(assignee_id: nil, assignee_agent_bot_id: nil) }
+  # Tolzar: public social threads (a Facebook / Instagram comment thread, additional_attributes.tolzar_comment).
+  scope :tolzar_social, -> { where("COALESCE(conversations.additional_attributes, '{}'::jsonb) ? 'tolzar_comment'") }
+  scope :tolzar_not_social, -> { where.not("COALESCE(conversations.additional_attributes, '{}'::jsonb) ? 'tolzar_comment'") }
   scope :assigned, -> { where.not(assignee_id: nil).or(where.not(assignee_agent_bot_id: nil)) }
   scope :assigned_to, ->(agent) { where(assignee_id: agent.id) }
   scope :sort_on_unread, lambda { |_direction|

@@ -210,6 +210,30 @@ export default {
         conversationType: 'unattended',
       }),
     },
+    // Tolzar: the optional Social tab (public Facebook / Instagram comment threads).
+    {
+      path: frontendURL('accounts/:accountId/social/conversations'),
+      name: 'conversation_social',
+      meta: {
+        permissions: CONVERSATION_PERMISSIONS,
+      },
+      component: ConversationView,
+      props: () => ({ conversationType: 'social' }),
+    },
+    {
+      path: frontendURL(
+        'accounts/:accountId/social/conversations/:conversationId'
+      ),
+      name: 'conversation_through_social',
+      meta: {
+        permissions: CONVERSATION_PERMISSIONS,
+      },
+      component: ConversationView,
+      props: route => ({
+        conversationId: route.params.conversationId,
+        conversationType: 'social',
+      }),
+    },
     {
       path: frontendURL('accounts/:accountId/participating/conversations'),
       name: 'conversation_participating',

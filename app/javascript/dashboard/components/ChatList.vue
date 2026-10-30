@@ -101,6 +101,14 @@ const advancedFilterTypes = ref(
 );
 
 const currentUser = useMapGetter('getCurrentUser');
+// Tolzar: the workspace's optional Social tab (public comment threads in their own view).
+const socialTabAccountId = useMapGetter('getCurrentAccountId');
+const getSocialTabAccount = useMapGetter('accounts/getAccount');
+const socialTabOn = computed(
+  () =>
+    !!getSocialTabAccount.value(socialTabAccountId.value)?.settings
+      ?.tolzar_social_tab
+);
 const chatLists = useMapGetter('getFilteredConversations');
 const mineChatsList = useMapGetter('getMineChats');
 const allChatList = useMapGetter('getAllStatusChats');
@@ -267,6 +275,7 @@ const conversationFilters = computed(() => {
     labels: props.label ? [props.label] : undefined,
     teamId: props.teamId || undefined,
     conversationType: props.conversationType || undefined,
+    socialTab: socialTabOn.value,
   };
 });
 
@@ -300,6 +309,9 @@ const pageTitle = computed(() => {
   }
   if (props.conversationType === wootConstants.CONVERSATION_TYPE.UNATTENDED) {
     return t('CHAT_LIST.UNATTENDED_HEADING');
+  }
+  if (props.conversationType === wootConstants.CONVERSATION_TYPE.SOCIAL) {
+    return t('TOLZAR_SOCIAL.HEADING');
   }
   if (hasActiveFolders.value) {
     return activeFolder.value.name;
@@ -366,7 +378,11 @@ const conversationList = computed(() => {
   if (tzUnreplied.value) {
     localConversationList = localConversationList.filter(c => {
       const w = Number(c.waitingSince ?? c.waiting_since);
-      return Number.isFinite(w) && w > 0 && c.status === wootConstants.STATUS_TYPE.OPEN;
+      return (
+        Number.isFinite(w) &&
+        w > 0 &&
+        c.status === wootConstants.STATUS_TYPE.OPEN
+      );
     });
   }
 

@@ -103,7 +103,16 @@ class ConversationFinder
       current_account
     ).perform
     filter_by_conversation_type if params[:conversation_type]
+    filter_by_social_tab
     @conversations
+  end
+
+  # Tolzar Social tab: with the workspace setting on, the Social view lists only public social threads and every
+  # other view leaves them out; with it off, nothing changes (the Social view still answers, for a stale link).
+  def filter_by_social_tab
+    return @conversations = @conversations.tolzar_social if params[:conversation_type] == 'social'
+
+    @conversations = @conversations.tolzar_not_social if ActiveModel::Type::Boolean.new.cast(current_account.tolzar_social_tab)
   end
 
   def filter_by_assignee_type

@@ -30,6 +30,12 @@ export const isOnUnattendedView = ({ route: { name: routeName } }) => {
   return UNATTENDED_ROUTES.includes(routeName);
 };
 
+// Tolzar: the optional Social tab.
+export const isOnSocialView = ({ route: { name: routeName } }) => {
+  const SOCIAL_ROUTES = ['conversation_social', 'conversation_through_social'];
+  return SOCIAL_ROUTES.includes(routeName);
+};
+
 export const isOnParticipatingView = ({ route: { name: routeName } }) => {
   const PARTICIPATING_ROUTES = [
     'conversation_participating',

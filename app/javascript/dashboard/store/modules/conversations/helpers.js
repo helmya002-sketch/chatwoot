@@ -65,8 +65,27 @@ export const filterByUnattended = (
     : shouldFilter;
 };
 
+// Tolzar Social tab: the Social view holds only public comment threads; with the workspace setting on,
+// every other view leaves them out (the server does the same, ConversationFinder#filter_by_social_tab).
+export const filterBySocial = (
+  shouldFilter,
+  conversationType,
+  socialTab,
+  isSocial
+) => {
+  if (conversationType === 'social') return isSocial && shouldFilter;
+  return socialTab ? !isSocial && shouldFilter : shouldFilter;
+};
+
 export const applyPageFilters = (conversation, filters) => {
-  const { inboxId, status, labels = [], teamId, conversationType } = filters;
+  const {
+    inboxId,
+    status,
+    labels = [],
+    teamId,
+    conversationType,
+    socialTab,
+  } = filters;
   const {
     status: chatStatus,
     inbox_id: chatInboxId,
@@ -87,6 +106,12 @@ export const applyPageFilters = (conversation, filters) => {
     conversationType,
     firstReplyOn,
     waitingSince
+  );
+  shouldFilter = filterBySocial(
+    shouldFilter,
+    conversationType,
+    socialTab,
+    !!conversation.additional_attributes?.tolzar_comment
   );
 
   return shouldFilter;

@@ -673,5 +673,15 @@
       "STORY": "uma story",
       "AD": "um anúncio"
     }
+  },
+  "TOLZAR_SOCIAL": {
+    "SIDEBAR": "Social",
+    "HEADING": "Social",
+    "SETTING": {
+      "TITLE": "Separador Social",
+      "NOTE": "Mostra os comentários nas suas publicações do Facebook e Instagram numa vista Social própria, à parte das mensagens privadas. Desligado: tudo fica numa só caixa de entrada.",
+      "SUCCESS": "Definição do separador Social guardada",
+      "ERROR": "Não foi possível guardar a definição. Tente novamente."
+    }
   }
 }
