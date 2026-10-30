@@ -22,8 +22,9 @@ Rails.application.config.after_initialize do
         'BRAND_NAME' => 'Tolzar',
         'BRAND_URL' => base,
         'WIDGET_BRAND_URL' => base,
-        'TERMS_URL' => base,
-        'PRIVACY_URL' => base,
+        # The public site serves both legal pages (Oracle, 30 Oct): link them, not the site's front page.
+        'TERMS_URL' => base.present? ? "#{base}/terms/" : '',
+        'PRIVACY_URL' => base.present? ? "#{base}/privacy/" : '',
         'CAPTAIN_TOOLS_CATALOG_URL' => ''            # never fetched from Chatwoot (Captain unused)
       }.each do |name, value|
         # No address configured: leave the links alone. (CAPTAIN_TOOLS_CATALOG_URL is blanked on purpose.)
