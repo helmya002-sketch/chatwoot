@@ -5,7 +5,6 @@ import { useMapGetter } from 'dashboard/composables/store';
 import { useI18n } from 'vue-i18n';
 import Avatar from 'next/avatar/Avatar.vue';
 import SidebarProfileMenuStatus from './SidebarProfileMenuStatus.vue';
-import { FEATURE_FLAGS } from 'dashboard/featureFlags';
 
 import {
   DropdownContainer,
@@ -14,6 +13,7 @@ import {
   DropdownItem,
 } from 'next/dropdown-menu/base';
 import CustomBrandPolicyWrapper from '../../components/CustomBrandPolicyWrapper.vue';
+import { openTolzarSupport } from 'next/Tolzar/tolzarSupport';
 
 defineProps({
   isCollapsed: { type: Boolean, default: false },
@@ -29,36 +29,31 @@ const { t } = useI18n();
 
 const currentUser = useMapGetter('getCurrentUser');
 const currentUserAvailability = useMapGetter('getCurrentUserAvailability');
-const accountId = useMapGetter('getCurrentAccountId');
 const globalConfig = useMapGetter('globalConfig/get');
-const isFeatureEnabledonAccount = useMapGetter(
-  'accounts/isFeatureEnabledonAccount'
+
+// Tolzar: "Contact support" opens Tolzar's own website chat (Super Admin > Settings > CHATWOOT_INBOX_TOKEN =
+// the website token of Tolzar's sales & support inbox); hidden while no token is set.
+const tolzarSupportToken = computed(
+  () => globalConfig.value.chatwootInboxToken
 );
-
-const showChatSupport = computed(() => {
-  return (
-    isFeatureEnabledonAccount.value(
-      accountId.value,
-      FEATURE_FLAGS.CONTACT_CHATWOOT_SUPPORT_TEAM
-    ) && globalConfig.value.chatwootInboxToken
-  );
-});
-
-const toggleChatSupport = () => {
-  if (window.$chatwoot) {
-    window.$chatwoot.toggle();
-  }
-};
+const contactTolzar = () =>
+  openTolzarSupport({
+    baseUrl: window.chatwootConfig?.hostURL || window.location.origin,
+    websiteToken: tolzarSupportToken.value,
+    user: currentUser.value,
+    locale:
+      currentUser.value?.ui_settings?.locale || document.documentElement.lang,
+  }).catch(() => {});
 
 const menuItems = computed(() => {
   return [
     {
-      // Tolzar: Chatwoot support widget removed (no external support relation)
-      show: false,
-      showOnCustomBrandedInstance: false,
+      // Tolzar: contact the Tolzar team (Tolzar's own website chat), not the upstream support team.
+      show: !!tolzarSupportToken.value,
+      showOnCustomBrandedInstance: true,
       label: t('SIDEBAR_ITEMS.CONTACT_SUPPORT'),
       icon: 'i-lucide-life-buoy',
-      click: toggleChatSupport,
+      click: contactTolzar,
     },
     {
       show: true,
