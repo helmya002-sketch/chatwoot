@@ -1,0 +1,13 @@
+es:
+  tolzar:
+    newsletter:
+      footer:
+        why: 'Recibes este correo porque usas Tolzar. Llega más o menos una vez al mes.'
+        unsubscribe: 'Darse de baja'
+        privacy: 'Privacidad'
+      unsubscribe:
+        title: 'Boletín de Tolzar'
+        confirm: '¿Dejar de recibir el boletín de Tolzar? Los correos de tu cuenta y de seguridad no cambian.'
+        button: 'Darse de baja'
+        done: 'Te has dado de baja. No volverás a recibir el boletín.'
+        invalid: 'Este enlace para darse de baja no es válido. Usa el enlace de tu último boletín.'

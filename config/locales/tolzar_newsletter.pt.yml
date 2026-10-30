@@ -1,0 +1,13 @@
+pt:
+  tolzar:
+    newsletter:
+      footer:
+        why: 'Recebe este email porque utiliza o Tolzar. Chega cerca de uma vez por mês.'
+        unsubscribe: 'Cancelar a subscrição'
+        privacy: 'Privacidade'
+      unsubscribe:
+        title: 'Newsletter do Tolzar'
+        confirm: 'Deixar de receber a newsletter do Tolzar? Os emails da conta e de segurança não são afetados.'
+        button: 'Cancelar a subscrição'
+        done: 'A subscrição foi cancelada. Não voltará a receber a newsletter.'
+        invalid: 'Esta ligação para cancelar a subscrição não é válida. Utilize a ligação da última newsletter.'

@@ -78,6 +78,13 @@ RSpec.describe 'Tolzar newsletter', type: :request do
       expect(mail.text_part.body.decoded).to include('Example Street 1, Hurghada')
     end
 
+    it 'writes the footer in the reader language (es, pt-PT among the site languages)' do
+      reader.update!(ui_settings: { 'locale' => 'es' })
+      expect(mail.text_part.body.decoded).to include('Darse de baja')
+      reader.update!(ui_settings: { 'locale' => 'pt' })
+      expect(Tolzar::NewsletterMailer.issue(delivery.reload).text_part.body.decoded).to include('Cancelar a subscrição')
+    end
+
     it 'renders the Markdown, escapes pasted HTML and adds no tracking' do
       html = mail.html_part.body.decoded
       expect(html).to include('<strong>reports</strong>')
