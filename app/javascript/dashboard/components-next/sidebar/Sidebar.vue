@@ -437,21 +437,21 @@ const menuItems = computed(() => {
   return [
     {
       name: 'Dashboard',
-      label: 'Dashboard',
+      label: t('TOLZAR_SIDEBAR.DASHBOARD'),
       icon: 'i-lucide-layout-dashboard',
       to: accountScopedRoute('tolzar_dashboard'),
       activeOn: ['tolzar_dashboard'],
     },
     {
       name: 'Pipeline',
-      label: 'Pipeline',
+      label: t('TOLZAR_SIDEBAR.PIPELINE'),
       icon: 'i-lucide-columns-3',
       to: accountScopedRoute('tolzar_pipeline'),
       activeOn: ['tolzar_pipeline'],
     },
     {
       name: 'Conversation',
-      label: 'Inbox',
+      label: t('TOLZAR_SIDEBAR.INBOX'),
       icon: 'i-lucide-inbox',
       children: [
         {
@@ -680,14 +680,15 @@ const menuItems = computed(() => {
     },
     {
       name: 'AI Agents',
-      label: 'AI Agents',
+      label: t('TOLZAR_SIDEBAR.AI_AGENTS'),
       icon: 'i-lucide-bot',
       to: accountScopedRoute('tolzar_ai_agents'),
       activeOn: ['tolzar_ai_agents'],
-      collapsible: tzAiAgents.value.length > 0,
+      // One agent (or none) needs no tree: the entry opens the builder directly.
+      collapsible: tzAiAgents.value.length > 1,
       showTreeLine: true,
       children:
-        tzAiAgents.value.length > 0
+        tzAiAgents.value.length > 1
           ? tzAiAgents.value.map(agent => ({
               name: `ai-agent-${agent.id}`,
               label: agent.name,
@@ -703,7 +704,7 @@ const menuItems = computed(() => {
     },
     {
       name: 'Campaigns',
-      label: 'Broadcasts',
+      label: t('TOLZAR_SIDEBAR.BROADCASTS'),
       icon: 'i-lucide-megaphone',
       children: [
         {
@@ -738,13 +739,13 @@ const menuItems = computed(() => {
         // Tolzar: leads, bookings, team speed + the AI scoreboard in one page.
         {
           name: 'Tolzar Reports',
-          label: t('TOLZAR_REPORTS.NAV'),
+          label: t('TOLZAR_SIDEBAR.REPORTS_OVERVIEW'),
           to: accountScopedRoute('tolzar_reports'),
         },
         // Tolzar: what Tolzar is worth (ROI), would-be values marked in Shadow.
         {
           name: 'Tolzar Results',
-          label: t('TOLZAR_RESULTS.NAV'),
+          label: t('TOLZAR_SIDEBAR.RESULTS'),
           to: accountScopedRoute('tolzar_results'),
         },
         {
@@ -793,13 +794,13 @@ const menuItems = computed(() => {
         // Tolzar: usage, audit, export, AI features, growth tools in one hub (admins).
         {
           name: 'Settings Tolzar',
-          label: t('TOLZAR_SETTINGS.NAV_LABEL'),
+          label: t('TOLZAR_SIDEBAR.WORKSPACE_SETTINGS'),
           icon: 'i-lucide-sliders-horizontal',
           to: accountScopedRoute('tolzar_settings'),
         },
         {
           name: 'Settings Tolzar Agency',
-          label: t('TOLZAR_AGENCY.NAV'),
+          label: t('TOLZAR_SIDEBAR.ALL_WORKSPACES'),
           icon: 'i-lucide-building-2',
           to: accountScopedRoute('tolzar_agency'),
         },
@@ -1152,6 +1153,8 @@ const selectSection = item => {
           :key="item.name"
           :to="item.children && item.children.length ? undefined : item.to"
           :title="item.label"
+          :aria-label="item.label"
+          :aria-current="isSectionActive(item) ? 'page' : null"
           class="tz-rail-ic flex relative justify-center items-center rounded-lg size-10"
           :class="
             isSectionActive(item)
@@ -1203,10 +1206,11 @@ const selectSection = item => {
         <button
           type="button"
           class="flex justify-center items-center rounded-md size-7 text-n-slate-11 hover:bg-n-alpha-2"
-          title="Collapse panel"
+          :title="t('TOLZAR_SIDEBAR.COLLAPSE_PANEL')"
+          :aria-label="t('TOLZAR_SIDEBAR.COLLAPSE_PANEL')"
           @click="toggleSubNav"
         >
-          <span class="i-lucide-panel-left-close size-4" />
+          <span class="i-lucide-panel-left-close size-4" aria-hidden="true" />
         </button>
       </div>
       <nav class="overflow-y-auto flex-grow px-2 pb-5 no-scrollbar min-w-0">

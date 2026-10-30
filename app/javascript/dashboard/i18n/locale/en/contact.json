@@ -681,7 +681,12 @@
       "LEAD_SCORE": "Lead score",
       "PLACE": "Place",
       "LAST_INTERACTION": "Last interaction",
-      "SUMMARY_MARK": "✦"
+      "SUMMARY_MARK": "✦",
+      "SELECT_ALL": "Select all contacts on this page",
+      "OPEN_ROW": "Open {name}",
+      "SORT_BY": "Sort by {column}",
+      "SORTED_ASC": "sorted ascending",
+      "SORTED_DESC": "sorted descending"
     },
     "STAGES": {
       "ALL": "All stages",
@@ -691,14 +696,15 @@
       "SET_FAILED": "Could not update the stage",
       "BULK_SUCCESS": "Stage set to {stage} for {count} contacts",
       "BULK_PARTIAL": "Stage set to {stage} for {done} of {count} contacts",
+      "BULK_PROGRESS": "Setting the stage… {done} of {count}",
       "NO_FIELD": "This workspace has no stage field yet. Add a contact attribute named lifecycle_stage in Settings → Custom attributes."
     },
     "PANE": {
       "FULL_PROFILE": "Full profile",
       "STAGE": "Stage",
       "LOST": "Lost",
-      "SUMMARY": "Tolzar summary",
-      "NO_SUMMARY": "No summary yet. Tolzar writes one after it reads a conversation.",
+      "SUMMARY": "{product} summary",
+      "NO_SUMMARY": "No summary yet. {product} writes one after it reads a conversation.",
       "LEAD_SCORE": "Lead score",
       "DETAILS": "Details",
       "TAGS": "Tags",
@@ -712,8 +718,7 @@
         "NUMBER": "Number",
         "TEXT": "Details"
       },
-      "GROUP_SIZE": "Party size",
-      "BOOKING_VALUE": "Deal value",
+      "DEAL_VALUE": "Deal value",
       "LANGUAGE": "Language",
       "PHONE": "Phone",
       "EMAIL": "Email"

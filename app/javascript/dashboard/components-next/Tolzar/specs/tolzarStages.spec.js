@@ -14,6 +14,9 @@ import {
   wonStage,
   lostStage,
   stageChipStyle,
+  TONE_CLASSES,
+  money,
+  isKnownCurrency,
 } from '../tolzarStages';
 
 describe('tolzarStages', () => {
@@ -141,6 +144,64 @@ describe('a custom pipeline', () => {
     expect(stageOf(undefined).key).toBe('Inquiry');
     expect(stageConditions('Inquiry').at(-1).filter_operator).toBe('is_not_present');
     expect(stageChipStyle('Signed').color).toMatch(/^#/);
+  });
+});
+
+describe('stageClass: one token map for every chip', () => {
+  afterEach(() => applyPipelineStages({}));
+
+  it('maps each tone to n-* theme classes, never a hex', () => {
+    const classes = STAGES.map(s => stageClass(s.key));
+    expect(classes).toHaveLength(5);
+    classes.forEach(c => {
+      expect(c).toMatch(/^bg-n-[a-z]+-3 text-n-[a-z]+-11$/);
+      expect(c).not.toMatch(/#/);
+    });
+    expect(new Set(classes).size).toBe(5);
+    expect(Object.keys(TONE_CLASSES).sort()).toEqual([
+      'amber',
+      'iris',
+      'ruby',
+      'slate',
+      'teal',
+    ]);
+  });
+
+  it('follows a custom stage tone and keeps unknown stages on the default tone', () => {
+    applyPipelineStages({
+      pipeline_stages: [{ key: 'Quote', tone: 'teal' }, 'Signed'],
+    });
+    expect(stageClass('Quote')).toBe(TONE_CLASSES.teal);
+    expect(stageClass('Nowhere')).toBe(TONE_CLASSES.slate);
+  });
+});
+
+describe('money', () => {
+  afterEach(() => applyPipelineStages({}));
+
+  it('formats in the given app locale with the workspace currency', () => {
+    applyPipelineStages({ deal_currency: 'EUR' });
+    expect(money(1234, { locale: 'en' })).toBe('€1,234');
+    expect(money(1234, { locale: 'de' })).toMatch(/1\.234\s?€/);
+    expect(money(12340, { short: true, locale: 'en' })).toBe('€12.3K');
+  });
+
+  it('shows a plain number without a currency setting', () => {
+    expect(money(1234, { locale: 'en' })).toBe('1,234');
+    expect(money(1234)).toBe('1,234');
+  });
+
+  it('never drops an unknown currency silently: number plus the code', () => {
+    applyPipelineStages({ deal_currency: 'ZZZ' });
+    expect(isKnownCurrency('ZZZ')).toBe(false);
+    expect(money(1234, { locale: 'en' })).toBe('1,234 ZZZ');
+    expect(isKnownCurrency('USD')).toBe(true);
+    expect(isKnownCurrency('eur')).toBe(false);
+  });
+
+  it('falls back to English on a bad locale instead of throwing', () => {
+    applyPipelineStages({ deal_currency: 'USD' });
+    expect(money(5, { locale: 'zz-INVALID-!!' })).toBe('$5');
   });
 });
 

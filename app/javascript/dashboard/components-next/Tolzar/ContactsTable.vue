@@ -1,7 +1,8 @@
 <script setup>
 // Tolzar Contacts pass 1: a dense, scannable table instead of Chatwoot's one-card-per-contact
 // list. Each row: channel badge, name, the brain's one-line summary, stage, lead score, place
-// and last interaction. Clicking a row opens the preview pane; the checkbox drives bulk actions.
+// and last interaction. Clicking (or Enter / Space on) a row opens the preview pane; the checkbox
+// drives bulk actions. Lead score and last interaction sort client-side on the loaded page.
 import { useI18n } from 'vue-i18n';
 import { computed, ref, watch } from 'vue';
 import { useStore, useMapGetter } from 'dashboard/composables/store';
@@ -75,6 +76,50 @@ const rows = computed(() =>
     };
   })
 );
+
+// Client-side sort of the loaded page: '' keeps the server order. Unscored contacts and
+// contacts with no activity sort last whichever way the column points.
+const SORTABLE = {
+  score: { label: 'TOLZAR_CONTACTS.TABLE.LEAD_SCORE', value: r => r.score },
+  lastAt: {
+    label: 'TOLZAR_CONTACTS.TABLE.LAST_INTERACTION',
+    value: r => (r.lastAt ? Number(r.lastAt) : null),
+  },
+};
+const sort = ref({ key: '', dir: 'desc' });
+const toggleSort = key => {
+  if (sort.value.key !== key) sort.value = { key, dir: 'desc' };
+  else if (sort.value.dir === 'desc') sort.value = { key, dir: 'asc' };
+  else sort.value = { key: '', dir: 'desc' };
+};
+const ariaSort = key => {
+  if (sort.value.key !== key) return 'none';
+  return sort.value.dir === 'asc' ? 'ascending' : 'descending';
+};
+const sortTitle = key => {
+  const column = t(SORTABLE[key].label);
+  const state =
+    sort.value.key === key
+      ? t(`TOLZAR_CONTACTS.TABLE.SORTED_${sort.value.dir.toUpperCase()}`)
+      : '';
+  return [t('TOLZAR_CONTACTS.TABLE.SORT_BY', { column }), state]
+    .filter(Boolean)
+    .join(', ');
+};
+const sortedRows = computed(() => {
+  const { key, dir } = sort.value;
+  if (!key) return rows.value;
+  const value = SORTABLE[key].value;
+  const sign = dir === 'asc' ? 1 : -1;
+  return [...rows.value].sort((a, b) => {
+    const av = value(a);
+    const bv = value(b);
+    if (av === null && bv === null) return 0;
+    if (av === null) return 1;
+    if (bv === null) return -1;
+    return (av - bv) * sign;
+  });
+});
 </script>
 
 <template>
@@ -84,18 +129,24 @@ const rows = computed(() =>
         <col class="w-10" />
         <col />
         <col class="w-28" />
-        <col class="w-24" />
+        <col class="w-28" />
         <col class="hidden w-40 2xl:table-column" />
         <col v-if="!activeContactId" class="w-36" />
       </colgroup>
       <thead>
         <tr class="text-xs text-n-slate-10 border-b border-n-weak">
           <th class="px-3 py-2.5 font-normal text-start">
-            <Checkbox
-              :model-value="allSelected"
-              :indeterminate="someSelected"
-              @change="e => emit('toggleAll', e.target.checked)"
-            />
+            <!-- Checkbox renders a bare input; the wrapping label names it for screen readers. -->
+            <label class="flex items-center cursor-pointer">
+              <Checkbox
+                :model-value="allSelected"
+                :indeterminate="someSelected"
+                @change="e => emit('toggleAll', e.target.checked)"
+              />
+              <span class="sr-only">{{
+                t('TOLZAR_CONTACTS.TABLE.SELECT_ALL')
+              }}</span>
+            </label>
           </th>
           <th class="px-2 py-2.5 font-normal text-start">
             {{ t('TOLZAR_CONTACTS.TABLE.CONTACT') }}
@@ -103,8 +154,30 @@ const rows = computed(() =>
           <th class="px-2 py-2.5 font-normal text-start">
             {{ t('TOLZAR_CONTACTS.TABLE.STAGE') }}
           </th>
-          <th class="px-2 py-2.5 font-normal text-start">
-            {{ t('TOLZAR_CONTACTS.TABLE.LEAD_SCORE') }}
+          <th
+            class="px-2 py-2.5 font-normal text-start"
+            :aria-sort="ariaSort('score')"
+          >
+            <button
+              type="button"
+              class="inline-flex items-center gap-1 rounded hover:text-n-slate-12 focus-visible:outline focus-visible:outline-1 focus-visible:outline-n-brand"
+              :class="{ 'text-n-slate-12': sort.key === 'score' }"
+              :title="sortTitle('score')"
+              @click="toggleSort('score')"
+            >
+              {{ t('TOLZAR_CONTACTS.TABLE.LEAD_SCORE') }}
+              <span
+                class="size-3"
+                :class="
+                  sort.key !== 'score'
+                    ? 'i-lucide-chevrons-up-down opacity-60'
+                    : sort.dir === 'asc'
+                      ? 'i-lucide-chevron-up'
+                      : 'i-lucide-chevron-down'
+                "
+                aria-hidden="true"
+              />
+            </button>
           </th>
           <th class="hidden px-2 py-2.5 font-normal text-start 2xl:table-cell">
             {{ t('TOLZAR_CONTACTS.TABLE.PLACE') }}
@@ -112,30 +185,62 @@ const rows = computed(() =>
           <th
             v-if="!activeContactId"
             class="px-2 py-2.5 font-normal text-start"
+            :aria-sort="ariaSort('lastAt')"
           >
-            {{ t('TOLZAR_CONTACTS.TABLE.LAST_INTERACTION') }}
+            <button
+              type="button"
+              class="inline-flex items-center gap-1 rounded hover:text-n-slate-12 focus-visible:outline focus-visible:outline-1 focus-visible:outline-n-brand"
+              :class="{ 'text-n-slate-12': sort.key === 'lastAt' }"
+              :title="sortTitle('lastAt')"
+              @click="toggleSort('lastAt')"
+            >
+              {{ t('TOLZAR_CONTACTS.TABLE.LAST_INTERACTION') }}
+              <span
+                class="size-3"
+                :class="
+                  sort.key !== 'lastAt'
+                    ? 'i-lucide-chevrons-up-down opacity-60'
+                    : sort.dir === 'asc'
+                      ? 'i-lucide-chevron-up'
+                      : 'i-lucide-chevron-down'
+                "
+                aria-hidden="true"
+              />
+            </button>
           </th>
         </tr>
       </thead>
       <tbody>
         <tr
-          v-for="row in rows"
+          v-for="row in sortedRows"
           :key="row.id"
-          class="border-b cursor-pointer border-n-weak last:border-b-0 hover:bg-n-slate-2"
+          class="border-b cursor-pointer border-n-weak last:border-b-0 hover:bg-n-slate-2 focus-visible:outline focus-visible:outline-1 focus-visible:-outline-offset-1 focus-visible:outline-n-brand"
           :class="{
             '!bg-n-blue-2': row.id === activeContactId,
             'bg-n-slate-2': selected.has(row.id) && row.id !== activeContactId,
           }"
+          role="button"
+          tabindex="0"
+          :aria-label="t('TOLZAR_CONTACTS.TABLE.OPEN_ROW', { name: row.name })"
+          :aria-pressed="row.id === activeContactId ? 'true' : 'false'"
           @click="emit('open', row.id)"
+          @keydown.enter.prevent="emit('open', row.id)"
+          @keydown.space.prevent="emit('open', row.id)"
         >
-          <td class="px-3 py-2.5 align-top" @click.stop>
-            <Checkbox
-              :model-value="selected.has(row.id)"
-              @change="
-                e =>
-                  emit('toggleContact', { id: row.id, value: e.target.checked })
-              "
-            />
+          <td class="px-3 py-2.5 align-top" @click.stop @keydown.stop>
+            <label class="flex items-center cursor-pointer">
+              <Checkbox
+                :model-value="selected.has(row.id)"
+                @change="
+                  e =>
+                    emit('toggleContact', {
+                      id: row.id,
+                      value: e.target.checked,
+                    })
+                "
+              />
+              <span class="sr-only">{{ row.name }}</span>
+            </label>
           </td>
           <td class="px-2 py-2 align-top">
             <div class="flex min-w-0 gap-2.5">

@@ -1,5 +1,7 @@
 <script setup>
 // Tolzar Contacts pass 1: "Set stage" in the contacts bulk-action bar.
+// The update itself runs in ContactsIndex (one request per contact: the proxy has no bulk
+// stage endpoint yet); this is only the picker.
 import { useI18n } from 'vue-i18n';
 import { ref } from 'vue';
 import Button from 'dashboard/components-next/button/Button.vue';
@@ -20,7 +22,7 @@ const pick = key => {
 </script>
 
 <template>
-  <div class="relative">
+  <div class="relative" @keydown.esc="open = false">
     <Button
       sm
       ghost
@@ -29,17 +31,21 @@ const pick = key => {
       :label="t('TOLZAR_CONTACTS.STAGES.SET')"
       :disabled="disabled || isLoading"
       :is-loading="isLoading"
+      aria-haspopup="menu"
+      :aria-expanded="open ? 'true' : 'false'"
       @click="open = !open"
     />
     <div v-if="open" class="fixed inset-0 z-40" @click="open = false" />
     <div
       v-if="open"
+      role="menu"
       class="absolute z-50 p-1 mt-1 border shadow-lg ltr:right-0 rtl:left-0 min-w-44 rounded-xl border-n-weak bg-n-alpha-3 backdrop-blur-[100px]"
     >
       <button
         v-for="s in STAGES"
         :key="s.key"
         type="button"
+        role="menuitem"
         class="flex items-center w-full gap-2 px-2 py-1.5 text-sm rounded-lg text-start text-n-slate-12 hover:bg-n-alpha-2"
         @click="pick(s.key)"
       >
