@@ -651,5 +651,15 @@
   },
   "GALLERY_VIEW": {
     "ERROR_DOWNLOADING": "Anhang konnte nicht heruntergeladen werden. Bitte versuche es erneut"
+  },
+  "TOLZAR_SOCIAL": {
+    "SIDEBAR": "Social",
+    "HEADING": "Social",
+    "SETTING": {
+      "TITLE": "Social-Tab",
+      "NOTE": "Kommentare zu deinen Facebook- und Instagram-Beiträgen in einer eigenen Social-Ansicht zeigen, getrennt von privaten Nachrichten. Aus: alles bleibt in einem Posteingang.",
+      "SUCCESS": "Einstellung für den Social-Tab gespeichert",
+      "ERROR": "Die Einstellung konnte nicht gespeichert werden. Bitte erneut versuchen."
+    }
   }
 }

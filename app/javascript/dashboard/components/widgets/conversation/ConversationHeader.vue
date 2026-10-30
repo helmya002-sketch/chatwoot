@@ -59,6 +59,7 @@ const backButtonUrl = computed(() => {
     conversation_through_mentions: 'mention',
     conversation_through_participating: 'participating',
     conversation_through_unattended: 'unattended',
+    conversation_through_social: 'social',
   };
   return conversationListPageURL({
     accountId: accountId.value,
@@ -158,7 +159,11 @@ const setStage = stage => {
   const merged = { ...(cc.custom_attributes || {}), lifecycle_stage: stage };
   store
     .dispatch('contacts/update', { id: cc.id, customAttributes: merged })
-    .then(() => useAlert(t('TOLZAR_CONTACTS.STAGES.SET_SUCCESS', { stage: stageOf(stage).label })))
+    .then(() =>
+      useAlert(
+        t('TOLZAR_CONTACTS.STAGES.SET_SUCCESS', { stage: stageOf(stage).label })
+      )
+    )
     .catch(() => useAlert(t('TOLZAR_CONTACTS.STAGES.SET_FAILED')));
 };
 </script>

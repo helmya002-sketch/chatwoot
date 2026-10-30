@@ -651,5 +651,15 @@
   },
   "GALLERY_VIEW": {
     "ERROR_DOWNLOADING": "Unable to download attachment. Please try again"
+  },
+  "TOLZAR_SOCIAL": {
+    "SIDEBAR": "Social",
+    "HEADING": "Social",
+    "SETTING": {
+      "TITLE": "Social tab",
+      "NOTE": "Show comments on your Facebook and Instagram posts in their own Social view, apart from private messages. Off: everything stays in one inbox.",
+      "SUCCESS": "Social tab setting saved",
+      "ERROR": "Could not save the Social tab setting. Please try again."
+    }
   }
 }

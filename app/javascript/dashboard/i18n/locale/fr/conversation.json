@@ -651,5 +651,15 @@
   },
   "GALLERY_VIEW": {
     "ERROR_DOWNLOADING": "Impossible de télécharger la pièce jointe. Veuillez réessayer"
+  },
+  "TOLZAR_SOCIAL": {
+    "SIDEBAR": "Réseaux sociaux",
+    "HEADING": "Réseaux sociaux",
+    "SETTING": {
+      "TITLE": "Onglet Réseaux sociaux",
+      "NOTE": "Afficher les commentaires sur vos publications Facebook et Instagram dans leur propre vue, à part des messages privés. Désactivé : tout reste dans une seule boîte de réception.",
+      "SUCCESS": "Réglage de l'onglet Réseaux sociaux enregistré",
+      "ERROR": "Impossible d'enregistrer le réglage. Réessayez."
+    }
   }
 }

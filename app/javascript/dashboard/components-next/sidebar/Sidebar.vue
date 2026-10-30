@@ -70,6 +70,10 @@ const { width: windowWidth } = useWindowSize();
 const isMobile = computed(() => windowWidth.value < 768);
 
 const accountId = useMapGetter('getCurrentAccountId');
+const getAccount = useMapGetter('accounts/getAccount');
+const socialTabOn = computed(
+  () => !!getAccount.value(accountId.value)?.settings?.tolzar_social_tab
+);
 const currentUserId = useMapGetter('getCurrentUserID');
 const isFeatureEnabledonAccount = useMapGetter(
   'accounts/isFeatureEnabledonAccount'
@@ -492,6 +496,18 @@ const menuItems = computed(() => {
             : 0,
           to: accountScopedRoute('conversation_unattended'),
         },
+        // Tolzar: the optional Social tab (Settings > Account settings), public comment threads apart.
+        ...(socialTabOn.value
+          ? [
+              {
+                name: 'Social',
+                activeOn: ['conversation_through_social'],
+                label: t('TOLZAR_SOCIAL.SIDEBAR'),
+                icon: 'i-lucide-megaphone',
+                to: accountScopedRoute('conversation_social'),
+              },
+            ]
+          : []),
         {
           name: 'Folders',
           label: t('SIDEBAR.CUSTOM_VIEWS_FOLDER'),

@@ -16,6 +16,8 @@ export default {
     MENTION: 'mention',
     PARTICIPATING: 'participating',
     UNATTENDED: 'unattended',
+    // Tolzar: the optional Social tab (public FB/IG comment threads).
+    SOCIAL: 'social',
   },
   SORT_BY_TYPE: {
     LAST_ACTIVITY_AT_ASC: 'last_activity_at_asc',

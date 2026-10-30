@@ -62,6 +62,9 @@ class Account < ApplicationRecord
   store_accessor :settings, :keep_pending_on_bot_failure
   store_accessor :settings, :captain_auto_resolve_mode
   store_accessor :settings, :enforce_mfa
+  # Tolzar: the optional Social tab (owner 30 Oct). On, public social threads (Facebook / Instagram comments)
+  # leave the normal inbox views for their own Social view; off (default), one inbox as before.
+  store_accessor :settings, :tolzar_social_tab
   include AccountCaptainAutoResolve
 
   has_many :account_users, dependent: :destroy_async
