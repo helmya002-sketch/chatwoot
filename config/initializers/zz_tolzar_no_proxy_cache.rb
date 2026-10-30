@@ -21,6 +21,9 @@ class TolzarNoProxyCache
   # /api/v1/accounts/<id>/tolzar/... and /tolzar/... (mirror, Meta, MCP doors).
   TOLZAR_PATH = %r{\A(?:/api/v1/accounts/[^/]+)?/tolzar(?:/|\z|\.)}
   STATIC_EXT = /\.(?:js|mjs|css|map|png|jpe?g|gif|svg|webp|avif|ico|woff2?|ttf|eot|wasm|mp3|mp4|webm|pdf)\z/i.freeze
+  # The feature board's two public feeds for the marketing site: no personal data, the same for every visitor,
+  # cacheable by browsers/CDNs for five minutes (Tolzar::FeedbackController#public_json). LSCache still skips them.
+  PUBLIC_FEED = %r{\A/feedback/(?:roadmap|changelog)\.json\z}
 
   def initialize(app)
     @app = app
@@ -39,6 +42,8 @@ class TolzarNoProxyCache
       # is per-user data; never stored by a proxy, whatever its content type.
       headers['X-LiteSpeed-Cache-Control'] = 'no-cache'
       headers['Cache-Control'] = 'no-store, private'
+    elsif path.match?(PUBLIC_FEED)
+      headers['X-LiteSpeed-Cache-Control'] = 'no-cache'
     elsif !(path.match?(STATIC_PATH) || path.match?(STATIC_EXT))
       content_type = (headers['Content-Type'] || headers['content-type']).to_s
       if content_type.include?('text/html') || content_type.include?('application/json')

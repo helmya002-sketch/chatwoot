@@ -204,8 +204,10 @@ class Tolzar::FeedbackController < ActionController::Base
       url: tolzar_feedback_changelog_url(anchor: entry.anchor), ideas: entry.public_ideas.map { |i| idea_json(i) } }
   end
 
+  # Canonical, RSS, JSON-LD and JSON URLs always use the public address (scheme included), never the request's.
   def default_url_options
-    { host: ENV.fetch('FRONTEND_URL') }
+    uri = URI.parse(ENV.fetch('FRONTEND_URL'))
+    { protocol: uri.scheme, host: uri.host, port: (uri.port unless uri.port == uri.default_port) }.compact
   end
 
   def in_the_viewers_language(&)

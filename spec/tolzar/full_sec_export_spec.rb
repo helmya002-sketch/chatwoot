@@ -128,6 +128,18 @@ RSpec.describe TolzarNoProxyCache do
     public_app = ->(_env) { [200, { 'Content-Type' => 'application/json', 'Cache-Control' => 'max-age=10, public' }, ['x']] }
     expect(described_class.new(public_app).call(Rack::MockRequest.env_for('/api/v1/x'))[1]['Cache-Control']).to include('no-store')
   end
+
+  it "lets only the feature board's two public feeds keep their public cache header (LSCache still skips them)" do
+    feed = ->(_env) { [200, { 'Content-Type' => 'application/json', 'Cache-Control' => 'max-age=300, public' }, ['x']] }
+    %w[/feedback/roadmap.json /feedback/changelog.json].each do |path|
+      headers = described_class.new(feed).call(Rack::MockRequest.env_for(path))[1]
+      expect(headers['Cache-Control']).to eq('max-age=300, public')
+      expect(headers['X-LiteSpeed-Cache-Control']).to eq('no-cache')
+    end
+    %w[/feedback /feedback/12-dark-mode /feedback/roadmap /feedback/roadmap.json/x /api/v1/feedback/roadmap.json].each do |path|
+      expect(described_class.new(feed).call(Rack::MockRequest.env_for(path))[1]['Cache-Control']).to include('no-store')
+    end
+  end
 end
 
 RSpec.describe Tolzar::WorkspaceExportJob, '(M6 CSV formula injection)' do
