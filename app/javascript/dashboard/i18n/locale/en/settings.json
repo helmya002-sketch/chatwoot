@@ -808,7 +808,7 @@
     }
   },
   "CREATE_ACCOUNT": {
-    "NO_ACCOUNT_WARNING": "Uh oh! We could not find any Tolzar accounts. Please create a new account to continue.",
+    "NO_ACCOUNT_WARNING": "We could not find a Tolzar workspace for you. Create one to continue.",
     "NEW_ACCOUNT": "New workspace",
     "SELECTOR_SUBTITLE": "Create a new account",
     "API": {
