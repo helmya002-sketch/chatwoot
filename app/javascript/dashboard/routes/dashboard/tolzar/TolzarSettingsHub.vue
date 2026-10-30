@@ -7,6 +7,7 @@ import TrustPanel from 'dashboard/components-next/Tolzar/settings/TrustPanel.vue
 import ChannelsPanel from 'dashboard/components-next/Tolzar/settings/ChannelsPanel.vue';
 import AiLimitsPanel from 'dashboard/components-next/Tolzar/settings/AiLimitsPanel.vue';
 import QuotasPanel from 'dashboard/components-next/Tolzar/settings/QuotasPanel.vue';
+import BillingGroupPanel from 'dashboard/components-next/Tolzar/settings/BillingGroupPanel.vue';
 import DocumentsPanel from 'dashboard/components-next/Tolzar/settings/DocumentsPanel.vue';
 import WorkspacePanel from 'dashboard/components-next/Tolzar/settings/WorkspacePanel.vue';
 import GoLivePanel from 'dashboard/components-next/Tolzar/settings/GoLivePanel.vue';
@@ -34,7 +35,7 @@ const problems = r =>
   isOwnerOnly(r) ? [$t('TOLZAR_SETTINGS.R1.OWNER_ONLY')] : brainErrors(r);
 
 const SECTIONS = [
-  ['workspace', ['workspace_settings', 'pipeline', 'usage', 'roles', 'audit', 'export', 'go_live']],
+  ['workspace', ['workspace_settings', 'pipeline', 'usage', 'plan', 'roles', 'audit', 'export', 'go_live']],
   ['trust', ['disclosure', 'retention', 'privacy']],
   ['channels', ['whatsapp_listen', 'meta_app', 'sms', 'crm', 'commerce']],
   ['team', ['sla', 'qa']],
@@ -291,6 +292,7 @@ onMounted(() => {
           </div>
 
           <QuotasPanel v-if="current === 'usage'" />
+          <BillingGroupPanel v-if="current === 'plan'" />
           <TrustPanel v-if="TRUST.includes(current)" :key="current" :section="current" />
           <ChannelsPanel v-if="CHANNELS.includes(current)" :key="current" :section="current" />
           <WhatsappListenOnlyPanel v-if="current === 'whatsapp_listen'" />

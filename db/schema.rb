@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_10_30_053234) do
+ActiveRecord::Schema[7.1].define(version: 2026_10_30_063457) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -74,7 +74,9 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_30_053234) do
     t.jsonb "internal_attributes", default: {}, null: false
     t.jsonb "settings", default: {}
     t.bigint "feature_flags_ext_1", default: 0, null: false
+    t.bigint "tolzar_billing_group_id"
     t.index ["status"], name: "index_accounts_on_status"
+    t.index ["tolzar_billing_group_id"], name: "index_accounts_on_tolzar_billing_group_id"
   end
 
   create_table "action_mailbox_inbound_emails", force: :cascade do |t|
@@ -1754,6 +1756,19 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_30_053234) do
       before(:insert).
       for_each(:row) do
     "NEW.display_id := nextval('conv_dpid_seq_' || NEW.account_id);"
+  end
+
+  create_table "tolzar_billing_groups", force: :cascade do |t|
+    t.bigint "brain_group_id", null: false
+    t.bigint "owner_user_id"
+    t.string "plan", default: "business", null: false
+    t.string "provider"
+    t.string "customer_ref"
+    t.string "subscription_ref"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["brain_group_id"], name: "index_tolzar_billing_groups_on_brain_group_id", unique: true
+    t.index ["owner_user_id"], name: "index_tolzar_billing_groups_on_owner_user_id"
   end
 
   create_table "tolzar_meta_apps", force: :cascade do |t|
