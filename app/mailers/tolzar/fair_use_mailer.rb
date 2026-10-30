@@ -3,7 +3,7 @@
 class Tolzar::FairUseMailer < AdministratorNotifications::BaseMailer
   def notice(to, meta)
     subject = I18n.t("tolzar.fair_use.mail.#{meta['level']}.subject", workspace: meta['workspace'])
-    url = "#{ENV.fetch('FRONTEND_URL', nil)}/app/accounts/#{Current.account.id}/tolzar-settings"
+    url = "#{(ENV['TOLZAR_MAIL_LINK_URL'].presence || ENV.fetch('FRONTEND_URL', nil)).to_s.chomp('/')}/app/accounts/#{Current.account.id}/tolzar-settings"
     send_notification(subject, to: to, action_url: url, meta: meta)
   end
 
