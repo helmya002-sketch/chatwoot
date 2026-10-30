@@ -179,14 +179,11 @@ const openMetaFor = async (params = '') => {
   return data?.meta || {};
 };
 
-async function loadTeams(openTotal) {
-  await store.dispatch('teams/get');
-  const teams = store.getters['teams/getTeams'] || [];
-  const rows = await Promise.all(
-    teams.map(async t => ({ name: t.name, n: (await openMetaFor(`&team_id=${t.id}`)).all_count || 0 }))
-  );
-  const inTeams = rows.reduce((a, r) => a + r.n, 0);
-  teamCounts.value = [...rows, { name: 'No team', n: Math.max(0, openTotal - inTeams) }];
+// Every team's open conversations in one request (tolzar/team_summary), not one per team.
+async function loadTeams() {
+  const { data } = await window.axios.get(`/api/v1/accounts/${accountId.value}/tolzar/team_summary`);
+  const rows = (data?.teams || []).map(t => ({ name: t.name, n: t.open || 0 }));
+  teamCounts.value = [...rows, { name: 'No team', n: Math.max(0, data?.no_team?.open || 0) }];
 }
 
 // The workspace's first-run checklist (open to every administrator): a card until it is done.
@@ -215,7 +212,7 @@ onMounted(async () => {
     totalContacts.value = contactsTotal;
     openMeta.value = meta;
     await Promise.all([
-      loadTeams(meta.all_count || 0).catch(() => {}),
+      loadTeams().catch(() => {}),
       window.axios
         .get(`/api/v1/accounts/${accountId.value}/conversations?status=open`)
         .then(({ data }) => {

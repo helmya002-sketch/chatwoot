@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_10_29_120000) do
+ActiveRecord::Schema[7.1].define(version: 2026_10_30_074440) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1754,6 +1754,16 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_29_120000) do
       before(:insert).
       for_each(:row) do
     "NEW.display_id := nextval('conv_dpid_seq_' || NEW.account_id);"
+  end
+
+  create_table "tolzar_agent_versions", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.string "agent_id", null: false
+    t.integer "version", null: false
+    t.jsonb "payload", default: {}, null: false
+    t.bigint "saved_by_id"
+    t.datetime "created_at", null: false
+    t.index ["account_id", "agent_id", "version"], name: "index_tolzar_agent_versions_on_agent_version", unique: true
   end
 
   create_table "tolzar_meta_apps", force: :cascade do |t|

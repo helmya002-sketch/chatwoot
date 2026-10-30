@@ -53,7 +53,9 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
 
   def agent_save
     agent = params[:agent].respond_to?(:to_unsafe_h) ? params[:agent].to_unsafe_h : params[:agent]
-    render_brain post_to_brain('/agents', { account_id: account_scope_id, agent: agent })
+    saved = post_to_brain('/agents', { account_id: account_scope_id, agent: agent })
+    record_agent_version(saved)
+    render_brain saved
   end
 
   def agent_delete
@@ -241,25 +243,14 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
     send_data blob.download, filename: blob.filename.to_s, type: 'application/gzip'
   end
 
-  # Audit log (A6): Chatwoot's own audits for this workspace plus the brain's settings log.
-  AUDIT_HIDDEN = /token|secret|password|otp|api_key|account_sid|credential/i
-
+  # Audit log (A6): Chatwoot's own audits for this workspace plus the brain's settings log, newest first,
+  # a page at a time, filtered by action, actor (user id) and date range (Tolzar::AuditLogQuery).
   def audit
-    limit = (params[:limit].presence || 200).to_i.clamp(1, 1000)
-    rows = Audited::Audit.where(associated_type: 'Account', associated_id: account_scope_id)
-                         .or(Audited::Audit.where(auditable_type: 'Account', auditable_id: account_scope_id))
-                         .order(created_at: :desc).limit(limit)
-    users = User.where(id: rows.map(&:user_id).compact.uniq).index_by(&:id)
-    chatwoot = rows.map do |a|
-      changes = (a.audited_changes || {}).reject { |k, _| k.to_s.match?(AUDIT_HIDDEN) }
-      { source: 'chatwoot', at: a.created_at, action: "#{a.auditable_type.underscore}.#{a.action}",
-        target: "#{a.auditable_type} #{a.auditable_id}",
-        actor: users[a.user_id]&.email || a.username || 'system', changes: changes }
-    end
-    brain = (get_from_brain("/audit?account_id=#{account_scope_id}&limit=#{limit}")['entries'] || []).map do |e|
-      { source: 'brain', at: e['at'], action: e['action'], target: e['target'], actor: e['actor'], changes: e['changes'] }
-    end
-    render json: { ok: true, entries: (chatwoot + brain).sort_by { |e| e[:at].to_s }.reverse.first(limit) }
+    query = Tolzar::AuditLogQuery.new(account: Current.account, params: params)
+    brain = get_from_brain("/audit?account_id=#{account_scope_id}&limit=#{Tolzar::AuditLogQuery::BRAIN_LIMIT}")['entries']
+    render json: { ok: true }.merge(query.perform(Array(brain)))
+  rescue Tolzar::AuditLogQuery::Refused => e
+    render json: { ok: false, error: 'invalid_params', detail: e.message }, status: :unprocessable_entity
   end
 
   # Workspace settings in the brain's DB on top of the yaml defaults (brain workspace_settings.py).
@@ -609,6 +600,14 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
 
   def ensure_owner
     render json: { ok: false, error: 'owner_only' }, status: :forbidden unless owner?
+  end
+
+  # The brain accepted an agent save: keep it as the agent's next version (Tolzar::AgentVersion).
+  def record_agent_version(res)
+    agent = res['agent'] if res.is_a?(Hash) && res['ok'] == true
+    return unless agent.is_a?(Hash) && agent['id'].present?
+
+    Tolzar::AgentVersion.record!(account: Current.account, agent_id: agent['id'].to_s.first(80), payload: agent, user: Current.user)
   end
 
   # Who made the change, for the brain's audit log (A6).

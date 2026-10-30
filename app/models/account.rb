@@ -109,6 +109,8 @@ class Account < ApplicationRecord
   has_many :whatsapp_channels, dependent: :destroy_async, class_name: '::Channel::Whatsapp'
   # Tolzar: the workspace's own Meta app (Facebook / Instagram), Tolzar::MetaApp.
   has_one :tolzar_meta_app, dependent: :destroy, class_name: '::Tolzar::MetaApp'
+  # Tolzar: the last saved versions of each AI agent, Tolzar::AgentVersion.
+  has_many :tolzar_agent_versions, dependent: :delete_all, class_name: '::Tolzar::AgentVersion'
   has_many :working_hours, dependent: :destroy_async
 
   has_one_attached :contacts_export
