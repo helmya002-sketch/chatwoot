@@ -837,5 +837,60 @@
     "AVG_REPLY_TIME": "Avg. Customer Waiting Time",
     "RESOLUTION_COUNT": "Número de resoluciones",
     "CONVERSATIONS": "Núm. de conversaciones"
+  },
+  "TOLZAR_SETTINGS": {
+    "NAV": {
+      "plan": "Plan y uso"
+    },
+    "HINT": {
+      "plan": "La cuota común de respuestas de IA de tu plan, compartida entre tus espacios de trabajo."
+    },
+    "BILLING": {
+      "WHAT_COUNTS": "Qué cuenta como respuesta de IA: un mensaje que la IA escribe y envía a un cliente en un canal en producción; las notas en modo sombra, el chat de prueba y los controles de calidad no se cuentan.",
+      "SWITCH_OFF": "La cuota común aún no está activada en Tolzar: cada espacio de trabajo mantiene sus propios límites.",
+      "NO_GROUP": "Este espacio de trabajo no comparte una cuota de respuestas de IA con otros espacios.",
+      "POOL_TITLE": "Respuestas de IA este mes, todos los espacios",
+      "PLAN": "Plan: {plan}",
+      "COUNTING_SINCE": "Contando desde el {date}",
+      "NOT_COUNTING": "Aún no se cuenta",
+      "UNLIMITED": "Sin tope",
+      "REMAINING": "Quedan {n}",
+      "REACHED": "Cuota alcanzada",
+      "PERIOD": "Mes {month}, {tz}",
+      "ENABLED": "Cuota activada",
+      "PAUSED": "Cuota desactivada: no se aplica",
+      "MEMBERS": "Espacios de trabajo del grupo",
+      "WORKSPACE": "Espacio de trabajo",
+      "WORKSPACE_ID": "Espacio de trabajo n.º {id}",
+      "THIS_WORKSPACE": "este espacio",
+      "USED": "Respuestas de IA",
+      "CAPS": "Límites propios (solo lectura)",
+      "CAPS_VALUE": "{calls} llamadas al día · {tokens} tokens al mes",
+      "NO_CAP": "sin límite",
+      "CAPS_HIDDEN": "Visible para sus administradores",
+      "READ_ONLY": "Solo un Propietario de todos los espacios del grupo puede cambiarlo.",
+      "MANAGE": "Gestionar el grupo",
+      "CHOOSE": "Espacios de trabajo (como máximo {n}; solo los tuyos)",
+      "ALLOWANCE": "Respuestas de IA al mes, compartidas",
+      "EMPTY_UNLIMITED": "vacío = sin tope",
+      "TZ": "Zona horaria del mes (Región/Ciudad)",
+      "ENABLE": "Aplicar la cuota común",
+      "CREATE": "Crear el grupo",
+      "SAVE": "Guardar",
+      "DELETE": "Eliminar el grupo",
+      "CONFIRM_DELETE": "Haz clic otra vez para eliminar",
+      "SAVED": "Guardado",
+      "DELETED": "Grupo eliminado",
+      "ERRORS": {
+        "owner_only": "Solo un Propietario de todos los espacios del grupo puede hacer esto.",
+        "too_many_members": "Un grupo tiene como máximo 5 espacios de trabajo.",
+        "in_another_group": "Uno de estos espacios ya está en otro grupo.",
+        "must_include_this_workspace": "Un grupo nuevo debe incluir este espacio de trabajo.",
+        "invalid_settings": "Revisa los espacios, la cuota (un número entero mayor que 0, o vacío) y la zona horaria.",
+        "not_found": "Este espacio de trabajo no está en ningún grupo.",
+        "brain_unreachable": "El servicio de IA de Tolzar no está disponible ahora. Inténtalo de nuevo en un minuto.",
+        "other": "No ha funcionado. Inténtalo de nuevo."
+      }
+    }
   }
 }

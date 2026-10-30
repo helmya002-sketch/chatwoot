@@ -3,7 +3,10 @@
 # The brain is internal-network only (no published port); this proxy is the single,
 # authenticated door to it. Nothing here touches a live conversation.
 class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
-  before_action :ensure_admin, except: %i[branding_view pack_view]
+  include TolzarBillingGroupActions
+
+  # The billing-group actions answer 403 (not 401) to a non-administrator (TolzarBillingGroupActions).
+  before_action :ensure_admin, except: %i[branding_view pack_view] + TolzarBillingGroupActions::BILLING_ACTIONS
   # Owner-only (H3): every write that changes the workspace's settings or data. Tests, previews and
   # reads stay open to every administrator.
   before_action :ensure_owner, only: %i[export_start export_download meta_connect_url meta_disconnect meta_select
@@ -650,12 +653,18 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
   end
 
   def get_from_brain(path)
+    get_from_brain_as(account_scope_id, path)
+  end
+
+  # Signed for another workspace: only for a workspace Rails has already checked the user administers
+  # (TolzarBillingGroupActions: the Owner rule and the read-only caps of each billing-group member).
+  def get_from_brain_as(account_id, path)
     uri = Tolzar::BrainClient.uri(path)
     http = Net::HTTP.new(uri.host, uri.port)
     http.read_timeout = 30
     http.open_timeout = 5
     req = Net::HTTP::Get.new(uri.request_uri)
-    Tolzar::BrainClient.sign(req, account_scope_id)
+    Tolzar::BrainClient.sign(req, account_id)
     req['X-Tolzar-Actor'] = actor_label
     JSON.parse(http.request(req).body)
   rescue StandardError => e
