@@ -38,7 +38,9 @@ RSpec.describe 'Tolzar proxy helpers', type: :request do
       # Answered once, and the customer wrote again (waiting_since set): waiting only under an SLA.
       create(:conversation, account: account, inbox: inbox, team: alpha).update_columns(first_reply_created_at: 1.hour.ago,
                                                                                          waiting_since: 10.minutes.ago)
-      # Answered, nothing new from the customer: never waiting.
+      # Answered, nothing new from the customer: never waiting. The assignee must be on the team, or
+      # AssignmentHandler clears the assignee on save and the conversation counts as unassigned.
+      create(:team_member, team: alpha, user: agent)
       create(:conversation, account: account, inbox: inbox, team: alpha, assignee: agent)
         .update_columns(first_reply_created_at: 1.hour.ago, waiting_since: nil)
       # Never answered (waiting_since set on create): waiting under both rules.
