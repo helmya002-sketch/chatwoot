@@ -29,7 +29,7 @@ class CreateTolzarNewsletters < ActiveRecord::Migration[7.1]
       t.datetime :sent_at
       t.timestamps
     end
-    add_index :tolzar_newsletter_deliveries, [:newsletter_id, :user_id], unique: true
+    add_index :tolzar_newsletter_deliveries, [:newsletter_id, :user_id], unique: true, name: 'idx_tz_nl_deliveries_newsletter_user'
     add_index :tolzar_newsletter_deliveries, [:newsletter_id, :status]
     add_index :tolzar_newsletter_deliveries, :message_id, unique: true, where: 'message_id IS NOT NULL'
     add_index :tolzar_newsletter_deliveries, :sent_at

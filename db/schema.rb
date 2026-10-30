@@ -1796,9 +1796,9 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_30_044158) do
     t.datetime "sent_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["newsletter_id", "user_id"], name: "idx_tz_nl_deliveries_newsletter_user", unique: true
     t.index ["message_id"], name: "index_tolzar_newsletter_deliveries_on_message_id", unique: true, where: "(message_id IS NOT NULL)"
     t.index ["newsletter_id", "status"], name: "index_tolzar_newsletter_deliveries_on_newsletter_id_and_status"
-    t.index ["newsletter_id", "user_id"], name: "index_tolzar_newsletter_deliveries_on_newsletter_id_and_user_id", unique: true
     t.index ["sent_at"], name: "index_tolzar_newsletter_deliveries_on_sent_at"
   end
 

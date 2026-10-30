@@ -6,8 +6,10 @@
 class Tolzar::NewsletterMailer < ActionMailer::Base
   layout false
 
+  # Always its own SMTP, never the app-wide setting: config/initializers/mailer.rb falls back to sendmail when the
+  # app's SMTP_ADDRESS is empty, and the rails image has no sendmail (gate, 30 Oct). Tests use :test.
+  self.delivery_method = Rails.env.test? ? :test : :smtp
   unless Rails.env.test?
-    self.delivery_method = :smtp
     self.smtp_settings = {
       address: ENV.fetch('NEWSLETTER_SMTP_ADDRESS', 'localhost'),
       port: ENV.fetch('NEWSLETTER_SMTP_PORT', '1025').to_i,
