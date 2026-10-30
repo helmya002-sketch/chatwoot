@@ -45,6 +45,16 @@ Rails.application.configure do
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   config.force_ssl = ActiveModel::Type::Boolean.new.cast(ENV.fetch('FORCE_SSL', false))
 
+  # Tolzar hardening (Oracle, item J): an explicit Host allow-list, e.g.
+  # TOLZAR_ALLOWED_HOSTS="chat.xplorer-redsea.com,app.tolzar.com,chatwoot,localhost". It must also list the internal
+  # names other containers use (the brain and the mirror call Chatwoot by its Docker name). Empty: no allow-list
+  # (as before). Health checks are never blocked.
+  tolzar_hosts = ENV.fetch('TOLZAR_ALLOWED_HOSTS', '').split(',').map(&:strip).compact_blank
+  if tolzar_hosts.any?
+    config.hosts.concat(tolzar_hosts)
+    config.host_authorization = { exclude: ->(request) { request.path.in?(%w[/health /api]) } }
+  end
+
   # Use the lowest log level to ensure availability of diagnostic information
   # when problems arise.
   config.log_level = ENV.fetch('LOG_LEVEL', 'info').to_sym
