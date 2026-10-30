@@ -22,6 +22,7 @@ import QuotasPanel from 'dashboard/components-next/Tolzar/settings/QuotasPanel.v
 import BillingGroupPanel from 'dashboard/components-next/Tolzar/settings/BillingGroupPanel.vue';
 import DocumentsPanel from 'dashboard/components-next/Tolzar/settings/DocumentsPanel.vue';
 import WorkspacePanel from 'dashboard/components-next/Tolzar/settings/WorkspacePanel.vue';
+import RoutingPanel from 'dashboard/components-next/Tolzar/settings/RoutingPanel.vue';
 import GoLivePanel from 'dashboard/components-next/Tolzar/settings/GoLivePanel.vue';
 import PipelinePanel from 'dashboard/components-next/Tolzar/settings/PipelinePanel.vue';
 import MetaAppPanel from 'dashboard/components-next/Tolzar/settings/MetaAppPanel.vue';
@@ -90,7 +91,7 @@ watchEffect(() =>
 );
 
 const SECTIONS = [
-  ['workspace', ['workspace_settings', 'pipeline', 'usage', 'plan', 'roles', 'audit', 'export', 'go_live']],
+  ['workspace', ['workspace_settings', 'routing', 'pipeline', 'usage', 'plan', 'roles', 'audit', 'export', 'go_live']],
   ['trust', ['disclosure', 'retention', 'privacy']],
   ['channels', ['whatsapp_listen', 'meta_app', 'sms', 'crm', 'commerce']],
   ['team', ['sla', 'qa']],
@@ -543,6 +544,7 @@ onMounted(() => {
           <AiLimitsPanel v-if="AI_LIMITS.includes(current)" :key="current" :section="current" />
           <DocumentsPanel v-if="current === 'documents'" />
           <WorkspacePanel v-if="current === 'workspace_settings'" />
+          <RoutingPanel v-if="current === 'routing'" />
           <GoLivePanel v-if="current === 'go_live'" />
           <PipelinePanel v-if="current === 'pipeline'" />
           <MetaAppPanel v-if="current === 'meta_app'" />

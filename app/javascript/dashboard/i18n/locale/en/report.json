@@ -1087,6 +1087,7 @@
     "NAV": {
       "plan": "Plan and usage",
       "workspace_settings": "Workspace settings",
+      "routing": "Routing",
       "pipeline": "Pipeline",
       "meta_app": "Facebook & Instagram app",
       "go_live": "Go live",
@@ -1121,6 +1122,7 @@
     "HINT": {
       "plan": "Your plan's shared AI-reply allowance across your workspaces.",
       "workspace_settings": "Hours, languages, templates and descriptions for this workspace, on top of the defaults. Only what you change is stored.",
+      "routing": "Which words send a message to which place or team, what always goes to a person, and the hand-over message.",
       "pipeline": "Your sales stages, where a contact's stage and deal value are stored, and the currency. Dashboard, Pipeline, Contacts and Reports follow it.",
       "meta_app": "Your business's own Meta app: Messenger, Instagram DMs and comments arrive here in listen-only mode. Staff keep answering in Meta Business Suite.",
       "go_live": "Shadow or live, per inbox. Owner only. Today nothing is live.",
@@ -1955,5 +1957,25 @@
       "too_many_values": "Pick at most {max} values.",
       "needs_values": "Pick at least one value, or untick this skill."
     }
+  },
+  "TOLZAR_ROUTING": {
+    "INTRO": "How Tolzar routes a message: the words that point to each place, a short description of each team, the words that always go to a person, and what the customer is told at a hand-over. Every change is audited.",
+    "KEYWORDS_LOCKED": "Keywords are read-only for now: editing them changes routing, so it opens after the shadow read-out. Names, team descriptions and the hand-over message can be changed.",
+    "OWNER_ONLY": "Only the workspace Owner can save changes here.",
+    "PLACES": "Places and their keywords",
+    "NO_PLACES": "This workspace has no places: every conversation goes to the team that handles it.",
+    "PLACE_NAME": "Name (team: {team})",
+    "KEYWORDS": "Words that point to this place",
+    "KEYWORDS_PLACEHOLDER": "e.g. a district, a hotel, a street, separated by commas",
+    "TEAMS": "Team descriptions",
+    "TEAM_PLACEHOLDER": "What this team handles, in one or two sentences",
+    "ALWAYS_PERSON": "Always a person",
+    "ALWAYS_PERSON_HINT": "A message with one of these words always goes to the team set for hand-overs, never to a place's team. The customer gets the message below (or the AI's own reply when it agrees).",
+    "ALWAYS_PERSON_MESSAGE": "Message when it goes to a person ({lang})",
+    "ALWAYS_PERSON_PLACEHOLDER": "e.g. refund, complaint, lawyer",
+    "HANDOVER": "Message when a place's team takes over",
+    "SAVE": "Save routing",
+    "SAVED": "Saved. Routing uses it from the next message.",
+    "RELOAD": "Someone saved in the meantime: reload"
   }
 }
