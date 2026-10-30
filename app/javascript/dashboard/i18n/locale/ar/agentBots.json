@@ -2,7 +2,7 @@
   "AGENT_BOTS": {
     "HEADER": "الروبوتات",
     "LOADING_EDITOR": "جار جلب المحرر...",
-    "DESCRIPTION": "Agent Bots are like the most fabulous members of your team. They can handle the small stuff, so you can focus on the stuff that matters. Give them a try. You can manage your bots from this page or create new ones using the 'Add Bot' button.",
+    "DESCRIPTION": "تجيب الروبوتات عن الأسئلة البسيطة ليتفرغ فريقك لما تبقى. أدر روبوتاتك هنا أو أنشئ روبوتا جديدا.",
     "LEARN_MORE": "Learn about agent bots",
     "COUNT": "{n} bot | {n} bots",
     "SEARCH_PLACEHOLDER": "Search bots...",

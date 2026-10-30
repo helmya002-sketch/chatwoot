@@ -11,15 +11,15 @@
     "SEARCH_404": "There are no items matching this query.",
     "PAYWALL": {
       "TITLE": "Upgrade to create custom roles",
-      "AVAILABLE_ON": "The custom role feature is only available in the Business and Enterprise plans.",
-      "UPGRADE_PROMPT": "Upgrade your plan to get access to advanced features like team management, automations, custom attributes, and more.",
+      "AVAILABLE_ON": "Not available on your plan. Contact Tolzar to enable it.",
+      "UPGRADE_PROMPT": "Contact Tolzar to enable more features for your team.",
       "UPGRADE_NOW": "Upgrade now",
       "CANCEL_ANYTIME": "You can change or cancel your plan anytime"
     },
     "ENTERPRISE_PAYWALL": {
-      "AVAILABLE_ON": "The custom role feature is only available in the paid plans.",
-      "UPGRADE_PROMPT": "Upgrade to a paid plan to access advanced features like audit logs, agent capacity, and more.",
-      "ASK_ADMIN": "Please reach out to your administrator for the upgrade."
+      "AVAILABLE_ON": "Not available on your plan. Contact Tolzar to enable it.",
+      "UPGRADE_PROMPT": "Contact Tolzar to enable more features for your team.",
+      "ASK_ADMIN": "Contact your administrator to enable it."
     },
     "LIST": {
       "404": "There are no custom roles available in this account.",
@@ -57,7 +57,7 @@
       },
       "CANCEL_BUTTON_TEXT": "Cancel",
       "API": {
-        "ERROR_MESSAGE": "Could not connect to Woot server. Please try again."
+        "ERROR_MESSAGE": "Something went wrong. Please try again."
       }
     },
     "ADD": {
@@ -81,7 +81,7 @@
       "BUTTON_TEXT": "Delete",
       "API": {
         "SUCCESS_MESSAGE": "Custom role deleted successfully.",
-        "ERROR_MESSAGE": "Could not connect to Woot server. Please try again."
+        "ERROR_MESSAGE": "Something went wrong. Please try again."
       },
       "CONFIRM": {
         "TITLE": "Confirm deletion",

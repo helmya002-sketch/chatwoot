@@ -1604,7 +1604,7 @@
         "AGENT_MESSAGE": "Hello"
       },
       "BRANDING_TEXT": "Tolzar",
-      "SCRIPT_SETTINGS": "\nwindow.chatwootSettings = {options};"
+      "SCRIPT_SETTINGS": "\nwindow.tolzarSettings = {options};"
     },
     "EMAIL_PROVIDERS": {
       "MICROSOFT": {

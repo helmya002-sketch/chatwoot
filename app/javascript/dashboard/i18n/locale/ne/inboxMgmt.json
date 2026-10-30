@@ -1604,7 +1604,7 @@
         "AGENT_MESSAGE": "नमस्कार"
       },
       "BRANDING_TEXT": "Tolzar द्वारा संचालित",
-      "SCRIPT_SETTINGS": "\n      window.chatwootSettings = {options};"
+      "SCRIPT_SETTINGS": "\n      window.tolzarSettings = {options};"
     },
     "EMAIL_PROVIDERS": {
       "MICROSOFT": {

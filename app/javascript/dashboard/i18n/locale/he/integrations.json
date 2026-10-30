@@ -164,7 +164,7 @@
         "TITLE": "ערוך webhook",
         "API": {
           "SUCCESS_MESSAGE": "תצורת Webhook עודכנה בהצלחה",
-          "ERROR_MESSAGE": "לא ניתן להתחבר לשרת Woot, נסה שוב מאוחר יותר"
+          "ERROR_MESSAGE": "לא ניתן להתחבר לשרת Tolzar, נסה שוב מאוחר יותר"
         }
       },
       "ADD": {
@@ -172,14 +172,14 @@
         "TITLE": "הוסף Webhook חדש",
         "API": {
           "SUCCESS_MESSAGE": "תצורת Webhook נוספה בהצלחה",
-          "ERROR_MESSAGE": "לא ניתן להתחבר לשרת Woot, נסה שוב מאוחר יותר"
+          "ERROR_MESSAGE": "לא ניתן להתחבר לשרת Tolzar, נסה שוב מאוחר יותר"
         }
       },
       "DELETE": {
         "BUTTON_TEXT": "מחק",
         "API": {
           "SUCCESS_MESSAGE": "Webhook נמחק בהצלחה",
-          "ERROR_MESSAGE": "לא ניתן להתחבר לשרת Woot, נסה שוב מאוחר יותר"
+          "ERROR_MESSAGE": "לא ניתן להתחבר לשרת Tolzar, נסה שוב מאוחר יותר"
         },
         "CONFIRM": {
           "TITLE": "אשר מחיקה",

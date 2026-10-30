@@ -814,7 +814,7 @@
     "API": {
       "SUCCESS_MESSAGE": "Account created successfully",
       "EXIST_MESSAGE": "Account already exists",
-      "ERROR_MESSAGE": "Nepodarilo sa pripojiť k serveru Woot, skúste to prosím neskôr"
+      "ERROR_MESSAGE": "Nepodarilo sa pripojiť k serveru Tolzar, skúste to prosím neskôr"
     },
     "FORM": {
       "NAME": {

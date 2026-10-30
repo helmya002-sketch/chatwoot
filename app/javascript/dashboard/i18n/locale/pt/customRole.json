@@ -57,7 +57,7 @@
       },
       "CANCEL_BUTTON_TEXT": "Cancelar",
       "API": {
-        "ERROR_MESSAGE": "Não foi possível conectar ao servidor Woot. Por favor, tente novamente."
+        "ERROR_MESSAGE": "Não foi possível conectar ao servidor Tolzar. Por favor, tente novamente."
       }
     },
     "ADD": {
@@ -81,7 +81,7 @@
       "BUTTON_TEXT": "Excluir",
       "API": {
         "SUCCESS_MESSAGE": "Função personalizada excluída com sucesso.",
-        "ERROR_MESSAGE": "Não foi possível conectar ao servidor Woot. Por favor, tente novamente."
+        "ERROR_MESSAGE": "Não foi possível conectar ao servidor Tolzar. Por favor, tente novamente."
       },
       "CONFIRM": {
         "TITLE": "Confirmar exclusão",

@@ -28,7 +28,7 @@
       "CANCEL_BUTTON_TEXT": "Cancel·la",
       "API": {
         "SUCCESS_MESSAGE": "S'ha esborrat el Hook correctament",
-        "ERROR_MESSAGE": "No s'ha pogut connectar amb el servidor Woot. Torna-ho a provar més endavant"
+        "ERROR_MESSAGE": "No s'ha pogut connectar amb el servidor Tolzar. Torna-ho a provar més endavant"
       }
     },
     "LIST": {
@@ -51,7 +51,7 @@
       },
       "API": {
         "SUCCESS_MESSAGE": "El hook d'integració s'ha afegit correctament",
-        "ERROR_MESSAGE": "No s'ha pogut connectar amb el servidor Woot. Torna-ho a provar més endavant"
+        "ERROR_MESSAGE": "No s'ha pogut connectar amb el servidor Tolzar. Torna-ho a provar més endavant"
       }
     },
     "CONNECT": {

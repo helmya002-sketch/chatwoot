@@ -164,7 +164,7 @@
         "TITLE": "Edit webhook",
         "API": {
           "SUCCESS_MESSAGE": "Webhook configuration updated successfully",
-          "ERROR_MESSAGE": "Yhteyden muodostaminen Woot-palvelimelle ei onnistunut, yritä myöhemmin uudelleen"
+          "ERROR_MESSAGE": "Yhteyden muodostaminen Tolzar-palvelimelle ei onnistunut, yritä myöhemmin uudelleen"
         }
       },
       "ADD": {
@@ -172,14 +172,14 @@
         "TITLE": "Lisää uusi webhook",
         "API": {
           "SUCCESS_MESSAGE": "Webhook configuration added successfully",
-          "ERROR_MESSAGE": "Yhteyden muodostaminen Woot-palvelimelle ei onnistunut, yritä myöhemmin uudelleen"
+          "ERROR_MESSAGE": "Yhteyden muodostaminen Tolzar-palvelimelle ei onnistunut, yritä myöhemmin uudelleen"
         }
       },
       "DELETE": {
         "BUTTON_TEXT": "Poista",
         "API": {
           "SUCCESS_MESSAGE": "Webhook poistettu onnistuneesti",
-          "ERROR_MESSAGE": "Yhteyden muodostaminen Woot-palvelimelle ei onnistunut, yritä myöhemmin uudelleen"
+          "ERROR_MESSAGE": "Yhteyden muodostaminen Tolzar-palvelimelle ei onnistunut, yritä myöhemmin uudelleen"
         },
         "CONFIRM": {
           "TITLE": "Vahvista poistaminen",

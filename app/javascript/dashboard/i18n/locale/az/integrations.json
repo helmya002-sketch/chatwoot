@@ -164,7 +164,7 @@
         "TITLE": "Webhook-u redaktə et",
         "API": {
           "SUCCESS_MESSAGE": "Webhook konfiqurasiyası uğurla yeniləndi",
-          "ERROR_MESSAGE": "Woot Server-ə qoşulmaq mümkün olmadı, zəhmət olmasa sonra yenidən cəhd edin"
+          "ERROR_MESSAGE": "Tolzar Server-ə qoşulmaq mümkün olmadı, zəhmət olmasa sonra yenidən cəhd edin"
         }
       },
       "ADD": {
@@ -172,14 +172,14 @@
         "TITLE": "Yeni webhook əlavə et",
         "API": {
           "SUCCESS_MESSAGE": "Webhook konfiqurasiyası uğurla əlavə edildi",
-          "ERROR_MESSAGE": "Woot Server-ə qoşulmaq mümkün olmadı, zəhmət olmasa sonra yenidən cəhd edin"
+          "ERROR_MESSAGE": "Tolzar Server-ə qoşulmaq mümkün olmadı, zəhmət olmasa sonra yenidən cəhd edin"
         }
       },
       "DELETE": {
         "BUTTON_TEXT": "Sil",
         "API": {
           "SUCCESS_MESSAGE": "Webhook uğurla silindi",
-          "ERROR_MESSAGE": "Woot Server-ə qoşulmaq mümkün olmadı, zəhmət olmasa sonra yenidən cəhd edin"
+          "ERROR_MESSAGE": "Tolzar Server-ə qoşulmaq mümkün olmadı, zəhmət olmasa sonra yenidən cəhd edin"
         },
         "CONFIRM": {
           "TITLE": "Silinməni təsdiqlə",

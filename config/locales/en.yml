@@ -34,7 +34,7 @@ en:
   administrator_notifications:
     captain:
       response_usage_alert:
-        subject: 'Your Captain credits are running low'
+        subject: 'Your Tolzar AI credits are running low'
         greeting: 'Hello,'
         usage_html: '%{account_name} has used more than 80% of its AI response credits for the current billing period.'
         balance: '%{consumed} credits have been used, and %{remaining} credits remain.'
@@ -414,8 +414,8 @@ en:
       unmuted: '%{user_name} has unmuted the conversation'
       auto_resolution_message: 'Resolving the conversation as it has been inactive for a while. Please start a new conversation if you need further assistance.'
     templates:
-      greeting_message_body: '%{account_name} typically replies in a few hours.'
-      ways_to_reach_you_message_body: 'Give the team a way to reach you.'
+      greeting_message_body: '%{account_name} usually answers within a few hours.'
+      ways_to_reach_you_message_body: 'Leave a way to reach you, and we will reply there.'
       email_input_box_message_body: 'Get notified by email'
       csat_input_message_body: 'Please rate the conversation'
     reply:
@@ -483,8 +483,8 @@ en:
       attachment_link_title: 'Conversation (#%{conversation_id}) with %{name}'
     notion:
       name: 'Notion'
-      short_description: 'Integrate databases, documents and pages directly with Captain.'
-      description: 'Connect your Notion workspace to enable Captain to access and generate intelligent responses using content from your databases, documents, and pages to provide more contextual customer support.'
+      short_description: 'Integrate databases, documents and pages directly with Tolzar AI.'
+      description: 'Connect your Notion workspace to enable Tolzar AI to access and generate intelligent responses using content from your databases, documents, and pages to provide more contextual customer support.'
     shopify:
       name: 'Shopify'
       short_description: 'Access order details and customer data from your Shopify store.'
@@ -497,9 +497,9 @@ en:
     copilot_message_required: Message is required
     copilot_error: 'Please connect an assistant to this inbox to use Copilot'
     copilot_limit: 'You are out of Copilot credits. You can buy more credits from the billing section.'
-    upgrade: 'Upgrade your plan to enable Captain AI'
-    disabled: 'Captain AI is disabled for this account.'
-    api_key_missing: 'Captain AI API key is not configured.'
+    upgrade: 'Tolzar AI is not available on your plan. Contact Tolzar to enable it.'
+    disabled: 'Tolzar AI is disabled for this account.'
+    api_key_missing: 'Tolzar AI API key is not configured.'
     copilot:
       using_tool: 'Using tool %{function_name}'
       completed_tool_call: 'Completed %{function_name} tool call'
@@ -557,7 +557,7 @@ en:
         unknown: 'has unknown settings: %{names}'
         not_boolean: 'values must be true or false'
     tools_manifest:
-      invalid_source: 'Enter a toolset from the Captain tools catalog as chatwoot/tools/folder'
+      invalid_source: 'Enter a toolset from the Tolzar AI tools catalog as owner/repository/folder'
       invalid_configuration: 'Invalid configuration'
       disabled: 'Installing tools from a manifest is not enabled'
   public_portal:
@@ -575,7 +575,7 @@ en:
       submit: Search
     toc_header: 'On this page'
     sidebar:
-      help_center: Help Center
+      help_center: Knowledge base
       categories: Categories
       language: Language
       theme: Theme
@@ -633,9 +633,9 @@ en:
       description: We couldn't find the page you were looking for.
       back_to_home: Go to home page
     not_active:
-      title: Help Center Unavailable
+      title: Knowledge base unavailable
       description: Please contact the site administrator for more information.
-      action: If you are the administrator, please upgrade your plan to restore access.
+      action: If you are the administrator, contact Tolzar to restore access.
   slack_unfurl:
     fields:
       name: Name
@@ -689,7 +689,7 @@ en:
     analytics:
       invalid_configuration: 'Invalid analytics configuration'
     articles:
-      captain_not_available: 'Translation requires Captain to be enabled for this account'
+      captain_not_available: 'Translation requires Tolzar AI to be enabled for this account'
       locale_not_available: 'Locale not available in this portal'
       category_not_found: 'Category not found in this portal'
       no_articles_found: 'No articles found to process'
@@ -743,7 +743,7 @@ en:
       suspension_history: 'Suspension history'
       custom_attributes: 'Custom attributes'
       manually_managed_features: 'Manually managed features'
-      captain_models: 'Captain models'
+      captain_models: 'Tolzar AI models'
       add_user: 'Add a user to this account'
       seed_data: 'Generate seed data'
       reset_cache: 'Reset frontend cache'
@@ -783,13 +783,13 @@ en:
         document_faq_generation: 'Document FAQ generation'
         conversation_faq_generation: 'Conversation FAQ generation'
         conversation_faq_matching: 'Conversation FAQ matching'
-        help_center_article_generation: 'Help center article generation'
+        help_center_article_generation: 'Knowledge base article generation'
         onboarding_content_generation: 'Onboarding content generation'
-        help_center_query_translation: 'Help center query translation'
+        help_center_query_translation: 'Knowledge base query translation'
         message_translation: 'Message translation'
         language_detection: 'Language detection'
         audio_transcription: 'Audio transcription'
-        help_center_search: 'Help center search'
+        help_center_search: 'Knowledge base search'
     collection:
       actions: 'Actions'
       empty: 'No %{resource} found.'
@@ -894,7 +894,7 @@ en:
         details_link: 'User details'
       sessions:
         heading: 'Mobile sessions'
-        description: 'Populated from the X-Chatwoot-* headers the app sends on every request, so it reflects the build currently installed on the device.'
+        description: 'Populated from the client headers the mobile app sends on every request, so it reflects the build currently installed on the device.'
         empty:
           title: 'No mobile sessions recorded.'
           description: 'This user has not signed in from the iOS or Android app.'
@@ -1030,7 +1030,7 @@ en:
       pages:
         general: 'General'
         internal: 'Internal'
-        internal_description: 'Keys and switches used by Chatwoot Cloud'
+        internal_description: 'Keys and switches used by Tolzar'
       configure: 'Configure'
       enterprise_badge: 'EE'
       included: 'Included'

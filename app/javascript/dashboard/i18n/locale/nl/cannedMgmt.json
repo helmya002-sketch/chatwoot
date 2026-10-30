@@ -38,7 +38,7 @@
       },
       "API": {
         "SUCCESS_MESSAGE": "Canned response added successfully.",
-        "ERROR_MESSAGE": "Kan geen verbinding maken met de Woot server. Probeer het opnieuw."
+        "ERROR_MESSAGE": "Kan geen verbinding maken met de Tolzar server. Probeer het opnieuw."
       }
     },
     "EDIT": {
@@ -60,14 +60,14 @@
       "BUTTON_TEXT": "Bewerken",
       "API": {
         "SUCCESS_MESSAGE": "Canned response is updated successfully.",
-        "ERROR_MESSAGE": "Kan geen verbinding maken met de Woot server. Probeer het opnieuw."
+        "ERROR_MESSAGE": "Kan geen verbinding maken met de Tolzar server. Probeer het opnieuw."
       }
     },
     "DELETE": {
       "BUTTON_TEXT": "Verwijderen",
       "API": {
         "SUCCESS_MESSAGE": "Canned response deleted successfully.",
-        "ERROR_MESSAGE": "Kan geen verbinding maken met de Woot server. Probeer het opnieuw."
+        "ERROR_MESSAGE": "Kan geen verbinding maken met de Tolzar server. Probeer het opnieuw."
       },
       "CONFIRM": {
         "TITLE": "Verwijdering bevestigen",

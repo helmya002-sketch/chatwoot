@@ -164,7 +164,7 @@
         "TITLE": "Webhookを編集",
         "API": {
           "SUCCESS_MESSAGE": "Webhookの設定が正常に更新されました",
-          "ERROR_MESSAGE": "Wootサーバーに接続できませんでした。後でもう一度お試しください。"
+          "ERROR_MESSAGE": "Tolzarサーバーに接続できませんでした。後でもう一度お試しください。"
         }
       },
       "ADD": {
@@ -172,14 +172,14 @@
         "TITLE": "新しいWebhookを追加",
         "API": {
           "SUCCESS_MESSAGE": "Webhookの設定が正常に追加されました",
-          "ERROR_MESSAGE": "Wootサーバーに接続できませんでした。後でもう一度お試しください。"
+          "ERROR_MESSAGE": "Tolzarサーバーに接続できませんでした。後でもう一度お試しください。"
         }
       },
       "DELETE": {
         "BUTTON_TEXT": "削除",
         "API": {
           "SUCCESS_MESSAGE": "Webhookの削除に成功しました",
-          "ERROR_MESSAGE": "Wootサーバーに接続できませんでした。後でもう一度お試しください。"
+          "ERROR_MESSAGE": "Tolzarサーバーに接続できませんでした。後でもう一度お試しください。"
         },
         "CONFIRM": {
           "TITLE": "削除の確認",

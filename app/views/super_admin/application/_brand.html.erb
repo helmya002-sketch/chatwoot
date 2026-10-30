@@ -13,8 +13,11 @@
       <img> would keep showing a stale/old logo after a rebrand). %>
   <%= link_to super_admin_root_path, class: "shrink-0", tabindex: -1, aria: { hidden: true } do %>
     <svg class="size-8" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
-      <rect width="32" height="32" rx="8" fill="#12A594"/>
-      <path d="M9 10.5h14v3.2h-5.4V23h-3.2v-9.3H9z" fill="#ffffff"/>
+      <g transform="scale(2)">
+        <rect width="16" height="16" rx="4" fill="#3E63DD"/>
+        <path d="M3 4.3 H13" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round"/>
+        <path d="M8 4.3 V10.1 a2.4 2.4 0 0 0 2.4 2.4" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" fill="none"/>
+      </g>
     </svg>
   <% end %>
   <div class="min-w-0 whitespace-nowrap">

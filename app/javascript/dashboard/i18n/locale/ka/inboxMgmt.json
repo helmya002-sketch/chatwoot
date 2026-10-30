@@ -1604,7 +1604,7 @@
         "AGENT_MESSAGE": "სალამი"
       },
       "BRANDING_TEXT": "მოძრავებულია Tolzar-ის მიერ",
-      "SCRIPT_SETTINGS": "\n      window.chatwootSettings = {options};"
+      "SCRIPT_SETTINGS": "\n      window.tolzarSettings = {options};"
     },
     "EMAIL_PROVIDERS": {
       "MICROSOFT": {

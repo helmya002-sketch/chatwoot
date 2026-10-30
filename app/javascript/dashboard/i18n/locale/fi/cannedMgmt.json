@@ -38,7 +38,7 @@
       },
       "API": {
         "SUCCESS_MESSAGE": "Canned response added successfully.",
-        "ERROR_MESSAGE": "Yhteyden muodostaminen Woot-palvelimelle ei onnistunut, yritä myöhemmin uudelleen"
+        "ERROR_MESSAGE": "Yhteyden muodostaminen Tolzar-palvelimelle ei onnistunut, yritä myöhemmin uudelleen"
       }
     },
     "EDIT": {
@@ -60,14 +60,14 @@
       "BUTTON_TEXT": "Muokkaa",
       "API": {
         "SUCCESS_MESSAGE": "Canned response is updated successfully.",
-        "ERROR_MESSAGE": "Yhteyden muodostaminen Woot-palvelimelle ei onnistunut, yritä myöhemmin uudelleen"
+        "ERROR_MESSAGE": "Yhteyden muodostaminen Tolzar-palvelimelle ei onnistunut, yritä myöhemmin uudelleen"
       }
     },
     "DELETE": {
       "BUTTON_TEXT": "Poista",
       "API": {
         "SUCCESS_MESSAGE": "Canned response deleted successfully.",
-        "ERROR_MESSAGE": "Yhteyden muodostaminen Woot-palvelimelle ei onnistunut, yritä myöhemmin uudelleen"
+        "ERROR_MESSAGE": "Yhteyden muodostaminen Tolzar-palvelimelle ei onnistunut, yritä myöhemmin uudelleen"
       },
       "CONFIRM": {
         "TITLE": "Confirm deletion",

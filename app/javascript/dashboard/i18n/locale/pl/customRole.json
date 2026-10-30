@@ -57,7 +57,7 @@
       },
       "CANCEL_BUTTON_TEXT": "Anuluj",
       "API": {
-        "ERROR_MESSAGE": "Nie można połączyć się z serwerem Woot. Spróbuj ponownie."
+        "ERROR_MESSAGE": "Nie można połączyć się z serwerem Tolzar. Spróbuj ponownie."
       }
     },
     "ADD": {
@@ -81,7 +81,7 @@
       "BUTTON_TEXT": "Usuń",
       "API": {
         "SUCCESS_MESSAGE": "Custom role deleted successfully.",
-        "ERROR_MESSAGE": "Nie można połączyć się z serwerem Woot. Spróbuj ponownie."
+        "ERROR_MESSAGE": "Nie można połączyć się z serwerem Tolzar. Spróbuj ponownie."
       },
       "CONFIRM": {
         "TITLE": "Potwierdzenie usunięcia",

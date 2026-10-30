@@ -164,7 +164,7 @@
         "TITLE": "Web Kancasını Düzenle",
         "API": {
           "SUCCESS_MESSAGE": "Web Kancası yapılandırması başarıyla güncellendi",
-          "ERROR_MESSAGE": "Woot Sunucusuna bağlanılamadı, Lütfen daha sonra tekrar deneyin"
+          "ERROR_MESSAGE": "Tolzar Sunucusuna bağlanılamadı, Lütfen daha sonra tekrar deneyin"
         }
       },
       "ADD": {
@@ -172,14 +172,14 @@
         "TITLE": "Yeni Web Kancası Ekle",
         "API": {
           "SUCCESS_MESSAGE": "Web Kancası yapılandırması başarıyla eklendi",
-          "ERROR_MESSAGE": "Woot Sunucusuna bağlanılamadı, Lütfen daha sonra tekrar deneyin"
+          "ERROR_MESSAGE": "Tolzar Sunucusuna bağlanılamadı, Lütfen daha sonra tekrar deneyin"
         }
       },
       "DELETE": {
         "BUTTON_TEXT": "Sil",
         "API": {
           "SUCCESS_MESSAGE": "Web Kancası başarıyla silindi",
-          "ERROR_MESSAGE": "Woot Sunucusuna bağlanılamadı, Lütfen daha sonra tekrar deneyin"
+          "ERROR_MESSAGE": "Tolzar Sunucusuna bağlanılamadı, Lütfen daha sonra tekrar deneyin"
         },
         "CONFIRM": {
           "TITLE": "Silmeyi Onayla",

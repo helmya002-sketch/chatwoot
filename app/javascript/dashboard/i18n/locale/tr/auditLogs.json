@@ -51,7 +51,7 @@
     },
     "API": {
       "SUCCESS_MESSAGE": "Denetim Kayıtları başarıyla alındı",
-      "ERROR_MESSAGE": "Woot Sunucusuna bağlanılamadı, Lütfen daha sonra tekrar deneyin"
+      "ERROR_MESSAGE": "Tolzar Sunucusuna bağlanılamadı, Lütfen daha sonra tekrar deneyin"
     },
     "DEFAULT_USER": "Sistem",
     "AUTOMATION_RULE": {

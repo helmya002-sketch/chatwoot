@@ -28,7 +28,7 @@
       "CANCEL_BUTTON_TEXT": "Zrušiť",
       "API": {
         "SUCCESS_MESSAGE": "Hook deleted successfully",
-        "ERROR_MESSAGE": "Nepodarilo sa pripojiť k serveru Woot, skúste to prosím neskôr"
+        "ERROR_MESSAGE": "Nepodarilo sa pripojiť k serveru Tolzar, skúste to prosím neskôr"
       }
     },
     "LIST": {
@@ -51,7 +51,7 @@
       },
       "API": {
         "SUCCESS_MESSAGE": "Integration hook added successfully",
-        "ERROR_MESSAGE": "Nepodarilo sa pripojiť k serveru Woot, skúste to prosím neskôr"
+        "ERROR_MESSAGE": "Nepodarilo sa pripojiť k serveru Tolzar, skúste to prosím neskôr"
       }
     },
     "CONNECT": {

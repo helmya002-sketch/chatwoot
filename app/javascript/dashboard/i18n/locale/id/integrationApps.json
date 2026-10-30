@@ -28,7 +28,7 @@
       "CANCEL_BUTTON_TEXT": "Batalkan",
       "API": {
         "SUCCESS_MESSAGE": "Hook berhasil dihapus",
-        "ERROR_MESSAGE": "Tidak dapat terhubung ke Server Woot, Silahkan coba lagi nanti"
+        "ERROR_MESSAGE": "Tidak dapat terhubung ke Server Tolzar, Silahkan coba lagi nanti"
       }
     },
     "LIST": {
@@ -51,7 +51,7 @@
       },
       "API": {
         "SUCCESS_MESSAGE": "Hook integrasi berhasil ditambahkan",
-        "ERROR_MESSAGE": "Tidak dapat terhubung ke Server Woot, Silahkan coba lagi nanti"
+        "ERROR_MESSAGE": "Tidak dapat terhubung ke Server Tolzar, Silahkan coba lagi nanti"
       }
     },
     "CONNECT": {

@@ -2,7 +2,7 @@
   "GENERAL_SETTINGS": {
     "LIMIT_MESSAGES": {
       "CONVERSATION": "You have exceeded the conversation limit. Hacker plan allows only 500 conversations.",
-      "INBOXES": "You have exceeded the inbox limit. Hacker plan only supports website live-chat. Additional inboxes like email, WhatsApp etc. require a paid plan.",
+      "INBOXES": "You have reached the inbox limit of your plan. Contact Tolzar to add more inboxes.",
       "AGENTS": "You have exceeded the agent limit. Your plan only allows {allowedAgents} agents.",
       "NON_ADMIN": "Please contact your administrator to upgrade the plan and continue using all features."
     },
@@ -48,7 +48,7 @@
         "TITLE": "Translation",
         "NOTE": "Speak every customer's language, whatever languages your team knows.",
         "CAPTAIN": {
-          "TITLE": "Captain",
+          "TITLE": "Tolzar AI",
           "NOTE": "AI translations that sound natural and keep your tone."
         },
         "GOOGLE": {
@@ -59,7 +59,7 @@
           "NOT_CONNECTED_HINT": "Google Translate isn't connected yet."
         },
         "UPGRADE": {
-          "NOTE": "Upgrade to a paid plan to translate conversations with Captain or Google Translate.",
+          "NOTE": "Translating conversations is not available on your plan. Contact Tolzar to enable it.",
           "BUTTON": "Upgrade"
         },
         "AUTO_TRANSLATE": {
@@ -211,10 +211,10 @@
       "GO_TO_MY_INBOX": "Go to My Inbox",
       "GO_TO_CONVERSATION_DASHBOARD": "Go to Conversation Dashboard",
       "GO_TO_CONTACTS_DASHBOARD": "Go to Contacts Dashboard",
-      "GO_TO_CAPTAIN": "Go to Captain",
+      "GO_TO_CAPTAIN": "Go to Tolzar AI",
       "GO_TO_CALLS_DASHBOARD": "Go to Calls Dashboard",
       "GO_TO_CAMPAIGNS": "Go to Campaigns",
-      "GO_TO_HELP_CENTER": "Go to Help Center",
+      "GO_TO_HELP_CENTER": "Go to Knowledge base",
       "GO_TO_REPORTS_OVERVIEW": "Go to Reports Overview",
       "GO_TO_CONVERSATION_REPORTS": "Go to Conversation Reports",
       "GO_TO_AGENT_REPORTS": "Go to Agent Reports",
@@ -232,7 +232,7 @@
       "GO_TO_SETTINGS_CUSTOM_ATTRIBUTES": "Go to Custom Attributes",
       "GO_TO_SETTINGS_AUTOMATION": "Go to Automation",
       "GO_TO_SETTINGS_MACROS": "Go to Quick Actions",
-      "GO_TO_SETTINGS_CANNED_RESPONSES": "Go to Canned Response Settings",
+      "GO_TO_SETTINGS_CANNED_RESPONSES": "Go to saved replies",
       "GO_TO_SETTINGS_SLA": "Go to SLA Settings",
       "GO_TO_SETTINGS_APPLICATIONS": "Go to Application Settings",
       "GO_TO_SETTINGS_DATA": "Go to Data",

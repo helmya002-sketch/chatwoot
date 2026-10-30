@@ -51,7 +51,7 @@
     },
     "API": {
       "SUCCESS_MESSAGE": "יומני ביקורת אוחזרו בהצלחה",
-      "ERROR_MESSAGE": "לא ניתן להתחבר לשרת Woot, נסה שוב מאוחר יותר"
+      "ERROR_MESSAGE": "לא ניתן להתחבר לשרת Tolzar, נסה שוב מאוחר יותר"
     },
     "DEFAULT_USER": "מערכת",
     "AUTOMATION_RULE": {

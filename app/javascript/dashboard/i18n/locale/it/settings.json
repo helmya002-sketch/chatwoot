@@ -814,7 +814,7 @@
     "API": {
       "SUCCESS_MESSAGE": "Account creato con successo",
       "EXIST_MESSAGE": "Account già esistente",
-      "ERROR_MESSAGE": "Impossibile connettersi al server Woot, riprova più tardi"
+      "ERROR_MESSAGE": "Impossibile connettersi al server Tolzar, riprova più tardi"
     },
     "FORM": {
       "NAME": {

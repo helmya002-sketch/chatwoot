@@ -1604,7 +1604,7 @@
         "AGENT_MESSAGE": "Բարև ձեզ"
       },
       "BRANDING_TEXT": "Շահագործվում է Tolzar-ով",
-      "SCRIPT_SETTINGS": "\n      window.chatwootSettings = {options};"
+      "SCRIPT_SETTINGS": "\n      window.tolzarSettings = {options};"
     },
     "EMAIL_PROVIDERS": {
       "MICROSOFT": {

@@ -106,15 +106,15 @@
         },
         "CHANNEL_WELCOME_TITLE": {
           "LABEL": "Cabecera de bienvenida",
-          "PLACEHOLDER": "¡Hola!"
+          "PLACEHOLDER": "Hola"
         },
         "CHANNEL_WELCOME_TAGLINE": {
           "LABEL": "Bienvenido Tagline",
-          "PLACEHOLDER": "Facilitamos la conexión con nosotros. Pídanos cualquier cosa o comparte tus comentarios."
+          "PLACEHOLDER": "Pregúntanos lo que quieras. Respondemos aquí."
         },
         "CHANNEL_GREETING_MESSAGE": {
           "LABEL": "Mensaje de bienvenida del canal",
-          "PLACEHOLDER": "Acme Inc normalmente responde en unas pocas horas."
+          "PLACEHOLDER": "Solemos responder en pocas horas."
         },
         "CHANNEL_GREETING_TOGGLE": {
           "LABEL": "Habilitar bienvenida al canal",
@@ -1604,7 +1604,7 @@
         "AGENT_MESSAGE": "Hola"
       },
       "BRANDING_TEXT": "Desarrollado por Tolzar",
-      "SCRIPT_SETTINGS": "\n      window.chatwootSettings = {options};"
+      "SCRIPT_SETTINGS": "\n      window.tolzarSettings = {options};"
     },
     "EMAIL_PROVIDERS": {
       "MICROSOFT": {

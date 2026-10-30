@@ -808,13 +808,13 @@
     }
   },
   "CREATE_ACCOUNT": {
-    "NO_ACCOUNT_WARNING": "Ak, vai! Mēs nevarējām atrast nevienu chatwoot kontu. Lūdzu, izveidojiet jaunu kontu, lai turpinātu.",
+    "NO_ACCOUNT_WARNING": "Ak, vai! Mēs nevarējām atrast nevienu Tolzar kontu. Lūdzu, izveidojiet jaunu kontu, lai turpinātu.",
     "NEW_ACCOUNT": "Jauns Konts",
     "SELECTOR_SUBTITLE": "Izveidot jaunu kontu",
     "API": {
       "SUCCESS_MESSAGE": "Konts ir veiksmīgi izveidots",
       "EXIST_MESSAGE": "Konts jau pastāv",
-      "ERROR_MESSAGE": "Nevar izveidot savienojumu ar Woot serveri. Lūdzu, vēlāk pamēģiniet vēlreiz"
+      "ERROR_MESSAGE": "Nevar izveidot savienojumu ar Tolzar serveri. Lūdzu, vēlāk pamēģiniet vēlreiz"
     },
     "FORM": {
       "NAME": {

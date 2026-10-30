@@ -814,7 +814,7 @@
     "API": {
       "SUCCESS_MESSAGE": "ანგარიში წარმატებით შეიქმნა",
       "EXIST_MESSAGE": "ანგარიში უკვე არსებობს",
-      "ERROR_MESSAGE": "ვერ მოხერხდა Woot Server-თან დაკავშირება, სცადეთ მოგვიანებით"
+      "ERROR_MESSAGE": "ვერ მოხერხდა Tolzar Server-თან დაკავშირება, სცადეთ მოგვიანებით"
     },
     "FORM": {
       "NAME": {

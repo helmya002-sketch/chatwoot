@@ -46,7 +46,7 @@
     },
     "API": {
       "SUCCESS_MESSAGE": "ההרשמה הצליחה",
-      "ERROR_MESSAGE": "לא ניתן להתחבר לשרת Woot, נסה שוב מאוחר יותר"
+      "ERROR_MESSAGE": "לא ניתן להתחבר לשרת Tolzar, נסה שוב מאוחר יותר"
     },
     "SUBMIT": "צור חשבון",
     "HAVE_AN_ACCOUNT": "כבר יש לך חשבון?",

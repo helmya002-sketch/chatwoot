@@ -12,7 +12,7 @@
     },
     "API": {
       "SUCCESS_MESSAGE": "So'rovnoma muvaffaqiyatli yangilandi",
-      "ERROR_MESSAGE": "Woot serveriga ulanib bo'lmadi, iltimos, keyinroq qayta urinib ko'ring"
+      "ERROR_MESSAGE": "Tolzar serveriga ulanib bo'lmadi, iltimos, keyinroq qayta urinib ko'ring"
     }
   },
   "POWERED_BY": "Tolzar yordamida ishlaydi"

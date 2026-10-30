@@ -1604,7 +1604,7 @@
         "AGENT_MESSAGE": "Bună"
       },
       "BRANDING_TEXT": "Oferit de Tolzar",
-      "SCRIPT_SETTINGS": "\nwindow.chatwootSettings = {options};"
+      "SCRIPT_SETTINGS": "\nwindow.tolzarSettings = {options};"
     },
     "EMAIL_PROVIDERS": {
       "MICROSOFT": {

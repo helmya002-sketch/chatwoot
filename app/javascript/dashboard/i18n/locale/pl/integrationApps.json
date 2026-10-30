@@ -28,7 +28,7 @@
       "CANCEL_BUTTON_TEXT": "Anuluj",
       "API": {
         "SUCCESS_MESSAGE": "Hook został pomyślnie usunięty",
-        "ERROR_MESSAGE": "Nie można połączyć się z serwerem Woot, spróbuj ponownie później"
+        "ERROR_MESSAGE": "Nie można połączyć się z serwerem Tolzar, spróbuj ponownie później"
       }
     },
     "LIST": {
@@ -51,7 +51,7 @@
       },
       "API": {
         "SUCCESS_MESSAGE": "Hook integracyjny został pomyślnie dodany",
-        "ERROR_MESSAGE": "Nie można połączyć się z serwerem Woot, spróbuj ponownie później"
+        "ERROR_MESSAGE": "Nie można połączyć się z serwerem Tolzar, spróbuj ponownie później"
       }
     },
     "CONNECT": {

@@ -28,7 +28,7 @@
       "CANCEL_BUTTON_TEXT": "Otkaži",
       "API": {
         "SUCCESS_MESSAGE": "Zakačka je uspešno obrisana",
-        "ERROR_MESSAGE": "Nije moguće se povezati sa Woot serverom, pokušajte ponovo kasnije"
+        "ERROR_MESSAGE": "Nije moguće se povezati sa Tolzar serverom, pokušajte ponovo kasnije"
       }
     },
     "LIST": {
@@ -51,7 +51,7 @@
       },
       "API": {
         "SUCCESS_MESSAGE": "Zakačka integracije je uspešno dodata",
-        "ERROR_MESSAGE": "Nije moguće se povezati sa Woot serverom, pokušajte ponovo kasnije"
+        "ERROR_MESSAGE": "Nije moguće se povezati sa Tolzar serverom, pokušajte ponovo kasnije"
       }
     },
     "CONNECT": {

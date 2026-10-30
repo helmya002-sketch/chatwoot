@@ -28,7 +28,7 @@
       "CANCEL_BUTTON_TEXT": "ביטול",
       "API": {
         "SUCCESS_MESSAGE": "ה-Hook נמחק בהצלחה",
-        "ERROR_MESSAGE": "לא ניתן להתחבר לשרת Woot, נסה שוב מאוחר יותר"
+        "ERROR_MESSAGE": "לא ניתן להתחבר לשרת Tolzar, נסה שוב מאוחר יותר"
       }
     },
     "LIST": {
@@ -51,7 +51,7 @@
       },
       "API": {
         "SUCCESS_MESSAGE": "קרס אינטגרציה נוסף בהצלחה",
-        "ERROR_MESSAGE": "לא ניתן להתחבר לשרת Woot, נסה שוב מאוחר יותר"
+        "ERROR_MESSAGE": "לא ניתן להתחבר לשרת Tolzar, נסה שוב מאוחר יותר"
       }
     },
     "CONNECT": {

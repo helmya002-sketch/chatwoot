@@ -461,6 +461,30 @@
     }
   },
   "ONBOARDING": {
+    "TOLZAR": {
+      "INTRO": "O Tolzar responde aos seus clientes em todos os canais com um agente de IA que trabalha dentro das suas regras. Começa em modo sombra: escreve apenas notas privadas, nunca mensagens aos clientes.",
+      "GUIDE": "Abrir o guia de configuração",
+      "CHANNEL": {
+        "TITLE": "Ligar um canal",
+        "DESCRIPTION": "Adicione o WhatsApp, o Instagram, o Messenger, o email ou o chat do seu site. As conversas aparecem aqui.",
+        "LINK": "Ligar um canal"
+      },
+      "TEACH": {
+        "TITLE": "Ensinar o seu agente de IA",
+        "DESCRIPTION": "Indique o seu site, carregue documentos e a lista de preços, e defina o que pode e não pode dizer.",
+        "LINK": "Abrir agentes de IA"
+      },
+      "SHADOW": {
+        "TITLE": "Observá-lo em modo sombra",
+        "DESCRIPTION": "Trabalha nas suas conversas reais e escreve apenas notas privadas. Compare as respostas com as da sua equipa.",
+        "LINK": "Ver os resultados"
+      },
+      "TEAM": {
+        "TITLE": "Convidar a sua equipa",
+        "DESCRIPTION": "Adicione as pessoas que respondem aos clientes, para que a IA entregue cada conversa à pessoa certa.",
+        "LINK": "Convidar pessoas"
+      }
+    },
     "TITLE": "Olá 👋. Bem-vindo ao {installationName}!",
     "DESCRIPTION": "Obrigado por se registar. Queremos que aproveite ao máximo o sistema {installationName}. Aqui estão algumas coisas que pode fazer no {installationName} para tornar a sua experiência ainda mais agradável.",
     "GREETING_MORNING": "👋 Bom dia, {name}. Bem-vindo ao {installationName}.",

@@ -51,7 +51,7 @@
     },
     "API": {
       "SUCCESS_MESSAGE": "AuditLogs retrieved successfully",
-      "ERROR_MESSAGE": "Yhteyden muodostaminen Woot-palvelimelle ei onnistunut, yritä myöhemmin uudelleen"
+      "ERROR_MESSAGE": "Yhteyden muodostaminen Tolzar-palvelimelle ei onnistunut, yritä myöhemmin uudelleen"
     },
     "DEFAULT_USER": "System",
     "AUTOMATION_RULE": {

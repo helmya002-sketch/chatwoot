@@ -1,9 +1,9 @@
 {
   "HELP_CENTER": {
-    "TITLE": "Help Center",
+    "TITLE": "Knowledge base",
     "NEW_PAGE": {
-      "DESCRIPTION": "Create self-service help center portals for your customers. Help them find answers quickly, without waiting. Streamline inquiries, boost agent efficiency, and elevate customer support.",
-      "CREATE_PORTAL_BUTTON": "Create Portal"
+      "DESCRIPTION": "Create a self-service knowledge base for your customers so they find answers without waiting.",
+      "CREATE_PORTAL_BUTTON": "Create knowledge base"
     },
     "HEADER": {
       "FILTER": "Filter by",
@@ -208,11 +208,11 @@
       "ADD": {
         "CREATE_FLOW": {
           "BASIC": {
-            "TITLE": "Help center information",
+            "TITLE": "Knowledge base information",
             "BODY": "Basic information about portal"
           },
           "CUSTOMIZATION": {
-            "TITLE": "Help center customization",
+            "TITLE": "Knowledge base customization",
             "BODY": "Customize portal"
           },
           "FINISH": {
@@ -224,12 +224,12 @@
           "BACK_BUTTON": "Back",
           "BASIC_SETTINGS_PAGE": {
             "HEADER": "Create Portal",
-            "TITLE": "Help center information",
+            "TITLE": "Knowledge base information",
             "CREATE_BASIC_SETTING_BUTTON": "Create portal basic settings"
           },
           "CUSTOMIZATION_PAGE": {
             "HEADER": "Portal customisation",
-            "TITLE": "Help center customization",
+            "TITLE": "Knowledge base customization",
             "UPDATE_PORTAL_BUTTON": "Update portal settings"
           },
           "FINISH_PAGE": {
@@ -493,7 +493,7 @@
       "SEARCH_BUTTON": "Search",
       "INSERT_ARTICLE": "Insert link",
       "IFRAME_ERROR": "URL is empty or invalid. Unable to display content.",
-      "OPEN_ARTICLE_SEARCH": "Insert article from Help Center",
+      "OPEN_ARTICLE_SEARCH": "Insert article from Knowledge base",
       "SUCCESS_ARTICLE_INSERTED": "Article inserted successfully",
       "PREVIEW_LINK": "Preview article",
       "CANCEL": "Close",
@@ -501,17 +501,17 @@
       "BACK_RESULTS": "Back to results"
     },
     "UPGRADE_PAGE": {
-      "TITLE": "Help Center",
-      "DESCRIPTION": "Create user-friendly self-service portals. Help your users to access the articles and get support 24/7. Upgrade your subscription to enable this feature.",
-      "SELF_HOSTED_DESCRIPTION": "Create user-friendly self-service portals. Help your users to access the articles and get support 24/7. Please contact your administrator to enable this feature.",
+      "TITLE": "Knowledge base",
+      "DESCRIPTION": "Publish articles your customers can read any time. Not available on your plan. Contact Tolzar to enable it.",
+      "SELF_HOSTED_DESCRIPTION": "Publish articles your customers can read any time. Contact your administrator to enable it.",
       "BUTTON": {
         "LEARN_MORE": "Learn more",
         "UPGRADE": "Upgrade"
       },
       "FEATURES": {
         "PORTALS": {
-          "TITLE": "Multiple portals",
-          "DESCRIPTION": "Create multiple help center portals for different products using the same account."
+          "TITLE": "Multiple knowledge bases",
+          "DESCRIPTION": "Create a knowledge base for each product in the same account."
         },
         "LOCALES": {
           "TITLE": "Full support for locales",
@@ -737,7 +737,7 @@
       },
       "POPULAR_CONTENT_DIALOG": {
         "TITLE": "Recommended content",
-        "DESCRIPTION": "Pick up to 3 categories and 6 articles to feature on this locale's help center home page. Drag them into the order you want visitors to see.",
+        "DESCRIPTION": "Pick up to 3 categories and 6 articles to feature on this locale's knowledge base home page. Drag them into the order you want visitors to see.",
         "SEARCH": "Search...",
         "EMPTY": "No matching results",
         "ADD_ANOTHER": "Add another...",
@@ -979,7 +979,7 @@
         },
         "SOCIAL_LINKS": {
           "HEADER": "Social links",
-          "DESCRIPTION": "Add the handle for each network and your help center builds the full link. Shown in the documentation layout footer.",
+          "DESCRIPTION": "Add the handle for each network and your knowledge base builds the full link. Shown in the documentation layout footer.",
           "PLACEHOLDER": "handle",
           "ADD": "Add social link",
           "REMOVE": "Remove"
@@ -988,10 +988,10 @@
       },
       "INTEGRATIONS": {
         "HEADER": "Integrations",
-        "DESCRIPTION": "Connect tools that extend what your help center can do.",
+        "DESCRIPTION": "Connect tools that extend what your knowledge base can do.",
         "LIVE_CHAT": {
           "TITLE": "Live chat with Tolzar",
-          "DESCRIPTION": "Show a live chat widget on your help center so visitors can reach you while they read.",
+          "DESCRIPTION": "Show a live chat widget on your knowledge base so visitors can reach you while they read.",
           "PLACEHOLDER": "Select live chat widget",
           "NONE_OPTION": "No widget"
         },
@@ -1004,28 +1004,28 @@
         },
         "GA4": {
           "TITLE": "Google Analytics 4",
-          "DESCRIPTION": "Measure traffic and visitor behavior on your help center with Google Analytics.",
+          "DESCRIPTION": "Measure traffic and visitor behavior on your knowledge base with Google Analytics.",
           "PLACEHOLDER": "G-XXXXXXXXXX",
           "HELP": "Find the measurement ID under Admin → Data streams in Google Analytics. Leave empty to disable.",
           "INVALID": "Enter a valid measurement ID, for example G-XXXXXXXXXX."
         },
         "HOTJAR": {
           "TITLE": "Hotjar",
-          "DESCRIPTION": "Understand how visitors use your help center with heatmaps and session recordings.",
+          "DESCRIPTION": "Understand how visitors use your knowledge base with heatmaps and session recordings.",
           "PLACEHOLDER": "1234567",
           "HELP": "Find your site ID under Sites & organizations in Hotjar. Leave empty to disable.",
           "INVALID": "Enter a numeric Hotjar site ID."
         },
         "PLAUSIBLE": {
           "TITLE": "Plausible",
-          "DESCRIPTION": "Track help center traffic with privacy-friendly Plausible Analytics.",
+          "DESCRIPTION": "Track knowledge base traffic with privacy-friendly Plausible Analytics.",
           "PLACEHOLDER": "example.com",
           "HELP": "Enter the domain configured in your Plausible site settings. Leave empty to disable.",
           "INVALID": "Enter a valid domain, for example example.com."
         },
         "AMPLITUDE": {
           "TITLE": "Amplitude",
-          "DESCRIPTION": "Analyze visitor behavior on your help center with Amplitude.",
+          "DESCRIPTION": "Analyze visitor behavior on your knowledge base with Amplitude.",
           "PLACEHOLDER": "0123456789abcdef0123456789abcdef",
           "HELP": "Find the API key in your Amplitude project settings. Leave empty to disable.",
           "INVALID": "Enter a valid Amplitude API key."
@@ -1039,7 +1039,7 @@
         },
         "META_PIXEL": {
           "TITLE": "Meta Pixel",
-          "DESCRIPTION": "Measure ad conversions and build audiences from help center visits with Meta Pixel.",
+          "DESCRIPTION": "Measure ad conversions and build audiences from knowledge base visits with Meta Pixel.",
           "PLACEHOLDER": "123456789012345",
           "HELP": "Find the pixel ID in Meta Events Manager. Leave empty to disable.",
           "INVALID": "Enter a numeric pixel ID."

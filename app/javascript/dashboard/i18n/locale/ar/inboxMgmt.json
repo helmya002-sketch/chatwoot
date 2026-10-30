@@ -106,15 +106,15 @@
         },
         "CHANNEL_WELCOME_TITLE": {
           "LABEL": "العنوان الترحيبي",
-          "PLACEHOLDER": "مرحبا بك!"
+          "PLACEHOLDER": "مرحبا"
         },
         "CHANNEL_WELCOME_TAGLINE": {
           "LABEL": "افتتاحية الترحيب",
-          "PLACEHOLDER": "نحن نجعل من السهل عليك التواصل معنا. اسألنا أي شيء، أو قم بمشاركتنا ملاحظاتك."
+          "PLACEHOLDER": "اسألنا أي شيء. نرد هنا."
         },
         "CHANNEL_GREETING_MESSAGE": {
           "LABEL": "رسالة الترحيب التلقائية",
-          "PLACEHOLDER": "يتم الرد عادة خلال بضع ساعات."
+          "PLACEHOLDER": "نرد عادة خلال بضع ساعات."
         },
         "CHANNEL_GREETING_TOGGLE": {
           "LABEL": "تفعيل رسالة الترحيب التلقائية",
@@ -1604,7 +1604,7 @@
         "AGENT_MESSAGE": "مرحبا"
       },
       "BRANDING_TEXT": "مدعوم بواسطة Tolzar",
-      "SCRIPT_SETTINGS": "\n      window.chatwootSettings = {options};"
+      "SCRIPT_SETTINGS": "\n      window.tolzarSettings = {options};"
     },
     "EMAIL_PROVIDERS": {
       "MICROSOFT": {

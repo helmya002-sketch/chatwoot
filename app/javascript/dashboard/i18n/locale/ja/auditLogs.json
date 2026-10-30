@@ -51,7 +51,7 @@
     },
     "API": {
       "SUCCESS_MESSAGE": "監査ログが正常に取得されました",
-      "ERROR_MESSAGE": "Wootサーバーに接続できませんでした。後でもう一度お試しください。"
+      "ERROR_MESSAGE": "Tolzarサーバーに接続できませんでした。後でもう一度お試しください。"
     },
     "DEFAULT_USER": "システム",
     "AUTOMATION_RULE": {

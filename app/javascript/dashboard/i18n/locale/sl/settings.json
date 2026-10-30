@@ -814,7 +814,7 @@
     "API": {
       "SUCCESS_MESSAGE": "Račun je bil uspešno ustvarjen",
       "EXIST_MESSAGE": "Račun že obstaja",
-      "ERROR_MESSAGE": "Povezava s strežnikom Woot ni uspela, prosimo, poskusite znova kasneje"
+      "ERROR_MESSAGE": "Povezava s strežnikom Tolzar ni uspela, prosimo, poskusite znova kasneje"
     },
     "FORM": {
       "NAME": {

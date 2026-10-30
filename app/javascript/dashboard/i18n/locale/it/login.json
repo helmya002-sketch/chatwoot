@@ -12,7 +12,7 @@
     },
     "API": {
       "SUCCESS_MESSAGE": "Accesso riuscito",
-      "ERROR_MESSAGE": "Impossibile connettersi al server Woot. Riprova.",
+      "ERROR_MESSAGE": "Impossibile connettersi al server Tolzar. Riprova.",
       "UNAUTH": "Nome utente o password errati. Riprova."
     },
     "OAUTH": {

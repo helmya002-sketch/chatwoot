@@ -164,7 +164,7 @@
         "TITLE": "Uredi webhook",
         "API": {
           "SUCCESS_MESSAGE": "Konfiguracija spletnega ključa je bila uspešno posodobljena",
-          "ERROR_MESSAGE": "Povezava s strežnikom Woot ni uspela, prosimo poskusite znova kasneje"
+          "ERROR_MESSAGE": "Povezava s strežnikom Tolzar ni uspela, prosimo poskusite znova kasneje"
         }
       },
       "ADD": {
@@ -172,14 +172,14 @@
         "TITLE": "Dodaj nov webhook",
         "API": {
           "SUCCESS_MESSAGE": "Konfiguracija spletnega ključa je bila uspešno dodana",
-          "ERROR_MESSAGE": "Povezava s strežnikom Woot ni uspela, prosimo, poskusite znova kasneje"
+          "ERROR_MESSAGE": "Povezava s strežnikom Tolzar ni uspela, prosimo, poskusite znova kasneje"
         }
       },
       "DELETE": {
         "BUTTON_TEXT": "Izbriši",
         "API": {
           "SUCCESS_MESSAGE": "Webhook je bil uspešno izbrisan",
-          "ERROR_MESSAGE": "Povezava s strežnikom Woot ni uspela, prosimo, poskusite znova kasneje"
+          "ERROR_MESSAGE": "Povezava s strežnikom Tolzar ni uspela, prosimo, poskusite znova kasneje"
         },
         "CONFIRM": {
           "TITLE": "Potrdite brisanje",

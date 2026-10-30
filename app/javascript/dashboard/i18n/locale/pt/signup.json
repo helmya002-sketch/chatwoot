@@ -3,8 +3,8 @@
     "TRY_WOOT": "Criar uma conta",
     "GET_STARTED": "Get started with Tolzar",
     "TITLE": "Cadastrar",
-    "TESTIMONIAL_HEADER": "Tudo que precisa é um passo para avançar",
-    "TESTIMONIAL_CONTENT": "Está a um passo de fidelizar os seus clientes, mantê-los e encontrar novos.",
+    "TESTIMONIAL_HEADER": "Uma caixa de entrada para todas as conversas",
+    "TESTIMONIAL_CONTENT": "Responda aos seus clientes em todos os canais a partir de um só lugar.",
     "TERMS_ACCEPT": "Ao criar uma conta, concorda com os nossos <a href=\"{termsURL}\">Termos & Condições</a> e <a href=\"{privacyURL}\">Política de privacidade</a>",
     "OAUTH": {
       "GOOGLE_SIGNUP": "Inscrever-se com conta Google"
@@ -46,7 +46,7 @@
     },
     "API": {
       "SUCCESS_MESSAGE": "Registration Successful",
-      "ERROR_MESSAGE": "Não foi possível conectar ao servidor Woot, por favor tente novamente mais tarde"
+      "ERROR_MESSAGE": "Não foi possível conectar ao servidor Tolzar, por favor tente novamente mais tarde"
     },
     "SUBMIT": "Criar conta",
     "HAVE_AN_ACCOUNT": "Já tem uma conta?",
