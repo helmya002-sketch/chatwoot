@@ -6,6 +6,7 @@ import UpdateBanner from './components/app/UpdateBanner.vue';
 import ImpersonationBanner from './components/app/ImpersonationBanner.vue';
 import StatusBanner from './components/app/StatusBanner.vue';
 import PaymentPendingBanner from './components/app/PaymentPendingBanner.vue';
+import FairUseBanner from './components/app/FairUseBanner.vue';
 import PendingEmailVerificationBanner from './components/app/PendingEmailVerificationBanner.vue';
 import LowBackupCodesBanner from './components/app/LowBackupCodesBanner.vue';
 import FeatureAnnouncement from './components-next/feature-announcement/FeatureAnnouncement.vue';
@@ -36,6 +37,7 @@ export default {
     UpdateBanner,
     StatusBanner,
     PaymentPendingBanner,
+    FairUseBanner,
     WootSnackbarBox,
     PendingEmailVerificationBanner,
     LowBackupCodesBanner,
@@ -153,6 +155,7 @@ export default {
       <TolzarBranding :account-id="currentAccountId" />
       <PendingEmailVerificationBanner v-if="hideOnOnboardingView" />
       <PaymentPendingBanner v-if="hideOnOnboardingView" />
+      <FairUseBanner v-if="hideOnOnboardingView" />
       <LowBackupCodesBanner v-if="hideOnOnboardingView" />
       <FeatureAnnouncement v-if="hideOnOnboardingView" />
     </template>
