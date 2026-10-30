@@ -683,5 +683,25 @@
       "SUCCESS": "Definição do separador Social guardada",
       "ERROR": "Não foi possível guardar a definição. Tente novamente."
     }
+  },
+  "TOLZAR_WHY": {
+    "SHOW": "Porquê esta resposta?",
+    "HIDE": "Ocultar motivo",
+    "LOADING": "A carregar a explicação…",
+    "NONE": "Ainda não há explicação para esta conversa.",
+    "DECIDED": "Decidido {at}",
+    "ROUTE": "equipa: {team}",
+    "SURE": "{pct}% de certeza",
+    "BASED_ON": "Com base em",
+    "NO_SOURCE": "Sem fonte citada: uma pessoa deve rever esta resposta.",
+    "CHECKS": "Verificações",
+    "REPLACED": "Uma verificação falhou, por isso foi usada a resposta segura em vez do rascunho da IA.",
+    "CHECK": {
+      "PRICE_GUARD": "Preços: só valores listados e citados",
+      "GROUNDING": "Factos: cada número está numa fonte citada",
+      "OUTPUT_POLICY": "Regras de resposta: sem links, promessas ou fugas",
+      "LANGUAGE": "Idioma: o do cliente",
+      "CONSISTENCY": "Coerência: só nomeia a equipa escolhida"
+    }
   }
 }

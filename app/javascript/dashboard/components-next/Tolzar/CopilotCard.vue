@@ -8,8 +8,8 @@
  *  - in a listen-only inbox (staff answer from the business's own tool, the composer is
  *    private-note only) the button is "Copy reply" and nothing is inserted.
  * Reads the custom attributes the brain writes (shadow-safe); hides when there is
- * nothing to show. The payload carries no sources or explanation yet, so there is no
- * "Based on" line (the brain's /explain is not wired to the front-end either).
+ * nothing to show. "Why this reply?" (WhyPanel) reads the brain's /explain on demand: what the draft
+ * is based on and which checks passed.
  */
 import { computed, ref, onBeforeUnmount } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -18,6 +18,7 @@ import { emitter } from 'shared/helpers/mitt';
 import { BUS_EVENTS } from 'shared/constants/busEvents';
 import { copyTextToClipboard } from 'shared/helpers/clipboard';
 import { tolzarBrand } from './TolzarBranding.vue';
+import WhyPanel from './WhyPanel.vue';
 
 const { t } = useI18n();
 const store = useStore();
@@ -188,6 +189,7 @@ const buttonHint = computed(() =>
     </div>
 
     <p v-if="hint" class="tz-c-why">{{ hint }}</p>
+    <WhyPanel v-if="suggestedReply && chat?.id" :conversation-id="chat.id" />
   </div>
 </template>
 

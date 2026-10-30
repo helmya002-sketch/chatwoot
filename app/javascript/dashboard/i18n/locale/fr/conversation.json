@@ -683,5 +683,25 @@
       "SUCCESS": "Réglage de l'onglet Réseaux sociaux enregistré",
       "ERROR": "Impossible d'enregistrer le réglage. Réessayez."
     }
+  },
+  "TOLZAR_WHY": {
+    "SHOW": "Pourquoi cette réponse ?",
+    "HIDE": "Masquer l'explication",
+    "LOADING": "Chargement de l'explication…",
+    "NONE": "Pas encore d'explication pour cette conversation.",
+    "DECIDED": "Décidé {at}",
+    "ROUTE": "équipe : {team}",
+    "SURE": "sûr à {pct} %",
+    "BASED_ON": "Basé sur",
+    "NO_SOURCE": "Aucune source citée : une personne doit vérifier cette réponse.",
+    "CHECKS": "Vérifications",
+    "REPLACED": "Une vérification a échoué ; la réponse sûre a remplacé le brouillon de l'IA.",
+    "CHECK": {
+      "PRICE_GUARD": "Prix : uniquement listés et cités",
+      "GROUNDING": "Faits : chaque chiffre vient d'une source citée",
+      "OUTPUT_POLICY": "Règles de réponse : ni liens, ni promesses, ni fuites",
+      "LANGUAGE": "Langue : celle du client",
+      "CONSISTENCY": "Cohérence : ne nomme que l'équipe choisie"
+    }
   }
 }

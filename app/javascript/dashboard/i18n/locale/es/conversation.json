@@ -683,5 +683,25 @@
       "SUCCESS": "Ajuste de la pestaña Social guardado",
       "ERROR": "No se pudo guardar el ajuste. Inténtalo de nuevo."
     }
+  },
+  "TOLZAR_WHY": {
+    "SHOW": "¿Por qué esta respuesta?",
+    "HIDE": "Ocultar motivo",
+    "LOADING": "Cargando la explicación…",
+    "NONE": "Aún no hay explicación para esta conversación.",
+    "DECIDED": "Decidido {at}",
+    "ROUTE": "equipo: {team}",
+    "SURE": "{pct}% de seguridad",
+    "BASED_ON": "Basado en",
+    "NO_SOURCE": "Sin fuente citada: una persona debe revisar esta respuesta.",
+    "CHECKS": "Comprobaciones",
+    "REPLACED": "Falló una comprobación, así que se usó la respuesta segura en lugar del borrador de la IA.",
+    "CHECK": {
+      "PRICE_GUARD": "Precios: solo importes listados y citados",
+      "GROUNDING": "Datos: cada número está en una fuente citada",
+      "OUTPUT_POLICY": "Reglas de respuesta: sin enlaces, promesas ni filtraciones",
+      "LANGUAGE": "Idioma: el del cliente",
+      "CONSISTENCY": "Coherencia: solo nombra el equipo elegido"
+    }
   }
 }

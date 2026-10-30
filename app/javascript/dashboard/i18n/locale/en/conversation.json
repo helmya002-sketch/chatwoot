@@ -683,5 +683,25 @@
       "SUCCESS": "Social tab setting saved",
       "ERROR": "Could not save the Social tab setting. Please try again."
     }
+  },
+  "TOLZAR_WHY": {
+    "SHOW": "Why this reply?",
+    "HIDE": "Hide why",
+    "LOADING": "Loading the explanation…",
+    "NONE": "No explanation for this conversation yet.",
+    "DECIDED": "Decided {at}",
+    "ROUTE": "team: {team}",
+    "SURE": "{pct}% sure",
+    "BASED_ON": "Based on",
+    "NO_SOURCE": "No cited source: a person should check this reply.",
+    "CHECKS": "Checks",
+    "REPLACED": "A check failed, so the safe reply was used instead of the AI's draft.",
+    "CHECK": {
+      "PRICE_GUARD": "Prices: only listed, cited amounts",
+      "GROUNDING": "Facts: every number is in a cited source",
+      "OUTPUT_POLICY": "Reply policy: no links, promises or leaks",
+      "LANGUAGE": "Language: the customer's own",
+      "CONSISTENCY": "Consistency: names the chosen team only"
+    }
   }
 }

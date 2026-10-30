@@ -683,5 +683,25 @@
       "SUCCESS": "Einstellung für den Social-Tab gespeichert",
       "ERROR": "Die Einstellung konnte nicht gespeichert werden. Bitte erneut versuchen."
     }
+  },
+  "TOLZAR_WHY": {
+    "SHOW": "Warum diese Antwort?",
+    "HIDE": "Begründung ausblenden",
+    "LOADING": "Erklärung wird geladen…",
+    "NONE": "Für diese Unterhaltung gibt es noch keine Erklärung.",
+    "DECIDED": "Entschieden {at}",
+    "ROUTE": "Team: {team}",
+    "SURE": "{pct}% sicher",
+    "BASED_ON": "Grundlage",
+    "NO_SOURCE": "Keine zitierte Quelle: Eine Person sollte diese Antwort prüfen.",
+    "CHECKS": "Prüfungen",
+    "REPLACED": "Eine Prüfung schlug fehl, daher wurde statt des KI-Entwurfs die sichere Antwort verwendet.",
+    "CHECK": {
+      "PRICE_GUARD": "Preise: nur gelistete, zitierte Beträge",
+      "GROUNDING": "Fakten: jede Zahl steht in einer zitierten Quelle",
+      "OUTPUT_POLICY": "Antwortregeln: keine Links, Zusagen oder Lecks",
+      "LANGUAGE": "Sprache: die des Kunden",
+      "CONSISTENCY": "Konsistenz: nennt nur das gewählte Team"
+    }
   }
 }
