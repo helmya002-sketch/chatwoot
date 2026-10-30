@@ -1715,6 +1715,7 @@
       "CONVERSATION": "Conversation number (from your own test message)",
       "TEXT": "Message (up to 300 characters)",
       "CONFIRM": "Type the contact name to confirm (your own name)",
+      "CODE_HINT": "Instagram DM only: send this code by Instagram DM from your own account to the business account, then send the test reply (valid 10 minutes, one use):",
       "SEND": "Send the one test message",
       "CLOSE": "Close without sending",
       "CLOSED": "Window closed.",

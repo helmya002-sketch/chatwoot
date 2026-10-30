@@ -362,7 +362,8 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
       return render(json: { ok: true, open_until: nil })
     end
 
-    render json: { ok: true, open_until: Tolzar::MetaTestSend.open!(Current.account, Current.user).iso8601 }
+    opened = Tolzar::MetaTestSend.open!(Current.account, Current.user)
+    render json: { ok: true, open_until: opened[:until].iso8601, instagram_code: opened[:code] }
   end
 
   def meta_test_send
