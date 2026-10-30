@@ -87,10 +87,10 @@
     "SEARCH_PLACEHOLDER": "Search integrations...",
     "NO_RESULTS": "No integrations found matching your search",
     "CAPTAIN": {
-      "DISABLED": "Captain is not enabled on your account.",
+      "DISABLED": "Tolzar AI is not enabled on your account.",
       "CLICK_HERE_TO_CONFIGURE": "Click here to configure",
-      "LOADING_CONSOLE": "Loading Captain Console...",
-      "FAILED_TO_LOAD_CONSOLE": "Failed to load Captain Console. Please refresh and try again."
+      "LOADING_CONSOLE": "Loading Tolzar AI Console...",
+      "FAILED_TO_LOAD_CONSOLE": "Failed to load Tolzar AI Console. Please refresh and try again."
     },
     "WEBHOOK": {
       "SUBSCRIBED_EVENTS": "Feliratkozott események",
@@ -493,7 +493,7 @@
         "PROJECT": "Google Cloud-projekt",
         "SERVICE": "Fordítási szolgáltatás",
         "SERVICE_GOOGLE": "A Google Fordító végzi a beszélgetések fordítását. Automatikus fordítás bekapcsolásakor a bejövő üzeneteket az egyes ügynökök nyelvére fordítja, a válaszokat pedig az ügyfél nyelvén küldi el. Az ügynökök az üzenet menüjéből is használhatják fordításra.",
-        "SERVICE_OTHER": "A Captain van kiválasztva fordítási szolgáltatásként, ezért a Google Fordítót jelenleg nem használjuk. Az automatikus fordítást és az üzenetek Fordítás műveletét is a Captain végzi. A Google-integráció használatához váltson a Google Fordítóra.",
+        "SERVICE_OTHER": "A Tolzar AI van kiválasztva fordítási szolgáltatásként, ezért a Google Fordítót jelenleg nem használjuk. Az automatikus fordítást és az üzenetek Fordítás műveletét is a Tolzar AI végzi. A Google-integráció használatához váltson a Google Fordítóra.",
         "CHANGE": "Megváltoztatás"
       }
     },
@@ -508,12 +508,12 @@
     }
   },
   "CAPTAIN": {
-    "NAME": "Captain",
+    "NAME": "Tolzar AI",
     "HEADER_KNOW_MORE": "Tudjon meg többet",
     "OVERVIEW": {
       "HEADER": "Áttekintés",
       "WELCOME": {
-        "LABEL": "Captain-összefoglaló",
+        "LABEL": "Tolzar AI-összefoglaló",
         "LOADING": "Összefoglaló készítése…"
       },
       "INBOX_BANNER": {
@@ -537,29 +537,29 @@
       "METRICS": {
         "HANDLED": {
           "LABEL": "Kezelt beszélgetések",
-          "HINT": "Azok a beszélgetések, amelyekben Captain válaszolt az ügyfélnek, vagy átadta a beszélgetést a csapatnak."
+          "HINT": "Azok a beszélgetések, amelyekben Tolzar AI válaszolt az ügyfélnek, vagy átadta a beszélgetést a csapatnak."
         },
         "AUTO_RESOLUTION": {
           "LABEL": "Automatikus megoldási arány",
-          "HINT": "A kezelt beszélgetések azon aránya, amelyeket Captain a csapat segítsége nélkül oldott meg. A magasabb érték azt jelenti, hogy Captain több beszélgetést oldott meg önállóan."
+          "HINT": "A kezelt beszélgetések azon aránya, amelyeket Tolzar AI a csapat segítsége nélkül oldott meg. A magasabb érték azt jelenti, hogy Tolzar AI több beszélgetést oldott meg önállóan."
         },
         "HANDOFF": {
           "LABEL": "Átadási arány",
-          "HINT": "A kezelt beszélgetések azon aránya, amelyeket Captain átadott a csapatnak. Az alacsonyabb érték azt jelenti, hogy kevesebb beszélgetéshez volt szükség ügynökre."
+          "HINT": "A kezelt beszélgetések azon aránya, amelyeket Tolzar AI átadott a csapatnak. Az alacsonyabb érték azt jelenti, hogy kevesebb beszélgetéshez volt szükség ügynökre."
         },
         "HOURS_SAVED": {
           "LABEL": "Megtakarított idő",
-          "HINT": "Becsült időmegtakarítás az ügynökök válaszidejében a Captain használatával.",
-          "NOTE": "Számítás alapja: minden nyilvános Captain-válasz két perc megtakarítást jelent."
+          "HINT": "Becsült időmegtakarítás az ügynökök válaszidejében a Tolzar AI használatával.",
+          "NOTE": "Számítás alapja: minden nyilvános Tolzar AI-válasz két perc megtakarítást jelent."
         },
         "REOPEN": {
           "LABEL": "Újranyitási arány",
-          "HINT": "Azon, Captain által megoldott beszélgetések aránya, amelyeket az ügyfelek később újranyitottak.",
+          "HINT": "Azon, Tolzar AI által megoldott beszélgetések aránya, amelyeket az ügyfelek később újranyitottak.",
           "NOTE": "Az alacsonyabb érték azt jelenti, hogy több megoldott beszélgetés maradt lezárva."
         },
         "DEPTH": {
           "LABEL": "Üzenetek beszélgetésenként",
-          "HINT": "A Captain által kezelt beszélgetésekben átlagosan küldött válaszok száma.",
+          "HINT": "A Tolzar AI által kezelt beszélgetésekben átlagosan küldött válaszok száma.",
           "NOTE": "Az alacsonyabb érték gyorsabb válaszadást jelezhet, de összetett kérdésekhez több válaszra lehet szükség."
         }
       },
@@ -578,8 +578,8 @@
       },
       "LINKS": {
         "DOCS": {
-          "TITLE": "Captain dokumentációja",
-          "DESCRIPTION": "Útmutatók és leírások a Captain használatához"
+          "TITLE": "Tolzar AI dokumentációja",
+          "DESCRIPTION": "Útmutatók és leírások a Tolzar AI használatához"
         },
         "PLAYGROUND": {
           "TITLE": "Játszótér",
@@ -592,17 +592,17 @@
       },
       "V2": {
         "DRILLDOWN": {
-          "HANDLED": "Az időszak azon beszélgetései, amelyekben Captain részt vett.",
-          "RESOLVED": "Azok a beszélgetések, amelyeket Captain átadás vagy emberi válasz nélkül oldott meg.",
-          "HANDED_OFF": "A Captain részvétele után átadott epizódok.",
-          "REOPENED": "A Captain által megoldott, majd később újranyitott epizódok.",
-          "DURABLE": "A Captain által megoldott epizódok, amelyek legalább hét napig lezárva maradtak.",
-          "CLOSED_WITH_TEAM": "Olyan epizódok, amelyekben a Captain részt vett, de amelyeket sem önállóan nem oldott meg, sem nem adott tovább.",
-          "REOPENED_WITHIN_7_DAYS": "A Captain által megoldott, hét napon belül újranyitott epizódok.",
-          "STAYED_CLOSED": "A Captain által megoldott epizódok, amelyeknél hét napon belül nem rögzítettek újranyitást. A közelmúltban megoldott epizódok is szerepelnek.",
+          "HANDLED": "Az időszak azon beszélgetései, amelyekben Tolzar AI részt vett.",
+          "RESOLVED": "Azok a beszélgetések, amelyeket Tolzar AI átadás vagy emberi válasz nélkül oldott meg.",
+          "HANDED_OFF": "A Tolzar AI részvétele után átadott epizódok.",
+          "REOPENED": "A Tolzar AI által megoldott, majd később újranyitott epizódok.",
+          "DURABLE": "A Tolzar AI által megoldott epizódok, amelyek legalább hét napig lezárva maradtak.",
+          "CLOSED_WITH_TEAM": "Olyan epizódok, amelyekben a Tolzar AI részt vett, de amelyeket sem önállóan nem oldott meg, sem nem adott tovább.",
+          "REOPENED_WITHIN_7_DAYS": "A Tolzar AI által megoldott, hét napon belül újranyitott epizódok.",
+          "STAYED_CLOSED": "A Tolzar AI által megoldott epizódok, amelyeknél hét napon belül nem rögzítettek újranyitást. A közelmúltban megoldott epizódok is szerepelnek.",
           "HANDOFF_REASON": "{reason} okból átadott epizódok.",
           "COUNT": "Nincs epizód | 1 epizód | {count} epizód",
-          "EPISODES_HINT": "Egy beszélgetés többször is megjelenhet, ha a Captain különálló epizódokban kezelte. Az epizódok kezdési időpont szerint vannak csoportosítva.",
+          "EPISODES_HINT": "Egy beszélgetés többször is megjelenhet, ha a Tolzar AI különálló epizódokban kezelte. Az epizódok kezdési időpont szerint vannak csoportosítva.",
           "STARTED_AT": "Epizód kezdete: {time}",
           "RETRY": "Újrapróbálkozás"
         },
@@ -610,7 +610,7 @@
         "SUMMARY": {
           "GREETING": "Üdvözöljük, {name}!",
           "DEFAULT_NAME": "vendég",
-          "EMPTY": "A Captain teljesítmény-összefoglalója akkor jelenik meg itt, ha már elegendő aktivitási adat áll rendelkezésre.",
+          "EMPTY": "A Tolzar AI teljesítmény-összefoglalója akkor jelenik meg itt, ha már elegendő aktivitási adat áll rendelkezésre.",
           "PREVIOUS": "Előző összefoglalópont",
           "NEXT": "Következő összefoglalópont"
         },
@@ -624,14 +624,14 @@
             "LABEL": "Az ügynökök munkaidejének és ráfordításának megtakarítása"
           },
           "DURABLE": {
-            "LABEL": "Lezárva maradt, Captain által megoldott beszélgetések",
+            "LABEL": "Lezárva maradt, Tolzar AI által megoldott beszélgetések",
             "NOT_APPLICABLE_HINT": "Ebben az időszakban még nincs olyan megoldás, amelyet hét napig követni lehetne. A tartósság mutatója ezért nem érhető el.",
-            "HINT": "A Captain által megoldott beszélgetések azon aránya, amelyek hét nappal később is lezárva maradtak.",
+            "HINT": "A Tolzar AI által megoldott beszélgetések azon aránya, amelyek hét nappal később is lezárva maradtak.",
             "NOTE": "Csak azok a megoldások szerepelnek, amelyek óta már eltelt hét nap."
           },
           "MEDIAN_RESOLUTION": {
             "LABEL": "Medián megoldási idő",
-            "HINT": "A beszélgetés Captainhez kerülésétől annak megoldásáig jellemzően eltelő idő.",
+            "HINT": "A beszélgetés Tolzar AIhez kerülésétől annak megoldásáig jellemzően eltelő idő.",
             "NOTE": "Az alacsonyabb érték azt jelenti, hogy a beszélgetések általában hamarabb megoldódnak."
           },
           "DEPTH": {
@@ -640,10 +640,10 @@
           "OF_TOTAL": "/ {total}"
         },
         "RESOLUTION_FLOW": {
-          "ARIA_LABEL": "A beszélgetések alakulása a Captain kezelése és a csapat eredményei szerint",
+          "ARIA_LABEL": "A beszélgetések alakulása a Tolzar AI kezelése és a csapat eredményei szerint",
           "NODES": {
             "HANDLED": "Kezelve",
-            "RESOLVED_BY_CAPTAIN": "Captain által megoldva",
+            "RESOLVED_BY_CAPTAIN": "Tolzar AI által megoldva",
             "HANDED_OFF": "Átadva",
             "CLOSED_WITH_TEAM": "A csapat által lezárva",
             "REOPENED": "7 napon belül újranyitva",
@@ -673,16 +673,16 @@
           "CURRENT_PERIOD": "Aktuális időszak",
           "PREVIOUS_PERIOD": "Previous period",
           "HANDLED": "Kezelve",
-          "RESOLVED": "Captain által megoldva",
-          "ARIA_LABEL": "A kezelt, illetve Captain által megoldott beszélgetések jelentési időszakonként",
-          "RATE_ARIA_LABEL": "Captain aktuális és előző megoldási aránya"
+          "RESOLVED": "Tolzar AI által megoldva",
+          "ARIA_LABEL": "A kezelt, illetve Tolzar AI által megoldott beszélgetések jelentési időszakonként",
+          "RATE_ARIA_LABEL": "Tolzar AI aktuális és előző megoldási aránya"
         },
         "CSAT": {
-          "TITLE": "Captain ügyfél-elégedettségi mutatója (CSAT)",
-          "AUTONOMOUS": "Captain által önállóan megoldott beszélgetések",
-          "AUTONOMOUS_HINT": "A Captain által a csapat segítsége nélkül megoldott beszélgetések átlagos ügyfélértékelése.",
-          "ASSISTED": "Captain által támogatott beszélgetések",
-          "ASSISTED_HINT": "Az átlagos ügyfélértékelés azoknál a beszélgetéseknél, amelyek megoldása előtt Captain segítséget nyújtott a csapatnak.",
+          "TITLE": "Tolzar AI ügyfél-elégedettségi mutatója (CSAT)",
+          "AUTONOMOUS": "Tolzar AI által önállóan megoldott beszélgetések",
+          "AUTONOMOUS_HINT": "A Tolzar AI által a csapat segítsége nélkül megoldott beszélgetések átlagos ügyfélértékelése.",
+          "ASSISTED": "Tolzar AI által támogatott beszélgetések",
+          "ASSISTED_HINT": "Az átlagos ügyfélértékelés azoknál a beszélgetéseknél, amelyek megoldása előtt Tolzar AI segítséget nyújtott a csapatnak.",
           "VS_HUMANS": "{value} az ügynökökhöz képest"
         },
         "USAGE": {
@@ -713,7 +713,7 @@
       "KICK_OFF_MESSAGE": "Gyors összefoglalóra van szüksége, szeretné áttekinteni a korábbi beszélgetéseket, vagy jobb választ megfogalmazni? A Copilot gyorsítja a folyamatot.",
       "SEND_MESSAGE": "Üzenet elküldése...",
       "EMPTY_MESSAGE": "Hiba történt a válasz elkészítésekor. Kérjük, próbálja újra.",
-      "LOADER": "Captain gondolkodik",
+      "LOADER": "Tolzar AI gondolkodik",
       "YOU": "Ön",
       "USE": "Használja ezt",
       "RESET": "Alaphelyzetbe állítás",
@@ -755,9 +755,9 @@
       "SEND_MESSAGE": "Üzenet elküldése",
       "HEADER": "Játszótér",
       "DESCRIPTION": "Használja ezt a játszóteret üzenetek küldéséhez az asszisztensnek, és ellenőrizze, hogy pontosan, gyorsan és a várt hangnemben válaszol-e.",
-      "CREDIT_NOTE": "Itt küldött üzenetek a Captain kreditjeit csökkentik.",
+      "CREDIT_NOTE": "Itt küldött üzenetek a Tolzar AI kreditjeit csökkentik.",
       "CLEAR_CONVERSATION": "Beszélgetés törlése",
-      "RESPONSE_ERROR": "Captain nem tudta befejezni ezt a tesztfuttatást. Ellenőrizze a beállítást, és próbálja újra.",
+      "RESPONSE_ERROR": "Tolzar AI nem tudta befejezni ezt a tesztfuttatást. Ellenőrizze a beállítást, és próbálja újra.",
       "SETUP": {
         "TITLE": "Tesztbeállítás",
         "DESCRIPTION": "Az itt végzett módosítások csak erre a tesztkörnyezetre érvényesek, kivéve, ha külön ment egy elemet.",
@@ -812,7 +812,7 @@
         },
         "KNOWLEDGE": {
           "TAB_TITLE": "Tudás",
-          "AVAILABLE_TITLE": "A Captain számára elérhető tudás",
+          "AVAILABLE_TITLE": "A Tolzar AI számára elérhető tudás",
           "AVAILABLE_DESCRIPTION": "A mentett források összefoglalója itt látható, kezelésük pedig a tesztfelületen kívül történik.",
           "DOCUMENTS": "Documents",
           "FAQS": "FAQs",
@@ -841,20 +841,20 @@
       }
     },
     "PAYWALL": {
-      "TITLE": "Frissítsen a Captain AI használatához",
-      "AVAILABLE_ON": "A Captain nem érhető el az ingyenes csomagban.",
+      "TITLE": "Frissítsen a Tolzar AI AI használatához",
+      "AVAILABLE_ON": "A Tolzar AI nem érhető el az ingyenes csomagban.",
       "UPGRADE_PROMPT": "Frissítse csomagját, hogy hozzáférjen asszisztenseinkhez, copilothoz és egyebekhez.",
       "UPGRADE_NOW": "Upgrade now",
       "CANCEL_ANYTIME": "You can change or cancel your plan anytime"
     },
     "ENTERPRISE_PAYWALL": {
-      "AVAILABLE_ON": "A Captain AI csak az Enterprise csomagokban érhető el.",
+      "AVAILABLE_ON": "A Tolzar AI AI csak az Enterprise csomagokban érhető el.",
       "UPGRADE_PROMPT": "Frissítse csomagját, hogy hozzáférjen asszisztenseinkhez, copilothoz és egyebekhez.",
       "ASK_ADMIN": "Please reach out to your administrator for the upgrade."
     },
     "BANNER": {
-      "RESPONSES": "A válaszlimit több mint 80%-át felhasználta. A Captain AI további használatához kérjük, frissítsen.",
-      "DOCUMENTS": "Elérte a dokumentumok korlátját. Frissítsen a Captain AI használat folytatásához."
+      "RESPONSES": "A válaszlimit több mint 80%-át felhasználta. A Tolzar AI AI további használatához kérjük, frissítsen.",
+      "DOCUMENTS": "Elérte a dokumentumok korlátját. Frissítsen a Tolzar AI AI használat folytatásához."
     },
     "FORM": {
       "CANCEL": "Mégse",
@@ -916,28 +916,28 @@
         },
         "INACTIVITY_RESOLUTION": {
           "TITLE": "Amikor az ügyfelek nem válaszolnak",
-          "DESCRIPTION": "Válassza ki, hogyan kezelje a Captain a beszélgetést.",
+          "DESCRIPTION": "Válassza ki, hogyan kezelje a Tolzar AI a beszélgetést.",
           "MODE_LABEL": "Teendő, ha az ügyfél nem válaszol",
           "REVIEW_AFTER": "Ellenőrzés ennyi idő elteltével",
           "RESOLVE_AFTER": "Beszélgetés lezárása ennyi idő után",
-          "ALWAYS_WARNING": "A Captain a kiválasztott idő elteltével ellenőrzés nélkül lezárja az összes beszélgetést. Így olyan beszélgetések is lezárulhatnak, amelyek még segítséget igényelnek.",
+          "ALWAYS_WARNING": "A Tolzar AI a kiválasztott idő elteltével ellenőrzés nélkül lezárja az összes beszélgetést. Így olyan beszélgetések is lezárulhatnak, amelyek még segítséget igényelnek.",
           "PENDING_INFO": "A beszélgetés függőben marad, amíg az ügyfél nem válaszol.",
           "RESOLUTION_MESSAGE": {
             "TITLE": "Üzenet küldése a beszélgetés lezárásakor",
-            "DESCRIPTION": "A Captain ezt a záróüzenetet küldi el a beszélgetés lezárása előtt."
+            "DESCRIPTION": "A Tolzar AI ezt a záróüzenetet küldi el a beszélgetés lezárása előtt."
           },
           "MODES": {
             "DISABLED": {
               "LABEL": "Várakozás az ügyfél válaszára",
-              "DESCRIPTION": "A Captain nem zárja le a beszélgetést. Kérésre azonban átadhatja az ügyet."
+              "DESCRIPTION": "A Tolzar AI nem zárja le a beszélgetést. Kérésre azonban átadhatja az ügyet."
             },
             "LEGACY": {
               "LABEL": "Mindig zárja le",
-              "DESCRIPTION": "A Captain minden beszélgetést lezár a kiválasztott idő elteltével."
+              "DESCRIPTION": "A Tolzar AI minden beszélgetést lezár a kiválasztott idő elteltével."
             },
             "EVALUATED": {
-              "LABEL": "Captain általi ellenőrzés (ajánlott)",
-              "DESCRIPTION": "A Captain dönti el, hogy lezárja-e a beszélgetést, vagy átadja."
+              "LABEL": "Tolzar AI általi ellenőrzés (ajánlott)",
+              "DESCRIPTION": "A Tolzar AI dönti el, hogy lezárja-e a beszélgetést, vagy átadja."
             }
           },
           "DURATION_HOURS_ARIA_LABEL": "Órák a műveletig",
@@ -959,11 +959,11 @@
         "AUDIENCE": {
           "EVERYONE": {
             "LABEL": "Mindenki",
-            "DESC": "Captain minden csatlakoztatott postafiókban válaszol a beszélgetésekre."
+            "DESC": "Tolzar AI minden csatlakoztatott postafiókban válaszol a beszélgetésekre."
           },
           "SPECIFIC": {
             "LABEL": "Meghatározott célközönség",
-            "DESC": "Captain csak az alábbi feltételeknek megfelelő ügyfeleknek válaszol."
+            "DESC": "Tolzar AI csak az alábbi feltételeknek megfelelő ügyfeleknek válaszol."
           },
           "ADD_CONDITION": "Feltétel hozzáadása",
           "ADD_GROUP": "Feltételcsoport hozzáadása",
@@ -986,15 +986,15 @@
         "SCHEDULE": {
           "ALWAYS": {
             "LABEL": "Bármikor",
-            "DESC": "Captain időponttól függetlenül minden beszélgetésre válaszol."
+            "DESC": "Tolzar AI időponttól függetlenül minden beszélgetésre válaszol."
           },
           "BUSINESS_HOURS": {
             "LABEL": "Nyitvatartási időben",
-            "DESC": "Captain csak az egyes postafiókok nyitvatartási idejében válaszol."
+            "DESC": "Tolzar AI csak az egyes postafiókok nyitvatartási idejében válaszol."
           },
           "OUTSIDE_BUSINESS_HOURS": {
             "LABEL": "Nyitvatartási időn kívül",
-            "DESC": "Captain csak akkor válaszol, amikor az egyes postafiókok zárva vannak."
+            "DESC": "Tolzar AI csak akkor válaszol, amikor az egyes postafiókok zárva vannak."
           },
           "HINT": "Azok a postafiókok, amelyekhez nincs beállítva nyitvatartási idő, mindig érintettek."
         }
@@ -1014,7 +1014,7 @@
         "SYSTEM_SETTINGS": {
           "TITLE": "System settings",
           "DESCRIPTION": "Customize what the assistant says when ending a conversation or transferring to a human.",
-          "DESCRIPTION_V2": "Állítsa be, mit tegyen Captain, ha az ügyfél nem válaszol, és adja meg az átadáskor küldött üzenetet."
+          "DESCRIPTION_V2": "Állítsa be, mit tegyen Tolzar AI, ha az ügyfél nem válaszol, és adja meg az átadáskor küldött üzenetet."
         },
         "AUDIENCE": {
           "TITLE": "Közönség",
@@ -1022,7 +1022,7 @@
         },
         "SCHEDULE": {
           "TITLE": "Ütemezés",
-          "DESCRIPTION": "Válassza ki, mikor válaszoljon Captain. Ezen az időszakon kívül a beszélgetések a csapathoz kerülnek."
+          "DESCRIPTION": "Válassza ki, mikor válaszoljon Tolzar AI. Ezen az időszakon kívül a beszélgetések a csapathoz kerülnek."
         },
         "CONTROL_ITEMS": {
           "TITLE": "The Fun Stuff",
@@ -1053,8 +1053,8 @@
         "TITLE": "No assistants available",
         "SUBTITLE": "Create an assistant to provide quick and accurate responses to your users. It can learn from your help articles and past conversations.",
         "FEATURE_SPOTLIGHT": {
-          "TITLE": "Captain Assistant",
-          "NOTE": "Captain Assistant engages directly with customers, learns from your help docs and past conversations, and delivers instant, accurate responses. It handles the initial queries, providing quick resolutions before  transferring to an agent when needed."
+          "TITLE": "Tolzar AI Assistant",
+          "NOTE": "Tolzar AI Assistant engages directly with customers, learns from your help docs and past conversations, and delivers instant, accurate responses. It handles the initial queries, providing quick resolutions before  transferring to an agent when needed."
         }
       },
       "GUARDRAILS": {
@@ -1360,8 +1360,8 @@
         "FILTERED_TITLE": "Nincs egyező dokumentum",
         "FILTERED_SUBTITLE": "Próbálja meg módosítani a forrást, az állapotot vagy a keresőkifejezést.",
         "FEATURE_SPOTLIGHT": {
-          "TITLE": "Captain Document",
-          "NOTE": "A document in Captain serves as a knowledge resource for the assistant. By connecting your help center or guides, Captain can analyze the content and provide accurate responses for customer inquiries."
+          "TITLE": "Tolzar AI Document",
+          "NOTE": "A document in Tolzar AI serves as a knowledge resource for the assistant. By connecting your help center or guides, Tolzar AI can analyze the content and provide accurate responses for customer inquiries."
         }
       }
     },
@@ -1371,10 +1371,10 @@
       "CATALOG": {
         "BUTTON": "Eszközkatalógus",
         "HEADER": "Eszközkatalógus",
-        "DESCRIPTION": "Böngésszen a Captain eszközkatalógusában található eszközkészletek között, és telepítse őket ehhez az asszisztenshez.",
+        "DESCRIPTION": "Böngésszen a Tolzar AI eszközkatalógusában található eszközkészletek között, és telepítse őket ehhez az asszisztenshez.",
         "ALL": "Mind",
         "EMPTY": "Ebben a kategóriában még nincsenek eszközkészletek.",
-        "LOAD_ERROR": "Nem sikerült betölteni az eszközkatalógust. Ellenőrizze a katalógus URL-jét a Captain beállításaiban.",
+        "LOAD_ERROR": "Nem sikerült betölteni az eszközkatalógust. Ellenőrizze a katalógus URL-jét a Tolzar AI beállításaiban.",
         "TOOL_COUNT": "{n} eszköz | {n} eszköz",
         "VERSION": "v{version}",
         "UPDATED": "Updated {time}",
@@ -1394,7 +1394,7 @@
       },
       "INSTALL_MANIFEST": {
         "TITLE": "Eszközkészlet telepítése",
-        "DESCRIPTION": "Telepítsen eszközkészletet a Captain eszközkatalógusából.",
+        "DESCRIPTION": "Telepítsen eszközkészletet a Tolzar AI eszközkatalógusából.",
         "VERSION_LABEL": "v{version} · {revision}",
         "UPDATE_NOTE": "Másik verzió van telepítve. A frissítés lecseréli az eszközöket, a bekapcsolt állapotukat viszont megőrzi. Adja meg újra a titkos adatokat.",
         "TOOLS_LABEL": "Tools",
@@ -1472,14 +1472,14 @@
         "ERROR_MESSAGE": "Failed to delete custom tool"
       },
       "PAYWALL": {
-        "TITLE": "Upgrade to use tools with Captain",
-        "AVAILABLE_ON": "Captain Tools are only available in Business and Enterprise plans. Please upgrade to Business plan to use the feature.",
+        "TITLE": "Upgrade to use tools with Tolzar AI",
+        "AVAILABLE_ON": "Tolzar AI Tools are only available in Business and Enterprise plans. Please upgrade to Business plan to use the feature.",
         "UPGRADE_PROMPT": "",
         "UPGRADE_NOW": "Számlázási beállítások megnyitása",
         "CANCEL_ANYTIME": ""
       },
       "ENTERPRISE_PAYWALL": {
-        "AVAILABLE_ON": "Captain Tools are only available in the paid plans.",
+        "AVAILABLE_ON": "Tolzar AI Tools are only available in the paid plans.",
         "UPGRADE_PROMPT": "Please upgrade to a paid plan to use this feature.",
         "ASK_ADMIN": "Please reach out to your administrator for the upgrade."
       },
@@ -1513,7 +1513,7 @@
         },
         "EMAIL_VERIFICATION": {
           "LABEL": "E-mail-cím ellenőrzésének megkövetelése",
-          "DESCRIPTION": "A Captain csak akkor használhatja ezt az eszközt, ha az ügyfél egyszer használatos kóddal igazolta az e-mail-címét.",
+          "DESCRIPTION": "A Tolzar AI csak akkor használhatja ezt az eszközt, ha az ügyfél egyszer használatos kóddal igazolta az e-mail-címét.",
           "IMPLIED": "A paraméter az ügyfél ellenőrzött e-mail-címét használja, ezért az e-mail-cím ellenőrzése mindig kötelező."
         },
         "AUTH_TYPES": {
@@ -1584,7 +1584,7 @@
           "ADD": "Ellenőrzött e-mail-cím hozzáadása",
           "EMAIL": "Kontakt e-mail-címe",
           "EMAIL_DESCRIPTION": "A kontakt ellenőrzött e-mail-címe",
-          "HELP": "A Tolzar tölti ki az e-mail-cím alapján, amelyet a kontakt egyszer használatos kóddal megerősített. A Captain nem láthatja és nem módosíthatja ezt az ügyfélbeszélgetésekben."
+          "HELP": "A Tolzar tölti ki az e-mail-cím alapján, amelyet a kontakt egyszer használatos kóddal megerősített. A Tolzar AI nem láthatja és nem módosíthatja ezt az ügyfélbeszélgetésekben."
         },
         "REQUEST_TEMPLATE": {
           "LABEL": "Request Body Template (Optional)",
@@ -1629,7 +1629,7 @@
         "ERROR_MESSAGE": "There was an error deleting the FAQ, please try again."
       },
       "SUGGESTIONS_BANNER": {
-        "TITLE": "Captain a gyakran ismétlődő ügyfélkérdésekből GYIK-javaslatokat állított össze.",
+        "TITLE": "Tolzar AI a gyakran ismétlődő ügyfélkérdésekből GYIK-javaslatokat állított össze.",
         "ACTION": "Javaslatok áttekintése"
       },
       "FORM_DESCRIPTION": "Add a question and its corresponding answer to the knowledge base and select the assistant it should be associated with.",
@@ -1666,8 +1666,8 @@
         "SUBTITLE": "FAQs help your assistant provide quick and accurate answers to questions from your customers. They can be generated automatically from your content or can be added manually.",
         "CLEAR_SEARCH": "Clear active filters",
         "FEATURE_SPOTLIGHT": {
-          "TITLE": "Captain FAQ",
-          "NOTE": "Captain FAQs detects common customer questions—whether missing from your knowledge base or frequently asked—and generates relevant FAQs to improve support. You can review each suggestion and decide whether to approve or reject it."
+          "TITLE": "Tolzar AI FAQ",
+          "NOTE": "Tolzar AI FAQs detects common customer questions—whether missing from your knowledge base or frequently asked—and generates relevant FAQs to improve support. You can review each suggestion and decide whether to approve or reject it."
         }
       }
     },
@@ -1684,7 +1684,7 @@
       "SAVE": "Save changes",
       "DETAILS": {
         "TITLE": "GYIK-javaslat áttekintése",
-        "DESCRIPTION": "Captain {count} beszélgetést csoportosított ebbe a javaslatba. Tekintse át a bizonyítékokat, és pontosítsa a GYIK-et jóváhagyás előtt. | Captain {count} beszélgetést csoportosított ebbe a javaslatba. Tekintse át a bizonyítékokat, és pontosítsa a GYIK-et jóváhagyás előtt.",
+        "DESCRIPTION": "Tolzar AI {count} beszélgetést csoportosított ebbe a javaslatba. Tekintse át a bizonyítékokat, és pontosítsa a GYIK-et jóváhagyás előtt. | Tolzar AI {count} beszélgetést csoportosított ebbe a javaslatba. Tekintse át a bizonyítékokat, és pontosítsa a GYIK-et jóváhagyás előtt.",
         "SOURCES": "Forrásbeszélgetések",
         "SOURCE_PROGRESS": "{visible}/{total}",
         "NO_SOURCES": "Nem található elérhető forrásbeszélgetés.",
@@ -1696,7 +1696,7 @@
         "CLEAR_SEARCH": "Keresés törlése"
       },
       "SUCCESS": {
-        "APPROVED": "A GYIK jóváhagyva, és hozzáadva a Captain tudásanyagához.",
+        "APPROVED": "A GYIK jóváhagyva, és hozzáadva a Tolzar AI tudásanyagához.",
         "DISMISSED": "Javaslat elvetve.",
         "SAVED": "Javaslat frissítve."
       },

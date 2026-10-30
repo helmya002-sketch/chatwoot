@@ -48,7 +48,7 @@
         "TITLE": "Fordítás",
         "NOTE": "Beszéljen az ügyfelek nyelvén, bármilyen nyelveket ismer is a csapata.",
         "CAPTAIN": {
-          "TITLE": "Captain",
+          "TITLE": "Tolzar AI",
           "NOTE": "Természetes hangzású AI fordítások, amelyek megőrzik az Ön hangnemét."
         },
         "GOOGLE": {
@@ -59,7 +59,7 @@
           "NOT_CONNECTED_HINT": "A Google Fordító még nincs csatlakoztatva."
         },
         "UPGRADE": {
-          "NOTE": "Váltson fizetős csomagra, hogy a Captain vagy a Google Fordító segítségével lefordíthassa a beszélgetéseket.",
+          "NOTE": "Váltson fizetős csomagra, hogy a Tolzar AI vagy a Google Fordító segítségével lefordíthassa a beszélgetéseket.",
           "BUTTON": "Frissítés"
         },
         "AUTO_TRANSLATE": {
@@ -211,7 +211,7 @@
       "GO_TO_MY_INBOX": "Ugrás a saját postafiókba",
       "GO_TO_CONVERSATION_DASHBOARD": "Ugrás a beszélgetések kezdőoldalára",
       "GO_TO_CONTACTS_DASHBOARD": "Ugrás a kapcsolatok kezdőoldalára",
-      "GO_TO_CAPTAIN": "Ugrás a Captainhez",
+      "GO_TO_CAPTAIN": "Ugrás a Tolzar AIhez",
       "GO_TO_CALLS_DASHBOARD": "Ugrás a hívások irányítópultjára",
       "GO_TO_CAMPAIGNS": "Ugrás a kampányokhoz",
       "GO_TO_HELP_CENTER": "Ugrás a súgóközpontba",

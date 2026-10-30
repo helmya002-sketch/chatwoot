@@ -20,18 +20,18 @@ export const notificationBubble = document.createElement('span');
 
 export const setBubbleText = bubbleText => {
   if (isExpandedView(window.$chatwoot.type)) {
-    const textNode = document.getElementById('woot-widget--expanded__text');
+    const textNode = document.getElementById('tz-widget--expanded__text');
     textNode.innerText = bubbleText;
   }
 };
 
 export const createBubbleIcon = ({ className, path, target }) => {
-  let bubbleClassName = `${className} woot-elements--${window.$chatwoot.position}`;
+  let bubbleClassName = `${className} tz-elements--${window.$chatwoot.position}`;
   const bubbleIcon = document.createElementNS(
     'http://www.w3.org/2000/svg',
     'svg'
   );
-  bubbleIcon.setAttributeNS(null, 'id', 'woot-widget-bubble-icon');
+  bubbleIcon.setAttributeNS(null, 'id', 'tz-widget-bubble-icon');
   bubbleIcon.setAttributeNS(null, 'width', '24');
   bubbleIcon.setAttributeNS(null, 'height', '24');
   bubbleIcon.setAttributeNS(null, 'viewBox', '0 0 240 240');
@@ -50,10 +50,10 @@ export const createBubbleIcon = ({ className, path, target }) => {
 
   if (isExpandedView(window.$chatwoot.type)) {
     const textNode = document.createElement('div');
-    textNode.id = 'woot-widget--expanded__text';
+    textNode.id = 'tz-widget--expanded__text';
     textNode.innerText = '';
     target.appendChild(textNode);
-    bubbleClassName += ' woot-widget--expanded';
+    bubbleClassName += ' tz-widget--expanded';
   }
 
   target.className = bubbleClassName;
@@ -63,9 +63,9 @@ export const createBubbleIcon = ({ className, path, target }) => {
 
 export const createBubbleHolder = hideMessageBubble => {
   if (hideMessageBubble) {
-    addClasses(bubbleHolder, 'woot-hidden');
+    addClasses(bubbleHolder, 'tz-hidden');
   }
-  addClasses(bubbleHolder, 'woot--bubble-holder');
+  addClasses(bubbleHolder, 'tz--bubble-holder');
   bubbleHolder.id = 'cw-bubble-holder';
   bubbleHolder.dataset.turboPermanent = true;
   body.appendChild(bubbleHolder);
@@ -90,9 +90,9 @@ export const onBubbleClick = (props = {}) => {
   const newIsOpen = toggleValue === undefined ? !isOpen : toggleValue;
   window.$chatwoot.isOpen = newIsOpen;
 
-  toggleClass(chatBubble, 'woot--hide');
-  toggleClass(closeBubble, 'woot--hide');
-  toggleClass(widgetHolder, 'woot--hide');
+  toggleClass(chatBubble, 'tz--hide');
+  toggleClass(closeBubble, 'tz--hide');
+  toggleClass(widgetHolder, 'tz--hide');
 
   handleBubbleToggle(newIsOpen);
 };
@@ -102,11 +102,11 @@ export const onClickChatBubble = () => {
 };
 
 export const addUnreadClass = () => {
-  const holderEl = document.querySelector('.woot-widget-holder');
+  const holderEl = document.querySelector('.tz-widget-holder');
   addClasses(holderEl, 'has-unread-view');
 };
 
 export const removeUnreadClass = () => {
-  const holderEl = document.querySelector('.woot-widget-holder');
+  const holderEl = document.querySelector('.tz-widget-holder');
   removeClasses(holderEl, 'has-unread-view');
 };

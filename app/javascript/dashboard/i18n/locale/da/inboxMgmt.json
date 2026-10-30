@@ -787,7 +787,7 @@
       },
       "TRANSCRIPTION": {
         "LABEL": "Transkribér optagelser",
-        "DESCRIPTION": "Konvertér hver optagelse til en tekstudskrift. Funktionen benytter Captain og kræver, at lydtranskribering er aktiveret for kontoen."
+        "DESCRIPTION": "Konvertér hver optagelse til en tekstudskrift. Funktionen benytter Tolzar AI og kræver, at lydtranskribering er aktiveret for kontoen."
       }
     },
     "WHATSAPP_CALLING": {

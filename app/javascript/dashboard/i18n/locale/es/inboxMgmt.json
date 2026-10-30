@@ -787,7 +787,7 @@
       },
       "TRANSCRIPTION": {
         "LABEL": "Transcribir grabaciones",
-        "DESCRIPTION": "Convierte cada grabación en una transcripción de texto. Usa Captain y requiere que la transcripción de audio esté habilitada para la cuenta."
+        "DESCRIPTION": "Convierte cada grabación en una transcripción de texto. Usa Tolzar AI y requiere que la transcripción de audio esté habilitada para la cuenta."
       }
     },
     "WHATSAPP_CALLING": {

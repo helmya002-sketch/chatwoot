@@ -332,7 +332,7 @@
     "ACTIVE": "Actif",
     "COMPANIES": "Entreprises",
     "ALL_COMPANIES": "Toutes les entreprises",
-    "CAPTAIN": "Captain",
+    "CAPTAIN": "Tolzar AI",
     "CALLS": "Appels",
     "CAPTAIN_ASSISTANTS": "Assistants",
     "CAPTAIN_OVERVIEW": "Vue d'ensemble",
@@ -421,7 +421,7 @@
     },
     "DOCS": "Lire la documentation",
     "SECURITY": "Sécurité",
-    "CAPTAIN_AI": "Captain",
+    "CAPTAIN_AI": "Tolzar AI",
     "CONVERSATION_WORKFLOW": "Flux de travail de la conversation"
   },
   "DATA_IMPORTS": {
@@ -536,11 +536,11 @@
     }
   },
   "CAPTAIN_SETTINGS": {
-    "TITLE": "Paramètres de Captain",
-    "DESCRIPTION": "Configurez les modèles et fonctionnalités d’IA de Captain. Captain utilise une facturation basée sur des crédits : chaque action consomme des crédits selon le modèle sélectionné.",
-    "LOADING": "Chargement de la configuration de Captain…",
-    "LINK_TEXT": "En savoir plus sur les crédits Captain",
-    "NOT_ENABLED": "Captain n’est pas activé pour votre compte. Passez à un plan supérieur pour accéder aux fonctionnalités de Captain.",
+    "TITLE": "Paramètres de Tolzar AI",
+    "DESCRIPTION": "Configurez les modèles et fonctionnalités d’IA de Tolzar AI. Tolzar AI utilise une facturation basée sur des crédits : chaque action consomme des crédits selon le modèle sélectionné.",
+    "LOADING": "Chargement de la configuration de Tolzar AI…",
+    "LINK_TEXT": "En savoir plus sur les crédits Tolzar AI",
+    "NOT_ENABLED": "Tolzar AI n’est pas activé pour votre compte. Passez à un plan supérieur pour accéder aux fonctionnalités de Tolzar AI.",
     "MODEL_CONFIG": {
       "TITLE": "Configuration du modèle",
       "DESCRIPTION": "Sélectionnez les modèles IA pour différentes fonctionnalités.",
@@ -575,8 +575,8 @@
       }
     },
     "API": {
-      "SUCCESS": "Les paramètres de Captain ont été mis à jour.",
-      "ERROR": "Impossible de mettre à jour les paramètres de Captain. Veuillez réessayer."
+      "SUCCESS": "Les paramètres de Tolzar AI ont été mis à jour.",
+      "ERROR": "Impossible de mettre à jour les paramètres de Tolzar AI. Veuillez réessayer."
     }
   },
   "BILLING_SETTINGS": {
@@ -611,12 +611,12 @@
       "BUTTON_TXT": "Accéder au portail de facturation"
     },
     "CAPTAIN": {
-      "TITLE": "Captain",
-      "DESCRIPTION": "Gérez l’utilisation et les crédits de Captain AI.",
+      "TITLE": "Tolzar AI",
+      "DESCRIPTION": "Gérez l’utilisation et les crédits de Tolzar AI AI.",
       "BUTTON_TXT": "Acheter plus de crédits",
       "DOCUMENTS": "Documents",
       "RESPONSES": "Responses",
-      "UPGRADE": "Captain n’est pas disponible avec le plan gratuit. Passez à un plan supérieur pour accéder aux assistants, à Copilot et à d’autres fonctionnalités.",
+      "UPGRADE": "Tolzar AI n’est pas disponible avec le plan gratuit. Passez à un plan supérieur pour accéder aux assistants, à Copilot et à d’autres fonctionnalités.",
       "REFRESH_CREDITS": "Actualiser"
     },
     "CHAT_WITH_US": {
@@ -660,7 +660,7 @@
     "TOPUP": {
       "BUY_CREDITS": "Acheter plus de crédits",
       "MODAL_TITLE": "Acheter des crédits AI",
-      "MODAL_DESCRIPTION": "Achetez des crédits supplémentaires pour Captain AI.",
+      "MODAL_DESCRIPTION": "Achetez des crédits supplémentaires pour Tolzar AI AI.",
       "CREDITS": "CRÉDITS",
       "ONE_TIME": "unique",
       "POPULAR": "Les plus populaires",

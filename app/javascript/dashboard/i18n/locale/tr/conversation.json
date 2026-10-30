@@ -113,7 +113,7 @@
     "REPLY_MESSAGE_NOT_FOUND": "Mesaj bulunamadı",
     "CAPTAIN_GENERATION": {
       "TITLE": "Bu yanıt nasıl oluşturuldu?",
-      "GENERATED_BY": "Captain tarafından oluşturuldu",
+      "GENERATED_BY": "Tolzar AI tarafından oluşturuldu",
       "LOADING": "Ayrıntılar yükleniyor…",
       "EMPTY": "Bu mesaj için oluşturma ayrıntısı bulunmuyor.",
       "TIMELINE": "Oluşturma adımları",
@@ -227,7 +227,7 @@
       "CANCEL": "İptal Et"
     },
     "SUGGESTIONS": {
-      "SUGGEST": "Suggest with Captain",
+      "SUGGEST": "Suggest with Tolzar AI",
       "EMPTY": "No new suggestions",
       "ACCEPT": "Kabul et",
       "APPLY_HINT": "Click to apply",
@@ -404,8 +404,8 @@
       },
       "REPORT_MESSAGE": {
         "LABEL": "Mesajı bildir",
-        "TITLE": "Captain mesajını bildir",
-        "DESCRIPTION": "Bu yapay zekâ yanıtıyla ilgili bir sorun mu buldunuz? Nelerin yanlış olduğunu bize bildirin; ekibimiz inceleyerek Captain'ın doğruluğunu geliştirmeye yardımcı olacaktır.",
+        "TITLE": "Tolzar AI mesajını bildir",
+        "DESCRIPTION": "Bu yapay zekâ yanıtıyla ilgili bir sorun mu buldunuz? Nelerin yanlış olduğunu bize bildirin; ekibimiz inceleyerek Tolzar AI'ın doğruluğunu geliştirmeye yardımcı olacaktır.",
         "PROBLEM_TYPE": "Sorun türü",
         "PROBLEM_TYPE_PLACEHOLDER": "Bir sorun türü seçin",
         "DESCRIPTION_LABEL": "Açıklama",
