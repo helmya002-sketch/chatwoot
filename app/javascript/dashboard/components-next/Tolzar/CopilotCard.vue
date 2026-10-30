@@ -11,7 +11,7 @@
  * nothing to show. "Why this reply?" (WhyPanel) reads the brain's /explain on demand: what the draft
  * is based on and which checks passed.
  */
-import { computed, ref, onBeforeUnmount } from 'vue';
+import { computed, ref, watch, onBeforeUnmount } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useStore, useMapGetter } from 'dashboard/composables/store';
 import { emitter } from 'shared/helpers/mitt';
@@ -19,6 +19,7 @@ import { BUS_EVENTS } from 'shared/constants/busEvents';
 import { copyTextToClipboard } from 'shared/helpers/clipboard';
 import { tolzarBrand } from './TolzarBranding.vue';
 import WhyPanel from './WhyPanel.vue';
+import { brainGet } from './tolzarBrainApi';
 
 const { t } = useI18n();
 const store = useStore();
@@ -51,8 +52,29 @@ const confidence = computed(() => {
   const c = Number(convAttrs.value.brain_confidence);
   return Number.isFinite(c) ? Math.round(c * 100) : null;
 });
-const suggestedReply = computed(() =>
-  (convAttrs.value.tolzar_suggested_reply || '').trim()
+// In shadow the brain writes no conversation fields (only its private note), so the card falls back
+// to the brain's latest decision for this conversation (/explain): its draft reply. Admins only; for
+// anyone else the request is refused and the card stays as it was.
+const accountId = useMapGetter('getCurrentAccountId');
+const decisionReply = ref('');
+const loadDecision = async id => {
+  decisionReply.value = '';
+  if (!id || convAttrs.value.tolzar_suggested_reply) return;
+  try {
+    const res = await brainGet(accountId.value, 'explain', {
+      conversation_id: id,
+    });
+    if (chat.value?.id === id && res?.ok) {
+      decisionReply.value = (res.explanation?.reply || '').trim();
+    }
+  } catch (e) {
+    decisionReply.value = '';
+  }
+};
+watch(() => chat.value?.id, loadDecision, { immediate: true });
+const suggestedReply = computed(
+  () =>
+    (convAttrs.value.tolzar_suggested_reply || '').trim() || decisionReply.value
 );
 const summary = computed(() =>
   (contactAttrs.value.tolzar_summary || '').trim()
