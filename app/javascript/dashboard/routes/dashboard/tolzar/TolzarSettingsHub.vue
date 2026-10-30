@@ -35,7 +35,7 @@ import {
   TONE_WARN,
   TONE_OK,
 } from 'dashboard/components-next/Tolzar/settings/tzClasses';
-import { fmtAt } from 'dashboard/components-next/Tolzar/tolzarTime';
+import { fmtAt, duration } from 'dashboard/components-next/Tolzar/tolzarTime';
 import { formatCount } from 'dashboard/components-next/Tolzar/tolzarUsage';
 import {
   STAGES,
@@ -67,7 +67,7 @@ import {
 // Shadow. Generic for any business.
 const accountId = useMapGetter('getCurrentAccountId');
 const getAccount = useMapGetter('accounts/getAccount');
-const { t: $t } = useI18n();
+const { t: $t, te } = useI18n();
 const { resolvedLocale } = useLocale();
 const route = useRoute();
 const router = useRouter();
@@ -130,6 +130,14 @@ const zone = () => {
 };
 const at = iso => fmtAt(iso, resolvedLocale.value);
 const count = v => formatCount(v, resolvedLocale.value);
+// Usage totals: the brain adds fields over time; unknown keys get a readable label, never a raw i18n key.
+const usageLabel = k =>
+  te(`TOLZAR_SETTINGS.USAGE.${k}`)
+    ? $t(`TOLZAR_SETTINGS.USAGE.${k}`)
+    : String(k).replace(/_/g, ' ').replace(/^./, c => c.toUpperCase());
+// Millisecond totals read as durations ("3 hr 12 min"), counts as numbers.
+const usageValue = (k, v) =>
+  /_ms$/.test(k) ? duration(Number(v) / 1000, resolvedLocale.value) : count(v);
 
 const loadAttributes = () =>
   window.axios
@@ -522,8 +530,8 @@ onMounted(() => {
           </div>
           <div v-if="current === 'usage' && data.total" class="grid grid-cols-2 gap-2 md:grid-cols-5">
             <div v-for="(v, k) in data.total" :key="k" class="p-3 rounded-lg bg-n-alpha-1">
-              <div class="text-xl font-bold text-n-slate-12">{{ count(v) }}</div>
-              <div class="text-xs text-n-slate-10">{{ $t(`TOLZAR_SETTINGS.USAGE.${k}`) }}</div>
+              <div class="text-xl font-bold text-n-slate-12">{{ usageValue(k, v) }}</div>
+              <div class="text-xs break-words text-n-slate-10">{{ usageLabel(k) }}</div>
             </div>
           </div>
 

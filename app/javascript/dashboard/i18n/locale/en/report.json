@@ -1170,7 +1170,12 @@
       "model_calls": "Model calls",
       "input_tokens": "Tokens in",
       "output_tokens": "Tokens out",
-      "workflow_runs": "Workflow runs"
+      "workflow_runs": "Workflow runs",
+      "repair_calls": "Repair calls",
+      "queue_ms": "Queue time",
+      "prefill_ms": "Reading time",
+      "decode_ms": "Writing time",
+      "cached_tokens": "Tokens from cache"
     },
     "EXPORT": {
       "PREPARE": "Prepare export",

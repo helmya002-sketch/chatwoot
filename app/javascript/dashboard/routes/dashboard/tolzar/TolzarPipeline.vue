@@ -121,7 +121,8 @@ const valueLabel = (value, n, m, all) =>
 const colValueLabel = key => {
   const v = colValue(key);
   const c = col(key);
-  if (!v && colLoadedAll(key)) return '';
+  // No deal value on any loaded card: say nothing rather than "≥  (15 of 260 loaded)".
+  if (!v) return '';
   return valueLabel(
     v,
     c.contacts?.length || 0,
