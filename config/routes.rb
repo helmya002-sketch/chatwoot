@@ -882,6 +882,11 @@ Rails.application.routes.draw do
         post :deliver
         post :suppression
       end
+      # Tolzar billing v1: plan, trial and paid-until per workspace (manual until XPay checkout).
+      resource :billing, only: [:show] do
+        post :set_plan
+        post :extend_trial
+      end
       # Tolzar feature board moderation, statuses, merges and changelog (singular: out of the Administrate list).
       resource :feedback, only: [:show] do
         post :moderate

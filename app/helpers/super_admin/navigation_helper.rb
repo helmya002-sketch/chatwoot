@@ -65,7 +65,9 @@ module SuperAdmin::NavigationHelper
       { label: t('super_admin.newsletter.title'), url: super_admin_newsletter_path, icon: 'i-lucide-mail',
         active: controller_name == 'newsletters', group: instance },
       { label: t('super_admin.feedback.title'), url: super_admin_feedback_path, icon: 'i-lucide-lightbulb',
-        active: controller_name == 'feedbacks', group: instance }
+        active: controller_name == 'feedbacks', group: instance },
+      { label: t('super_admin.billing.title'), url: super_admin_billing_path, icon: 'i-lucide-credit-card',
+        active: controller_name == 'billings', group: instance }
     ]
   end
 

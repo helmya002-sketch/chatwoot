@@ -121,3 +121,33 @@ RSpec.describe 'Tolzar billing v1: AI off while paused' do
     expect(Tolzar::Subscription.ai_paused?(account.id)).to be(false)
   end
 end
+
+RSpec.describe 'Tolzar billing v1: Super Admin page', type: :request do
+  let(:super_admin) { create(:super_admin) }
+  let(:account) { create(:account, name: 'Trial Shop') }
+
+  before { sign_in(super_admin, scope: :super_admin) }
+
+  it 'lists workspaces with their plan and state' do
+    account
+    get '/super_admin/billing'
+    expect(response).to have_http_status(:success)
+    expect(response.body).to include('Trial Shop', 'trialing')
+  end
+
+  it 'sets a paid plan until a date and extends a trial' do
+    post '/super_admin/billing/set_plan', params: { account_id: account.id, plan: 'team', paid_until: '2027-01-31', currency: 'EGP' }
+    sub = Tolzar::Subscription.find_by(account_id: account.id)
+    expect(sub).to have_attributes(plan: 'team', seat_limit: 5, currency: 'EGP')
+    expect(sub.paid_until.to_date).to eq(Date.new(2027, 1, 31))
+
+    other = create(:account)
+    post '/super_admin/billing/extend_trial', params: { account_id: other.id, days: 7 }
+    expect(Tolzar::Subscription.find_by(account_id: other.id).trial_ends_at).to be > 36.days.from_now
+  end
+
+  it 'refuses a plan without a valid date' do
+    post '/super_admin/billing/set_plan', params: { account_id: account.id, plan: 'team', paid_until: 'soon' }
+    expect(Tolzar::Subscription.find_by(account_id: account.id).plan).to eq('trial')
+  end
+end
