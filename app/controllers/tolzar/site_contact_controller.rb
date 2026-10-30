@@ -1,5 +1,6 @@
 # Tolzar: the marketing site's trial / contact form (owner's ask via the Oracle, 30 Oct 2026).
-#   POST /tolzar/site/contact   name, email (required), company, phone, topic, message; `website` is the honeypot
+#   POST /tolzar/site/contact   name, email (required), company, company_url, industry, volume, phone, topic, lang,
+#                               message; `website` is the honeypot
 # Each request lands as a new conversation in one API inbox of Tolzar's own workspace (TOLZAR_CONTACT_INBOX_ID),
 # from a contact found or created by email, so trial requests are answered in Tolzar like any other chat.
 # No login, no CSRF token (a static site posts it): the honeypot answers "thanks" and stores nothing, and each IP
@@ -14,7 +15,8 @@ class Tolzar::SiteContactController < ActionController::Base
   PER_IP_HOUR = 5
   GLOBAL_DAY = 300
   TOPICS = %w[trial demo contact pricing partner other].freeze
-  LIMITS = { name: 100, email: 255, company: 150, phone: 40, message: 2000 }.freeze
+  LIMITS = { name: 100, email: 255, company: 150, company_url: 255, industry: 80, volume: 40, phone: 40, lang: 10,
+             message: 2000 }.freeze
   EMAIL = URI::MailTo::EMAIL_REGEXP
 
   def create
@@ -59,7 +61,8 @@ class Tolzar::SiteContactController < ActionController::Base
     ).perform
     conversation = Conversation.create!(account_id: inbox.account_id, inbox: inbox, contact: contact_inbox.contact,
                                         contact_inbox: contact_inbox,
-                                        additional_attributes: { source: 'tolzar_site_form', topic: form[:topic] })
+                                        additional_attributes: { source: 'tolzar_site_form', topic: form[:topic],
+                                                                 lang: form[:lang].presence }.compact)
     conversation.messages.create!(account_id: inbox.account_id, inbox: inbox, message_type: :incoming,
                                   sender: contact_inbox.contact, content: message_text(form))
   end
@@ -69,6 +72,9 @@ class Tolzar::SiteContactController < ActionController::Base
     lines << "Name: #{form[:name]}" if form[:name].present?
     lines << "Email: #{form[:email]}"
     lines << "Company: #{form[:company]}" if form[:company].present?
+    lines << "Website: #{form[:company_url]}" if form[:company_url].present?
+    lines << "Industry: #{form[:industry]}" if form[:industry].present?
+    lines << "Monthly volume: #{form[:volume]}" if form[:volume].present?
     lines << "Phone: #{form[:phone]}" if form[:phone].present?
     lines << '' << form[:message] if form[:message].present?
     lines.join("\n")

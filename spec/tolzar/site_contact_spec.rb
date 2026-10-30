@@ -29,6 +29,15 @@ RSpec.describe 'Tolzar site contact form', type: :request do
     expect(message.content).to include('Website form: trial', 'Company: Blue Hotel', 'We want a trial.')
   end
 
+  it 'keeps the trial form extras: website, industry, monthly volume and language' do
+    post '/tolzar/site/contact', params: form.merge(company_url: 'https://blue.example', industry: 'Other',
+                                                    volume: 'Under 500', lang: 'de')
+    conversation = inbox.conversations.last
+    expect(conversation.additional_attributes).to include('lang' => 'de')
+    expect(conversation.messages.last.content).to include('Website: https://blue.example', 'Industry: Other',
+                                                          'Monthly volume: Under 500')
+  end
+
   it 'answers fetch() with JSON and CORS for an allowed origin only' do
     post '/tolzar/site/contact', params: form.to_json,
                                  headers: { 'Content-Type' => 'application/json', 'Origin' => 'https://tolzar.com' }
