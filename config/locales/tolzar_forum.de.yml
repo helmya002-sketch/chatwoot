@@ -1,0 +1,14 @@
+de:
+  tolzar:
+    forum_oauth:
+      title: 'Tolzar Community'
+      sign_in:
+        text: 'Melden Sie sich zuerst bei Tolzar an. Die Community nutzt Ihr Tolzar-Konto.'
+        login: 'Bei Tolzar anmelden'
+        retry: 'Ich bin angemeldet, weiter'
+      consent:
+        text: Weiter zur Tolzar Community als %{name}.
+        shared: Die Community erhält Ihren Anzeigenamen, Ihre Sprache und Ihre E-Mail-Adresse. Ihre E-Mail-Adresse wird dort nie angezeigt.
+        button: Weiter
+      not_eligible: 'Die Community steht Tolzar-Nutzern offen. Erstellen Sie zuerst einen Arbeitsbereich oder treten Sie einem bei.'
+      error: 'Dieser Anmeldelink ist ungültig. Bitte beginnen Sie erneut auf der Community-Seite.'
