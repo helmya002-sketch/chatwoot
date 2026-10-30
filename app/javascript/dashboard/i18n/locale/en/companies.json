@@ -191,8 +191,8 @@
         "ANY": "Any"
       },
       "ENRICHMENT_UPGRADE": {
-        "TITLE": "Enrich company profiles on the Business plan",
-        "DESCRIPTION": "Automatically fill in a company's description, industry, size, location and social profiles from its domain. Available on the Business and Enterprise plans.",
+        "TITLE": "Enrich company profiles",
+        "DESCRIPTION": "Fill in a company's description, industry, size, location and social profiles from its domain. Not available on your plan. Contact Tolzar to enable it.",
         "UPGRADE": "See plans"
       }
     },
@@ -204,8 +204,8 @@
     },
     "PAYWALL": {
       "TITLE": "Upgrade to use Companies",
-      "AVAILABLE_ON": "Companies is not available on the free plan.",
-      "UPGRADE_PROMPT": "Upgrade your plan to group contacts by company, see every conversation with an account and keep company details in one place.",
+      "AVAILABLE_ON": "Not available on your plan. Contact Tolzar to enable it.",
+      "UPGRADE_PROMPT": "Group contacts by company and keep company details in one place.",
       "UPGRADE_NOW": "Upgrade now",
       "CANCEL_ANYTIME": "You can change or cancel your plan anytime"
     }

@@ -684,7 +684,7 @@
       "UPDATED_BY_LABEL": "Updated by",
       "PAYWALL": {
         "TITLE": "Upgrade to add review notes",
-        "AVAILABLE_ON": "The review notes feature is only available in the Business and Enterprise plans.",
+        "AVAILABLE_ON": "Not available on your plan. Contact Tolzar to enable it.",
         "UPGRADE_PROMPT": "Add internal context to every CSAT response with review notes. Capture what really happened, spot patterns faster, and make better decisions from your feedback.",
         "UPGRADE_NOW": "Upgrade now",
         "CANCEL_ANYTIME": "You can change or cancel your plan anytime"

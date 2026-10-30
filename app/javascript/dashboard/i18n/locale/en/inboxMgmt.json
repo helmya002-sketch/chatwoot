@@ -106,15 +106,15 @@
         },
         "CHANNEL_WELCOME_TITLE": {
           "LABEL": "Welcome Heading",
-          "PLACEHOLDER": "Hi there !"
+          "PLACEHOLDER": "Hello"
         },
         "CHANNEL_WELCOME_TAGLINE": {
           "LABEL": "Welcome Tagline",
-          "PLACEHOLDER": "We make it simple to connect with us. Ask us anything, or share your feedback."
+          "PLACEHOLDER": "Ask us anything. We reply here."
         },
         "CHANNEL_GREETING_MESSAGE": {
           "LABEL": "Channel greeting message",
-          "PLACEHOLDER": "Acme Inc typically replies in a few hours."
+          "PLACEHOLDER": "We usually answer within a few hours."
         },
         "CHANNEL_GREETING_TOGGLE": {
           "LABEL": "Enable channel greeting",
@@ -787,7 +787,7 @@
       },
       "TRANSCRIPTION": {
         "LABEL": "Transcribe recordings",
-        "DESCRIPTION": "Turn each recording into a text transcript. Uses Captain and requires audio transcription to be enabled for the account."
+        "DESCRIPTION": "Turn each recording into a text transcript. Uses Tolzar AI and requires audio transcription to be enabled for the account."
       }
     },
     "WHATSAPP_CALLING": {
@@ -1136,7 +1136,7 @@
       "SENDER_NAME_SECTION_TEXT": "Enable/Disable showing Agent's name in email, if disabled it will show business name",
       "ENABLE_CONTINUITY_VIA_EMAIL": "Enable conversation continuity via email",
       "ENABLE_CONTINUITY_VIA_EMAIL_SUB_TEXT": "Conversations will continue over email if the contact email address is available.",
-      "ENABLE_CONTINUITY_VIA_EMAIL_DISABLED_TEXT": "This feature is available on a paid plan. Upgrade to enable conversation continuity via email.",
+      "ENABLE_CONTINUITY_VIA_EMAIL_DISABLED_TEXT": "Not available on your plan. Contact Tolzar to enable it.",
       "LOCK_TO_SINGLE_CONVERSATION": "Conversation Routing",
       "LOCK_TO_SINGLE_CONVERSATION_SUB_TEXT": "Configure conversation creation for existing contacts",
       "INBOX_UPDATE_TITLE": "Inbox Settings",
@@ -1271,12 +1271,12 @@
       "UPDATE_PRE_CHAT_FORM_SETTINGS": "Update Pre Chat Form Settings"
     },
     "HELP_CENTER": {
-      "LABEL": "Help Center",
-      "PLACEHOLDER": "Select Help Center",
-      "SELECT_PLACEHOLDER": "Select Help Center",
+      "LABEL": "Knowledge base",
+      "PLACEHOLDER": "Select Knowledge base",
+      "SELECT_PLACEHOLDER": "Select Knowledge base",
       "NONE": "None",
-      "REMOVE": "Remove Help Center",
-      "SUB_TEXT": "Attach a Help Center with the inbox"
+      "REMOVE": "Remove Knowledge base",
+      "SUB_TEXT": "Attach a knowledge base to this inbox"
     },
     "AUTO_ASSIGNMENT": {
       "MAX_ASSIGNMENT_LIMIT": "Auto assignment limit",
@@ -1310,8 +1310,8 @@
         "ROUND_ROBIN": "Round robin",
         "BALANCED": "Balanced assignment"
       },
-      "UPGRADE_PROMPT": "Custom assignment policies are available on the Business plan",
-      "UPGRADE_TO_BUSINESS": "Upgrade to Business",
+      "UPGRADE_PROMPT": "Not available on your plan. Contact Tolzar to enable it.",
+      "UPGRADE_TO_BUSINESS": "Contact Tolzar",
       "DEFAULT_POLICY_LINKED": "Default policy linked",
       "DEFAULT_POLICY_DESCRIPTION": "Link a custom assignment policy to customize how conversations are assigned to agents in this inbox.",
       "LINK_EXISTING_POLICY": "Link existing policy",
@@ -1541,11 +1541,11 @@
         },
         "WELCOME_HEADING": {
           "LABEL": "Welcome Heading",
-          "PLACE_HOLDER": "Hi there!"
+          "PLACE_HOLDER": "Hello"
         },
         "WELCOME_TAGLINE": {
           "LABEL": "Welcome Tagline",
-          "PLACE_HOLDER": "We make it simple to connect with us. Ask us anything, or share your feedback."
+          "PLACE_HOLDER": "Ask us anything. We reply here."
         },
         "REPLY_TIME": {
           "LABEL": "Reply Time",
@@ -1587,9 +1587,9 @@
         "CHAT": "Chat mode"
       },
       "REPLY_TIME": {
-        "IN_A_FEW_MINUTES": "Typically replies in a few minutes",
-        "IN_A_FEW_HOURS": "Typically replies in a few hours",
-        "IN_A_DAY": "Typically replies in a day"
+        "IN_A_FEW_MINUTES": "Usually answers within a few minutes",
+        "IN_A_FEW_HOURS": "Usually answers within a few hours",
+        "IN_A_DAY": "Usually answers within a day"
       },
       "FOOTER": {
         "START_CONVERSATION_BUTTON_TEXT": "Start Conversation",
@@ -1597,8 +1597,8 @@
       },
       "BODY": {
         "TEAM_AVAILABILITY": {
-          "ONLINE": "We are Online",
-          "OFFLINE": "We are away at the moment"
+          "ONLINE": "Online now",
+          "OFFLINE": "Away right now"
         },
         "USER_MESSAGE": "Hi",
         "AGENT_MESSAGE": "Hello"
