@@ -651,5 +651,27 @@
   },
   "GALLERY_VIEW": {
     "ERROR_DOWNLOADING": "Unable to download attachment. Please try again"
+  },
+  "TOLZAR_COMMENT_CONTEXT": {
+    "HEADING": "Comment on a {type} on {platform}",
+    "LOADING": "Loading the post…",
+    "UNAVAILABLE": "Meta doesn't show this post any more (deleted or no permission).",
+    "NO_TEXT": "This post has no text.",
+    "MORE": "Show more",
+    "LESS": "Show less",
+    "OPEN": "Open on {platform}",
+    "PICTURE_ALT": "Picture of the post",
+    "PLATFORM": {
+      "FACEBOOK": "Facebook",
+      "INSTAGRAM": "Instagram"
+    },
+    "TYPE": {
+      "POST": "post",
+      "PHOTO": "photo",
+      "VIDEO": "video",
+      "REEL": "reel",
+      "STORY": "story",
+      "AD": "ad"
+    }
   }
 }

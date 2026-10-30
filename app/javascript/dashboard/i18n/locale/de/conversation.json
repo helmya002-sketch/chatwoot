@@ -651,5 +651,27 @@
   },
   "GALLERY_VIEW": {
     "ERROR_DOWNLOADING": "Anhang konnte nicht heruntergeladen werden. Bitte versuche es erneut"
+  },
+  "TOLZAR_COMMENT_CONTEXT": {
+    "HEADING": "Kommentar zu: {type} auf {platform}",
+    "LOADING": "Beitrag wird geladen…",
+    "UNAVAILABLE": "Meta zeigt diesen Beitrag nicht mehr (gelöscht oder keine Berechtigung).",
+    "NO_TEXT": "Dieser Beitrag hat keinen Text.",
+    "MORE": "Mehr anzeigen",
+    "LESS": "Weniger anzeigen",
+    "OPEN": "Auf {platform} öffnen",
+    "PICTURE_ALT": "Bild des Beitrags",
+    "PLATFORM": {
+      "FACEBOOK": "Facebook",
+      "INSTAGRAM": "Instagram"
+    },
+    "TYPE": {
+      "POST": "Beitrag",
+      "PHOTO": "Foto",
+      "VIDEO": "Video",
+      "REEL": "Reel",
+      "STORY": "Story",
+      "AD": "Anzeige"
+    }
   }
 }

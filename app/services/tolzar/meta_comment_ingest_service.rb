@@ -88,7 +88,11 @@ class Tolzar::MetaCommentIngestService
       inbox: @inbox, source_id: "comment:#{@platform}:#{author_id}", contact_attributes: { name: author_name }
     ).perform
     conversation = thread_for(contact_inbox) || new_thread(contact_inbox)
-    create_message(conversation, :incoming, contact_inbox.contact)
+    message = create_message(conversation, :incoming, contact_inbox.contact)
+    # The comment it answers, read after the commit (Tolzar::MetaCommentContextJob).
+    return unless parent_id && message.content_attributes['in_reply_to'].blank?
+
+    Tolzar::MetaCommentContextJob.set(wait: 2.seconds).perform_later(conversation.id, message.id)
   end
 
   # A reply by the page goes into the thread of the comment it answers; otherwise it is not ours to show.
@@ -112,6 +116,8 @@ class Tolzar::MetaCommentIngestService
       additional_attributes: { 'tolzar_comment' => thread_attributes }
     )
     conversation.update_labels([LABEL])
+    # What the comment is about (the post, ad, reel or story), fetched outside the webhook's lock.
+    Tolzar::MetaCommentContextJob.set(wait: 2.seconds).perform_later(conversation.id)
     conversation
   end
 
@@ -121,11 +127,15 @@ class Tolzar::MetaCommentIngestService
       .compact
   end
 
+  # A reply to a comment we hold quotes it like any reply (in_reply_to); one we don't hold is read by
+  # Tolzar::MetaCommentContextJob.
   def create_message(conversation, type, sender)
+    held_parent = parent_id && find_message(parent_id)
     conversation.messages.create!(
       account_id: @inbox.account_id, inbox_id: @inbox.id, message_type: type, sender: sender,
       content: text.presence || '(comment with no text)', source_id: "comment:#{comment_id}",
-      content_attributes: { 'tolzar_comment_id' => comment_id, 'tolzar_comment_parent_id' => parent_id }.compact
+      content_attributes: { 'tolzar_comment_id' => comment_id, 'tolzar_comment_parent_id' => parent_id,
+                            'in_reply_to' => held_parent&.id }.compact
     )
   end
 

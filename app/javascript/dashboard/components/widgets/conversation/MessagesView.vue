@@ -32,6 +32,7 @@ import CollapsedReplyBar from './CollapsedReplyBar.vue';
 import ResizableEditorWrapper from './ResizableEditorWrapper.vue';
 import ReferralBubble from 'dashboard/components-next/Conversation/ReferralBubble.vue';
 import TolzarCopilotCard from 'next/Tolzar/CopilotCard.vue';
+import TolzarCommentContextCard from 'next/Tolzar/CommentContextCard.vue';
 
 // stores and apis
 import { mapGetters } from 'vuex';
@@ -86,6 +87,7 @@ export default {
     ResizableEditorWrapper,
     ReferralBubble,
     TolzarCopilotCard,
+    TolzarCommentContextCard,
   },
   mixins: [inboxMixin],
   setup() {
@@ -241,6 +243,10 @@ export default {
     },
     referralData() {
       return this.currentChat?.additional_attributes?.referral || null;
+    },
+    // Tolzar: the post / ad / reel a Facebook or Instagram comment thread is about.
+    tolzarComment() {
+      return this.currentChat?.additional_attributes?.tolzar_comment || null;
     },
     readMessages() {
       return getReadMessages(
@@ -600,6 +606,10 @@ export default {
           @navigate="openConversation(olderConversation)"
         />
         <ReferralBubble v-if="referralData" :referral="referralData" />
+        <TolzarCommentContextCard
+          v-if="tolzarComment"
+          :comment="tolzarComment"
+        />
         <li v-if="hasMoreCampaignHistory" class="flex justify-center py-3">
           <NextButton
             :label="$t('CAMPAIGN.HISTORY.LOAD_MORE')"
