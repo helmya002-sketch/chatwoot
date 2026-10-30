@@ -1,0 +1,11 @@
+<p>Hello,</p>
+
+{% if meta['level'] == 'over' %}
+<p>Your workspace <b>{{ meta['workspace'] }}</b> has used <b>{{ meta['used'] }}</b> AI replies this month ({{ meta['month'] }}), past the <b>{{ meta['allowance'] }}</b> included in your {{ meta['plan'] }} plan's fair use.</p>
+{% else %}
+<p>Your workspace <b>{{ meta['workspace'] }}</b> has used <b>{{ meta['used'] }}</b> of the <b>{{ meta['allowance'] }}</b> AI replies included in your {{ meta['plan'] }} plan this month ({{ meta['month'] }}).</p>
+{% endif %}
+
+<p>Nothing changes for your customers: the AI keeps answering, and nothing is charged automatically. If your volume stays at this level, we will get in touch about the plan that fits it.</p>
+
+<p><a href="{{ action_url }}">See your usage</a></p>

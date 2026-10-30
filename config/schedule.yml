@@ -113,3 +113,10 @@ tolzar_subscription_purge_job:
   cron: '45 5 * * * UTC'
   class: 'Tolzar::SubscriptionPurgeJob'
   queue: housekeeping
+
+# Tolzar: executed hourly at minute 17
+# fair use per plan: AI replies this month vs the plan's allowance; notices only (only with TOLZAR_FAIR_USE=true)
+tolzar_fair_use_job:
+  cron: '17 * * * * UTC'
+  class: 'Tolzar::FairUseJob'
+  queue: low

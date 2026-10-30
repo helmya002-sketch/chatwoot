@@ -168,6 +168,12 @@
     "LIMITS_UPGRADE": "Your account has exceeded the usage limits, please upgrade your plan to continue using Tolzar",
     "OPEN_BILLING": "Open billing"
   },
+  "TOLZAR_FAIR_USE": {
+    "NEAR": "This workspace has used {used} of the {allowance} AI replies in its plan this month. The AI keeps answering, and nothing is charged automatically.",
+    "OVER": "This workspace is past the {allowance} AI replies in its plan this month ({used} so far). The AI keeps answering, and nothing is charged automatically; we will contact you about the right plan.",
+    "SEE_USAGE": "See usage",
+    "DISMISS": "Dismiss"
+  },
   "FORMS": {
     "MULTISELECT": {
       "ENTER_TO_SELECT": "Press enter to select",
