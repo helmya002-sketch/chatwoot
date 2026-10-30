@@ -6,5 +6,9 @@ en:
         text: 'Sign in to Tolzar first. The community uses your Tolzar account.'
         login: 'Sign in to Tolzar'
         retry: 'I am signed in, continue'
+      consent:
+        text: Continue to the Tolzar Community as %{name}.
+        shared: The community gets your display name, language and email. Your email is never shown there.
+        button: Continue
       not_eligible: 'The community is open to people who use Tolzar. Create or join a workspace first.'
       error: 'This sign-in link is not valid. Start again from the community page.'

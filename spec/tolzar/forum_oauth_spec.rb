@@ -1,78 +1,159 @@
 require 'rails_helper'
 
 # Tolzar: the app as the community forum's OAuth2 provider (one client, Tolzar users only, no forum registration).
+# Red-team suite for the Oracle's guard (30 Oct): every example is an attack or a guard that must hold.
 RSpec.describe 'Tolzar forum OAuth', type: :request do
   let(:account) { create(:account) }
   let(:user) { create(:user, account: account) }
   let(:redirect) { 'https://community.example.test/answer/api/v1/connector/redirect/basic' }
+  let(:secret) { 's' * 40 }
   let(:env) do
-    { TOLZAR_FORUM_OAUTH_CLIENT_ID: 'forum', TOLZAR_FORUM_OAUTH_CLIENT_SECRET: 's' * 40,
-      TOLZAR_FORUM_OAUTH_REDIRECT_URI: redirect }
+    { TOLZAR_FORUM_OAUTH_CLIENT_ID: 'forum', TOLZAR_FORUM_OAUTH_CLIENT_SECRET: secret, TOLZAR_FORUM_OAUTH_REDIRECT_URI: redirect }
   end
-  let(:authorize_params) { { response_type: 'code', client_id: 'forum', redirect_uri: redirect, state: 'xyz' } }
+  let(:code_verifier) { 'v' * 64 }
+  let(:code_challenge) { Base64.urlsafe_encode64(Digest::SHA256.digest(code_verifier), padding: false) }
+  let(:authorize_params) do
+    { response_type: 'code', client_id: 'forum', redirect_uri: redirect, state: 'xyz',
+      code_challenge: code_challenge, code_challenge_method: 'S256' }
+  end
 
   around { |example| with_modified_env(env) { example.run } }
+  before { Redis::Alfred.delete('tolzar:forum_oauth:token:127.0.0.1') } # the /token limit is per address
 
   def sign_in_dashboard(as)
     token = as.create_new_auth_token
     cookies['cw_d_session_info'] = { 'access-token' => token['access-token'], 'client' => token['client'], 'uid' => token['uid'] }.to_json
   end
 
-  def code_from(location)
-    Rack::Utils.parse_query(URI(location).query)['code']
+  def approve(extra = {})
+    post '/tolzar/oauth/authorize', params: authorize_params.merge(extra)
+    Rack::Utils.parse_query(URI(response.location).query)['code'] if response.redirect?
   end
 
-  it 'refuses a wrong client or redirect without redirecting anywhere' do
-    get '/tolzar/oauth/authorize', params: authorize_params.merge(redirect_uri: 'https://evil.example/cb')
-    expect(response).to have_http_status(:bad_request)
-    get '/tolzar/oauth/authorize', params: authorize_params.merge(client_id: 'other')
-    expect(response).to have_http_status(:bad_request)
-  end
-
-  it 'asks a signed-out visitor to sign in to Tolzar, and refuses a user without a workspace' do
-    get '/tolzar/oauth/authorize', params: authorize_params
-    expect(response).to have_http_status(:unauthorized)
-
-    sign_in_dashboard(create(:user))
-    get '/tolzar/oauth/authorize', params: authorize_params
-    expect(response).to have_http_status(:forbidden)
-  end
-
-  it 'runs the code flow once: code -> token -> userinfo; the code is single-use' do
-    sign_in_dashboard(user)
-    get '/tolzar/oauth/authorize', params: authorize_params
-    expect(response).to have_http_status(:redirect)
-    expect(response.location).to start_with(redirect).and include('state=xyz')
-    code = code_from(response.location)
-
+  def exchange(code, extra = {})
     post '/tolzar/oauth/token', params: { grant_type: 'authorization_code', code: code, redirect_uri: redirect,
-                                          client_id: 'forum', client_secret: 's' * 40 }
-    expect(response).to have_http_status(:ok)
-    access = response.parsed_body['access_token']
-
-    get '/tolzar/oauth/userinfo', headers: { 'Authorization' => "Bearer #{access}" }
-    expect(response.parsed_body).to include('id' => user.id.to_s, 'email' => user.email, 'username' => "u#{user.id}")
-
-    post '/tolzar/oauth/token', params: { grant_type: 'authorization_code', code: code, redirect_uri: redirect,
-                                          client_id: 'forum', client_secret: 's' * 40 }
-    expect(response).to have_http_status(:bad_request)
+                                          client_id: 'forum', client_secret: secret, code_verifier: code_verifier }.merge(extra)
   end
 
-  it 'refuses a wrong client secret, a forged bearer and an expired token' do
-    sign_in_dashboard(user)
-    get '/tolzar/oauth/authorize', params: authorize_params
-    code = code_from(response.location)
-    post '/tolzar/oauth/token', params: { grant_type: 'authorization_code', code: code, redirect_uri: redirect,
-                                          client_id: 'forum', client_secret: 'wrong' }
-    expect(response).to have_http_status(:unauthorized)
+  describe 'guard 2: exact redirect URI, state passed through' do
+    it 'refuses a foreign, prefixed or suffixed redirect without redirecting anywhere' do
+      sign_in_dashboard(user)
+      ["https://evil.example/cb", "#{redirect}/../evil", "#{redirect}x", redirect.sub('https', 'http')].each do |uri|
+        get '/tolzar/oauth/authorize', params: authorize_params.merge(redirect_uri: uri)
+        expect(response).to have_http_status(:bad_request)
+        expect(response.location).to be_nil
+      end
+    end
 
-    get '/tolzar/oauth/userinfo', headers: { 'Authorization' => 'Bearer forged' }
-    expect(response).to have_http_status(:unauthorized)
+    it 'returns the state unchanged' do
+      sign_in_dashboard(user)
+      approve
+      expect(response.location).to start_with("#{redirect}?").and include('state=xyz')
+    end
+  end
 
-    old = Rails.application.message_verifier(:tolzar_forum_userinfo).generate(user.id, purpose: :tolzar_forum_userinfo, expires_in: 10.minutes)
-    travel 11.minutes do
-      get '/tolzar/oauth/userinfo', headers: { 'Authorization' => "Bearer #{old}" }
+  describe 'guard 4: an explicit click, never framed, CSRF on the click' do
+    it 'shows a consent page on GET (no code issued) that cannot be framed' do
+      sign_in_dashboard(user)
+      get '/tolzar/oauth/authorize', params: authorize_params
+      expect(response).to have_http_status(:ok)
+      expect(response.headers['X-Frame-Options']).to eq('DENY')
+      expect(response.headers['Content-Security-Policy']).to include("frame-ancestors 'none'")
+      expect(response.body).to include('name="code_challenge"')
+    end
+
+    it 'refuses the click without the CSRF token (a cross-site auto-submit)' do
+      sign_in_dashboard(user)
+      ActionController::Base.allow_forgery_protection = true
+      expect { post '/tolzar/oauth/authorize', params: authorize_params }.to raise_error(ActionController::InvalidAuthenticityToken)
+    ensure
+      ActionController::Base.allow_forgery_protection = false
+    end
+
+    it 'asks a signed-out visitor to sign in and refuses a user without a workspace' do
+      get '/tolzar/oauth/authorize', params: authorize_params
       expect(response).to have_http_status(:unauthorized)
+      sign_in_dashboard(create(:user))
+      get '/tolzar/oauth/authorize', params: authorize_params
+      expect(response).to have_http_status(:forbidden)
+    end
+  end
+
+  describe 'guard 1: PKCE S256 and a constant-time client secret' do
+    it 'refuses an authorize request without S256 PKCE' do
+      sign_in_dashboard(user)
+      get '/tolzar/oauth/authorize', params: authorize_params.except(:code_challenge, :code_challenge_method)
+      expect(response).to have_http_status(:bad_request)
+      get '/tolzar/oauth/authorize', params: authorize_params.merge(code_challenge_method: 'plain')
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it 'refuses a token request with a wrong verifier or a wrong secret' do
+      sign_in_dashboard(user)
+      exchange(approve, code_verifier: 'w' * 64)
+      expect(response).to have_http_status(:bad_request)
+      exchange(approve, client_secret: 'wrong')
+      expect(response).to have_http_status(:unauthorized)
+    end
+  end
+
+  describe 'guard 3: single-use codes, stored hashed' do
+    it 'runs code -> token -> userinfo once; the same code a second time is refused' do
+      sign_in_dashboard(user)
+      code = approve
+      expect(Redis::Alfred.get("tolzar:forum_oauth:code:#{code}")).to be_nil # only the hash is a key
+      exchange(code)
+      expect(response).to have_http_status(:ok)
+      expect(response.headers['Cache-Control']).to include('no-store')
+      exchange(code)
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it 'refuses a code redeemed with another redirect URI than the one it was issued for' do
+      sign_in_dashboard(user)
+      exchange(approve, redirect_uri: 'https://evil.example/cb')
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it 'refuses an expired code' do
+      sign_in_dashboard(user)
+      code = approve
+      Redis::Alfred.delete("tolzar:forum_oauth:code:#{Digest::SHA256.hexdigest(code)}") # what the 60 s expiry does
+      exchange(code)
+      expect(response).to have_http_status(:bad_request)
+    end
+  end
+
+  describe 'guard 5: userinfo returns the minimum' do
+    it 'returns id, a non-personal username, display name, locale and email; nothing else' do
+      sign_in_dashboard(user)
+      exchange(approve)
+      get '/tolzar/oauth/userinfo', headers: { 'Authorization' => "Bearer #{response.parsed_body['access_token']}" }
+      expect(response.parsed_body.keys).to contain_exactly('id', 'username', 'name', 'locale', 'email')
+      expect(response.parsed_body).to include('id' => user.id.to_s, 'username' => "u#{user.id}", 'email' => user.email)
+    end
+
+    it 'refuses a forged, an expired or a newsletter token' do
+      get '/tolzar/oauth/userinfo', headers: { 'Authorization' => 'Bearer forged' }
+      expect(response).to have_http_status(:unauthorized)
+      old = Rails.application.message_verifier(:tolzar_forum_userinfo).generate(user.id, purpose: :tolzar_forum_userinfo,
+                                                                                         expires_in: 10.minutes)
+      travel 11.minutes do
+        get '/tolzar/oauth/userinfo', headers: { 'Authorization' => "Bearer #{old}" }
+        expect(response).to have_http_status(:unauthorized)
+      end
+      other = Rails.application.message_verifier(:tolzar_newsletter_unsubscribe).generate(user.id, purpose: :tolzar_newsletter_unsubscribe)
+      get '/tolzar/oauth/userinfo', headers: { 'Authorization' => "Bearer #{other}" }
+      expect(response).to have_http_status(:unauthorized)
+    end
+  end
+
+  describe 'guard 6: rate limit on /token' do
+    it 'answers 429 after 20 token requests a minute from one address' do
+      20.times { exchange('nope') }
+      expect(response).to have_http_status(:bad_request)
+      exchange('nope')
+      expect(response).to have_http_status(:too_many_requests)
     end
   end
 end

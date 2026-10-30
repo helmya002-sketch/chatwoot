@@ -6,5 +6,9 @@ pt:
         text: 'Inicie sessão no Tolzar primeiro. A comunidade utiliza a sua conta Tolzar.'
         login: 'Iniciar sessão no Tolzar'
         retry: 'Já iniciei sessão, continuar'
+      consent:
+        text: Continuar para a Comunidade Tolzar como %{name}.
+        shared: A comunidade recebe o seu nome de apresentação, o idioma e o email. O seu email nunca é mostrado lá.
+        button: Continuar
       not_eligible: 'A comunidade está aberta a quem utiliza o Tolzar. Crie um espaço de trabalho ou junte-se a um primeiro.'
       error: 'Esta ligação de início de sessão não é válida. Recomece a partir da página da comunidade.'
