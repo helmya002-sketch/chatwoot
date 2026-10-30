@@ -10,6 +10,9 @@ import TolzarAgency from './TolzarAgency.vue';
 import TolzarResults from './TolzarResults.vue';
 
 const PERMS = { permissions: ['administrator', 'agent', 'custom_role'] };
+// AI Agents and Workflows: every write (and the test chat) is admin/Owner-only on the proxy, so the
+// pages are admin-only too; the sidebar reads this meta and hides them for everyone else.
+const ADMIN = { permissions: ['administrator'] };
 
 export const routes = [
   {
@@ -28,42 +31,42 @@ export const routes = [
     path: frontendURL('accounts/:accountId/ai-agents'),
     name: 'tolzar_ai_agents',
     component: TolzarAIAgents,
-    meta: PERMS,
+    meta: ADMIN,
   },
   {
     path: frontendURL('accounts/:accountId/tolzar-reports'),
     name: 'tolzar_reports',
     component: TolzarReports,
-    meta: { permissions: ['administrator'] },
+    meta: ADMIN,
   },
   {
     path: frontendURL('accounts/:accountId/tolzar-results'),
     name: 'tolzar_results',
     component: TolzarResults,
-    meta: { permissions: ['administrator'] },
+    meta: ADMIN,
   },
   {
     path: frontendURL('accounts/:accountId/tolzar-settings'),
     name: 'tolzar_settings',
     component: TolzarSettingsHub,
-    meta: { permissions: ['administrator'] },
+    meta: ADMIN,
   },
   {
     path: frontendURL('accounts/:accountId/tolzar-onboarding'),
     name: 'tolzar_onboarding',
     component: TolzarOnboarding,
-    meta: { permissions: ['administrator'] },
+    meta: ADMIN,
   },
   {
     path: frontendURL('accounts/:accountId/tolzar-agency'),
     name: 'tolzar_agency',
     component: TolzarAgency,
-    meta: { permissions: ['administrator'] },
+    meta: ADMIN,
   },
   {
     path: frontendURL('accounts/:accountId/workflows'),
     name: 'tolzar_workflows',
     component: TolzarWorkflows,
-    meta: PERMS,
+    meta: ADMIN,
   },
 ];
