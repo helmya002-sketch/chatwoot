@@ -1,0 +1,62 @@
+en:
+  tolzar:
+    newsletter:
+      footer:
+        why: 'You receive this because you use Tolzar. It comes about once a month.'
+        unsubscribe: 'Unsubscribe'
+        privacy: 'Privacy'
+      unsubscribe:
+        title: 'Tolzar newsletter'
+        confirm: 'Stop receiving the Tolzar newsletter? Account and security emails are not affected.'
+        button: 'Unsubscribe'
+        done: 'You are unsubscribed. You will not receive the newsletter again.'
+        invalid: 'This unsubscribe link is not valid. Use the link in your latest newsletter.'
+  super_admin:
+    newsletter:
+      title: 'Newsletter'
+      description: 'One newsletter to the people who use the app. Users who opted out or bounced are never included.'
+      status:
+        enabled: 'Sending on'
+        disabled: 'Sending off'
+      missing_env: 'Set these before a preview or a send: %{keys}.'
+      audience:
+        title: 'Recipients'
+        recipients: 'Will receive this issue'
+        opted_out: 'Unsubscribed'
+        suppressed: 'Suppressed (bounces, complaints)'
+      new_title: 'New issue'
+      edit_title: 'Issue #%{id}'
+      fields:
+        subject: 'Subject'
+        locale: 'Language'
+        all_languages: 'All languages'
+        body: 'Body (Markdown)'
+        body_help: 'Markdown only; HTML in the body is shown as text. A footer with the unsubscribe link is added to every copy.'
+      preview:
+        title: 'Preview'
+      send:
+        title: 'Send'
+        explain: 'This sends the issue to %{count} users at the warm-up rate. Type SEND to confirm.'
+      progress:
+        title: 'Progress'
+      list:
+        title: 'Issues'
+      suppression:
+        title: 'Suppression'
+        email: 'User email'
+        suppress_complaint: 'Suppress (complaint)'
+        unsuppress: 'Remove suppression'
+        help: 'Opt-outs are the user''s own choice and cannot be removed here.'
+      actions:
+        save: 'Save draft'
+        test_send: 'Send a test to me'
+        deliver: 'Send to users'
+        apply: 'Apply'
+      saved: 'Saved.'
+      test_sent: 'Test sent to %{email}.'
+      queued: 'Queued. Messages go out in batches at the warm-up rate.'
+      disabled: 'Sending to users is off (NEWSLETTER_ENABLED).'
+      not_a_draft: 'This issue was already sent.'
+      confirm_needed: 'Type SEND to confirm.'
+      user_not_found: 'No user with that email.'
+      suppression_saved: 'Saved.'

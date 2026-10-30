@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_10_29_120000) do
+ActiveRecord::Schema[7.1].define(version: 2026_10_30_044158) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1784,6 +1784,47 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_29_120000) do
     t.index ["processed_at"], name: "index_tolzar_mirror_events_on_processed_at"
     t.index ["tenant", "event_id"], name: "index_tolzar_mirror_events_on_tenant_and_event_id", unique: true
     t.index ["tenant", "received_at"], name: "index_tolzar_mirror_events_on_tenant_and_received_at"
+  end
+
+  create_table "tolzar_newsletter_deliveries", force: :cascade do |t|
+    t.bigint "newsletter_id", null: false
+    t.bigint "user_id", null: false
+    t.string "email", null: false
+    t.string "status", default: "queued", null: false
+    t.string "message_id"
+    t.string "error"
+    t.datetime "sent_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["message_id"], name: "index_tolzar_newsletter_deliveries_on_message_id", unique: true, where: "(message_id IS NOT NULL)"
+    t.index ["newsletter_id", "status"], name: "index_tolzar_newsletter_deliveries_on_newsletter_id_and_status"
+    t.index ["newsletter_id", "user_id"], name: "index_tolzar_newsletter_deliveries_on_newsletter_id_and_user_id", unique: true
+    t.index ["sent_at"], name: "index_tolzar_newsletter_deliveries_on_sent_at"
+  end
+
+  create_table "tolzar_newsletter_recipients", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.datetime "opted_out_at"
+    t.datetime "suppressed_at"
+    t.string "suppression_reason"
+    t.jsonb "soft_bounces", default: [], null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_tolzar_newsletter_recipients_on_user_id", unique: true
+  end
+
+  create_table "tolzar_newsletters", force: :cascade do |t|
+    t.string "subject", null: false
+    t.text "body_markdown", null: false
+    t.string "locale"
+    t.string "status", default: "draft", null: false
+    t.bigint "created_by_id"
+    t.integer "recipients_count", default: 0, null: false
+    t.datetime "sending_started_at"
+    t.datetime "sent_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["status"], name: "index_tolzar_newsletters_on_status"
   end
 
   create_trigger("camp_dpid_before_insert", :generated => true, :compatibility => 1).

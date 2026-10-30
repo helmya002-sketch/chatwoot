@@ -1,0 +1,13 @@
+fr:
+  tolzar:
+    newsletter:
+      footer:
+        why: 'Vous recevez ce message parce que vous utilisez Tolzar. Il arrive environ une fois par mois.'
+        unsubscribe: 'Se désabonner'
+        privacy: 'Confidentialité'
+      unsubscribe:
+        title: 'Newsletter Tolzar'
+        confirm: 'Ne plus recevoir la newsletter Tolzar ? Les e-mails de compte et de sécurité ne sont pas concernés.'
+        button: 'Se désabonner'
+        done: 'Vous êtes désabonné. Vous ne recevrez plus la newsletter.'
+        invalid: "Ce lien de désabonnement n'est pas valide. Utilisez le lien de votre dernière newsletter."

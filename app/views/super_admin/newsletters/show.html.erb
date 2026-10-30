@@ -1,0 +1,119 @@
+<% scope = 'super_admin.newsletter' %>
+<% content_for(:title) { t("#{scope}.title") } %>
+
+<%= render "page_header", title: t("#{scope}.title"), description: t("#{scope}.description") do %>
+  <%= render "badge", label: (@enabled ? t("#{scope}.status.enabled") : t("#{scope}.status.disabled")), tone: (@enabled ? :success : :warning) %>
+<% end %>
+
+<div class="space-y-6 pb-10">
+  <% if @missing_env.any? %>
+    <%= render "alert" do %>
+      <%= t("#{scope}.missing_env", keys: @missing_env.join(", ")) %>
+    <% end %>
+  <% end %>
+
+  <%= render "card", title: t("#{scope}.audience.title") do %>
+    <dl class="grid grid-cols-1 gap-4 p-4 sm:grid-cols-3">
+      <div>
+        <dt class="text-label-small text-n-slate-11"><%= t("#{scope}.audience.recipients") %></dt>
+        <dd class="text-heading-2 tabular-nums text-n-slate-12"><%= number_with_delimiter(@audience_count) %></dd>
+      </div>
+      <div>
+        <dt class="text-label-small text-n-slate-11"><%= t("#{scope}.audience.opted_out") %></dt>
+        <dd class="text-heading-2 tabular-nums text-n-slate-12"><%= number_with_delimiter(@opted_out) %></dd>
+      </div>
+      <div>
+        <dt class="text-label-small text-n-slate-11"><%= t("#{scope}.audience.suppressed") %></dt>
+        <dd class="text-heading-2 tabular-nums text-n-slate-12"><%= number_with_delimiter(@suppressed) %></dd>
+      </div>
+    </dl>
+  <% end %>
+
+  <%= render "card", title: (@newsletter.persisted? ? t("#{scope}.edit_title", id: @newsletter.id) : t("#{scope}.new_title")) do %>
+    <% editable = @newsletter.new_record? || @newsletter.draft? %>
+    <%= form_with model: @newsletter, scope: :newsletter,
+                  url: (@newsletter.persisted? ? super_admin_newsletter_path(id: @newsletter.id) : super_admin_newsletter_path),
+                  method: (@newsletter.persisted? ? :patch : :post), local: true, class: "space-y-4 p-4" do |f| %>
+      <div>
+        <%= f.label :subject, t("#{scope}.fields.subject"), class: "mb-1 block text-label-small text-n-slate-11" %>
+        <%= f.text_field :subject, maxlength: Tolzar::Newsletter::SUBJECT_MAX, required: true, disabled: !editable, class: ui(:input) %>
+      </div>
+      <div>
+        <%= f.label :locale, t("#{scope}.fields.locale"), class: "mb-1 block text-label-small text-n-slate-11" %>
+        <%= f.select :locale, [[t("#{scope}.fields.all_languages"), ""]] + I18n.available_locales.map { |l| [l.to_s, l.to_s] },
+                     {}, disabled: !editable, class: ui(:select, "sm:w-60") %>
+      </div>
+      <div>
+        <%= f.label :body_markdown, t("#{scope}.fields.body"), class: "mb-1 block text-label-small text-n-slate-11" %>
+        <%= f.text_area :body_markdown, rows: 16, maxlength: Tolzar::Newsletter::BODY_MAX, required: true, disabled: !editable,
+                        class: ui(:input, "font-mono") %>
+        <p class="mt-1 text-label-small text-n-slate-10"><%= t("#{scope}.fields.body_help") %></p>
+      </div>
+      <% if editable %>
+        <%= render "button", label: t("#{scope}.actions.save"), submit: f %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% if @newsletter.persisted? %>
+    <%= render "card", title: t("#{scope}.preview.title") do %>
+      <div class="space-y-4 p-4">
+        <% if @preview_html %>
+          <iframe title="<%= t("#{scope}.preview.title") %>" sandbox="" srcdoc="<%= @preview_html %>"
+                  class="h-[32rem] w-full rounded-lg border border-n-weak bg-white"></iframe>
+        <% end %>
+        <div class="flex flex-wrap gap-2">
+          <%= render "button", label: t("#{scope}.actions.test_send"), variant: :secondary,
+                               post_to: test_send_super_admin_newsletter_path(id: @newsletter.id) %>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @newsletter.draft? %>
+      <%= render "card", title: t("#{scope}.send.title") do %>
+        <%= form_with url: deliver_super_admin_newsletter_path(id: @newsletter.id), method: :post, local: true, class: "space-y-3 p-4" do |f| %>
+          <p class="text-body-main text-n-slate-11"><%= t("#{scope}.send.explain", count: number_with_delimiter(@audience_count)) %></p>
+          <%= f.text_field :confirm, placeholder: "SEND", autocomplete: "off", class: ui(:input, "sm:w-60") %>
+          <%= render "button", label: t("#{scope}.actions.deliver"), variant: :danger, submit: f, disabled: !@enabled %>
+        <% end %>
+      <% end %>
+    <% else %>
+      <%= render "card", title: t("#{scope}.progress.title") do %>
+        <ul class="flex flex-wrap gap-2 p-4">
+          <% @newsletter.counts.sort.each do |status, n| %>
+            <li><%= render "badge", label: "#{status} #{number_with_delimiter(n)}", tone: (status == 'sent' ? :success : :neutral) %></li>
+          <% end %>
+        </ul>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <%= render "card", title: t("#{scope}.list.title"), count: @newsletters.size do %>
+    <ul class="divide-y divide-n-weak">
+      <% @newsletters.each do |n| %>
+        <li class="flex flex-wrap items-center justify-between gap-2 px-4 py-2.5">
+          <%= link_to n.subject, super_admin_newsletter_path(id: n.id), class: "min-w-0 truncate text-body-main text-n-slate-12 hover:underline" %>
+          <span class="flex items-center gap-2 text-label-small tabular-nums text-n-slate-11">
+            <%= n.locale || t("#{scope}.fields.all_languages") %>
+            <%= render "badge", label: n.status, tone: (n.status == 'sent' ? :success : :neutral) %>
+          </span>
+        </li>
+      <% end %>
+      <li class="px-4 py-2.5"><%= link_to t("#{scope}.new_title"), super_admin_newsletter_path, class: "text-body-main text-n-blue-11 hover:underline" %></li>
+    </ul>
+  <% end %>
+
+  <%= render "card", title: t("#{scope}.suppression.title") do %>
+    <%= form_with url: suppression_super_admin_newsletter_path, method: :post, local: true, class: "flex flex-wrap items-end gap-2 p-4" do |f| %>
+      <div class="w-full sm:w-72">
+        <%= f.label :email, t("#{scope}.suppression.email"), class: "mb-1 block text-label-small text-n-slate-11" %>
+        <%= f.email_field :email, required: true, class: ui(:input) %>
+      </div>
+      <%= f.select :op, [[t("#{scope}.suppression.suppress_complaint"), "suppress"], [t("#{scope}.suppression.unsuppress"), "unsuppress"]],
+                   {}, class: ui(:select, "sm:w-60") %>
+      <%= f.hidden_field :reason, value: "complaint" %>
+      <%= render "button", label: t("#{scope}.actions.apply"), variant: :secondary, submit: f %>
+    <% end %>
+    <p class="px-4 pb-4 text-label-small text-n-slate-10"><%= t("#{scope}.suppression.help") %></p>
+  <% end %>
+</div>

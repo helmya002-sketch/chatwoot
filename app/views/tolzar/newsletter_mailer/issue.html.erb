@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="<%= @locale %>" dir="<%= @locale.to_s.in?(%w[ar fa he ur]) ? 'rtl' : 'ltr' %>">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= @newsletter.subject %></title>
+</head>
+<body style="margin:0;padding:0;background:#f6f7f9;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f6f7f9;">
+    <tr>
+      <td align="center" style="padding:24px 12px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#ffffff;border-radius:8px;">
+          <tr>
+            <td style="padding:28px 28px 8px;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:16px;line-height:1.55;color:#1c2024;">
+              <%= sanitize @newsletter.body_html, tags: %w[p br h1 h2 h3 h4 strong em del a ul ol li blockquote code pre hr table thead tbody tr th td img],
+                                                  attributes: %w[href src alt title] %>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:16px 28px 28px;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:12px;line-height:1.5;color:#60646c;border-top:1px solid #e8e8ec;">
+              <p style="margin:0 0 8px;"><%= t('tolzar.newsletter.footer.why') %></p>
+              <p style="margin:0 0 8px;">
+                <a href="<%= @unsubscribe_url %>" style="color:#60646c;"><%= t('tolzar.newsletter.footer.unsubscribe') %></a>
+                &middot;
+                <a href="<%= @privacy_url %>" style="color:#60646c;"><%= t('tolzar.newsletter.footer.privacy') %></a>
+              </p>
+              <p style="margin:0;"><%= @postal_address %></p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

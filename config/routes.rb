@@ -21,6 +21,10 @@ Rails.application.routes.draw do
   get  'tolzar/meta/error',         to: 'tolzar/meta#failed'
   get  'tolzar/meta/hook/:webhook_token', to: 'tolzar/meta_hook#verify'
   post 'tolzar/meta/hook/:webhook_token', to: 'tolzar/meta_hook#events'
+  # Tolzar newsletter to the app's own users: one-click unsubscribe (RFC 8058) and Postal's delivery events.
+  get  'tolzar/newsletter/unsubscribe/:token', to: 'tolzar/newsletter_unsubscribe#show', as: :tolzar_newsletter_unsubscribe
+  post 'tolzar/newsletter/unsubscribe/:token', to: 'tolzar/newsletter_unsubscribe#create'
+  post 'tolzar/newsletter/postal/:webhook_token', to: 'tolzar/newsletter_postal#create', as: :tolzar_newsletter_postal
   # Tolzar MCP server (F1): public, read-only, per-workspace Bearer token checked by the brain.
   # Held back from the internet until Server ops has reviewed the hardening (28 Oct): enable with
   # TOLZAR_MCP_PUBLIC=true once rate limits + fail2ban logging are confirmed on the box.
@@ -845,6 +849,12 @@ Rails.application.routes.draw do
       root to: 'dashboard#index'
 
       resource :app_config, only: [:show, :create]
+      # Tolzar newsletter (a singular resource, so it stays out of the Administrate resource list).
+      resource :newsletter, only: [:show, :create, :update] do
+        post :test_send
+        post :deliver
+        post :suppression
+      end
       resource :user_diagnostics, only: [:show, :create] do
         post :destroy_subscriptions, on: :collection
       end

@@ -61,7 +61,9 @@ module SuperAdmin::NavigationHelper
       { label: t('super_admin.navigation.settings'), url: super_admin_settings_path, icon: 'i-lucide-settings', active: settings_open?,
         pinned: true, group: instance },
       { label: t('super_admin.navigation.monitor'), url: super_admin_instance_status_path, icon: 'i-lucide-activity', active: monitor_open?,
-        group: instance }
+        group: instance },
+      { label: t('super_admin.newsletter.title'), url: super_admin_newsletter_path, icon: 'i-lucide-mail',
+        active: controller_name == 'newsletters', group: instance }
     ]
   end
 
