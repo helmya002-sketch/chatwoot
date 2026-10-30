@@ -467,22 +467,36 @@
       "CHANNEL": {
         "TITLE": "Connecter un canal",
         "DESCRIPTION": "Ajoutez WhatsApp, Instagram, Messenger, l’e-mail ou le chat de votre site. Les conversations apparaissent ici.",
-        "LINK": "Connecter un canal"
+        "LINK": "Connecter un canal",
+        "TIME": "2 min"
       },
       "TEACH": {
         "TITLE": "Former votre agent IA",
         "DESCRIPTION": "Indiquez votre site, importez vos documents et votre liste de prix, et fixez ce qu’il peut dire ou non.",
-        "LINK": "Ouvrir les agents IA"
+        "LINK": "Ouvrir les agents IA",
+        "TIME": "5 min"
       },
       "SHADOW": {
         "TITLE": "L’observer en mode observation",
         "DESCRIPTION": "Il travaille sur vos vraies conversations et n’écrit que des notes privées. Comparez ses réponses à celles de votre équipe.",
-        "LINK": "Voir les résultats"
+        "LINK": "Voir les résultats",
+        "TIME": "en continu"
       },
       "TEAM": {
         "TITLE": "Inviter votre équipe",
         "DESCRIPTION": "Ajoutez les personnes qui répondent aux clients, pour que l’IA confie chaque conversation à la bonne personne.",
-        "LINK": "Inviter des personnes"
+        "LINK": "Inviter des personnes",
+        "TIME": "2 min"
+      },
+      "SETUP_TIME": "Environ 10 minutes de configuration",
+      "STEP": "Étape {n}",
+      "START_HERE": "Commencez ici",
+      "FLOW": {
+        "TITLE": "Comment fonctionne le mode observation",
+        "CUSTOMER": "Un client écrit sur l’un de vos canaux.",
+        "AI": "Tolzar rédige la réponse en note privée, selon vos règles et vos informations.",
+        "TEAM": "Votre équipe répond comme d’habitude et compare. Rien de l’IA n’arrive au client.",
+        "SAFE": "Tant que le mode observation est actif, l’IA n’envoie jamais rien à un client."
       }
     },
     "TITLE": "Salut 👋, Bienvenue sur {installationName}!",

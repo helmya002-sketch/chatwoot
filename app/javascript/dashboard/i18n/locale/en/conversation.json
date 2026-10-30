@@ -467,22 +467,36 @@
       "CHANNEL": {
         "TITLE": "Connect a channel",
         "DESCRIPTION": "Bring in WhatsApp, Instagram, Messenger, email or your website chat. Conversations appear here.",
-        "LINK": "Connect a channel"
+        "LINK": "Connect a channel",
+        "TIME": "2 min"
       },
       "TEACH": {
         "TITLE": "Teach your AI agent",
         "DESCRIPTION": "Point it to your website, upload documents and your price list, and set what it may and may not say.",
-        "LINK": "Open AI agents"
+        "LINK": "Open AI agents",
+        "TIME": "5 min"
       },
       "SHADOW": {
         "TITLE": "Watch it in shadow mode",
         "DESCRIPTION": "It works on your real conversations and writes only private notes. Compare its answers with your team's.",
-        "LINK": "See the results"
+        "LINK": "See the results",
+        "TIME": "ongoing"
       },
       "TEAM": {
         "TITLE": "Invite your team",
         "DESCRIPTION": "Add the people who answer customers, so the AI hands each conversation to the right person.",
-        "LINK": "Invite people"
+        "LINK": "Invite people",
+        "TIME": "2 min"
+      },
+      "SETUP_TIME": "About 10 minutes to set up",
+      "STEP": "Step {n}",
+      "START_HERE": "Start here",
+      "FLOW": {
+        "TITLE": "How shadow mode works",
+        "CUSTOMER": "A customer writes on one of your channels.",
+        "AI": "Tolzar drafts the answer as a private note, using your rules and knowledge.",
+        "TEAM": "Your team replies as usual and compares. Nothing reaches the customer from the AI.",
+        "SAFE": "While shadow mode is on, nothing is ever sent to a customer by the AI."
       }
     },
     "TITLE": "Hey 👋, Welcome to {installationName}!",

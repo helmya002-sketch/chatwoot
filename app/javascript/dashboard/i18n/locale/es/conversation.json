@@ -467,22 +467,36 @@
       "CHANNEL": {
         "TITLE": "Conecta un canal",
         "DESCRIPTION": "Añade WhatsApp, Instagram, Messenger, el correo o el chat de tu web. Las conversaciones aparecen aquí.",
-        "LINK": "Conectar un canal"
+        "LINK": "Conectar un canal",
+        "TIME": "2 min"
       },
       "TEACH": {
         "TITLE": "Enseña a tu agente de IA",
         "DESCRIPTION": "Indícale tu web, sube documentos y tu lista de precios, y define qué puede decir y qué no.",
-        "LINK": "Abrir agentes de IA"
+        "LINK": "Abrir agentes de IA",
+        "TIME": "5 min"
       },
       "SHADOW": {
         "TITLE": "Míralo en modo sombra",
         "DESCRIPTION": "Trabaja sobre tus conversaciones reales y solo escribe notas privadas. Compara sus respuestas con las de tu equipo.",
-        "LINK": "Ver los resultados"
+        "LINK": "Ver los resultados",
+        "TIME": "continuo"
       },
       "TEAM": {
         "TITLE": "Invita a tu equipo",
         "DESCRIPTION": "Añade a las personas que responden a los clientes, para que la IA pase cada conversación a la persona adecuada.",
-        "LINK": "Invitar personas"
+        "LINK": "Invitar personas",
+        "TIME": "2 min"
+      },
+      "SETUP_TIME": "Unos 10 minutos de configuración",
+      "STEP": "Paso {n}",
+      "START_HERE": "Empieza aquí",
+      "FLOW": {
+        "TITLE": "Cómo funciona el modo sombra",
+        "CUSTOMER": "Un cliente escribe en uno de tus canales.",
+        "AI": "Tolzar redacta la respuesta como nota privada, con tus reglas y tu información.",
+        "TEAM": "Tu equipo responde como siempre y compara. Nada de la IA llega al cliente.",
+        "SAFE": "Mientras el modo sombra está activo, la IA nunca envía nada a un cliente."
       }
     },
     "TITLE": "Hola 👋, ¡Bienvenido a {installationName}!",

@@ -467,22 +467,36 @@
       "CHANNEL": {
         "TITLE": "Kanal verbinden",
         "DESCRIPTION": "Binden Sie WhatsApp, Instagram, Messenger, E-Mail oder Ihren Website-Chat an. Die Gespräche erscheinen hier.",
-        "LINK": "Kanal verbinden"
+        "LINK": "Kanal verbinden",
+        "TIME": "2 Min."
       },
       "TEACH": {
         "TITLE": "KI-Agenten anlernen",
         "DESCRIPTION": "Geben Sie Ihre Website an, laden Sie Dokumente und Ihre Preisliste hoch und legen Sie fest, was er sagen darf und was nicht.",
-        "LINK": "KI-Agenten öffnen"
+        "LINK": "KI-Agenten öffnen",
+        "TIME": "5 Min."
       },
       "SHADOW": {
         "TITLE": "Im Schattenmodus beobachten",
         "DESCRIPTION": "Er arbeitet mit Ihren echten Gesprächen und schreibt nur private Notizen. Vergleichen Sie seine Antworten mit denen Ihres Teams.",
-        "LINK": "Ergebnisse ansehen"
+        "LINK": "Ergebnisse ansehen",
+        "TIME": "laufend"
       },
       "TEAM": {
         "TITLE": "Team einladen",
         "DESCRIPTION": "Fügen Sie die Personen hinzu, die Kunden antworten, damit die KI jedes Gespräch an die richtige Person übergibt.",
-        "LINK": "Personen einladen"
+        "LINK": "Personen einladen",
+        "TIME": "2 Min."
+      },
+      "SETUP_TIME": "Etwa 10 Minuten Einrichtung",
+      "STEP": "Schritt {n}",
+      "START_HERE": "Hier starten",
+      "FLOW": {
+        "TITLE": "So funktioniert der Schattenmodus",
+        "CUSTOMER": "Ein Kunde schreibt auf einem Ihrer Kanäle.",
+        "AI": "Tolzar entwirft die Antwort als private Notiz, nach Ihren Regeln und Ihrem Wissen.",
+        "TEAM": "Ihr Team antwortet wie gewohnt und vergleicht. Von der KI erreicht nichts den Kunden.",
+        "SAFE": "Solange der Schattenmodus aktiv ist, sendet die KI nie etwas an einen Kunden."
       }
     },
     "TITLE": "Hallo 👋, Willkommen bei {installationName}!",
