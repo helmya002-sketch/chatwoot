@@ -90,7 +90,7 @@ class Tolzar::MetaCommentIngestService
     conversation = thread_for(contact_inbox) || new_thread(contact_inbox)
     message = create_message(conversation, :incoming, contact_inbox.contact)
     # The comment it answers, read after the commit (Tolzar::MetaCommentContextJob).
-    return unless parent_id && message.content_attributes['in_reply_to'].blank?
+    return unless parent_id && message.content_attributes['in_reply_to'].blank? && message.content_attributes['tolzar_comment_parent'].blank?
 
     Tolzar::MetaCommentContextJob.set(wait: 2.seconds).perform_later(conversation.id, message.id)
   end
@@ -127,16 +127,24 @@ class Tolzar::MetaCommentIngestService
       .compact
   end
 
-  # A reply to a comment we hold quotes it like any reply (in_reply_to); one we don't hold is read by
-  # Tolzar::MetaCommentContextJob.
+  # A reply quotes the comment it answers: like any reply (in_reply_to) when that comment is in the same
+  # thread (Chatwoot keeps in_reply_to inside one conversation), from our copy when it is in another
+  # person's thread, and read by Tolzar::MetaCommentContextJob when we never received it.
   def create_message(conversation, type, sender)
-    held_parent = parent_id && find_message(parent_id)
     conversation.messages.create!(
       account_id: @inbox.account_id, inbox_id: @inbox.id, message_type: type, sender: sender,
       content: text.presence || '(comment with no text)', source_id: "comment:#{comment_id}",
-      content_attributes: { 'tolzar_comment_id' => comment_id, 'tolzar_comment_parent_id' => parent_id,
-                            'in_reply_to' => held_parent&.id }.compact
+      content_attributes: { 'tolzar_comment_id' => comment_id, 'tolzar_comment_parent_id' => parent_id }
+                            .merge(parent_quote(conversation)).compact
     )
+  end
+
+  def parent_quote(conversation)
+    held = parent_id && find_message(parent_id)
+    return {} if held.blank?
+    return { 'in_reply_to' => held.id } if held.conversation_id == conversation.id
+
+    { 'tolzar_comment_parent' => { 'text' => held.content.to_s.first(1000), 'author' => held.sender&.name }.compact }
   end
 
   def edited
