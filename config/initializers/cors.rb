@@ -33,3 +33,11 @@ end
 # To Enable connecting to the API channel public APIs
 # ref : https://medium.com/@emikaijuin/connecting-to-action-cable-without-rails-d39a8aaa52d5
 Rails.application.config.action_cable.disable_request_forgery_protection = true
+
+# Tolzar hardening: with TOLZAR_ALLOWED_HOSTS set, a browser websocket must come from one of our hosts
+# (TolzarAllowedHosts.cable_origin_allowed?; no Origin = native app, allowed).
+require Rails.root.join('lib/tolzar_allowed_hosts').to_s
+if TolzarAllowedHosts.enabled?
+  Rails.application.config.action_cable.disable_request_forgery_protection = false
+  Rails.application.config.action_cable.allowed_request_origins = [->(origin) { TolzarAllowedHosts.cable_origin_allowed?(origin) }]
+end

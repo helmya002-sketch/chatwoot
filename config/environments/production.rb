@@ -49,9 +49,9 @@ Rails.application.configure do
   # TOLZAR_ALLOWED_HOSTS="chat.xplorer-redsea.com,app.tolzar.com,chatwoot,localhost". It must also list the internal
   # names other containers use (the brain and the mirror call Chatwoot by its Docker name). Empty: no allow-list
   # (as before). Health checks are never blocked.
-  tolzar_hosts = ENV.fetch('TOLZAR_ALLOWED_HOSTS', '').split(',').map(&:strip).compact_blank
-  if tolzar_hosts.any?
-    config.hosts.concat(tolzar_hosts)
+  require Rails.root.join('lib/tolzar_allowed_hosts').to_s
+  if TolzarAllowedHosts.enabled?
+    config.hosts.concat(TolzarAllowedHosts.hosts)
     config.host_authorization = { exclude: ->(request) { request.path.in?(%w[/health /api]) } }
   end
 
