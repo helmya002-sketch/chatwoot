@@ -133,6 +133,7 @@ Rails.application.routes.draw do
           get    'tolzar/agents/:agent_id/price_upload',      to: 'tolzar#price_upload_versions'
           post   'tolzar/agents/:agent_id/price_upload',      to: 'tolzar#price_upload'
           post   'tolzar/agents/:agent_id/price_upload/restore', to: 'tolzar#price_upload_restore'
+          post   'tolzar/agents/:agent_id/knowledge_upload',  to: 'tolzar#knowledge_upload'
           # Tolzar proxy helpers: one team summary, bulk stage, agent versions and duplicate.
           get    'tolzar/team_summary',                to: 'tolzar_helpers#team_summary'
           post   'tolzar/pipeline/bulk_stage',         to: 'tolzar_helpers#bulk_stage'

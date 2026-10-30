@@ -13,7 +13,7 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
                                         agent_save agent_delete agent_default workflow_save workflow_delete
                                         workspace_settings_save price_source_save price_source_test go_live kill_switch
                                         kill_switch_release workspace_bootstrap whatsapp_listen_only_connect
-                                        price_upload price_upload_restore pipeline_settings_save
+                                        price_upload price_upload_restore knowledge_upload pipeline_settings_save
                                         meta_app meta_app_save meta_app_delete meta_page_connect meta_app_rotate_verify_token
                                         meta_test_send_window meta_test_send
                                         conversation_retention_save]
@@ -476,6 +476,27 @@ class Api::V1::Accounts::TolzarController < Api::V1::Accounts::BaseController
     body = { account_id: account_scope_id, filename: file.original_filename.to_s.first(120), format: fmt,
              content_b64: Base64.strict_encode64(raw) }
     render_brain(post_to_brain(price_upload_path, body))
+  end
+
+  # A knowledge document (PDF, DOCX, TXT/MD, HTML) for one agent (brain knowledge_upload.py): read here, sent to
+  # the brain base64-encoded, never stored by Rails; the brain keeps only the extracted text. Owner-only.
+  KNOWLEDGE_UPLOAD_MAX_BYTES = 5_000_000
+  KNOWLEDGE_UPLOAD_FORMATS = %w[.pdf .docx .txt .md .html .htm].freeze
+
+  def knowledge_upload
+    return head(:not_found) unless params[:agent_id].to_s.match?(AGENT_ID)
+
+    file = params[:file]
+    return render(json: { ok: false, error: 'file required' }, status: :bad_request) unless file.respond_to?(:read)
+    unless KNOWLEDGE_UPLOAD_FORMATS.include?(File.extname(file.original_filename.to_s).downcase)
+      return render(json: { ok: false, error: 'unsupported_format' }, status: :bad_request)
+    end
+
+    raw = file.read(KNOWLEDGE_UPLOAD_MAX_BYTES + 1).to_s
+    return render(json: { ok: false, error: 'too_large' }, status: :bad_request) if raw.bytesize > KNOWLEDGE_UPLOAD_MAX_BYTES
+
+    body = { account_id: account_scope_id, filename: file.original_filename.to_s.first(120), content_b64: Base64.strict_encode64(raw) }
+    render_brain(post_to_brain("/agents/#{ERB::Util.url_encode(params[:agent_id].to_s)}/knowledge-upload", body))
   end
 
   def price_upload_restore
