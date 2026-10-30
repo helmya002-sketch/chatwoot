@@ -79,7 +79,9 @@ RSpec.describe 'Tolzar forum OAuth', type: :request do
     it 'refuses the click without the CSRF token (a cross-site auto-submit)' do
       sign_in_dashboard(user)
       ActionController::Base.allow_forgery_protection = true
-      expect { post '/tolzar/oauth/authorize', params: authorize_params }.to raise_error(ActionController::InvalidAuthenticityToken)
+      post '/tolzar/oauth/authorize', params: authorize_params # the test env renders exceptions (show_exceptions)
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response.location).to be_nil # no code was issued
     ensure
       ActionController::Base.allow_forgery_protection = false
     end
