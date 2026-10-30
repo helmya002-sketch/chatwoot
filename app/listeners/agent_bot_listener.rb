@@ -84,7 +84,10 @@ class AgentBotListener < BaseListener
   def process_webhook_bot_event(agent_bot, payload)
     return if agent_bot.outgoing_url.blank?
 
+    # Tolzar B2: deliveries to the brain are signed with the workspace's own key, derived in the job (no secret
+    # in the queue), while TOLZAR_AUTO_PROVISION is on.
+    secret = Tolzar::BrainProvisioning.sign_per_workspace?(agent_bot.outgoing_url) ? nil : agent_bot.secret
     AgentBots::WebhookJob.perform_later(agent_bot.outgoing_url, payload, :agent_bot_webhook,
-                                        secret: agent_bot.secret, delivery_id: SecureRandom.uuid)
+                                        secret: secret, delivery_id: SecureRandom.uuid)
   end
 end
