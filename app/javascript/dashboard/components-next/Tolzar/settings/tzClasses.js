@@ -10,4 +10,11 @@ export const INPUT =
 export const LABEL = 'block mt-3 mb-1 text-xs text-n-slate-11';
 export const CHECK = 'flex gap-2 items-center mt-3 text-sm text-n-slate-12';
 export const SHADOW_BADGE =
-  'inline-flex items-center px-2 py-0.5 text-[11px] font-semibold rounded-full text-amber-700 bg-amber-500/10';
+  'inline-flex items-center px-2 py-0.5 text-[11px] font-semibold rounded-full text-n-amber-11 bg-n-amber-3';
+// Status tones in theme tokens (readable in light and dark; white-label safe).
+export const TONE_WARN = 'text-n-amber-11 bg-n-amber-3';
+export const TONE_OK = 'text-n-teal-11 bg-n-teal-3';
+export const TONE_BAD = 'text-n-ruby-11 bg-n-ruby-3';
+export const TONE_MUTED = 'text-n-slate-11 bg-n-slate-3';
+// Icon-only buttons: always visible to keyboard users even when the design hides them until hover.
+export const HOVER_REVEAL = 'opacity-0 group-hover:opacity-100 focus-visible:opacity-100 focus:opacity-100';

@@ -1,0 +1,33 @@
+{
+  "TOLZAR_UI": {
+    "STATE": {
+      "SHADOW": "Shadow",
+      "SHADOW_HINT": "Tolzar runs here and records what it would do. Nothing reaches a customer.",
+      "OFF": "Off",
+      "OFF_HINT": "Not running.",
+      "LIVE": "Live",
+      "LIVE_HINT": "Tolzar sends to customers here."
+    },
+    "UNSAVED": {
+      "TITLE": "Unsaved changes",
+      "BODY": "You have changes that are not saved. Leave and lose them, or stay and save first?",
+      "LEAVE": "Leave without saving",
+      "STAY": "Stay"
+    },
+    "LOADING": "Loading…",
+    "SAVING": "Saving…",
+    "SAVED": "Saved",
+    "RETRY": "Retry",
+    "CANCEL": "Cancel",
+    "DELETE": "Delete",
+    "CLOSE": "Close",
+    "LOAD_FAILED": "Could not load this. Check your connection and try again.",
+    "NOT_AVAILABLE": "n/a",
+    "YOUR_TIME_ZONE": "Shown in your time zone ({zone})",
+    "OWNER_ONLY_HINT": "Only a workspace Owner can change this.",
+    "COPY": "Copy",
+    "COPIED": "Copied",
+    "SHOW_MORE": "Show more ({n} left)",
+    "NONE_YET": "Nothing here yet"
+  }
+}
