@@ -1,0 +1,10 @@
+fr:
+  tolzar:
+    forum_oauth:
+      title: 'Communauté Tolzar'
+      sign_in:
+        text: 'Connectez-vous d’abord à Tolzar. La communauté utilise votre compte Tolzar.'
+        login: 'Se connecter à Tolzar'
+        retry: 'Je suis connecté, continuer'
+      not_eligible: 'La communauté est ouverte aux utilisateurs de Tolzar. Créez ou rejoignez d’abord un espace de travail.'
+      error: 'Ce lien de connexion n’est pas valide. Recommencez depuis la page de la communauté.'

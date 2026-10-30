@@ -1,0 +1,10 @@
+en:
+  tolzar:
+    forum_oauth:
+      title: 'Tolzar Community'
+      sign_in:
+        text: 'Sign in to Tolzar first. The community uses your Tolzar account.'
+        login: 'Sign in to Tolzar'
+        retry: 'I am signed in, continue'
+      not_eligible: 'The community is open to people who use Tolzar. Create or join a workspace first.'
+      error: 'This sign-in link is not valid. Start again from the community page.'
