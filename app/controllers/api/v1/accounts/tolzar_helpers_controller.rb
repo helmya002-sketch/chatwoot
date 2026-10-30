@@ -9,8 +9,10 @@ class Api::V1::Accounts::TolzarHelpersController < Api::V1::Accounts::TolzarCont
   before_action :ensure_owner, only: :agent_duplicate
   before_action :ensure_agent_id, only: %i[agent_versions agent_duplicate]
 
+  # Waiting follows the workspace SLA the brain keeps (Settings > SLA); no SLA config (brain down) = no SLA on.
   def team_summary
-    render json: { ok: true }.merge(Tolzar::TeamSummary.new(account: Current.account, user: Current.user).perform)
+    sla = get_from_brain("/sla?account_id=#{account_scope_id}")['config']
+    render json: { ok: true }.merge(Tolzar::TeamSummary.new(account: Current.account, user: Current.user, sla: sla).perform)
   end
 
   def bulk_stage

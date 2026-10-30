@@ -9,13 +9,14 @@ RSpec.describe 'Tolzar proxy helpers', type: :request do
   let(:controller_class) { Api::V1::Accounts::TolzarController }
   let(:brain_agents) { [] }
   let(:brain_audit) { [] }
+  let(:sla_config) { { 'enabled' => false } }
   let(:gets) { [] }
   let(:posts) { [] }
 
   before do
     allow_any_instance_of(controller_class).to receive(:get_from_brain) do |_controller, path|
       gets << path
-      { 'ok' => true, 'roles' => {}, 'agents' => brain_agents, 'entries' => brain_audit }
+      { 'ok' => true, 'roles' => {}, 'agents' => brain_agents, 'entries' => brain_audit, 'config' => sla_config }
     end
     allow_any_instance_of(controller_class).to receive(:post_to_brain) do |_controller, path, body|
       posts << [path, body]
@@ -34,23 +35,53 @@ RSpec.describe 'Tolzar proxy helpers', type: :request do
     let!(:beta) { create(:team, account: account, name: 'Beta') }
 
     before do
-      create(:conversation, account: account, inbox: inbox, team: alpha)
-      create(:conversation, account: account, inbox: inbox, team: alpha, assignee: agent).update_column(:waiting_since, nil)
+      # Answered once, and the customer wrote again (waiting_since set): waiting only under an SLA.
+      create(:conversation, account: account, inbox: inbox, team: alpha).update_columns(first_reply_created_at: 1.hour.ago,
+                                                                                         waiting_since: 10.minutes.ago)
+      # Answered, nothing new from the customer: never waiting.
+      create(:conversation, account: account, inbox: inbox, team: alpha, assignee: agent)
+        .update_columns(first_reply_created_at: 1.hour.ago, waiting_since: nil)
+      # Never answered (waiting_since set on create): waiting under both rules.
       create(:conversation, account: account, inbox: other_inbox, team: beta)
       create(:conversation, account: account, inbox: inbox)
       create(:conversation, account: account, inbox: inbox, team: beta, status: :resolved)
     end
 
-    it 'counts every team in one response for an administrator' do
+    it 'counts every team in one response, waiting = no agent reply yet when there is no SLA' do
       get url('team_summary'), headers: admin.create_new_auth_token
       expect(response).to have_http_status(:success)
       body = response.parsed_body
-      expect(body['totals']).to eq('open' => 4, 'unassigned' => 3, 'waiting' => 3)
+      expect(gets.last).to eq("/sla?account_id=#{account.id}")
+      expect(body['waiting_rule']).to eq('first_reply_pending')
+      expect(body['totals']).to eq('open' => 4, 'unassigned' => 3, 'waiting' => 2)
       expect(body['teams']).to eq([
-                                    { 'id' => alpha.id, 'name' => 'Alpha', 'open' => 2, 'unassigned' => 1, 'waiting' => 1 },
+                                    { 'id' => alpha.id, 'name' => 'Alpha', 'open' => 2, 'unassigned' => 1, 'waiting' => 0 },
                                     { 'id' => beta.id, 'name' => 'Beta', 'open' => 1, 'unassigned' => 1, 'waiting' => 1 }
                                   ])
       expect(body['no_team']).to eq('open' => 1, 'unassigned' => 1, 'waiting' => 1)
+    end
+
+    context 'when the workspace SLA is on' do
+      let(:sla_config) { { 'enabled' => true, 'first_reply_minutes' => 30, 'working_hours_only' => false } }
+
+      it 'counts the conversations whose reply clock is running or past due' do
+        get url('team_summary'), headers: admin.create_new_auth_token
+        body = response.parsed_body
+        expect(body['waiting_rule']).to eq('sla:reply_within_30m')
+        expect(body['totals']['waiting']).to eq(3)
+        expect(body['teams'].map { |t| t['waiting'] }).to eq([1, 1])
+        expect(body['no_team']['waiting']).to eq(1)
+      end
+    end
+
+    context 'when the workspace SLA is saved but off' do
+      let(:sla_config) { { 'enabled' => false, 'first_reply_minutes' => 30 } }
+
+      it 'keeps the first-reply rule' do
+        get url('team_summary'), headers: admin.create_new_auth_token
+        expect(response.parsed_body['waiting_rule']).to eq('first_reply_pending')
+        expect(response.parsed_body['totals']['waiting']).to eq(2)
+      end
     end
 
     it 'counts only the conversations an agent may see' do
