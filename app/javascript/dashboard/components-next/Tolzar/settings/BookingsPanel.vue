@@ -14,6 +14,7 @@ import {
 } from './tzClasses';
 import { emptyLine, linesTotal, toSpec, PLACEHOLDER } from './tolzarDocuments';
 import BookingCalendarLink from './BookingCalendarLink.vue';
+import BookingSchedule from './BookingSchedule.vue';
 
 // Settings hub → Workspace → Bookings (Tolzar::Booking): today and the next 14 days, the list, a booking editor,
 // status moves, the payments record (Tolzar never charges) and a draft voucher from a booking.
@@ -110,10 +111,8 @@ function open(which) {
 
 async function save() {
   const d = editing.value;
+  // toSpec keeps each line's until and resource (c102); mapping by index went wrong once empty lines were dropped.
   const spec = toSpec(d);
-  spec.lines = spec.lines.map((l, i) =>
-    d.lines[i]?.until ? { ...l, until: d.lines[i].until } : l
-  );
   try {
     await window.axios.post(base.value, {
       currency: d.currency,
@@ -156,7 +155,7 @@ onMounted(() => open('agenda'));
     </p>
     <div class="flex gap-2" role="tablist">
       <button
-        v-for="v in ['agenda', 'list', 'new']"
+        v-for="v in ['agenda', 'schedule', 'list', 'new']"
         :key="v"
         type="button"
         role="tab"
@@ -174,6 +173,7 @@ onMounted(() => open('agenda'));
       {{ error }}
     </p>
 
+    <BookingSchedule v-if="view === 'schedule'" />
     <section v-if="view === 'agenda' && !error" class="mt-3">
       <p class="m-0 text-[13px] text-n-slate-12">
         {{
@@ -334,7 +334,7 @@ onMounted(() => open('agenda'));
       <div
         v-for="(line, i) in editing.lines"
         :key="line.key"
-        class="grid grid-cols-[8rem_1fr_7rem_7rem_4rem_6rem_auto] gap-2 items-center mt-2"
+        class="grid grid-cols-[8rem_1fr_7rem_7rem_7rem_4rem_6rem_auto] gap-2 items-center mt-2"
       >
         <select
           v-model="line.type"
@@ -362,6 +362,13 @@ onMounted(() => open('agenda'));
           :class="INPUT"
           type="date"
           :aria-label="t('TOLZAR_SETTINGS_UI.BOOKINGS.UNTIL')"
+        />
+        <input
+          v-model="line.resource"
+          :class="INPUT"
+          maxlength="60"
+          :aria-label="t('TOLZAR_SETTINGS_UI.BOOKINGS.RESOURCE')"
+          :placeholder="t('TOLZAR_SETTINGS_UI.BOOKINGS.RESOURCE')"
         />
         <input
           v-model="line.qty"

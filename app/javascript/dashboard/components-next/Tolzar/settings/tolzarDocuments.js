@@ -49,6 +49,11 @@ export function toSpec(d) {
       qty: String(l.qty || '').trim() || '1',
       unit_price: String(l.unit_price || '').trim(),
       ...(l.date ? { date: l.date } : {}),
+      // Bookings (c102): the last day, and who or what the line uses (a boat, a room, a guide).
+      ...(l.until ? { until: l.until } : {}),
+      ...(String(l.resource || '').trim()
+        ? { resource: String(l.resource).trim() }
+        : {}),
     }));
   const spec = { guests, lines };
   if (String(d.paid || '').trim())

@@ -86,6 +86,7 @@ class Tolzar::DocumentSpec
     lines.each_with_index do |line, i|
       @errors << "lines[#{i}]: unknown type #{line['type']}" unless LINE_TYPES.include?(line['type'].to_s)
       @errors << "lines[#{i}]: a description" if line['description'].to_s.strip.empty?
+      @errors << "lines[#{i}]: a resource of at most 60 characters" if line['resource'].to_s.length > 60
       check_number(line['qty'], "lines[#{i}].qty", positive: true) if line['qty'].present?
       check_number(line['unit_price'], "lines[#{i}].unit_price") unless placeholder?(line['unit_price'])
       if line['type'] == 'discount' && line_cents(line).positive?

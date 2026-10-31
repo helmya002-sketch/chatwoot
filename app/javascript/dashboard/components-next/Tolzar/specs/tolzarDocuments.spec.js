@@ -104,4 +104,25 @@ describe('tolzarDocuments logo', () => {
     });
     expect(checkLogo(null, null)).toEqual({ error: 'type' });
   });
+
+  it('keeps until and resource on the line they belong to (c102)', () => {
+    const spec = toSpec({
+      lines: [
+        { type: 'service', description: '', unit_price: '' },
+        {
+          type: 'rental',
+          description: 'Boat day',
+          unit_price: '50',
+          date: '2026-11-05',
+          until: '2026-11-06',
+          resource: ' Boat 2 ',
+        },
+      ],
+    });
+    expect(spec.lines).toHaveLength(1);
+    expect(spec.lines[0]).toMatchObject({
+      until: '2026-11-06',
+      resource: 'Boat 2',
+    });
+  });
 });
