@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_10_31_160000) do
+ActiveRecord::Schema[7.1].define(version: 2026_10_31_170000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1677,6 +1677,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_31_160000) do
     t.bigint "updated_by_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "held_at"
+    t.string "held_reason", limit: 300
     t.index ["account_id"], name: "index_tolzar_subscriptions_on_account_id", unique: true
   end
 

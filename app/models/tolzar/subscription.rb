@@ -47,6 +47,7 @@ class Tolzar::Subscription < ApplicationRecord
 
   def state(now = Time.current)
     return 'purged' if purged_at
+    return 'paused' if held_at # a super admin's manual hold (hold! / release!): never a purge date
     return 'active' if plan == 'internal'
     return pause_state(now) if lapsed?(now)
 
@@ -78,6 +79,16 @@ class Tolzar::Subscription < ApplicationRecord
             seat_limit: seat_limit || SEATS.fetch(plan), currency: currency || self.currency)
   end
 
+  # Control Center: a manual hold and its release (typed confirmation + reason, audited by the caller). A hold sets
+  # no purge date, so SubscriptionPurgeJob never touches a held workspace.
+  def hold!(reason:, now: Time.current)
+    update!(held_at: now, held_reason: reason.to_s.strip.first(300))
+  end
+
+  def release!
+    update!(held_at: nil, held_reason: nil)
+  end
+
   def extend_trial!(days:, by: nil)
     update!(trial_ends_at: [trial_ends_at, Time.current].compact.max + days.to_i.days,
             paused_at: nil, purge_after: nil, updated_by_id: by&.id)
@@ -89,7 +100,8 @@ class Tolzar::Subscription < ApplicationRecord
 
   def view(now = Time.current)
     { plan: plan, state: state(now), trial_ends_at: trial_ends_at, paid_until: paid_until, paused_at: paused_at,
-      purge_after: purge_after, seat_limit: seat_limit, seats_used: account.account_users.count, currency: currency }
+      purge_after: purge_after, seat_limit: seat_limit, seats_used: account.account_users.count, currency: currency,
+      held_at: held_at, held_reason: held_reason }
   end
 
   private

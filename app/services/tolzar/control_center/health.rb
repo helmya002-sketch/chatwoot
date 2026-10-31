@@ -13,7 +13,8 @@ class Tolzar::ControlCenter::Health
       backup: backup_status,
       mirror_lag_seconds: mirror_lag,
       mirror_errors_24h: Tolzar::MirrorEvent.where(received_at: (@now - 24.hours)..).where.not(error: nil).count,
-      monitors: monitors
+      monitors: monitors,
+      mail: mail
     }
   end
 
@@ -37,6 +38,14 @@ class Tolzar::ControlCenter::Health
   def mirror_lag
     last = Tolzar::MirrorEvent.maximum(:received_at)
     last ? (@now - last).to_i : nil
+  end
+
+  # The newsletter's own sends in the last 24 hours, by outcome (Tolzar::NewsletterDelivery statuses).
+  def mail
+    rows = Tolzar::NewsletterDelivery.where(updated_at: (@now - 24.hours)..).group(:status).count
+    { sent: rows.fetch('sent', 0), bounced: rows.fetch('bounced', 0), failed: rows.fetch('failed', 0) }
+  rescue StandardError
+    nil
   end
 
   private

@@ -6,6 +6,9 @@
   <div class="<%= class_names("rounded-xl border px-4 py-3 text-body-main", b[:enforced] ? "border-n-teal-6 bg-n-teal-3 text-n-teal-12" : "border-n-weak bg-n-solid-1 text-n-slate-11") %>">
     <%= t("#{cc}.#{b[:enforced] ? 'billing_enforced' : 'billing_not_enforced'}") %>
   </div>
+  <p class="m-0 text-body-main text-n-slate-11">
+    <%= t("#{cc}.xpay", state: t("#{cc}.#{ENV.fetch('TOLZAR_XPAY_MERCHANT_ID', '').present? ? 'xpay_on' : 'xpay_off'}")) %>
+  </p>
   <div class="flex flex-wrap gap-2">
     <%= render "button", label: t("#{cc}.open_billing"), url: super_admin_billing_path, variant: :secondary, extra: "h-9" %>
   </div>

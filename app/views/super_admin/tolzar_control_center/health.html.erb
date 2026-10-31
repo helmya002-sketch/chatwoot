@@ -70,6 +70,12 @@
     <% end %>
   </div>
 
+  <%= render "card", title: t("#{cc}.mail") do %>
+    <p class="px-5 py-4 m-0 text-body-main text-n-slate-12">
+      <%= h[:mail] ? t("#{cc}.mail_line", **h[:mail]) : t("#{cc}.none") %>
+    </p>
+  <% end %>
+
   <%= render "card", title: t("#{cc}.queues") do %>
     <% sq = h[:sidekiq] %>
     <% if sq.nil? %>

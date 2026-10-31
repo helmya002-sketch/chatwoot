@@ -22,6 +22,24 @@
     </div>
   <% end %>
 
+  <%= render "card", title: t("super_admin.tolzar_switches.request_title") do %>
+    <% can_request = SuperAdmin::TolzarSwitchRequestsController.open? %>
+    <div class="px-5 py-4 space-y-2 text-body-main">
+      <p class="m-0 text-n-slate-11"><%= t("super_admin.tolzar_switches.#{can_request ? 'request_hint' : 'request_closed'}") %></p>
+      <%= form_with url: super_admin_tolzar_switch_requests_path, method: :post, class: "flex flex-wrap gap-2 items-end" do %>
+        <fieldset <%= "disabled" unless can_request %> class="contents">
+          <div><%= label_tag :name, t("super_admin.tolzar_switches.request_name"), class: "text-label-small" %>
+               <%= text_field_tag :name, nil, placeholder: "TOLZAR_…", class: ui(:input, "min-h-9 w-64 font-mono") %></div>
+          <div><%= label_tag :value, t("super_admin.tolzar_switches.request_value"), class: "text-label-small" %>
+               <%= text_field_tag :value, nil, class: ui(:input, "min-h-9 w-48 font-mono") %></div>
+          <div><%= label_tag :reason, t("super_admin.control_center.people_reason"), class: "text-label-small" %>
+               <%= text_field_tag :reason, nil, maxlength: 300, class: ui(:input, "min-h-9 w-72") %></div>
+          <%= render "button", label: t("super_admin.tolzar_switches.request_send"), type: "submit", extra: "h-9" %>
+        </fieldset>
+      <% end %>
+    </div>
+  <% end %>
+
   <% [[t("super_admin.tolzar_switches.app"), @app_switches], [t("super_admin.tolzar_switches.brain"), @brain_switches]].each do |title, rows| %>
     <%= render "card", title: title do %>
       <% if rows.nil? %>

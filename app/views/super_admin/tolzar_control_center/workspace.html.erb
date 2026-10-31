@@ -44,6 +44,27 @@
     <% end %>
   </div>
 
+  <%= render "card", title: t("#{cc}.hold_title") do %>
+    <div class="px-5 py-4 space-y-2 text-body-main">
+      <% held = sub && sub[:held_at] %>
+      <p class="m-0 text-n-slate-11">
+        <%= held ? t("#{cc}.held_since", at: sub[:held_at].utc.strftime("%Y-%m-%d %H:%M"), reason: sub[:held_reason]) : t("#{cc}.hold_hint") %>
+      </p>
+      <%= form_with url: (held ? super_admin_tolzar_cc_workspace_release_path(@account) : super_admin_tolzar_cc_workspace_hold_path(@account)),
+                    method: :post, class: "flex flex-wrap gap-2 items-end" do %>
+        <div>
+          <%= label_tag :confirm, t("#{cc}.type_name", name: @account.name), class: "text-label-small" %>
+          <%= text_field_tag :confirm, nil, autocomplete: "off", class: ui(:input, "min-h-9 w-56") %>
+        </div>
+        <div>
+          <%= label_tag :reason, t("#{cc}.people_reason"), class: "text-label-small" %>
+          <%= text_field_tag :reason, nil, maxlength: 300, class: ui(:input, "min-h-9 w-72") %>
+        </div>
+        <%= render "button", label: t("#{cc}.#{held ? 'release' : 'hold'}"), type: "submit", variant: (held ? :primary : :danger), extra: "h-9" %>
+      <% end %>
+    </div>
+  <% end %>
+
   <% ai = @detail[:ai] %>
   <%= render "card", title: t("#{cc}.ai") do %>
     <% if ai.nil? %>

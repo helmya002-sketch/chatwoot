@@ -979,6 +979,7 @@ Rails.application.routes.draw do
       resources :platform_banners
       resource :instance_status, only: [:show]
       resource :tolzar_switches, only: [:show]
+      resource :tolzar_switch_requests, only: [:create]
       resource :tolzar_audits, only: [:show] do
         get :export
       end
@@ -986,6 +987,8 @@ Rails.application.routes.draw do
       get 'control_center', to: 'tolzar_control_center#overview', as: :tolzar_control_center
       get 'control_center/workspaces', to: 'tolzar_control_center#workspaces', as: :tolzar_cc_workspaces
       get 'control_center/workspaces/:id', to: 'tolzar_control_center#workspace', as: :tolzar_cc_workspace
+      post 'control_center/workspaces/:id/hold', to: 'tolzar_workspace_actions#hold', as: :tolzar_cc_workspace_hold
+      post 'control_center/workspaces/:id/release', to: 'tolzar_workspace_actions#release', as: :tolzar_cc_workspace_release
       get 'control_center/people', to: 'tolzar_control_center#people', as: :tolzar_cc_people
       post 'control_center/people/:id/reset_two_factor', to: 'tolzar_people_actions#reset_two_factor', as: :tolzar_cc_reset_two_factor
       post 'control_center/people/:id/end_sessions', to: 'tolzar_people_actions#end_sessions', as: :tolzar_cc_end_sessions
