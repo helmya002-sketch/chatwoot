@@ -19,6 +19,8 @@ Rails.application.routes.draw do
   post 'tolzar/meta/data_deletion', to: 'tolzar/meta#data_deletion'
   # Tolzar's own help (round 4, c67): every in-app "Learn more" opens our help centre, never Chatwoot's docs.
   get  'tz/help/:topic', to: 'tolzar/help_topics#show', as: :tolzar_help_topic, constraints: { topic: /[a-z_]{1,40}/ }
+  get  'tz/ical/:account_id/:user_id/:token', to: 'tolzar/booking_calendar#show', format: false,
+                                              constraints: { account_id: /\d+/, user_id: /\d+/, token: /[0-9a-f]{64}\.ics/ }
   get  'tolzar/meta/deletion',      to: 'tolzar/meta#deletion'
   get  'tolzar/meta/error',         to: 'tolzar/meta#failed'
   get  'tolzar/meta/hook/:webhook_token', to: 'tolzar/meta_hook#verify'
@@ -155,6 +157,8 @@ Rails.application.routes.draw do
           get    'tolzar/team_leaderboard',          to: 'tolzar_team_leaderboard#show'
           get    'tolzar/channel_breakdown',         to: 'tolzar_channel_breakdown#show'
           get    'tolzar/contacts/:contact_id/timeline', to: 'tolzar_contact_timeline#show'
+          get    'tolzar/booking_calendar',          to: 'tolzar_booking_calendar#show'
+          post   'tolzar/booking_calendar/reset',    to: 'tolzar_booking_calendar#reset'
           get    'tolzar/human_agent_replies',       to: 'tolzar_human_agent_replies#index'
           get    'tolzar/bookings/:id',              to: 'tolzar_bookings#show'
           post   'tolzar/bookings',                  to: 'tolzar_bookings#create'

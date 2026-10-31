@@ -13,6 +13,7 @@ import {
   TONE_MUTED,
 } from './tzClasses';
 import { emptyLine, linesTotal, toSpec, PLACEHOLDER } from './tolzarDocuments';
+import BookingCalendarLink from './BookingCalendarLink.vue';
 
 // Settings hub → Workspace → Bookings (Tolzar::Booking): today and the next 14 days, the list, a booking editor,
 // status moves, the payments record (Tolzar never charges) and a draft voucher from a booking.
@@ -415,5 +416,6 @@ onMounted(() => open('agenda'));
         {{ t('TOLZAR_SETTINGS_UI.BOOKINGS.SAVE') }}
       </button>
     </section>
+    <BookingCalendarLink />
   </div>
 </template>

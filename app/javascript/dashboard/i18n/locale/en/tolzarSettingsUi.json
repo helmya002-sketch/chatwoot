@@ -66,6 +66,12 @@
       "BALANCE": "Balance {amount}"
     },
     "BOOKINGS": {
+      "ICAL_TITLE": "Your calendar link",
+      "ICAL_WHAT": "Add this private link to Google Calendar, Outlook or Apple Calendar to see confirmed bookings (booking number, status and dates only). It is yours alone: don't share it.",
+      "ICAL_COPY": "Copy link",
+      "ICAL_COPIED": "Copied",
+      "ICAL_RESET": "Make a new link",
+      "ICAL_RESET_CONFIRM": "Make a new link? The old one stops working, and calendars that use it stop updating.",
       "WHAT": "Bookings with guests, dates and lines, a record of payments (Tolzar never charges a card), and a voucher from any booking.",
       "OFF": "Bookings are not switched on for this workspace yet.",
       "TAB_agenda": "Next 14 days",
