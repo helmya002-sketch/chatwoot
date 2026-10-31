@@ -14,7 +14,7 @@ class Api::V1::Accounts::TolzarBookingConnectorController < Api::V1::Accounts::B
   def show
     connector = Tolzar::BookingConnector.find_by(account_id: Current.account.id)
     render json: { ok: true, connected: connector.present?, connector: connector&.view,
-                   adapters: Tolzar::BookingConnector::ADAPTERS.keys }
+                   adapters: Tolzar::BookingConnector::ADAPTERS.keys, webhook: webhook_for(connector) }
   end
 
   def save
@@ -63,6 +63,14 @@ class Api::V1::Accounts::TolzarBookingConnectorController < Api::V1::Accounts::B
   end
 
   private
+
+  # Where the booking system posts its events (Tolzar::BookingHook), and the signing secret: the owner only.
+  def webhook_for(connector)
+    return unless connector && Tolzar::AccountOwner.owner?(Current.account, Current.user)
+
+    { url: "#{ENV.fetch('FRONTEND_URL', '').chomp('/')}/tolzar/booking_hooks/#{connector.id}",
+      secret: Tolzar::BookingHook.secret(connector), events: Tolzar::BookingHook::EVENTS }
+  end
 
   def ensure_enabled
     head :not_found unless Tolzar::BookingConnector.enabled?(Current.account.id)

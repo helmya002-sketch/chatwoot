@@ -34,6 +34,8 @@ Rails.application.routes.draw do
   # Tolzar: the website concierge (Tolzar::SiteConciergeController; the brain's TOLZAR_DEMO switch).
   # Tolzar: lead intake (Tolzar::LeadIntake; TOLZAR_LEAD_INTAKE workspaces, per-inbox secret URL).
   post    'tolzar/leads/:inbox_id/:token', to: 'tolzar/leads#create'
+  # Tolzar: booking-system events (Tolzar::BookingHook; signed, TOLZAR_BOOKING_CONNECTOR).
+  post    'tolzar/booking_hooks/:connector_id', to: 'tolzar/booking_hooks#create'
   post    'tolzar/site/concierge', to: 'tolzar/site_concierge#create'
   post    'tolzar/site/concierge/handoff', to: 'tolzar/site_concierge#handoff'
   match   'tolzar/site/concierge(/handoff)', to: 'tolzar/site_concierge#preflight', via: :options
