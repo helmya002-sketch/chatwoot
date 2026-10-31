@@ -18,6 +18,7 @@ module Tolzar::OwnWidget
     inbox = web_widget.inbox
     {
       authToken: token,
+      maxFileMb: GlobalConfig.get('MAXIMUM_FILE_UPLOAD_SIZE')['MAXIMUM_FILE_UPLOAD_SIZE'],
       pubsubToken: contact_inbox&.pubsub_token,
       locale: web_widget.account.locale,
       channel: {

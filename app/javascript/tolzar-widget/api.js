@@ -63,6 +63,20 @@ export class Api {
     });
   }
 
+  // The pre-chat form's submit: creates the conversation with the visitor's details and first message.
+  startConversation(body) {
+    return this.request('POST', 'conversations', { body });
+  }
+
+  sendFile(file, echoId) {
+    const form = new FormData();
+    form.append('message[attachments][]', file, file.name);
+    form.append('message[echo_id]', echoId);
+    form.append('message[timestamp]', new Date().toString());
+    form.append('message[referer_url]', document.referrer || '');
+    return this.request('POST', 'messages', { body: form });
+  }
+
   typing(on) {
     return this.request('POST', 'conversations/toggle_typing', {
       body: { typing_status: on ? 'on' : 'off' },

@@ -7,6 +7,14 @@ import { Cable, cableUrl } from './cable';
 import { formatMessage } from './format';
 import { createStore, upsert, markFailed, countUnread, TYPE } from './store';
 import { t, direction } from './i18n';
+import {
+  awayNode,
+  attachmentNodes,
+  attachButton,
+  fileTooBig,
+  prechatNeeded,
+  renderPrechat,
+} from './extras';
 
 const el = (doc, tag, cls, text) => {
   const node = doc.createElement(tag);
@@ -61,9 +69,18 @@ export class WidgetApp {
     try {
       upsert(this.store, await this.api.messages());
       this.paint();
+      this.maybePrechat();
     } catch {
       this.showError(t(this.locale, 'LOAD_FAILED'));
     }
+  }
+
+  // The inbox's pre-chat form, before the visitor's first message (extras.js).
+  maybePrechat() {
+    if (this.prechatDone || !prechatNeeded(this)) return;
+    if (this.root.querySelector('.tz-prechat')) return;
+    this.composer.hidden = true;
+    this.list.after(renderPrechat(this));
   }
 
   // --- the loader's messages (the customer's page -> us) ---------------------------------------------------
@@ -207,6 +224,32 @@ export class WidgetApp {
     this.paint();
   }
 
+  async sendFile(file) {
+    if (fileTooBig(file, this.config.maxFileMb)) {
+      this.showError(t(this.locale, 'TOO_BIG'));
+      return;
+    }
+    this.showError('');
+    const echoId = `tz-${Date.now().toString(36)}-f`;
+    upsert(this.store, [
+      {
+        echo_id: echoId,
+        content: file.name,
+        message_type: TYPE.INCOMING,
+        created_at: Date.now() / 1000,
+        pending: true,
+      },
+    ]);
+    this.paint();
+    try {
+      const saved = await this.api.sendFile(file, echoId);
+      upsert(this.store, [{ ...saved, echo_id: echoId }]);
+    } catch {
+      markFailed(this.store, echoId);
+    }
+    this.paint();
+  }
+
   onInput() {
     this.api.typing(true);
     this.win.clearTimeout(this.typingTimer);
@@ -275,9 +318,20 @@ export class WidgetApp {
       this.input.value = '';
       this.send(text);
     });
-    form.append(this.input, sendBtn);
+    const canAttach = this.channel.enabledFeatures?.attachments !== false;
+    form.append(
+      ...(canAttach ? [attachButton(this)] : []),
+      this.input,
+      sendBtn
+    );
+    this.composer = form;
 
-    this.root.append(header, this.list, this.typingEl, this.errorEl, form);
+    const away = awayNode(this);
+    this.root.append(
+      ...[header, away, this.list, this.typingEl, this.errorEl, form].filter(
+        Boolean
+      )
+    );
   }
 
   paint() {
@@ -292,7 +346,10 @@ export class WidgetApp {
       if (!mine && m.sender?.name && m.type !== TYPE.ACTIVITY)
         li.append(el(doc, 'div', 'tz-sender', m.sender.name));
       const bubble = el(doc, 'div', 'tz-bubble');
-      bubble.append(formatMessage(m.content, doc));
+      if (m.content && !(m.attachments.length && m.pending)) {
+        bubble.append(formatMessage(m.content, doc));
+      }
+      bubble.append(...attachmentNodes(doc, m.attachments, this.locale));
       li.append(bubble);
       if (m.pending || m.failed)
         li.append(
