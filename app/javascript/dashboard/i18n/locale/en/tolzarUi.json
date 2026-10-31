@@ -29,5 +29,23 @@
     "COPIED": "Copied",
     "SHOW_MORE": "Show more ({n} left)",
     "NONE_YET": "Nothing here yet"
+  },
+  "TOLZAR_LICENCES": {
+    "TITLE": "Open-source licences",
+    "INTRO": "Tolzar is built on open-source software. These are the components it ships, each with its licence and the notice its authors require.",
+    "FAILED": "The licences could not be loaded.",
+    "FOUNDATION": "Inbox foundation",
+    "SOURCE_OFFER": "Source code of LGPL and MPL components",
+    "SOURCE_OFFER_HINT": "These components are used under a weak-copyleft licence. Their complete source code is published at the address shown. To get the source of the exact version we run, ask through Contact support in the profile menu.",
+    "SOURCE": "Source",
+    "SEARCH": "Search by name or licence",
+    "NONE": "None",
+    "NO_FILE": "This package ships no licence file; its licence is the one named above, as published on its home page.",
+    "GROUP": {
+      "gems": "Server (Ruby gems, {n})",
+      "javascript": "Browser (JavaScript packages, {n})",
+      "system": "System libraries ({n})",
+      "ai": "AI service (Python packages, runtime and model, {n})"
+    }
   }
 }

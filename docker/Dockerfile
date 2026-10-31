@@ -216,8 +216,11 @@ COPY . /app
 RUN mkdir -p /app/log
 
 # generate production assets if production environment
+# Tolzar: the browser bundles' open-source notices (in-app "Open-source licences" page), written while
+# node_modules still exists.
 RUN if [ "$RAILS_ENV" = "production" ]; then \
-  SECRET_KEY_BASE=precompile_placeholder RAILS_LOG_TO_STDOUT=enabled bundle exec rake assets:precompile \
+  node docker/tolzar/js_notices.mjs /app > /app/config/tolzar/js_notices.json \
+  && SECRET_KEY_BASE=precompile_placeholder RAILS_LOG_TO_STDOUT=enabled bundle exec rake assets:precompile \
   && rm -rf spec node_modules tmp/cache; \
   fi
 

@@ -72,6 +72,14 @@ const menuItems = computed(() => {
       link: { name: 'profile_settings_index' },
     },
     {
+      // Tolzar: the open-source notices of everything Tolzar ships (TolzarLicences.vue).
+      show: true,
+      showOnCustomBrandedInstance: true,
+      label: t('SIDEBAR_ITEMS.OPEN_SOURCE_LICENCES'),
+      icon: 'i-lucide-scale',
+      link: { name: 'tolzar_open_source_licences' },
+    },
+    {
       show: true,
       showOnCustomBrandedInstance: true,
       label: t('SIDEBAR_ITEMS.APPEARANCE'),

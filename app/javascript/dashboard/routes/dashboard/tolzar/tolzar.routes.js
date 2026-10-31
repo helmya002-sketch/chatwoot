@@ -8,6 +8,7 @@ import TolzarSettingsHub from './TolzarSettingsHub.vue';
 import TolzarOnboarding from './TolzarOnboarding.vue';
 import TolzarAgency from './TolzarAgency.vue';
 import TolzarResults from './TolzarResults.vue';
+import TolzarLicences from './TolzarLicences.vue';
 
 const PERMS = { permissions: ['administrator', 'agent', 'custom_role'] };
 // AI Agents and Workflows: every write (and the test chat) is admin/Owner-only on the proxy, so the
@@ -62,6 +63,13 @@ export const routes = [
     name: 'tolzar_agency',
     component: TolzarAgency,
     meta: ADMIN,
+  },
+  {
+    // Profile menu → Open-source licences: every signed-in member may read it.
+    path: frontendURL('accounts/:accountId/open-source-licences'),
+    name: 'tolzar_open_source_licences',
+    component: TolzarLicences,
+    meta: PERMS,
   },
   {
     path: frontendURL('accounts/:accountId/workflows'),

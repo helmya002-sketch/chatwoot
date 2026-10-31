@@ -97,6 +97,8 @@ Rails.application.routes.draw do
         end
 
         scope module: :accounts do
+          # Tolzar: the open-source notices behind the profile menu's "Open-source licences" page.
+          get 'open_source_licences', to: 'open_source_licences#index'
           # Tolzar: admin-gated proxy to the internal brain's AI-Agents test chat.
           post 'tolzar/agent_test', to: 'tolzar#agent_test'
           # Tolzar: server-side AI-Agent configs (CRUD), proxied to the brain.
