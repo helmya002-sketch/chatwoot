@@ -20,6 +20,9 @@ RSpec.describe 'Tolzar TikTok CRM events' do
     end
 
     it 'is owner only, keeps the token write-only and checks the stage map' do
+      # The token is encrypted at rest: without the ACTIVE_RECORD_ENCRYPTION_* keys this skips (the gate's keyed
+      # pass runs it, as encrypted_credentials_spec).
+      skip 'ACTIVE_RECORD_ENCRYPTION_* keys are not set' unless Chatwoot.encryption_configured?
       save(user: agent)
       expect(response).to have_http_status(:forbidden)
       save(stage_events: { 'Not a stage' => 'Lead' })
@@ -35,6 +38,9 @@ RSpec.describe 'Tolzar TikTok CRM events' do
   end
 
   describe 'sending' do
+    # The link's token is encrypted: without the keys these skip. Declared before let!(:link), so it runs first.
+    before { skip 'ACTIVE_RECORD_ENCRYPTION_* keys are not set' unless Chatwoot.encryption_configured? }
+
     let!(:link) do
       Tolzar::AdPlatformLink.create!(account: account, platform: 'tiktok', enabled: true, event_set_id: 'CRM12345',
                                      token: 'tt-secret-token', stage_events: { 'Customer Won' => 'CompletePayment' })

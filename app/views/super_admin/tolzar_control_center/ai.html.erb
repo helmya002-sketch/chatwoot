@@ -21,7 +21,7 @@
                 <% if row[:known] %>
                   <%= render "badge", label: t("#{cc}.#{row[:kill_switch_on] ? 'kill_on' : 'kill_off'}"), tone: (row[:kill_switch_on] ? :danger : :neutral) %>
                 <% else %>
-                  <%= render "badge", label: t("#{cc}.ai_unknown"), tone: :warning %>
+                  <%= render "badge", label: t("#{cc}.ai_list_unknown"), tone: :warning %>
                 <% end %>
               </td>
               <td class="px-4 py-2 tabular-nums">

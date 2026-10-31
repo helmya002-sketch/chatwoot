@@ -14,6 +14,12 @@ RSpec.describe 'Tolzar booking connector', type: :request do
     with_modified_env(TOLZAR_BOOKING_CONNECTOR: account.id.to_s, TOLZAR_BOOKING_DOCS_ACCOUNTS: account.id.to_s) { example.run }
   end
 
+  # The token is encrypted at rest (Active Record encryption). Without the ACTIVE_RECORD_ENCRYPTION_* keys (the
+  # gate's first pass) the examples that store one skip; the gate's keyed pass runs them (as encrypted_credentials).
+  def needs_keys!
+    skip 'ACTIVE_RECORD_ENCRYPTION_* keys are not set' unless Chatwoot.encryption_configured?
+  end
+
   def connect(user: owner, **body)
     post base, params: { adapter: 'dwt', base_url: 'https://bookings.example.com/admin/bookings/api.php', token: 'dwtbk_secret1' }.merge(body),
                headers: user.create_new_auth_token, as: :json
@@ -27,6 +33,7 @@ RSpec.describe 'Tolzar booking connector', type: :request do
   end
 
   it 'lets only the owner connect, keeps the token encrypted and never returns it' do
+    needs_keys!
     connect(user: agent)
     expect(response).to have_http_status(:forbidden)
     connect(base_url: 'http://bookings.example.com/api.php')
@@ -41,6 +48,7 @@ RSpec.describe 'Tolzar booking connector', type: :request do
   end
 
   it 'tests the connection with a read call and keeps only the outcome' do
+    needs_keys!
     connect
     allow_any_instance_of(Tolzar::BookingConnector).to receive(:client).and_return(fake) # rubocop:disable RSpec/AnyInstance
     allow(fake).to receive(:catalog).and_return([{ 'slug' => 'open-water' }, { 'slug' => 'advanced' }])
@@ -50,6 +58,7 @@ RSpec.describe 'Tolzar booking connector', type: :request do
   end
 
   it "reads a guest's bookings and sends a document as a draft booking without prices" do
+    needs_keys!
     connect
     contact = create(:contact, account: account, phone_number: '+41791234567', name: 'Sara')
     conversation = create(:conversation, account: account, contact: contact)

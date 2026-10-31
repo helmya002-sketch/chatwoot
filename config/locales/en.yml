@@ -854,7 +854,7 @@ en:
       queue_line: '%{size} waiting · %{latency}s'
       ai_title: 'AI safety'
       ai_description: 'Every workspace: is the kill switch on, how many inboxes are live, how many agents. Read-only before 12 Nov; the kill switch is set in the workspace.'
-      ai_unknown: 'Brain did not answer'
+      ai_list_unknown: 'Brain did not answer'
       live_inboxes: 'Live inboxes'
       agents_count: 'Agents'
       billing_title: 'Billing overview'
