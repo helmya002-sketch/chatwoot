@@ -63,7 +63,24 @@ RSpec.describe 'Tolzar lead intake', type: :request do
     expect(response).to have_http_status(:unprocessable_entity)
   end
 
-  it "shows the lead URLs to the workspace owner only" do
+  it 'reports leads per source and campaign with won and lost to administrators' do
+    admin = create(:user, account: account, role: :administrator)
+    send_lead
+    send_lead(lead.merge(lead_id: 'tt-9', email: 'b@example.com', phone: nil, name: 'B'))
+    Contact.find_by(email: 'b@example.com').tap do |c|
+      c.update!(custom_attributes: c.custom_attributes.merge('lifecycle_stage' => 'Customer Won'))
+    end
+    create(:contact, account: account, custom_attributes: { 'lead_source' => 'website' })
+    get "/api/v1/accounts/#{account.id}/tolzar/lead_sources", params: { days: 30 }, headers: admin.create_new_auth_token
+    rows = response.parsed_body['rows']
+    expect(rows.first).to include('source' => 'tiktok', 'campaign' => 'Spring', 'leads' => 2, 'won' => 1, 'lost' => 0)
+    expect(rows.pluck('source')).to include('website')
+    agent = create(:user, account: account, role: :agent)
+    get "/api/v1/accounts/#{account.id}/tolzar/lead_sources", headers: agent.create_new_auth_token
+    expect(response).to have_http_status(:unauthorized)
+  end
+
+  it 'shows the lead URLs to the workspace owner only' do
     owner = create(:user, account: account, role: :administrator)
     other_admin = create(:user, account: account, role: :administrator)
     inbox

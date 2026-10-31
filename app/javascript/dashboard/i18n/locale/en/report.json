@@ -1118,7 +1118,8 @@
       "agent_teams": "Agents per team",
       "tuning": "Improvement proposals",
       "whatsapp_listen": "WhatsApp (listen-only)",
-      "lead_intake": "Lead forms"
+      "lead_intake": "Lead forms",
+      "lead_sources": "Lead sources"
     },
     "HINT": {
       "plan": "Your plan's shared AI-reply allowance across your workspaces.",
@@ -1154,7 +1155,8 @@
       "agent_teams": "Which AI agent speaks for which team (sales, support...). Empty uses the workspace's default agent.",
       "tuning": "Once a day Tolzar suggests up to 3 edits to your agent's instructions, from QA notes, guard stops and your team's answers.",
       "whatsapp_listen": "Receive a WhatsApp number that another platform already runs, with your business's own Meta app. Owner only.",
-      "lead_intake": "Send leads from TikTok Instant Forms, ad connectors or your website straight into the pipeline. Owner only."
+      "lead_intake": "Send leads from TikTok Instant Forms, ad connectors or your website straight into the pipeline. Owner only.",
+      "lead_sources": "Which sources and campaigns bring your leads, and how many you win."
     },
     "SAVE": "Save",
     "NONE_YET": "Nothing yet.",

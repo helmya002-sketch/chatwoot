@@ -28,6 +28,7 @@ import PipelinePanel from 'dashboard/components-next/Tolzar/settings/PipelinePan
 import MetaAppPanel from 'dashboard/components-next/Tolzar/settings/MetaAppPanel.vue';
 import WhatsappListenOnlyPanel from 'dashboard/components-next/Tolzar/settings/WhatsappListenOnlyPanel.vue';
 import LeadIntakePanel from 'dashboard/components-next/Tolzar/settings/LeadIntakePanel.vue';
+import LeadSourcesPanel from 'dashboard/components-next/Tolzar/settings/LeadSourcesPanel.vue';
 import {
   BTN,
   BTN_GHOST,
@@ -98,7 +99,7 @@ const SECTIONS = [
   ['team', ['sla', 'qa']],
   ['ai', ['media', 'documents', 'recovery', 'learned', 'brief', 'ask', 'negotiation', 'agent_teams', 'tuning']],
   ['contacts', ['dedupe']],
-  ['growth', ['links', 'broadcasts']],
+  ['growth', ['links', 'broadcasts', 'lead_sources']],
   ['developers', ['connections', 'mcp']],
 ];
 // Round 1 panels load their own data (one component per group).
@@ -543,6 +544,7 @@ onMounted(() => {
           <ChannelsPanel v-if="CHANNELS.includes(current)" :key="current" :section="current" />
           <WhatsappListenOnlyPanel v-if="current === 'whatsapp_listen'" />
           <LeadIntakePanel v-if="current === 'lead_intake'" />
+          <LeadSourcesPanel v-if="current === 'lead_sources'" />
           <AiLimitsPanel v-if="AI_LIMITS.includes(current)" :key="current" :section="current" />
           <DocumentsPanel v-if="current === 'documents'" />
           <WorkspacePanel v-if="current === 'workspace_settings'" />

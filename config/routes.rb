@@ -122,6 +122,7 @@ Rails.application.routes.draw do
           post   'tolzar/billing_group/delete', to: 'tolzar#billing_group_delete'
           post   'tolzar/whatsapp/listen_only',  to: 'tolzar#whatsapp_listen_only_connect'
           get    'tolzar/lead_intake',           to: 'tolzar_lead_intake#show'
+          get    'tolzar/lead_sources',          to: 'tolzar_lead_intake#sources'
           get    'tolzar/workspace/settings',    to: 'tolzar#workspace_settings'
           post   'tolzar/workspace/settings',    to: 'tolzar#workspace_settings_save'
           post   'tolzar/workspace/go_live',     to: 'tolzar#go_live'
