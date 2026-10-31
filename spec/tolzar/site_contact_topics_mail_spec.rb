@@ -30,25 +30,29 @@ RSpec.describe 'Tolzar site contact: topics and the trial mail', type: :request 
   end
 
   it 'sends no mail while TOLZAR_TRIAL_MAIL_FROM is unset' do
-    perform_enqueued_jobs { post '/tolzar/site/contact', params: form }
-    expect(ActionMailer::Base.deliveries).to be_empty
+    expect { post '/tolzar/site/contact', params: form }.not_to have_enqueued_mail(Tolzar::TrialMailer, :confirmation)
   end
 
-  it 'sends one trial mail to the typed address only, once a day, with a fixed text' do
+  it 'queues one trial mail for the typed address only, once a day, only for a trial' do
     with_modified_env(TOLZAR_TRIAL_MAIL_FROM: 'Tolzar <noreply@tolzar.com>') do
-      perform_enqueued_jobs do
-        post '/tolzar/site/contact', params: form.merge(lang: 'de')
-        post '/tolzar/site/contact', params: form
-        post '/tolzar/site/contact', params: form.merge(topic: 'contact', email: 'other@example.com')
-      end
+      expect { post '/tolzar/site/contact', params: form.merge(lang: 'de') }
+        .to have_enqueued_mail(Tolzar::TrialMailer, :confirmation).with('mona@example.com', 'Mona', 'de')
+      expect { post '/tolzar/site/contact', params: form }.not_to have_enqueued_mail(Tolzar::TrialMailer, :confirmation)
+      expect { post '/tolzar/site/contact', params: form.merge(topic: 'contact', email: 'other@example.com') }
+        .not_to have_enqueued_mail(Tolzar::TrialMailer, :confirmation)
     end
-    expect(ActionMailer::Base.deliveries.size).to eq(1)
-    mail = ActionMailer::Base.deliveries.first
-    expect(mail.to).to eq(['mona@example.com'])
-    expect(mail.subject).to eq('Ihre Tolzar-Testphase: so geht es weiter')
-    expect(mail.text_part.body.to_s).to include('Hallo Mona,', 'Innerhalb von 1 Werktag')
-    expect(mail.html_part.body.to_s).not_to include('<script>', '<b>')
-    expect(mail.body.encoded).not_to include('Call me')
+  end
+
+  it 'renders the fixed trial text and delivers it, nothing typed echoed but the first name' do
+    with_modified_env(TOLZAR_TRIAL_MAIL_FROM: 'Adam from Tolzar <noreply@tolzar.com>') do
+      mail = Tolzar::TrialMailer.confirmation('mona@example.com', 'Mona', 'de')
+      expect { mail.deliver_now }.to change(ActionMailer::Base.deliveries, :size).by(1)
+      expect(mail.to).to eq(['mona@example.com'])
+      expect(mail[:from].display_names).to eq(['Adam from Tolzar'])
+      expect(mail.subject).to eq('Ihre Tolzar-Testphase: so geht es weiter')
+      expect(mail.text_part.body.to_s).to include('Hallo Mona,', 'Innerhalb von 1 Werktag', 'Adam von Tolzar')
+      expect(mail.html_part.body.to_s).not_to include('<script>')
+    end
   end
 
   it 'folds the v3 extras of a plain (no-JS) post into the message, once' do
