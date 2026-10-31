@@ -1359,3 +1359,5 @@ en:
       update: 'Update on the conversation with %{name}'
       someone: 'a customer'
       teammate: 'A teammate'
+    transcript:
+      system: 'System'

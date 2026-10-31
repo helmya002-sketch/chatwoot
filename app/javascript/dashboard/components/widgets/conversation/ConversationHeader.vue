@@ -24,6 +24,7 @@ import {
   STAGES as SHARED_STAGES,
 } from 'dashboard/components-next/Tolzar/tolzarStages';
 import LeadScoreRing from 'dashboard/components-next/Tolzar/LeadScoreRing.vue';
+import TranscriptButton from 'dashboard/components-next/Tolzar/TranscriptButton.vue';
 import { tolzarBrand } from 'dashboard/components-next/Tolzar/TolzarBranding.vue';
 import ConversationSummaryButton from 'dashboard/components-next/Tolzar/ConversationSummaryButton.vue';
 import FollowUpReminderButton from 'dashboard/components-next/Tolzar/FollowUpReminderButton.vue';
@@ -325,6 +326,7 @@ const setStage = stage => {
         :conversation-id="currentChat.id"
       />
       <ConversationCallButton :inbox="inbox" :chat="currentChat" />
+      <TranscriptButton :display-id="currentChat.id" />
       <MoreActions :conversation-id="currentChat.id" />
     </div>
   </div>

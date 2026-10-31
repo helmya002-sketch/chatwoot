@@ -1,0 +1,53 @@
+<%# Tolzar conversation transcript (Api::V1::Accounts::TolzarTranscriptController#show). Self-contained, no script;
+    every value escaped by ERB. Private notes appear only when the viewer ticked "include internal notes". %>
+<% contact = conversation.contact %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Conversation #<%= conversation.display_id %></title>
+  <style>
+    @page { size: A4; margin: 14mm; }
+    body { font: 12px/1.5 Inter, system-ui, sans-serif; color: #0f172a; margin: 16px; }
+    header { border-bottom: 2px solid #3e63dd; padding-bottom: 8px; margin-bottom: 12px; }
+    h1 { font-size: 18px; margin: 0; }
+    .muted { color: #475569; }
+    .msg { padding: 6px 0; border-bottom: 1px solid #e2e8f0; break-inside: avoid; }
+    .who { font-weight: 600; }
+    .time { color: #475569; font-size: 11px; margin-inline-start: 6px; }
+    .text { white-space: pre-wrap; word-wrap: break-word; margin-top: 2px; }
+    .note { background: #fff8e6; padding-inline: 6px; }
+    .tag { font-size: 10px; text-transform: uppercase; letter-spacing: .06em; color: #6b4a00; margin-inline-start: 6px; }
+    .activity { color: #475569; font-style: italic; }
+    .files { color: #475569; font-size: 11px; margin-top: 2px; }
+    @media print { body { margin: 0; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Conversation #<%= conversation.display_id %></h1>
+    <div class="muted">
+      <%= conversation.account.name %> · <%= conversation.inbox&.name %><% if contact %> · <%= contact.name %><% end %>
+    </div>
+    <div class="muted">
+      Printed <%= Time.current.in_time_zone(zone).strftime('%Y-%m-%d %H:%M') %> (<%= zone.tzinfo.name %>)
+      · <%= notes ? 'Internal notes included' : 'Internal notes left out' %>
+    </div>
+  </header>
+
+  <% if rows.empty? %><p class="muted">No messages.</p><% end %>
+  <% rows.each do |row| %>
+    <% if row[:kind] == 'activity' %>
+      <div class="msg activity"><span class="time"><%= row[:at].strftime('%Y-%m-%d %H:%M') %></span> <%= row[:text] %></div>
+    <% else %>
+      <div class="msg<%= ' note' if row[:kind] == 'note' %>">
+        <span class="who"><%= row[:sender] %></span>
+        <span class="time"><%= row[:at].strftime('%Y-%m-%d %H:%M') %></span>
+        <% if row[:kind] == 'note' %><span class="tag">Internal note</span><% end %>
+        <% if row[:text].present? %><div class="text"><%= row[:text] %></div><% end %>
+        <% if row[:files].any? %><div class="files">Attachments: <%= row[:files].join(', ') %></div><% end %>
+      </div>
+    <% end %>
+  <% end %>
+</body>
+</html>

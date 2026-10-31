@@ -147,6 +147,14 @@
       "OPEN_FOCUSED": "Open the focused card or row (pipeline, contacts, agents, workflows)",
       "MOVE_FOCUS": "Move to the next or previous button or field"
     },
+    "TRANSCRIPT": {
+      "BUTTON": "Print transcript",
+      "TITLE": "Print this conversation",
+      "HINT": "Opens a print-friendly page. Use your browser's Print to save it as PDF.",
+      "NOTES": "Include internal notes",
+      "OPEN": "Open print view",
+      "FAILED": "Couldn't open the transcript. Try again."
+    },
     "CARD": {
       "NO_REPLY_YET": "No reply yet",
       "NO_REPLY_FOR": "No reply for {time}",

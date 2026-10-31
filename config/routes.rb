@@ -169,6 +169,7 @@ Rails.application.routes.draw do
           post   'tolzar/holidays',                  to: 'tolzar_holidays#save'
           post   'tolzar/booking_calendar/reset',    to: 'tolzar_booking_calendar#reset'
           get    'tolzar/human_agent_replies',       to: 'tolzar_human_agent_replies#index'
+          get    'tolzar/conversations/:display_id/transcript', to: 'tolzar_transcript#show'
           get    'tolzar/bookings/:id',              to: 'tolzar_bookings#show'
           post   'tolzar/bookings',                  to: 'tolzar_bookings#create'
           patch  'tolzar/bookings/:id',              to: 'tolzar_bookings#update'
