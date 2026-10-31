@@ -12,6 +12,11 @@ class WidgetsController < ActionController::Base
   before_action :build_contact
   after_action :allow_iframe_requests
 
+  # Tolzar::OwnWidget: the Tolzar app for listed workspaces; the old app (show.html.erb) everywhere else.
+  def show
+    render(Tolzar::OwnWidget.on?(@web_widget.account_id) ? 'widgets/tolzar' : 'widgets/show')
+  end
+
   private
 
   def set_global_config

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= @web_widget.inbox.name %></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex">
+    <%# Tolzar widget (Tolzar::OwnWidget): the visitor's config as JSON data, escaped by json_escape; no inline JS. %>
+    <script type="application/json" id="tz-widget-config"><%= json_escape(Tolzar::OwnWidget.page_config(@web_widget, @contact_inbox, @token).to_json).html_safe %></script>
+    <%= vite_client_tag %>
+    <%= vite_javascript_tag 'tolzar_widget' %>
+  </head>
+  <body>
+    <div id="tz-widget" data-scheme="auto"></div>
+  </body>
+</html>

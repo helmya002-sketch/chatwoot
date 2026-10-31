@@ -1,0 +1,84 @@
+/* Tolzar widget (inside the iframe). Our own styles; light and dark from the visitor's setting or the page's
+   choice (data-scheme), RTL by logical properties. Text pairs meet WCAG AA. */
+:root {
+  --tz-bg: #ffffff;
+  --tz-surface: #f1f5f9;
+  --tz-text: #0f172a;
+  --tz-muted: #5f6e85;
+  --tz-border: #e2e8f0;
+  --tz-accent: #3e63dd;
+  --tz-on-accent: #ffffff;
+  --tz-danger: #b42318;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  #tz-widget:not([data-scheme='light']) {
+    --tz-bg: #0f172a;
+    --tz-surface: #16213d;
+    --tz-text: #f1f5f9;
+    --tz-muted: #a0aec2;
+    --tz-border: #1e293b;
+    --tz-danger: #ff8c8c;
+    color-scheme: dark;
+  }
+}
+#tz-widget[data-scheme='dark'] {
+  --tz-bg: #0f172a;
+  --tz-surface: #16213d;
+  --tz-text: #f1f5f9;
+  --tz-muted: #a0aec2;
+  --tz-border: #1e293b;
+  --tz-danger: #ff8c8c;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body { font: 14px/1.45 Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans Arabic', sans-serif; }
+#tz-widget {
+  display: flex; flex-direction: column; height: 100%;
+  background: var(--tz-bg); color: var(--tz-text);
+}
+.tz-header {
+  display: flex; align-items: flex-start; gap: 12px; padding: 16px;
+  background: var(--tz-accent); color: var(--tz-on-accent);
+}
+.tz-head-text { flex: 1; min-width: 0; }
+.tz-title { font-weight: 600; font-size: 16px; }
+.tz-sub { opacity: 0.92; font-size: 13px; margin-block-start: 2px; }
+.tz-close {
+  min-width: 44px; min-height: 44px; margin: -10px; border: 0; border-radius: 10px;
+  background: transparent; color: inherit; font-size: 24px; cursor: pointer;
+}
+.tz-close:focus-visible, .tz-send:focus-visible, .tz-input:focus-visible {
+  outline: 2px solid var(--tz-accent); outline-offset: 2px;
+}
+.tz-header .tz-close:focus-visible { outline-color: var(--tz-on-accent); }
+#tz-widget:not(.tz-mobile) .tz-close { display: none; }
+.tz-list {
+  flex: 1; overflow-y: auto; margin: 0; padding: 16px; list-style: none;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.tz-msg { display: flex; flex-direction: column; max-width: 85%; }
+.tz-mine { align-self: flex-end; align-items: flex-end; }
+.tz-theirs { align-self: flex-start; align-items: flex-start; }
+.tz-activity { align-self: center; max-width: 100%; color: var(--tz-muted); font-size: 12px; text-align: center; }
+.tz-bubble { padding: 9px 12px; border-radius: 14px; overflow-wrap: anywhere; }
+.tz-mine .tz-bubble { background: var(--tz-accent); color: var(--tz-on-accent); border-end-end-radius: 4px; }
+.tz-theirs .tz-bubble { background: var(--tz-surface); border-end-start-radius: 4px; }
+.tz-activity .tz-bubble { padding: 0; background: none; }
+.tz-mine .tz-bubble a { color: inherit; }
+.tz-theirs .tz-bubble a { color: var(--tz-accent); }
+.tz-sender { font-size: 12px; color: var(--tz-muted); margin-block-end: 2px; }
+.tz-state { font-size: 11px; color: var(--tz-muted); margin-block-start: 2px; }
+.tz-typing { padding: 0 16px 6px; font-size: 12px; color: var(--tz-muted); }
+.tz-error { margin: 0 16px 8px; padding: 8px 10px; border-radius: 8px; background: var(--tz-surface); color: var(--tz-danger); font-size: 13px; }
+.tz-composer { display: flex; gap: 8px; padding: 10px 12px; border-block-start: 1px solid var(--tz-border); }
+.tz-input {
+  flex: 1; min-height: 44px; max-height: 140px; resize: none; padding: 11px 12px;
+  border: 1px solid var(--tz-border); border-radius: 12px; background: var(--tz-bg); color: var(--tz-text); font: inherit;
+}
+.tz-send {
+  min-height: 44px; padding: 0 16px; border: 0; border-radius: 12px; cursor: pointer;
+  background: var(--tz-accent); color: var(--tz-on-accent); font: inherit; font-weight: 600;
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
