@@ -153,6 +153,7 @@ Rails.application.routes.draw do
           post   'tolzar/canned_starters',           to: 'tolzar_canned_starters#create'
           get    'tolzar/outcome_reasons',           to: 'tolzar_outcome_reasons#show'
           get    'tolzar/team_leaderboard',          to: 'tolzar_team_leaderboard#show'
+          get    'tolzar/channel_breakdown',         to: 'tolzar_channel_breakdown#show'
           get    'tolzar/human_agent_replies',       to: 'tolzar_human_agent_replies#index'
           get    'tolzar/bookings/:id',              to: 'tolzar_bookings#show'
           post   'tolzar/bookings',                  to: 'tolzar_bookings#create'

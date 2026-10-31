@@ -100,6 +100,12 @@
   "TOLZAR_RESULTS_UI": {
     "WHAT_IS_SHADOW": "What Shadow means",
     "WOULD_BE_HINT": "Values marked would-be are what customers would have seen.",
+    "CHANNELS": {
+      "TITLE": "Channels",
+      "INBOX": "Inbox",
+      "CONVERSATIONS": "Conversations",
+      "INCOMING": "Customer messages"
+    },
     "TEAM": {
       "TITLE": "Team",
       "PERSON": "Person",
