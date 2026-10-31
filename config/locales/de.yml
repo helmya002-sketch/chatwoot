@@ -1088,3 +1088,16 @@ de:
         test_email:
           queued: 'Test email on its way to %{email}. Ask the user to check their inbox and spam folder.'
           subject: 'Test email from %{brand_name} support'
+  # Tolzar: German for the tolzar: block of en.yml (digest subjects, private push titles).
+  tolzar:
+    digest:
+      subject: '%{workspace}: Ihr Tag am %{day}'
+      weekly_subject: '%{workspace}: Ihre Woche vom %{from} bis %{to}'
+    push:
+      new_conversation: 'Neues Gespräch von %{name}'
+      new_message: 'Neue Nachricht von %{name}'
+      assigned: 'Ihnen zugewiesen: %{name}'
+      mention: '%{name} hat Sie erwähnt'
+      update: 'Neuigkeit im Gespräch mit %{name}'
+      someone: 'ein Kunde'
+      teammate: 'Ein Teammitglied'

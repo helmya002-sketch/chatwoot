@@ -41,6 +41,12 @@ import sla from './sla.json';
 import teamsSettings from './teamsSettings.json';
 import whatsappTemplates from './whatsappTemplates.json';
 import whatsappTemplateMgmt from './whatsappTemplateMgmt.json';
+import tolzarUi from './tolzarUi.json';
+import tolzarDashboard from './tolzarDashboard.json';
+import tolzarAgents from './tolzarAgents.json';
+import tolzarInbox from './tolzarInbox.json';
+import tolzarPwa from './tolzarPwa.json';
+import tolzarSettingsUi from './tolzarSettingsUi.json';
 
 export default {
   ...advancedFilters,
@@ -86,4 +92,10 @@ export default {
   ...teamsSettings,
   ...whatsappTemplates,
   ...whatsappTemplateMgmt,
+  ...tolzarUi,
+  ...tolzarDashboard,
+  ...tolzarAgents,
+  ...tolzarInbox,
+  ...tolzarPwa,
+  ...tolzarSettingsUi,
 };

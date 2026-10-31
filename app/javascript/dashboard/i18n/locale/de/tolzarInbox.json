@@ -1,0 +1,137 @@
+{
+  "TOLZAR_INBOX": {
+    "COPILOT": {
+      "TITLE": "{product}-Copilot",
+      "INTENT": {
+        "LEAD": "Lead",
+        "JOB": "Bewerbung",
+        "SPAM": "Spam",
+        "OTHER": "Muss zugeordnet werden"
+      },
+      "SCORE": "Score {score}",
+      "CONFIDENCE": "Konfidenz",
+      "CONFIDENCE_ARIA": "Konfidenz {pct} %",
+      "SUGGESTED_REPLY": "Antwortvorschlag",
+      "AI_DRAFT": "KI-Entwurf",
+      "AI_DRAFT_HINT": "Von {product} verfasst. Nichts wird gesendet, bevor Sie es senden.",
+      "USE_REPLY": "Antwort übernehmen",
+      "USE_REPLY_HINT": "Setzt den Entwurf in Ihr Eingabefeld, damit Sie ihn vor dem Senden prüfen können.",
+      "COPY_REPLY": "Antwort kopieren",
+      "COPY_REPLY_HINT": "Dieser Posteingang ist nur lesend: Fügen Sie den Entwurf in das Tool ein, aus dem Sie antworten.",
+      "COPIED": "Kopiert",
+      "COPY_FAILED": "Kopieren nicht möglich. Markieren Sie den Text und kopieren Sie ihn selbst."
+    },
+    "BRIEFING": {
+      "GREETING": {
+        "MORNING": "Guten Morgen, {name} 👋",
+        "AFTERNOON": "Guten Tag, {name} 👋",
+        "EVENING": "Guten Abend, {name} 👋",
+        "MORNING_ANON": "Guten Morgen 👋",
+        "AFTERNOON_ANON": "Guten Tag 👋",
+        "EVENING_ANON": "Guten Abend 👋"
+      },
+      "HOT_LEADS": "{n} heißer Lead wartet | {n} heiße Leads warten",
+      "ALL_CAUGHT_UP": "Sie sind auf dem neuesten Stand ✨",
+      "SEE_BRIEFING": "Briefing ansehen",
+      "DISMISS": "Briefing für heute ausblenden",
+      "CLOSE": "Schließen",
+      "WHAT_NEEDS_YOU": "Was Sie braucht",
+      "NO_NAME": "Kontakt ohne Namen",
+      "OPEN_LEAD": "Gespräch mit {name} öffnen (Score {score})",
+      "EMPTY": "Gerade keine dringenden Leads. {product} meldet sich, sobald ein heißer Lead eingeht.",
+      "DAY": {
+        "WAITING": "Wartet am längsten",
+        "DUE": "Heute fällige Follow-ups",
+        "TODAY": "Ihr Tag bisher",
+        "TODAY_LINE": "{replied} Antworten gesendet · {resolved} gelöst · erste Antwort {first} (Median)"
+      },
+      "NOW_LABEL": "Gerade jetzt",
+      "NOW": {
+        "mine": "mir zugewiesen offen | mir zugewiesen offen",
+        "waiting": "wartet auf Antwort | warten auf Antwort",
+        "unassigned": "nicht zugewiesen | nicht zugewiesen",
+        "due_today": "Follow-up heute fällig | Follow-ups heute fällig",
+        "bookings_today": "Buchung heute | Buchungen heute"
+      },
+      "AI": {
+        "OFF": "KI aus",
+        "SHADOW": "KI im Shadow-Modus",
+        "LIVE": "KI live",
+        "UNKNOWN": "KI-Status unbekannt"
+      },
+      "AI_HINT": {
+        "OFF": "Die KI ist für diesen Arbeitsbereich ausgeschaltet (oder der Notschalter ist aktiv). Es werden keine Entwürfe erstellt.",
+        "SHADOW": "Die KI verfasst Antworten nur als private Notizen. Nichts wird an Kunden gesendet.",
+        "LIVE": "Mindestens ein Posteingang erlaubt der KI, Kunden zu antworten.",
+        "UNKNOWN": "Der KI-Dienst hat gerade nicht geantwortet. Dies wird jede Minute erneut geprüft."
+      }
+    },
+    "STARTERS": {
+      "BUTTON": "Startantworten hinzufügen",
+      "ADDED": "{n} Startantworten hinzugefügt. Passen Sie sie an Ihren Stil an.",
+      "FAILED": "Die Startantworten konnten nicht hinzugefügt werden. Bitte versuchen Sie es erneut."
+    },
+    "COLLISION": {
+      "TEXT": "{name} hat diesem Kunden geantwortet, während Sie geschrieben haben. Vor dem Senden lesen?",
+      "CANCEL": "Erst prüfen",
+      "SEND_ANYWAY": "Trotzdem senden"
+    },
+    "REPLY_CLOSED": {
+      "TITLE": "Antwortfenster geschlossen.",
+      "META_24_HOURS": "Der Kunde hat zuletzt vor mehr als 24 Stunden geschrieben. Sie können wieder antworten, sobald er eine neue Nachricht sendet.",
+      "META_7_DAYS": "Der Kunde hat zuletzt vor mehr als 7 Tagen geschrieben, also nach Ablauf der Meta-Frist für menschliche Mitarbeitende. Sie können wieder antworten, sobald er eine neue Nachricht sendet.",
+      "WHATSAPP": "Der Kunde hat zuletzt vor mehr als 24 Stunden geschrieben. Senden Sie eine genehmigte Vorlage, um neu zu beginnen, oder warten Sie auf seine nächste Nachricht.",
+      "TIKTOK": "Der Kunde hat zuletzt vor mehr als 48 Stunden geschrieben. Sie können wieder antworten, sobald er eine neue Nachricht sendet.",
+      "API_HOURS": "Dieser Posteingang erlaubt Antworten nur innerhalb von {hours} Stunden nach der letzten Nachricht des Kunden.",
+      "OTHER": "Dieser Kanal erlaubt gerade keine Antwort. Sie können wieder antworten, wenn der Kunde schreibt.",
+      "WHY": "Warum?"
+    },
+    "REPLY_WINDOW": {
+      "STANDARD": "Standardfenster: noch {left}",
+      "HUMAN_AGENT": "Fenster für menschliche Mitarbeitende: noch {left} (nur Ihre Antworten, nie die KI)",
+      "LEFT_D": "{n} T.",
+      "LEFT_H": "{n} Std.",
+      "SEND_HUMAN_AGENT": "Als Antwort eines menschlichen Mitarbeiters senden",
+      "SENT_TAGGED": "Mit dem Human-Agent-Tag von Meta gesendet · {name}",
+      "AUDIT_TITLE": "Human-Agent-Antworten",
+      "AUDIT_HINT": "Jede Messenger- und Instagram-Antwort, die mit dem Human-Agent-Tag von Meta gesendet wurde: wann, von wem und in welchem Gespräch. Nur Menschen senden diese, nie die KI.",
+      "AUDIT_EMPTY": "Noch keine Antwort hat das Human-Agent-Tag verwendet.",
+      "AUDIT_WHEN": "Wann",
+      "AUDIT_WHO": "Gesendet von",
+      "AUDIT_CONVERSATION": "Gespräch",
+      "AUDIT_TAG": "Tag",
+      "LEFT_MIN": "{n} Min."
+    },
+    "BELL": {
+      "TITLE": "Benachrichtigungen",
+      "SEE_ALL": "Alle anzeigen",
+      "EMPTY": "Sie haben keine Benachrichtigungen"
+    },
+    "LEAD_SCORE": {
+      "LABEL": "Lead-Score",
+      "ARIA": "Lead-Score {score} von 100",
+      "TOOLTIP": "{product}-Lead-Score"
+    },
+    "HEADER": {
+      "SET_STAGE": "Phase festlegen"
+    },
+    "CARD": {
+      "NO_REPLY_YET": "Noch keine Antwort",
+      "NO_REPLY_FOR": "Seit {time} keine Antwort",
+      "AI_DRAFTED": "KI-Entwurf",
+      "AI_DRAFTED_HINT": "{product} hat eine Antwort zur Prüfung für Sie entworfen."
+    }
+  },
+  "TOLZAR_SIDEBAR": {
+    "DASHBOARD": "Dashboard",
+    "PIPELINE": "Pipeline",
+    "INBOX": "Posteingang",
+    "AI_AGENTS": "KI-Agenten",
+    "BROADCASTS": "Broadcasts",
+    "REPORTS_OVERVIEW": "Tolzar-Übersicht",
+    "RESULTS": "Ergebnisse",
+    "WORKSPACE_SETTINGS": "Arbeitsbereich",
+    "ALL_WORKSPACES": "Alle Arbeitsbereiche",
+    "COLLAPSE_PANEL": "Bereich einklappen"
+  }
+}

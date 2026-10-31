@@ -15,6 +15,14 @@ import arUi from '../locale/ar/tolzarUi.json';
 import arIndex from '../locale/ar';
 import enYml from '../../../../../config/locales/en.yml';
 import arYml from '../../../../../config/locales/ar.yml';
+import deAgents from '../locale/de/tolzarAgents.json';
+import deDashboard from '../locale/de/tolzarDashboard.json';
+import deInbox from '../locale/de/tolzarInbox.json';
+import dePwa from '../locale/de/tolzarPwa.json';
+import deSettingsUi from '../locale/de/tolzarSettingsUi.json';
+import deUi from '../locale/de/tolzarUi.json';
+import deIndex from '../locale/de';
+import deYml from '../../../../../config/locales/de.yml';
 
 const EN = {
   tolzarAgents: enAgents,
@@ -36,6 +44,18 @@ const LOCALES = {
       tolzarPwa: arPwa,
       tolzarSettingsUi: arSettingsUi,
       tolzarUi: arUi,
+    },
+  },
+  de: {
+    index: deIndex,
+    yml: deYml.de.tolzar,
+    files: {
+      tolzarAgents: deAgents,
+      tolzarDashboard: deDashboard,
+      tolzarInbox: deInbox,
+      tolzarPwa: dePwa,
+      tolzarSettingsUi: deSettingsUi,
+      tolzarUi: deUi,
     },
   },
 };

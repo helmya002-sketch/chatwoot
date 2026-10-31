@@ -1,0 +1,18 @@
+{
+  "TOLZAR_PWA": {
+    "QUIET": {
+      "TITLE": "Ruhezeiten",
+      "HINT": "Zwischen diesen Uhrzeiten ({zone}) keine Benachrichtigungen auf Ihrem Telefon oder in diesem Browser. Nachrichten kommen weiterhin im Posteingang an.",
+      "FROM": "Von",
+      "TO": "Bis",
+      "SAVE": "Ruhezeiten speichern",
+      "SAVED": "Ruhezeiten gespeichert."
+    },
+    "PUSH": {
+      "TITLE": "Benachrichtigungen",
+      "TEXT": "Lassen Sie sich benachrichtigen, wenn ein Kunde schreibt oder Ihnen ein Gespräch zugewiesen wird.",
+      "LATER": "Nicht jetzt",
+      "ENABLE": "Einschalten"
+    }
+  }
+}

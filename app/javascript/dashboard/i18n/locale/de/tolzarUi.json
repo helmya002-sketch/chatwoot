@@ -1,0 +1,52 @@
+{
+  "TOLZAR_UI": {
+    "STATE": {
+      "SHADOW": "Shadow",
+      "SHADOW_HINT": "Tolzar läuft hier und protokolliert, was es tun würde. Nichts erreicht einen Kunden.",
+      "OFF": "Aus",
+      "OFF_HINT": "Läuft nicht.",
+      "LIVE": "Live",
+      "LIVE_HINT": "Tolzar sendet hier an Kunden."
+    },
+    "UNSAVED": {
+      "TITLE": "Ungespeicherte Änderungen",
+      "BODY": "Sie haben Änderungen, die nicht gespeichert sind. Verlassen und verwerfen, oder bleiben und zuerst speichern?",
+      "LEAVE": "Ohne Speichern verlassen",
+      "STAY": "Bleiben"
+    },
+    "LOADING": "Wird geladen…",
+    "SAVING": "Wird gespeichert…",
+    "SAVED": "Gespeichert",
+    "RETRY": "Erneut versuchen",
+    "CANCEL": "Abbrechen",
+    "DELETE": "Löschen",
+    "CLOSE": "Schließen",
+    "LOAD_FAILED": "Konnte nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+    "NOT_AVAILABLE": "k. A.",
+    "YOUR_TIME_ZONE": "In Ihrer Zeitzone angezeigt ({zone})",
+    "OWNER_ONLY_HINT": "Nur der Inhaber des Arbeitsbereichs kann dies ändern.",
+    "COPY": "Kopieren",
+    "COPIED": "Kopiert",
+    "SHOW_MORE": "Mehr anzeigen (noch {n})",
+    "NONE_YET": "Hier ist noch nichts"
+  },
+  "TOLZAR_LICENCES": {
+    "TITLE": "Open-Source-Lizenzen",
+    "INTRO": "Tolzar basiert auf Open-Source-Software. Dies sind die mitgelieferten Komponenten, jeweils mit ihrer Lizenz und dem Hinweis, den ihre Autoren verlangen.",
+    "FAILED": "Die Lizenzen konnten nicht geladen werden.",
+    "FOUNDATION": "Grundlage des Posteingangs",
+    "SOURCE_OFFER": "Quellcode der LGPL- und MPL-Komponenten",
+    "SOURCE_OFFER_HINT": "Diese Komponenten werden unter einer schwachen Copyleft-Lizenz genutzt. Ihr vollständiger Quellcode ist unter der angezeigten Adresse veröffentlicht. Den Quellcode der genau von uns eingesetzten Version erhalten Sie auf Anfrage über „Support kontaktieren“ im Profilmenü.",
+    "SOURCE": "Quelle",
+    "SEARCH": "Nach Name oder Lizenz suchen",
+    "NONE": "Keine",
+    "ROLLBACK": "nur für ein Rollback behalten",
+    "NO_FILE": "Dieses Paket enthält keine Lizenzdatei; es gilt die oben genannte Lizenz, wie auf seiner Website veröffentlicht.",
+    "GROUP": {
+      "gems": "Server (Ruby-Gems, {n})",
+      "javascript": "Browser (JavaScript-Pakete, {n})",
+      "system": "Systembibliotheken ({n})",
+      "ai": "KI-Dienst (Python-Pakete, Laufzeit und Modell, {n})"
+    }
+  }
+}

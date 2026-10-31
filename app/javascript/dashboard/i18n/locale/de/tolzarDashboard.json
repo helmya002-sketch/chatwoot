@@ -1,0 +1,168 @@
+{
+  "TOLZAR_DASHBOARD": {
+    "TITLE": "Übersicht",
+    "GREETING": {
+      "MORNING": "Guten Morgen, {name}",
+      "AFTERNOON": "Guten Tag, {name}",
+      "EVENING": "Guten Abend, {name}"
+    },
+    "FALLBACK_NAME": "zusammen",
+    "SUMMARY": "{open} offen · {won} gewonnen · {rate} % Abschlussquote",
+    "LOADING": "Ihre Übersicht wird geladen…",
+    "UPDATED": "Aktualisiert {time}",
+    "REFRESH": "Aktualisieren",
+    "REFRESHING": "Wird aktualisiert…",
+    "TO_ASSIGN": "{n} zuzuweisen",
+    "OPEN_INBOX": "Posteingang öffnen",
+    "KPI": {
+      "TOTAL_CONTACTS": "Kontakte gesamt",
+      "IN_PROGRESS": "{n} in Bearbeitung",
+      "OTHER_STAGES": "{n} in anderen Phasen",
+      "OPEN_CONVERSATIONS": "Offene Gespräche",
+      "UNASSIGNED": "{n} nicht zugewiesen",
+      "WIN_RATE": "Abschlussquote",
+      "WIN_RATE_SUB": "der entschiedenen Kontakte",
+      "WIN_RATE_HINT": "gewonnen ÷ (gewonnen + verloren)"
+    },
+    "FUNNEL": "Lifecycle-Trichter",
+    "CONTACTS_N": "{n} Kontakte",
+    "BY_TEAM": "Gespräche nach Team",
+    "NO_TEAM": "Kein Team",
+    "NO_CONVERSATIONS": "Noch keine Gespräche.",
+    "PRESENCE": {
+      "TITLE": "Team-Verfügbarkeit",
+      "ONLINE_OF": "{online}/{total} online",
+      "ONLINE": "Online",
+      "BUSY": "Beschäftigt",
+      "OFFLINE": "Offline",
+      "NONE": "Noch keine Teammitglieder."
+    },
+    "ATTENTION": {
+      "TITLE": "Braucht Aufmerksamkeit",
+      "HOT": "Heiß",
+      "WAITING": "Wartet auf erste Antwort",
+      "UNASSIGNED": "Nicht zugewiesen",
+      "HOT_N": "{n} heiß",
+      "WAITING_N": "{n} warten auf erste Antwort",
+      "UNASSIGNED_N": "{n} nicht zugewiesen",
+      "SCORE": "Score {n}",
+      "EMPTY": "Im Moment braucht Sie nichts.",
+      "EMPTY_HINT": "Nicht zugewiesene, unbeantwortete und heiße Gespräche erscheinen hier und lassen sich mit einem Klick öffnen."
+    },
+    "RECENT": "Letzte Gespräche",
+    "VIEW_ALL": "Alle anzeigen",
+    "UNKNOWN": "Unbekannt",
+    "NO_MESSAGES": "Noch keine Nachrichten",
+    "LINKS": {
+      "AI_AGENTS": "KI-Agenten",
+      "AI_AGENTS_SUB": "Ihre KI-Agenten einrichten",
+      "WORKFLOWS": "Workflows",
+      "WORKFLOWS_SUB": "Gespräche automatisieren",
+      "INBOX": "Posteingang",
+      "INBOX_SUB": "Alle Gespräche"
+    }
+  },
+  "TOLZAR_PIPELINE_UI": {
+    "TITLE": "Pipeline",
+    "SUBTITLE": "Wo jeder Kontakt steht, Phase für Phase. Ziehen Sie eine Karte oder nutzen Sie ihre Verschieben-Schaltfläche.",
+    "VALUE": "Pipeline-Wert",
+    "VALUE_PARTIAL": "≥ {value} ({n} von {m} geladen)",
+    "VALUE_FULL": "{value}",
+    "NO_CONTACTS": "Keine Kontakte",
+    "NO_CONTACT_INFO": "Keine Kontaktdaten",
+    "MOVE": "{name} in eine andere Phase verschieben",
+    "MOVE_TO": "Verschieben nach",
+    "OPEN_IN_CONTACTS": "In Kontakten öffnen",
+    "DROP_HERE": "Zum Verschieben hier ablegen",
+    "FILTER": {
+      "LABEL": "Anzeigen",
+      "ALL": "Alle",
+      "MINE": "Meine",
+      "INBOX": "Posteingang",
+      "ANY_INBOX": "Jeder Posteingang",
+      "HINT": "Filtert die bisher geladenen Karten."
+    },
+    "ASSIGNEE": "Zugewiesen an {name}",
+    "SCORE": "Lead-Score {n}"
+  },
+  "TOLZAR_REPORTS_UI": {
+    "DOWNLOAD_CSV": "CSV herunterladen",
+    "CSV": {
+      "FUNNEL": "kontakte-nach-phase",
+      "WEEKLY": "neue-kontakte-pro-woche",
+      "PEOPLE": "teammitglieder",
+      "PIPELINE": "dealwert-nach-phase",
+      "BY_MODEL": "ki-nach-modell",
+      "DAILY": "ki-taeglich",
+      "DISAGREE": "ki-abweichungen"
+    }
+  },
+  "TOLZAR_RESULTS_UI": {
+    "WHAT_IS_SHADOW": "Was Shadow-Modus bedeutet",
+    "WOULD_BE_HINT": "Als „würde“ markierte Werte zeigen, was Kunden gesehen hätten.",
+    "CHANNELS": {
+      "TITLE": "Kanäle",
+      "INBOX": "Posteingang",
+      "CONVERSATIONS": "Gespräche",
+      "INCOMING": "Kundennachrichten"
+    },
+    "TEAM": {
+      "TITLE": "Team",
+      "PERSON": "Person",
+      "REPLIES": "Antworten",
+      "FIRST_REPLY": "Erste Antwort (Median)",
+      "RESOLVED": "Gelöst",
+      "CSAT": "Bewertung",
+      "CSAT_N": "{avg} ({n})"
+    },
+    "OUTCOMES": {
+      "TITLE": "Warum Deals gewonnen oder verloren wurden",
+      "won": "Gewonnen",
+      "lost": "Verloren",
+      "NONE": "Noch keine Gründe ausgewählt."
+    },
+    "BOOKINGS": {
+      "TITLE": "Buchungen und Dokumente",
+      "PERIOD": "Zeitraum",
+      "DAYS": "{n} Tage",
+      "DOCUMENTS": "Ausgestellte Dokumente",
+      "ISSUED": "{n} ausgestellt, {cancelled} storniert",
+      "BOOKINGS": "Getätigte Buchungen",
+      "VALUE": "Wert",
+      "PAID": "Bezahlt",
+      "DUE": "Noch offen",
+      "NONE": "Keine bestätigten Buchungen in diesem Zeitraum."
+    }
+  },
+  "TOLZAR_ONBOARDING_UI": {
+    "TIMEZONE_FILTER": "Zeitzone suchen…",
+    "TIMEZONE_NONE": "Keine passende Zeitzone.",
+    "LANGUAGES_HINT": "Wählen Sie jede Sprache, in der Ihre Kunden schreiben.",
+    "PROBLEM": {
+      "required": "Pflichtfeld.",
+      "hours": "Geben Sie beide Uhrzeiten im Format HH:MM ein."
+    },
+    "PACK_FIRST_HINT": "Ein Paket fügt die Kontaktfelder und das Startwissen für Ihre Branche hinzu. Sie können es später in den Einstellungen ändern.",
+    "PACK_NONE_HINT": "Nur allgemeine Felder.",
+    "SETTING_UP": "Wird eingerichtet…",
+    "CHECK_HINT": {
+      "settings": "Name, Zeitzone, Geschäftszeiten und Sprachen. Etwa eine Minute.",
+      "pack": "Optional: Felder und Startwissen für Ihre Branche.",
+      "agent": "Erstellen Sie einen aus einer Vorlage, prüfen Sie ihn und schalten Sie ihn dann ein. Er läuft im Shadow-Modus.",
+      "knowledge": "Fügen Sie Ihre Website ein oder laden Sie Dokumente hoch, damit der Agent aus Ihren eigenen Seiten antwortet.",
+      "prices": "Optional: eine Preisquelle, damit der Agent nie einen Preis rät.",
+      "channel": "Verbinden Sie den Posteingang, an den Ihre Kunden schreiben (Website-Chat, E-Mail, WhatsApp).",
+      "ai_disclosure": "Der Satz, der Kunden mitteilt, dass eine KI beteiligt war. Vor dem Live-Betrieb erforderlich.",
+      "owner": "Die Person, die einen Posteingang live schalten oder den Notschalter verwenden kann.",
+      "live_ready": "Wird angezeigt, wenn alle Go-live-Prüfungen bestanden sind. Nichts geht von selbst live."
+    }
+  },
+  "TOLZAR_AGENCY_UI": {
+    "SAVED": "Branding gespeichert.",
+    "ROW_FAILED": "Konnte nicht geladen werden",
+    "ROW_FAILED_HINT": "Nutzung oder Scoreboard haben für diesen Arbeitsbereich nicht geantwortet. Laden Sie die Seite neu, um es erneut zu versuchen.",
+    "CONTRAST_WARN": "Weißer Text wäre auf dieser Farbe schwer lesbar. Wählen Sie einen dunkleren Farbton.",
+    "PREVIEW_NAV": "Posteingang · Kontakte · Workflows · Berichte",
+    "DEFAULT_NAME": "Tolzar"
+  }
+}
