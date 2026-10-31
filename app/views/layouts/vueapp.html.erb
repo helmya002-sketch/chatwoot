@@ -78,6 +78,7 @@
         inboxEventsEnabled: '<%= ENV['ENABLE_INBOX_EVENTS'].present? %>',
         searchTimeRangeLimitDays: <%= Limits.search_time_range_limit_days %>,
         autoResolveMinMinutes: <%= Limits.auto_resolve_min_minutes %>,
+        tolzarNewAuth: '<%= ENV['TOLZAR_NEW_UI_AUTH'] == 'true' %>',
         selectedLocale: '<%= I18n.locale %>'
       }
       window.globalConfig = <%= raw @global_config.to_json %>

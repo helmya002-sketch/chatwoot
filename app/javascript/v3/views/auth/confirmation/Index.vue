@@ -51,7 +51,7 @@ export default {
 
 <template>
   <div
-    class="flex items-center justify-center min-h-screen h-full bg-n-background w-full"
+    class="tz-auth-page flex items-center justify-center min-h-screen h-full bg-n-background w-full"
   >
     <Spinner color-scheme="primary" size="" />
     <div class="ml-2 text-n-slate-11">{{ $t('CONFIRM_EMAIL') }}</div>

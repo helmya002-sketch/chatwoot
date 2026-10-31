@@ -10,6 +10,11 @@ export default {
     this.setColorTheme();
     this.listenToThemeChanges();
     this.setLocale(window.chatwootConfig.selectedLocale);
+    // Tolzar (round 4, c82): the new look on sign-in, reset, set-password and confirmation (TOLZAR_NEW_UI_AUTH).
+    document.body.classList.toggle(
+      'tz-auth',
+      window.chatwootConfig.tolzarNewAuth === 'true'
+    );
   },
   methods: {
     setColorTheme() {
@@ -56,6 +61,7 @@ export default {
 @tailwind utilities;
 
 @import '../dashboard/assets/scss/next-colors';
+@import '../dashboard/assets/scss/tolzar-auth';
 
 html,
 body {

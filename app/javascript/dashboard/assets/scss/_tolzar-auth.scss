@@ -1,0 +1,32 @@
+// Tolzar sign-in pages in the new look (round 4, c82): sign-in, password reset, set password (invites) and e-mail
+// confirmation, only when TOLZAR_NEW_UI_AUTH=true (body.tz-auth, set by v3/App.vue). The website's soft brand
+// gradient behind a white card with the mock's lift; 44 px fields and buttons. Dark mode keeps its own colours.
+// Hook classes only (tz-auth-page, tz-auth-card), never a Tailwind utility (no @apply clash).
+:root:not(.dark) body.tz-auth {
+  .tz-auth-page {
+    background:
+      radial-gradient(1200px 520px at 50% -12%, rgb(62 99 221 / 0.14), transparent 62%),
+      #f6f8fc;
+  }
+
+  .tz-auth-card {
+    border: 1px solid #dce3f2;
+    border-radius: 20px;
+    box-shadow:
+      0 2px 4px rgb(15 23 42 / 0.04),
+      0 40px 100px -40px rgb(30 50 120 / 0.4);
+  }
+}
+
+body.tz-auth .tz-auth-card {
+  input:not([type='checkbox']):not([type='radio']) {
+    min-height: 44px;
+    border-radius: 10px;
+  }
+
+  button[type='submit'] {
+    min-height: 44px;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+}
