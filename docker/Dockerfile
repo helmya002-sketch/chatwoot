@@ -16,7 +16,7 @@
 #        jq -r '.artifacts[] | select(.type=="apk") | [.name, ([.licenses[].value] | join(" "))] | @tsv' tolzar-sbom.json \
 #          | grep -E '(^|[^L])GPL|AGPL|SSPL|BUSL|BSL-1' | sort
 #      Expected only: OS base programs not linked into Tolzar (alpine-baselayout*, apk-tools, busybox,
-#      busybox-binsh, musl-utils, scanelf; ssl_client is removed) and the allowed libraries libgcc / libstdc++
+#      busybox-binsh, ssl_client, musl-utils, scanelf) and the allowed libraries libgcc / libstdc++
 #      (GCC Runtime Library Exception), gmp (LGPL-3.0 OR GPL-2.0), zstd-libs (BSD OR GPL), xz-libs if present
 #      (liblzma is 0BSD). Must NOT appear: libimagequant, fftw-*, readline, gcc, g++, binutils, make, patch,
 #      git, imagemagick*, libgomp, libheif, x265*, ghostscript, poppler.
@@ -293,8 +293,7 @@ RUN apk update && apk add --no-cache \
   libpq \
   $(cat /tmp/rundeps) \
   && rm /tmp/rundeps \
-  && gem install bundler -v "$BUNDLER_VERSION" \
-  && if [ "$RAILS_ENV" = "production" ]; then apk del --no-cache ssl_client; fi
+  && gem install bundler -v "$BUNDLER_VERSION"
 
 # Restrict libvips to its trusted image loaders when generating variants
 ENV VIPS_BLOCK_UNTRUSTED=1
@@ -321,8 +320,8 @@ COPY --from=pre-builder /app/.git_sha /app/.git_sha
 
 # Licence guard: the build fails if a forbidden package is installed, libvips links a GPL library, any binary
 # under /usr/local or /gems links a GPL library, or any installed package is GPL-licensed other than the
-# Alpine base programs (docker/tolzar/licence_check.sh). ssl_client (GPL-2.0, busybox wget's TLS helper) is
-# removed above: nothing in the app runs it.
+# Alpine base programs (docker/tolzar/licence_check.sh): busybox and its TLS helper ssl_client, apk-tools,
+# alpine-baselayout, musl-utils and scanelf, separate programs never linked into a Tolzar process.
 # Development images (RAILS_ENV != production) keep build-base + git above for the `bundle install`
 # in docker/entrypoints/rails.sh and are not checked; they are never shipped.
 RUN set -eu; \

@@ -12,7 +12,8 @@
 #
 # Installed packages: every package whose licence names GPL / AGPL / SSPL / BSL (LGPL is fine) fails, except
 # the ALLOWED libraries and BASE_PROGRAMS: the Alpine base programs the image cannot run without (busybox is
-# the shell the entrypoints run in, apk-tools owns the package database this check reads, musl-utils is ldd).
+# the shell the entrypoints run in, ssl_client its TLS helper, apk-tools owns the package database this check reads,
+# musl-utils is ldd).
 # They are separate programs, never linked into a Tolzar process.
 #
 # Exit 0 = pass. Every library is mapped to the apk package that owns it and that package's licence
@@ -31,7 +32,8 @@ trap 'rm -rf "$TMP"' EXIT
 #   xz-libs                   liblzma itself is 0BSD; the GPL parts are the xz command-line scripts
 ALLOWED="libgcc libstdc++ libgomp gmp zstd-libs xz-libs"
 # scanelf (pax-utils) is a dependency of musl-utils.
-BASE_PROGRAMS="alpine-baselayout alpine-baselayout-data apk-tools busybox busybox-binsh musl-utils scanelf"
+# ssl_client is busybox's TLS helper (busybox, openssl and apk-tools depend on it: apk refuses to remove it).
+BASE_PROGRAMS="alpine-baselayout alpine-baselayout-data apk-tools busybox busybox-binsh ssl_client musl-utils scanelf"
 # Must never be installed at all (the old image's findings).
 FORBIDDEN="libimagequant fftw-double-libs fftw-single-libs fftw-long-double-libs imagemagick imagemagick-libs
 readline gcc g++ binutils make patch git build-base libheif x265-libs ghostscript poppler"
