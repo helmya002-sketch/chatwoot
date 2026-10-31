@@ -8,8 +8,11 @@ import {
   keysToModifyInQWERTZ,
 } from 'shared/helpers/KeyboardHelpers';
 import Hotkey from 'dashboard/components/base/Hotkey.vue';
+import { TOLZAR_SHORTCUT_KEYS } from 'dashboard/components-next/Tolzar/tolzarShortcuts';
+import { tolzarBrand } from 'dashboard/components-next/Tolzar/TolzarBranding.vue';
 
-defineProps({ show: Boolean });
+// Tolzar (round 4, E2): tolzarSection adds the Tolzar screens' keys (account flag tolzar_inbox_tools).
+defineProps({ show: Boolean, tolzarSection: Boolean });
 defineEmits(['close']);
 
 const { t } = useI18n();
@@ -88,6 +91,36 @@ onMounted(async () => {
                 {{ key }}
               </span>
             </template>
+          </div>
+        </div>
+      </div>
+
+      <div v-if="tolzarSection" class="px-8 pt-0 pb-8">
+        <h4 class="mb-3 text-sm font-semibold text-n-slate-12">
+          {{
+            t('TOLZAR_INBOX.SHORTCUTS.SECTION', {
+              product: tolzarBrand.productName,
+            })
+          }}
+        </h4>
+        <div class="grid grid-cols-2 gap-x-5 gap-y-3">
+          <div
+            v-for="shortcut in TOLZAR_SHORTCUT_KEYS"
+            :key="shortcut.id"
+            class="flex justify-between items-center min-w-[25rem]"
+          >
+            <h5 class="text-sm text-n-slate-12 min-w-[36px]">
+              {{ t(`TOLZAR_INBOX.SHORTCUTS.${shortcut.label}`) }}
+            </h5>
+            <div class="flex items-center gap-2 mb-1 ml-2">
+              <Hotkey
+                v-for="key in shortcut.displayKeys"
+                :key="key"
+                custom-class="min-h-[28px] min-w-[36px] key normal-case"
+              >
+                {{ key }}
+              </Hotkey>
+            </div>
           </div>
         </div>
       </div>

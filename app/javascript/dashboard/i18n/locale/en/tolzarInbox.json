@@ -129,6 +129,13 @@
       "CLOSE": "Close",
       "NOTE_PREFIX": "Summary:"
     },
+    "SHORTCUTS": {
+      "SECTION": "On {product} screens",
+      "SHOW_SHEET": "Show this list of shortcuts",
+      "CLOSE_MENU": "Close a menu, panel or the notifications list",
+      "OPEN_FOCUSED": "Open the focused card or row (pipeline, contacts, agents, workflows)",
+      "MOVE_FOCUS": "Move to the next or previous button or field"
+    },
     "CARD": {
       "NO_REPLY_YET": "No reply yet",
       "NO_REPLY_FOR": "No reply for {time}",

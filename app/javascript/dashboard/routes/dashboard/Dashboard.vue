@@ -14,6 +14,7 @@ import { useWindowSize } from '@vueuse/core';
 
 import wootConstants from 'dashboard/constants/globals';
 import { isUpgradePageBypassRoute } from 'dashboard/helper/routeHelpers';
+import { isShortcutSheetKey } from 'dashboard/components-next/Tolzar/tolzarShortcuts';
 
 const CommandBar = defineAsyncComponent(
   () => import('./commands/commandbar.vue')
@@ -81,6 +82,11 @@ export default {
     bypassUpgradePage() {
       return isUpgradePageBypassRoute(this.$route.name);
     },
+    // Tolzar (round 4, E2): "?" and the Tolzar section of the shortcut sheet (account flag tolzar_inbox_tools).
+    tolzarInboxTools() {
+      return !!this.$store.getters['accounts/getAccount'](this.accountId)
+        ?.tolzar_inbox_tools;
+    },
     previouslyUsedDisplayType() {
       const {
         previously_used_conversation_display_type: conversationDisplayType,
@@ -105,7 +111,18 @@ export default {
       immediate: true,
     },
   },
+  mounted() {
+    window.addEventListener('keydown', this.onTolzarShortcutKey);
+  },
+  beforeUnmount() {
+    window.removeEventListener('keydown', this.onTolzarShortcutKey);
+  },
   methods: {
+    onTolzarShortcutKey(e) {
+      if (!this.tolzarInboxTools || !isShortcutSheetKey(e)) return;
+      e.preventDefault();
+      this.showShortcutModal = true;
+    },
     toggleMobileSidebar() {
       this.isMobileSidebarOpen = !this.isMobileSidebarOpen;
     },
@@ -177,6 +194,7 @@ export default {
         />
         <WootKeyShortcutModal
           v-model:show="showShortcutModal"
+          :tolzar-section="tolzarInboxTools"
           @close="closeKeyShortcutModal"
           @clickaway="closeKeyShortcutModal"
         />
