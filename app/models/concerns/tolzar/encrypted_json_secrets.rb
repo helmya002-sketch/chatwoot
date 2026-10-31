@@ -32,6 +32,20 @@ module Tolzar::EncryptedJsonSecrets
     raw.is_a?(Hash) && raw.stringify_keys.slice(*tolzar_json_secrets_spec[:keys]).compact.any?
   end
 
+  # The move for `rails tolzar:encrypt_credentials`: written straight to the row (no validations, no callbacks: a
+  # live channel whose provider check would fail, e.g. an expired token, must still be moved, and the task must
+  # not call the provider per channel). Returns true when the row reads back as moved.
+  def tolzar_move_json_secrets!
+    return true unless tolzar_json_secrets_ready? && tolzar_json_secrets_pending?
+
+    column = tolzar_json_secrets_spec[:column]
+    keys = tolzar_json_secrets_spec[:keys]
+    raw = attribute_in_database(column).to_h.stringify_keys
+    secrets = tolzar_stored_secrets.merge(raw.slice(*keys).compact)
+    update_columns(column => raw.except(*keys), tolzar_secrets: secrets.to_json) # rubocop:disable Rails/SkipsModelValidations
+    !self.class.unscoped.find(id).tolzar_json_secrets_pending?
+  end
+
   private
 
   def tolzar_json_secrets_ready?

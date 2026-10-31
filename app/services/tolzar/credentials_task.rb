@@ -57,8 +57,9 @@ module Tolzar::CredentialsTask
 
       klass.unscoped.find_each do |record|
         record.encrypt if encrypted_fields(klass).any?
-        record.save!(validate: false, touch: false) if klass.include?(Tolzar::EncryptedJsonSecrets) &&
-                                                     record.tolzar_json_secrets_pending?
+        next unless klass.include?(Tolzar::EncryptedJsonSecrets)
+
+        Rails.logger.warn("[tolzar] credentials: #{klass.name} #{record.id} not moved") unless record.tolzar_move_json_secrets!
       end
     end
   end

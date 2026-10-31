@@ -45,7 +45,7 @@ RSpec.describe 'Tolzar encrypted credentials' do
     it 'keeps a value set in memory and drops a key removed from the hash' do
       reloaded = Channel::Whatsapp.find(channel.id)
       reloaded.provider_config = reloaded.provider_config.merge('api_key' => 'rotated').except('verification_pin')
-      reloaded.save!
+      reloaded.save!(validate: false) # a changed Cloud token is otherwise checked against the Graph API
       again = Channel::Whatsapp.find(channel.id)
       expect(again.provider_config['api_key']).to eq('rotated')
       expect(again.provider_config).not_to have_key('verification_pin')
