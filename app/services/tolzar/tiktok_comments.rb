@@ -19,6 +19,13 @@ module Tolzar::TiktokComments
     accounts.include?(account_id.to_i)
   end
 
+  # TOLZAR_TIKTOK_COMMENT_REPLIES: the workspaces whose staff may answer a comment publicly from Tolzar (a live
+  # send: off until the owner's go). Empty = off; a reply then stays in Tolzar, marked failed with the reason.
+  def replies_enabled?(account_id)
+    ENV.fetch('TOLZAR_TIKTOK_COMMENT_REPLIES', '').split(',').filter_map { |v| Integer(v.strip, exception: false) }
+       .include?(account_id.to_i)
+  end
+
   # Thin client for the two read endpoints (the upstream Tiktok::Client covers DMs only).
   class Client
     pattr_initialize [:business_id!, :access_token!]
@@ -33,6 +40,19 @@ module Tolzar::TiktokComments
       data = get('business/comment/list/', business_id: business_id, video_id: video_id, max_count: limit,
                                            sort_field: 'create_time', sort_order: 'desc')
       Array(data['comments'] || data['list']).first(limit)
+    end
+
+    # A public reply under a comment (business/comment/reply/create/). Returns the new comment's id.
+    def reply(video_id, comment_id, text)
+      response = HTTParty.post("#{base_url}/business/comment/reply/create/",
+                               body: { business_id: business_id, video_id: video_id, comment_id: comment_id, text: text }.to_json,
+                               headers: { 'Access-Token': access_token, 'Content-Type': 'application/json' }, timeout: 15)
+      raise "TikTok comment reply: HTTP #{response.code}" unless response.success?
+
+      json = JSON.parse(response.body)
+      raise "TikTok comment reply: #{json['code']} #{json['message']}" unless json['code'].to_i.zero?
+
+      (json.dig('data', 'comment_id') || json.dig('data', 'reply_id')).to_s
     end
 
     private

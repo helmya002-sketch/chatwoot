@@ -39,8 +39,48 @@ RSpec.describe Tolzar::TiktokCommentIngestService do
     message = create(:message, conversation: conversation, account: conversation.account, inbox: inbox,
                                message_type: :outgoing, content: 'Hello!')
     expect(Tiktok::Client).not_to receive(:new)
+    expect(Tolzar::TiktokComments::Client).not_to receive(:new)
     Tiktok::SendOnTiktokService.new(message: message).perform
     expect(message.reload.status).to eq('failed')
+  end
+
+  describe 'public replies (TOLZAR_TIKTOK_COMMENT_REPLIES)' do
+    let(:client) { instance_double(Tolzar::TiktokComments::Client) }
+    let(:agent) { create(:user, account: channel.account, role: :agent) }
+    let(:conversation) do
+      ingest('comment_id' => 'c1', 'text' => 'Price?', 'user_id' => 'u1')
+      inbox.conversations.sole
+    end
+
+    def reply(content, sender: agent)
+      message = create(:message, conversation: conversation, account: conversation.account, inbox: inbox,
+                                 message_type: :outgoing, content: content, sender: sender)
+      Tiktok::SendOnTiktokService.new(message: message).perform
+      message.reload
+    end
+
+    before do
+      allow(Tolzar::TiktokComments::Client).to receive(:new).and_return(client)
+      allow_any_instance_of(Channel::Tiktok).to receive(:validated_access_token).and_return('tok') # rubocop:disable RSpec/AnyInstance
+    end
+
+    it 'posts a staff reply under the comment it answers when the workspace has it on' do
+      expect(client).to receive(:reply).with('v1', 'c1', 'It is 20 USD').and_return('c55')
+      with_modified_env(TOLZAR_TIKTOK_COMMENT_REPLIES: channel.account_id.to_s) do
+        message = reply('It is 20 USD')
+        expect(message.status).to eq('delivered')
+        expect(message.source_id).to eq('comment:c55')
+      end
+    end
+
+    it 'never posts while off, for a bot or AI sender, or past 150 characters' do
+      expect(client).not_to receive(:reply)
+      expect(reply('Hi').status).to eq('failed')
+      with_modified_env(TOLZAR_TIKTOK_COMMENT_REPLIES: channel.account_id.to_s) do
+        expect(reply('From a bot', sender: create(:agent_bot)).status).to eq('failed')
+        expect(reply('x' * 151).status).to eq('failed')
+      end
+    end
   end
 end
 

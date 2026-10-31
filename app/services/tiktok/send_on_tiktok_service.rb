@@ -9,10 +9,10 @@ class Tiktok::SendOnTiktokService < Base::SendOnChannelService
   end
 
   def perform_reply
-    # Tolzar: a comment thread (Tolzar::TiktokCommentIngestService) is never answered by DM; replying to comments
-    # from Tolzar is a later step. The reply stays in Tolzar, marked failed with the reason.
+    # Tolzar: a comment thread (Tolzar::TiktokCommentIngestService) is never answered by DM: a staff reply goes out
+    # as a public comment reply when the workspace has it on, else it stays in Tolzar marked failed.
     if message.conversation.additional_attributes&.dig('tolzar_comment', 'platform') == 'tiktok'
-      return Messages::StatusUpdateService.new(message, 'failed', 'Replying to TikTok comments from Tolzar is not on yet.').perform
+      return Tolzar::TiktokCommentReply.new(message).perform
     end
 
     validate_message_support!
