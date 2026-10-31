@@ -18,21 +18,28 @@ class Webhooks::Trigger
   # Tolzar: retried with a longer, exponential backoff by AgentBots::WebhookJob.
   class TolzarBrainRetryableError < RetryableError; end
 
-  def initialize(url, payload, webhook_type, secret: nil, delivery_id: nil)
+  # Tolzar (H2): webhook_id (a workspace webhook while its delivery log is on) also writes this delivery to
+  # Tolzar::WebhookDelivery. Without it nothing is recorded.
+  def initialize(url, payload, webhook_type, secret: nil, delivery_id: nil, webhook_id: nil)
     @url = url
     @payload = payload
     @webhook_type = webhook_type
     @secret = secret
     @delivery_id = delivery_id
+    @webhook_id = webhook_id
   end
 
-  def self.execute(url, payload, webhook_type, secret: nil, delivery_id: nil)
-    new(url, payload, webhook_type, secret: secret, delivery_id: delivery_id).execute
+  def self.execute(url, payload, webhook_type, secret: nil, delivery_id: nil, webhook_id: nil)
+    new(url, payload, webhook_type, secret: secret, delivery_id: delivery_id, webhook_id: webhook_id).execute
   end
 
   def execute
-    perform_request
+    started = Process.clock_gettime(Process::CLOCK_MONOTONIC) if @webhook_id
+    result = perform_request
+    tolzar_log(started)
+    result
   rescue StandardError => e
+    tolzar_log(started, e)
     raise TolzarBrainRetryableError.new(status: http_status(e), message: e.message) if retryable_tolzar_brain_error?(e)
     raise RetryableError.new(status: http_status(e), message: e.message) if retryable_agent_bot_error?(e)
 
@@ -155,6 +162,26 @@ class Webhooks::Trigger
     host.present? && host.casecmp?(Tolzar::BrainClient.brain_host.to_s)
   rescue URI::InvalidURIError
     false
+  end
+
+  # Tolzar (H2): records how the delivery went (ok, the receiver's HTTP error status, or a short error kind; never
+  # the payload or the URL). Never breaks the delivery.
+  def tolzar_log(started, error = nil)
+    return if @webhook_id.blank?
+
+    outcome = error ? tolzar_failure(error) : { ok: true }
+    ms = ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - started) * 1000).round
+    Tolzar::WebhookDelivery.record(@webhook_id, @payload[:event] || @payload['event'], outcome, ms)
+  rescue StandardError
+    nil
+  end
+
+  def tolzar_failure(error)
+    status = http_status(error)
+    return { ok: false, status: status, error: 'http' } if status
+
+    blocked = error.is_a?(SafeFetch::UnsafeUrlError) || error.is_a?(SafeFetch::InvalidUrlError)
+    { ok: false, error: blocked ? 'blocked_url' : 'unreachable' }
   end
 
   def http_status(error)

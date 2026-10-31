@@ -110,12 +110,14 @@ class WebhookListener < BaseListener
   def deliver_account_webhooks(payload, account)
     return unless account.api_and_webhooks_enabled?
 
+    log = Tolzar::WebhookDelivery.on?(account.id)
     account.webhooks.account_type.each do |webhook|
       next unless webhook.subscriptions.include?(payload[:event])
 
       WebhookJob.perform_later(webhook.url, payload, :account_webhook,
                                secret: webhook.secret,
-                               delivery_id: SecureRandom.uuid)
+                               delivery_id: SecureRandom.uuid,
+                               **(log ? { webhook_id: webhook.id } : {}))
     end
   end
 

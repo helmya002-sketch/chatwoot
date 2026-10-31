@@ -336,6 +336,17 @@
     "WORKSPACE": {
       "SEARCH_TIMEZONE": "Search a city or region…",
       "NO_TIMEZONE": "No time zone matches."
+    },
+    "WEBHOOK_LOG": {
+      "TITLE": "Recent deliveries",
+      "HINT": "The last 50 deliveries of this webhook. What was sent is never stored.",
+      "EMPTY": "No deliveries yet.",
+      "OK": "Delivered",
+      "FAILED": "Failed",
+      "STATUS": "HTTP {status}",
+      "BLOCKED_URL": "URL not allowed",
+      "UNREACHABLE": "Could not connect",
+      "MS": "{n} ms"
     }
   }
 }

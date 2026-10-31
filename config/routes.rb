@@ -177,6 +177,7 @@ Rails.application.routes.draw do
           post   'tolzar/booking_request_link/reset', to: 'tolzar_booking_request_link#reset'
           get    'tolzar/human_agent_replies',       to: 'tolzar_human_agent_replies#index'
           get    'tolzar/conversations/:display_id/transcript', to: 'tolzar_transcript#show'
+          get    'tolzar/webhooks/:webhook_id/deliveries', to: 'tolzar_webhook_deliveries#index'
           get    'tolzar/bookings/:id',              to: 'tolzar_bookings#show'
           post   'tolzar/bookings',                  to: 'tolzar_bookings#create'
           patch  'tolzar/bookings/:id',              to: 'tolzar_bookings#update'

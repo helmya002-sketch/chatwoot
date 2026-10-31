@@ -2,9 +2,11 @@
 import { useAlert } from 'dashboard/composables';
 import { mapGetters } from 'vuex';
 import WebhookForm from './WebhookForm.vue';
+// Tolzar (H2): the webhook's recent deliveries (hidden while off).
+import WebhookDeliveries from 'dashboard/components-next/Tolzar/WebhookDeliveries.vue';
 
 export default {
-  components: { WebhookForm },
+  components: { WebhookForm, WebhookDeliveries },
   props: {
     value: {
       type: Object,
@@ -56,5 +58,6 @@ export default {
       @submit="onSubmit"
       @cancel="onClose"
     />
+    <WebhookDeliveries :webhook-id="id" />
   </div>
 </template>

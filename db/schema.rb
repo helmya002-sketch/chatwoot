@@ -2070,6 +2070,20 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_31_214500) do
     t.index ["user_id"], name: "index_tolzar_ideas_on_user_id"
   end
 
+  create_table "tolzar_webhook_deliveries", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "webhook_id", null: false
+    t.string "event", limit: 64
+    t.integer "status"
+    t.boolean "ok", default: false, null: false
+    t.string "error", limit: 32
+    t.integer "duration_ms"
+    t.datetime "created_at", null: false
+    t.index ["webhook_id", "id"], name: "index_tolzar_webhook_deliveries_on_webhook_id_and_id"
+  end
+
+  add_foreign_key "tolzar_webhook_deliveries", "webhooks", on_delete: :cascade
+
   create_trigger("camp_dpid_before_insert", :generated => true, :compatibility => 1).
       on("accounts").
       name("camp_dpid_before_insert").
