@@ -77,6 +77,37 @@ export class Api {
     return this.request('POST', 'messages', { body: form });
   }
 
+  campaigns() {
+    return this.request('GET', 'campaigns').then(d =>
+      Array.isArray(d) ? d : []
+    );
+  }
+
+  triggerCampaign(campaignId, pageUrl) {
+    return this.request('POST', 'events', {
+      body: {
+        name: 'campaign.triggered',
+        event_info: { campaign_id: campaignId, referer: pageUrl },
+      },
+    });
+  }
+
+  rate(messageId, rating, feedback = '') {
+    return this.request('PATCH', `messages/${encodeURIComponent(messageId)}`, {
+      body: {
+        message: {
+          submitted_values: {
+            csat_survey_response: { rating, feedback_message: feedback },
+          },
+        },
+      },
+    });
+  }
+
+  transcript() {
+    return this.request('POST', 'conversations/transcript');
+  }
+
   typing(on) {
     return this.request('POST', 'conversations/toggle_typing', {
       body: { typing_status: on ? 'on' : 'off' },

@@ -16,6 +16,7 @@ export function normalise(raw) {
     content: raw.content ?? '',
     type: Number(raw.message_type ?? TYPE.INCOMING),
     contentType: raw.content_type || 'text',
+    content_attributes: raw.content_attributes || {},
     createdAt: Number(raw.created_at || Date.now() / 1000),
     sender: raw.sender
       ? {

@@ -15,6 +15,8 @@ import {
   prechatNeeded,
   renderPrechat,
 } from './extras';
+import { pickCampaign, armCampaign, csatNode, transcriptNode } from './engage';
+import { isOpen as inHours } from './hours';
 
 const el = (doc, tag, cls, text) => {
   const node = doc.createElement(tag);
@@ -83,6 +85,54 @@ export class WidgetApp {
     this.list.after(renderPrechat(this));
   }
 
+  // An ongoing campaign for the page the visitor is on (engage.js): its message shows after the wait and opens
+  // the conversation for the team; the loader is told so it can show the unread bubble.
+  async onPage(pageUrl) {
+    if (this.cancelCampaign) this.cancelCampaign();
+    this.pageUrl = pageUrl;
+    if (!this.campaigns)
+      this.campaigns = await this.api.campaigns().catch(() => []);
+    const ch = this.channel;
+    const campaign = pickCampaign(this.campaigns, {
+      pageUrl,
+      inOfficeHours: inHours({
+        enabled: ch.workingHoursEnabled,
+        hours: ch.workingHours,
+        timeZone: ch.timezone,
+      }),
+      hasMessages: this.store.messages.length > 0,
+    });
+    this.cancelCampaign = armCampaign(campaign, c => this.fireCampaign(c), {
+      set: (fn, ms) => this.win.setTimeout(fn, ms),
+      clear: id => this.win.clearTimeout(id),
+    });
+  }
+
+  async fireCampaign(campaign) {
+    if (this.store.messages.length) return;
+    try {
+      await this.api.triggerCampaign(campaign.id, this.pageUrl);
+      if (!this.open) this.bridge.send('setUnreadMode', {});
+      await this.load();
+      this.updateUnread();
+    } catch {
+      // A campaign that cannot start stays silent; the visitor can still write.
+    }
+  }
+
+  async rate(message, rating) {
+    try {
+      await this.api.rate(message.id, rating);
+      message.content_attributes = {
+        ...(message.content_attributes || {}),
+        submitted_values: { csat_survey_response: { rating } },
+      };
+      this.paint();
+    } catch {
+      this.showError(t(this.locale, 'FAILED'));
+    }
+  }
+
   // --- the loader's messages (the customer's page -> us) ---------------------------------------------------
   loaderHandlers() {
     return {
@@ -104,7 +154,7 @@ export class WidgetApp {
       'set-color-scheme': ({ darkMode }) => this.setScheme(darkMode),
       'toggle-close-button': ({ isMobile }) =>
         this.root.classList.toggle('tz-mobile', Boolean(isMobile)),
-      'change-url': () => {},
+      'change-url': ({ referrerURL }) => this.onPage(referrerURL),
       'push-event': () => {},
     };
   }
@@ -350,6 +400,7 @@ export class WidgetApp {
         bubble.append(formatMessage(m.content, doc));
       }
       bubble.append(...attachmentNodes(doc, m.attachments, this.locale));
+      if (m.contentType === 'input_csat') bubble.append(csatNode(this, m));
       li.append(bubble);
       if (m.pending || m.failed)
         li.append(
@@ -366,6 +417,14 @@ export class WidgetApp {
       this.list.append(
         el(doc, 'li', 'tz-msg tz-activity', t(this.locale, 'RESOLVED'))
       );
+    if (
+      this.store.status === 'resolved' &&
+      this.channel.enabledFeatures?.email_transcript !== false
+    ) {
+      const li = el(doc, 'li', 'tz-msg tz-activity');
+      li.append(transcriptNode(this));
+      this.list.append(li);
+    }
     this.list.scrollTop = this.list.scrollHeight;
   }
 
