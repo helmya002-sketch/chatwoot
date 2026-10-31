@@ -460,3 +460,34 @@ body.tz-ui {
     box-shadow: 0 1px 2px rgb(30 50 120 / 0.06);
   }
 }
+
+// Phase 3 inbox, composer (round 3 c45). Hard requirements kept: the editor's height rules
+// (ResizableEditorWrapper: default 72 px, min 48, at most 40 % of the pane, never collapses) are not touched;
+// only the frame changes: a rounded card, a brand ring while typing, amber while writing a private note.
+body.tz-ui {
+  .reply-box {
+    border-radius: 14px;
+    border: 1px solid rgb(var(--border-strong));
+    background-color: rgb(var(--solid-1));
+    box-shadow: 0 1px 2px rgb(30 50 120 / 0.06);
+    transition: box-shadow 0.15s ease, border-color 0.15s ease;
+  }
+
+  .reply-box:focus-within {
+    border-color: rgb(var(--blue-9));
+    box-shadow: 0 0 0 3px rgb(var(--blue-9) / 0.15);
+  }
+
+  .reply-box.is-private {
+    border-color: rgb(var(--amber-6));
+    background-color: rgb(var(--amber-2));
+  }
+
+  .reply-box.is-private:focus-within {
+    box-shadow: 0 0 0 3px rgb(var(--amber-9) / 0.2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.tz-ui .reply-box { transition: none; }
+}
