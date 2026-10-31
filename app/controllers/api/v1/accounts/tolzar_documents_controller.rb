@@ -1,6 +1,7 @@
 # Tolzar booking documents API (Tolzar::Document), for TOLZAR_BOOKING_DOCS_ACCOUNTS workspaces (404 otherwise).
 #   GET    tolzar/documents             the register (status, doc_type, q = number or contact name), newest first
 #   GET    tolzar/documents/export      the register as CSV (administrators)
+#   GET    tolzar/documents/export_pdfs ?from=&to= issued/cancelled documents as PDFs + register.csv, .tar.gz (admins)
 #   GET    tolzar/documents/:id
 #   POST   tolzar/documents             a draft {doc_type, conversation_id (display id), currency, language, spec}
 #   PATCH  tolzar/documents/:id         a draft's new spec (a new version)
@@ -15,13 +16,14 @@ class Api::V1::Accounts::TolzarDocumentsController < Api::V1::Accounts::BaseCont
 
   before_action :ensure_enabled
   before_action :set_document, only: %i[show update issue void printable send_document]
-  before_action :ensure_admin, only: %i[void export]
+  before_action :ensure_admin, only: %i[void export export_pdfs]
   before_action :ensure_owner, only: :settings_save
 
   def index
     scope = Tolzar::Document.where(account_id: Current.account.id).includes(:contact, :conversation).register
     scope = scope.where(status: params[:status]) if Tolzar::Document::STATUSES.include?(params[:status])
     scope = scope.where(doc_type: params[:doc_type]) if Tolzar::DocumentSpec::TYPES.include?(params[:doc_type])
+    scope = scope.where(contact_id: params[:contact_id]) if params[:contact_id].present?
     if params[:q].present?
       like = "%#{Tolzar::Document.sanitize_sql_like(params[:q].to_s.first(80))}%"
       scope = scope.left_joins(:contact).where('tolzar_documents.number ILIKE :q OR contacts.name ILIKE :q', q: like)
@@ -90,6 +92,14 @@ class Api::V1::Accounts::TolzarDocumentsController < Api::V1::Accounts::BaseCont
       end
     end
     send_data csv, filename: "documents-#{Time.current.strftime('%Y%m%d')}.csv", type: 'text/csv'
+  end
+
+  # The PDFs of a period (Tolzar::DocumentArchive), rendered by the brain; at most 100 per file.
+  def export_pdfs
+    archive = Tolzar::DocumentArchive.new(Current.account, from: params[:from], to: params[:to]).build
+    send_data archive[:data], filename: archive[:filename], type: 'application/gzip'
+  rescue Tolzar::DocumentArchive::Refused => e
+    render json: { ok: false, error: e.message }, status: :service_unavailable
   end
 
   # A plain, self-contained page (no script, our own styles); every value is escaped by ERB. formats: [:html], since

@@ -127,6 +127,23 @@ async function printDoc(row) {
   setTimeout(() => URL.revokeObjectURL(url), 60000);
 }
 
+async function exportPdfs() {
+  notice.value = '';
+  try {
+    const { data } = await window.axios.get(`${base.value}/export_pdfs`, {
+      responseType: 'blob',
+    });
+    const url = URL.createObjectURL(data);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'documents.tar.gz';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  } catch (e) {
+    notice.value = say(e, t('TOLZAR_SETTINGS_UI.DOCS.FAILED'));
+  }
+}
+
 async function savePrefixes() {
   notice.value = '';
   try {
@@ -503,6 +520,9 @@ onMounted(() => {
       </tbody>
     </table>
 
+    <button type="button" :class="BTN_GHOST" @click="exportPdfs">
+      {{ t('TOLZAR_SETTINGS_UI.DOCS.EXPORT_PDFS') }}
+    </button>
     <h3 class="mt-6 mb-1 text-sm font-semibold text-n-slate-12">
       {{ t('TOLZAR_SETTINGS_UI.DOCS.PREFIXES') }}
     </h3>

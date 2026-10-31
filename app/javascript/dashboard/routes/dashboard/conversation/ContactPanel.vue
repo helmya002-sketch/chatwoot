@@ -12,6 +12,7 @@ import { FEATURE_FLAGS } from 'dashboard/featureFlags';
 import AccordionItem from 'dashboard/components/Accordion/AccordionItem.vue';
 import TolzarSidebarPanel from 'dashboard/components-next/Tolzar/SidebarPanel.vue';
 import TolzarBookingsCard from 'dashboard/components-next/Tolzar/BookingsCard.vue';
+import TolzarDocumentsCard from 'dashboard/components-next/Tolzar/DocumentsCard.vue';
 import ContactConversations from './ContactConversations.vue';
 import ConversationAction from './ConversationAction.vue';
 import ConversationParticipant from './ConversationParticipant.vue';
@@ -183,6 +184,7 @@ const TZ_TABS = [
     <div v-show="activeTab === 'overview'" class="px-2 pt-3">
       <TolzarSidebarPanel :contact="contact" />
       <TolzarBookingsCard :contact-id="contactId" />
+      <TolzarDocumentsCard :contact-id="contactId" />
     </div>
     <div class="px-2 pb-8 list-group">
       <Draggable

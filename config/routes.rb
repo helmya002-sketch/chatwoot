@@ -128,6 +128,7 @@ Rails.application.routes.draw do
           # Tolzar booking documents (Tolzar::Document; TOLZAR_BOOKING_DOCS_ACCOUNTS)
           get    'tolzar/documents',             to: 'tolzar_documents#index'
           get    'tolzar/documents/export',      to: 'tolzar_documents#export'
+          get    'tolzar/documents/export_pdfs', to: 'tolzar_documents#export_pdfs'
           get    'tolzar/documents_settings',    to: 'tolzar_documents#settings'
           post   'tolzar/documents_settings',    to: 'tolzar_documents#settings_save'
           get    'tolzar/documents/:id/print',   to: 'tolzar_documents#printable'

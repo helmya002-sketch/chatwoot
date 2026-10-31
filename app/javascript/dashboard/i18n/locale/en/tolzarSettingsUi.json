@@ -93,6 +93,8 @@
       "NO_NUMBER": "(draft)",
       "HAS_PLACEHOLDERS": "Has placeholders",
       "PRINT": "Print",
+      "CARD_TITLE": "Documents",
+      "EXPORT_PDFS": "Download PDFs (last 30 days)",
       "SEND": "Send to the conversation",
       "ISSUE": "Issue",
       "VOID": "Cancel document",
