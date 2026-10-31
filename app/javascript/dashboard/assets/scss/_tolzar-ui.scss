@@ -414,7 +414,7 @@ body.dark.tz-ui ninja-keys {
 // Phase 3 inbox, list (round 3 c43). Hard requirements kept as they are: the compact density default
 // (tolzarDensity.js) and its toggle. Only colour and emphasis change here, never the row height.
 body.tz-ui {
-  .conversation.border-b {
+  .conversation[class~='border-b'] {
     border-bottom-color: rgb(var(--border-weak));
   }
 
