@@ -1,7 +1,7 @@
 /* eslint-disable @intlify/vue-i18n/no-dynamic-keys -- t() here is our own widget i18n, not vue-i18n */
 // Tolzar widget: an AI or bot reply's sources (content_attributes.tolzar_sources: [{title, url}]) as safe links
-// under the reply, and the page the visitor writes from as conversation attributes (tolzar_page, without query
-// string or fragment, so no tracking parameter or personal data in a URL is kept).
+// under the reply, and the page the visitor writes from (origin + path, no query string or fragment, so no tracking
+// parameter or personal data in a URL is kept), sent as each message's referer_url.
 import { safeHref } from './format';
 import { t } from './i18n';
 

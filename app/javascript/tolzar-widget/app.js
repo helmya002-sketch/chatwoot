@@ -267,24 +267,15 @@ export class WidgetApp {
     ]);
     this.paint();
     try {
-      const saved = await this.api.sendText(content, echoId);
+      const page = pageContext(this.pageUrl)?.tolzar_page;
+      const saved = await this.api.sendText(content, echoId, page);
       upsert(this.store, [{ ...saved, echo_id: echoId }]);
-      this.tagPage();
     } catch {
       markFailed(this.store, echoId);
     }
     this.paint();
   }
 
-  // Page-aware context (context.js): the page the visitor writes from, on the conversation, once per page.
-  tagPage() {
-    const ctx = pageContext(this.pageUrl);
-    if (!ctx || this.taggedPage === ctx.tolzar_page) return;
-    this.taggedPage = ctx.tolzar_page;
-    this.api.setConversationAttributes(ctx).catch(() => {
-      this.taggedPage = null;
-    });
-  }
 
   async sendFile(file) {
     if (fileTooBig(file, this.config.maxFileMb)) {

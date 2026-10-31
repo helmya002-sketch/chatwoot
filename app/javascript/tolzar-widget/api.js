@@ -50,14 +50,16 @@ export class Api {
     return this.request('GET', 'conversations').then(d => d || {});
   }
 
-  sendText(content, echoId) {
+  // refererUrl: the page the visitor writes from (origin + path, context.js); the app keeps the first one as the
+  // conversation's referer. Falls back to the iframe's referrer.
+  sendText(content, echoId, refererUrl) {
     return this.request('POST', 'messages', {
       body: {
         message: {
           content,
           echo_id: echoId,
           timestamp: new Date().toString(),
-          referer_url: document.referrer || '',
+          referer_url: refererUrl || document.referrer || '',
         },
       },
     });
