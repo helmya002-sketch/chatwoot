@@ -142,4 +142,18 @@ RSpec.describe 'Tolzar encrypted credentials' do
       expect(InstallationConfig.find(config.id).serialized_value[:value]).to eq('n-secret')
     end
   end
+
+  it 'treats a setting about a token as plain, and still reads it if it was encrypted before' do
+    expect(Tolzar::EncryptedInstallationConfig.secret_name?('WIDGET_TOKEN_EXPIRY')).to be(false)
+    expect(Tolzar::EncryptedInstallationConfig.secret_name?('TIKTOK_APP_SECRET')).to be(true)
+    config = InstallationConfig.create!(name: 'WIDGET_TOKEN_EXPIRY', value: '180', locked: false)
+    expect(config.tolzar_encrypted_value).to be_nil
+    config.update_columns(tolzar_encrypted_value: { v: '90' }.to_json, # rubocop:disable Rails/SkipsModelValidations
+                          serialized_value: { value: nil }.with_indifferent_access)
+    expect(InstallationConfig.find(config.id).value).to eq('90')
+    InstallationConfig.find(config.id).update!(value: '120')
+    reloaded = InstallationConfig.find(config.id)
+    expect(reloaded.tolzar_encrypted_value).to be_nil
+    expect(reloaded.value).to eq('120')
+  end
 end

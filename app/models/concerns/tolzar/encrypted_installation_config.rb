@@ -6,13 +6,17 @@
 # moves it. Other configs (flags, URLs, feature lists) stay as they are.
 module Tolzar::EncryptedInstallationConfig
   SECRET_NAME = /(SECRET|PASSWORD|API_KEY|_TOKEN|PRIVATE_KEY|IDENTIFIER_HASH)/
+  # Settings about a token, not a token (WIDGET_TOKEN_EXPIRY is a number of days): never treated as secrets.
+  NOT_SECRET = /(_EXPIRY|_TTL|_TIMEOUT|_LENGTH|_ENABLED)\z/
 
   def self.secret_name?(name)
-    name.to_s.match?(SECRET_NAME)
+    name.to_s.match?(SECRET_NAME) && !name.to_s.match?(NOT_SECRET)
   end
 
+  # Reads the encrypted column whenever it holds a value (also for a name no longer treated as secret, until its
+  # next write moves it back to the plain column).
   def value
-    return super unless tolzar_encrypts_value?
+    return super unless has_attribute?(:tolzar_encrypted_value)
     return super if tolzar_encrypted_value.blank?
 
     JSON.parse(tolzar_encrypted_value)['v']
@@ -21,7 +25,10 @@ module Tolzar::EncryptedInstallationConfig
   end
 
   def value=(value_to_assign)
-    return super unless tolzar_encrypts_value?
+    unless tolzar_encrypts_value?
+      self.tolzar_encrypted_value = nil if has_attribute?(:tolzar_encrypted_value)
+      return super
+    end
 
     self.tolzar_encrypted_value = { v: value_to_assign }.to_json
     super(nil)
