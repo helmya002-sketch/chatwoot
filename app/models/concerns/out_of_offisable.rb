@@ -19,8 +19,9 @@ module OutOfOffisable
     after_create :create_default_working_hours
   end
 
+  # Tolzar (c103): a workspace holiday closes the inbox all day (Tolzar::Holidays; off = unchanged).
   def out_of_office?
-    working_hours_enabled? && working_hours.today.closed_now?
+    working_hours_enabled? && (Tolzar::Holidays.closed_today?(self) || working_hours.today.closed_now?)
   end
 
   def working_now?

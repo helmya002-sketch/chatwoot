@@ -102,6 +102,16 @@
       "UNTIL": "Until",
       "SAVE": "Save booking"
     },
+    "HOLIDAYS": {
+      "WHAT": "Days your business is closed. On these days every inbox with working hours shows as away all day, in its own time zone, and sends its away message.",
+      "OFF": "Holidays are not switched on for this workspace yet.",
+      "DATE": "Date",
+      "NAME": "Name (optional)",
+      "ADD": "Add a day",
+      "REMOVE": "Remove",
+      "SAVE": "Save",
+      "SAVED": "Saved."
+    },
     "WHATS_NEW": {
       "EMPTY": "Nothing new for your workspace yet."
     },

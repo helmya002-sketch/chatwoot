@@ -159,6 +159,8 @@ Rails.application.routes.draw do
           get    'tolzar/contacts/:contact_id/timeline', to: 'tolzar_contact_timeline#show'
           get    'tolzar/booking_calendar',          to: 'tolzar_booking_calendar#show'
           get    'tolzar/booking_schedule',          to: 'tolzar_booking_schedule#show'
+          get    'tolzar/holidays',                  to: 'tolzar_holidays#show'
+          post   'tolzar/holidays',                  to: 'tolzar_holidays#save'
           post   'tolzar/booking_calendar/reset',    to: 'tolzar_booking_calendar#reset'
           get    'tolzar/human_agent_replies',       to: 'tolzar_human_agent_replies#index'
           get    'tolzar/bookings/:id',              to: 'tolzar_bookings#show'
