@@ -34,7 +34,8 @@ Rails.application.configure do
   config.action_mailer.smtp_settings = smtp_settings
 
   # Use sendmail if using postfix for email
-  config.action_mailer.delivery_method = :sendmail if ENV['SMTP_ADDRESS'].blank?
+  # Tolzar: never in test, where test.rb's :test must stay (the gate has no SMTP_ADDRESS and no sendmail binary).
+  config.action_mailer.delivery_method = :sendmail if ENV['SMTP_ADDRESS'].blank? && !Rails.env.test?
 
   # You can use letter opener for your local development by setting the environment variable
   config.action_mailer.delivery_method = :letter_opener if Rails.env.development? && ENV['LETTER_OPENER']
