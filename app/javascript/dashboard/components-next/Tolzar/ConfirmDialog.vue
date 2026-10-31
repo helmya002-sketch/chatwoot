@@ -55,6 +55,7 @@ defineExpose({ ask });
         v-model="text"
         class="box-border w-full px-2.5 py-2 text-[13px] text-n-slate-12 bg-n-solid-1 border border-solid border-n-weak rounded-lg outline-none"
         :placeholder="opts.input.placeholder || ''"
+        :aria-label="opts.input.label"
         @keydown.enter.prevent="!disabled() && confirm()"
       />
     </template>

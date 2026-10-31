@@ -38,6 +38,7 @@ function enable() {
     class="tz-push-offer fixed z-50 inset-x-3 flex items-center gap-3 p-3 rounded-2xl bg-n-solid-1 border border-solid border-n-weak shadow-lg"
     role="dialog"
     :aria-label="t('TOLZAR_PWA.PUSH.TITLE')"
+    @keydown.esc="later"
   >
     <span class="flex-1 text-sm text-n-slate-12">
       {{ t('TOLZAR_PWA.PUSH.TEXT') }}

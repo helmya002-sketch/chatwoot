@@ -31,6 +31,7 @@ watchEffect(() =>
           ? 'border-n-brand bg-n-brand text-white'
           : 'border-n-weak text-n-slate-11 hover:bg-n-slate-2'
       "
+      :aria-pressed="!activeStage"
       @click="emit('select', '')"
     >
       {{ t('TOLZAR_CONTACTS.STAGES.ALL') }}
@@ -45,9 +46,14 @@ watchEffect(() =>
           ? ['border-transparent font-semibold', stageClass(s.key)]
           : 'border-n-weak text-n-slate-11 hover:bg-n-slate-2'
       "
+      :aria-pressed="activeStage === s.key"
       @click="emit('select', s.key)"
     >
-      <span class="p-0.5 rounded-full" :class="stageClass(s.key)">
+      <span
+        class="p-0.5 rounded-full"
+        :class="stageClass(s.key)"
+        aria-hidden="true"
+      >
         <span class="block rounded-full size-1.5 bg-current" />
       </span>
       {{ s.label }}

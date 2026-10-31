@@ -67,17 +67,18 @@ async function connect() {
       <li>{{ t('TOLZAR_SETTINGS.WA_LISTEN.SECRETS') }}</li>
     </ul>
     <label :class="LABEL">{{ t('TOLZAR_SETTINGS.WA_LISTEN.WABA_ID') }}</label>
-    <input v-model="form.waba_id" :class="INPUT" autocomplete="off" />
+    <input v-model="form.waba_id" :class="INPUT" autocomplete="off" :aria-label="t('TOLZAR_SETTINGS.WA_LISTEN.WABA_ID')" />
     <label :class="LABEL">{{
       t('TOLZAR_SETTINGS.WA_LISTEN.PHONE_NUMBER_ID')
     }}</label>
-    <input v-model="form.phone_number_id" :class="INPUT" autocomplete="off" />
+    <input v-model="form.phone_number_id" :class="INPUT" autocomplete="off" :aria-label="t('TOLZAR_SETTINGS.WA_LISTEN.PHONE_NUMBER_ID')" />
     <label :class="LABEL">{{ t('TOLZAR_SETTINGS.WA_LISTEN.TOKEN') }}</label>
     <input
       v-model="form.access_token"
       :class="INPUT"
       type="password"
       autocomplete="new-password"
+      :aria-label="t('TOLZAR_SETTINGS.WA_LISTEN.TOKEN')"
     />
     <label :class="LABEL">{{
       t('TOLZAR_SETTINGS.WA_LISTEN.APP_SECRET')
@@ -87,11 +88,12 @@ async function connect() {
       :class="INPUT"
       type="password"
       autocomplete="new-password"
+      :aria-label="t('TOLZAR_SETTINGS.WA_LISTEN.APP_SECRET')"
     />
     <label :class="LABEL">{{
       t('TOLZAR_SETTINGS.WA_LISTEN.INBOX_NAME')
     }}</label>
-    <input v-model="form.inbox_name" :class="INPUT" autocomplete="off" />
+    <input v-model="form.inbox_name" :class="INPUT" autocomplete="off" :aria-label="t('TOLZAR_SETTINGS.WA_LISTEN.INBOX_NAME')" />
     <button type="button" :class="BTN" :disabled="!ready || busy" @click="connect">
       {{ busy ? t('TOLZAR_UI.SAVING') : t('TOLZAR_SETTINGS.WA_LISTEN.CONNECT') }}
     </button>

@@ -107,18 +107,18 @@ onMounted(load);
       <div>
         <label :class="CHECK"><input v-model="data.form.enabled" type="checkbox" /> {{ t('TOLZAR_SETTINGS.AI.NEGOTIATE') }}</label>
         <label :class="LABEL">{{ t('TOLZAR_SETTINGS.AI.FLOOR') }}</label>
-        <input v-model.number="data.form.floor_pct" type="number" min="0" max="100" step="0.5" :class="INPUT" />
+        <input v-model.number="data.form.floor_pct" type="number" min="0" max="100" step="0.5" :class="INPUT" :aria-label="t('TOLZAR_SETTINGS.AI.FLOOR')" />
         <label :class="LABEL">{{ t('TOLZAR_SETTINGS.AI.MAX_DISCOUNT') }}</label>
-        <input v-model.number="data.form.max_discount_pct" type="number" min="0" max="100" step="0.5" :class="INPUT" />
+        <input v-model.number="data.form.max_discount_pct" type="number" min="0" max="100" step="0.5" :class="INPUT" :aria-label="t('TOLZAR_SETTINGS.AI.MAX_DISCOUNT')" />
         <label :class="LABEL">{{ t('TOLZAR_SETTINGS.AI.PERKS') }}</label>
-        <textarea v-model="data.form.perks" rows="4" :class="INPUT" :placeholder="t('TOLZAR_SETTINGS.AI.PERKS_PLACEHOLDER')" />
+        <textarea v-model="data.form.perks" rows="4" :class="INPUT" :placeholder="t('TOLZAR_SETTINGS.AI.PERKS_PLACEHOLDER')" :aria-label="t('TOLZAR_SETTINGS.AI.PERKS')" />
         <div class="flex justify-between items-baseline">
           <label :class="LABEL">{{ t('TOLZAR_SETTINGS.AI.POLICIES') }}</label>
           <span class="text-xs text-n-slate-10">{{ data.form.policies.length }}/{{ MAX_POLICIES }}</span>
         </div>
         <p class="mt-0 mb-1 text-xs text-n-slate-10">{{ t('TOLZAR_SETTINGS.AI.POLICIES_HINT') }}</p>
         <div v-for="(p, i) in data.form.policies" :key="i" class="flex gap-2 items-center mt-1">
-          <input v-model="data.form.policies[i]" type="text" :maxlength="MAX_POLICY_CHARS" :class="INPUT" :placeholder="t('TOLZAR_SETTINGS.AI.POLICY_PLACEHOLDER')" />
+          <input v-model="data.form.policies[i]" type="text" :maxlength="MAX_POLICY_CHARS" :class="INPUT" :placeholder="t('TOLZAR_SETTINGS.AI.POLICY_PLACEHOLDER')" :aria-label="t('TOLZAR_SETTINGS.AI.POLICY_PLACEHOLDER')" />
           <span class="text-[11px] text-n-slate-10 shrink-0">{{ (p || '').length }}/{{ MAX_POLICY_CHARS }}</span>
           <button type="button" class="text-xs text-n-ruby-11 shrink-0" :aria-label="t('TOLZAR_SETTINGS.AI.POLICY_REMOVE')" @click="removePolicy(i)">{{ t('TOLZAR_SETTINGS.AI.POLICY_REMOVE') }}</button>
         </div>
@@ -138,7 +138,7 @@ onMounted(load);
     <div v-if="section === 'agent_teams'" class="max-w-[620px]">
       <div v-for="r in data.rows" :key="r.id" class="flex gap-3 items-center py-2 border-t border-solid border-n-weak text-[13px]">
         <span class="flex-1">{{ r.name }}</span>
-        <select v-model="r.agent" :class="INPUT" class="!w-[240px]">
+        <select v-model="r.agent" :class="INPUT" class="!w-[240px]" :aria-label="r.name">
           <option value="">{{ t('TOLZAR_SETTINGS.AI.DEFAULT_AGENT') }}</option>
           <option v-for="a in data.agents" :key="a.id" :value="a.id">{{ a.name || a.id }}</option>
         </select>

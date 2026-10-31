@@ -651,7 +651,7 @@ onMounted(() => {
                 <ShadowBadge state="shadow" :hint="$t('TOLZAR_SETTINGS_UI.SHADOW_DETAIL.sla')" />
               </label>
               <label :class="LABEL">{{ $t('TOLZAR_SETTINGS.SLA.MINUTES') }}</label>
-              <input v-model.number="data.config.first_reply_minutes" type="number" min="1" :class="INPUT" />
+              <input v-model.number="data.config.first_reply_minutes" type="number" min="1" :class="INPUT" :aria-label="$t('TOLZAR_SETTINGS.SLA.MINUTES')" />
               <label :class="CHECK"><input v-model="data.config.working_hours_only" type="checkbox" class="accent-n-brand" /> {{ $t('TOLZAR_SETTINGS.SLA.WORKING_HOURS') }}</label>
               <label :class="CHECK" class="!mt-2"><input v-model="data.config.mention_assignee" type="checkbox" class="accent-n-brand" /> {{ $t('TOLZAR_SETTINGS.SLA.MENTION') }}</label>
               <p class="text-xs text-n-slate-10">{{ $t('TOLZAR_SETTINGS.SLA.COUNTS', { late: (data.counts || {}).sla_breach || 0, ok: (data.counts || {}).sla_ok || 0 }) }}</p>
@@ -673,9 +673,9 @@ onMounted(() => {
             <!-- media -->
             <div v-if="current === 'media' && data.config" class="max-w-[520px]">
               <label :class="LABEL">{{ $t('TOLZAR_SETTINGS.MEDIA.VOICE') }}</label>
-              <select v-model="data.config.voice" :class="INPUT"><option v-for="m in MEDIA_MODES" :key="m" :value="m">{{ $t(`TOLZAR_SETTINGS.MODES.${m}`) }}</option></select>
+              <select v-model="data.config.voice" :class="INPUT" :aria-label="$t('TOLZAR_SETTINGS.MEDIA.VOICE')"><option v-for="m in MEDIA_MODES" :key="m" :value="m">{{ $t(`TOLZAR_SETTINGS.MODES.${m}`) }}</option></select>
               <label :class="LABEL">{{ $t('TOLZAR_SETTINGS.MEDIA.IMAGES') }}</label>
-              <select v-model="data.config.images" :class="INPUT"><option v-for="m in MEDIA_MODES" :key="m" :value="m">{{ $t(`TOLZAR_SETTINGS.MODES.${m}`) }}</option></select>
+              <select v-model="data.config.images" :class="INPUT" :aria-label="$t('TOLZAR_SETTINGS.MEDIA.IMAGES')"><option v-for="m in MEDIA_MODES" :key="m" :value="m">{{ $t(`TOLZAR_SETTINGS.MODES.${m}`) }}</option></select>
               <label :class="LABEL">{{ $t('TOLZAR_SETTINGS.MEDIA.FIELDS') }}</label>
               <div v-for="(f, i) in data.config.image_fields || []" :key="i" class="flex gap-1 mb-1">
                 <input v-model="f.key" :class="INPUT" class="!w-[140px]" :placeholder="$t('TOLZAR_SETTINGS_UI.MEDIA.FIELD_KEY_PLACEHOLDER')" :aria-label="$t('TOLZAR_SETTINGS_UI.MEDIA.FIELD_KEY')" />
@@ -686,12 +686,12 @@ onMounted(() => {
               </div>
               <button type="button" class="text-xs text-n-brand" @click="(data.config.image_fields = data.config.image_fields || []).push({ key: '', description: '' })">{{ $t('TOLZAR_SETTINGS_UI.MEDIA.ADD_FIELD') }}</button>
               <label :class="LABEL">{{ $t('TOLZAR_SETTINGS.MEDIA.VIDEO') }}</label>
-              <select v-model="data.config.video" :class="INPUT"><option v-for="m in MEDIA_MODES" :key="m" :value="m">{{ $t(`TOLZAR_SETTINGS.MODES.${m}`) }}</option></select>
+              <select v-model="data.config.video" :class="INPUT" :aria-label="$t('TOLZAR_SETTINGS.MEDIA.VIDEO')"><option v-for="m in MEDIA_MODES" :key="m" :value="m">{{ $t(`TOLZAR_SETTINGS.MODES.${m}`) }}</option></select>
               <label :class="LABEL">{{ $t('TOLZAR_SETTINGS.MEDIA.VIDEO_FRAMES') }}</label>
-              <input v-model.number="data.config.video_frames" type="number" :min="VIDEO_FRAMES.min" :max="VIDEO_FRAMES.max" :class="INPUT" class="!w-[100px]" />
+              <input v-model.number="data.config.video_frames" type="number" :min="VIDEO_FRAMES.min" :max="VIDEO_FRAMES.max" :class="INPUT" class="!w-[100px]" :aria-label="$t('TOLZAR_SETTINGS.MEDIA.VIDEO_FRAMES')" />
               <p class="text-xs text-n-amber-11">{{ $t('TOLZAR_SETTINGS.MEDIA.VIDEO_NOTE') }}</p>
               <label :class="LABEL">{{ $t('TOLZAR_SETTINGS.MEDIA.RETENTION') }}</label>
-              <input v-model.number="data.config.retention_days" type="number" min="1" :class="INPUT" />
+              <input v-model.number="data.config.retention_days" type="number" min="1" :class="INPUT" :aria-label="$t('TOLZAR_SETTINGS.MEDIA.RETENTION')" />
               <p class="text-xs text-n-slate-10">{{ $t('TOLZAR_SETTINGS.MEDIA.PRIVACY') }}</p>
               <button type="button" :class="BTN" :disabled="busy.media" @click="saveMedia">{{ busy.media ? $t('TOLZAR_UI.SAVING') : $t('TOLZAR_SETTINGS.SAVE') }}</button>
             </div>
@@ -704,11 +704,11 @@ onMounted(() => {
                 <ShadowBadge state="shadow" :hint="$t('TOLZAR_SETTINGS_UI.SHADOW_DETAIL.recovery')" />
               </label>
               <label :class="LABEL">{{ $t('TOLZAR_SETTINGS.RECOVERY.QUIET') }}</label>
-              <input v-model.number="data.config.quiet_hours" type="number" min="6" :class="INPUT" />
+              <input v-model.number="data.config.quiet_hours" type="number" min="6" :class="INPUT" :aria-label="$t('TOLZAR_SETTINGS.RECOVERY.QUIET')" />
               <label :class="LABEL">{{ $t('TOLZAR_SETTINGS.RECOVERY.TOUCH_DAYS') }}</label>
-              <input v-model="touchDays" :class="INPUT" :placeholder="$t('TOLZAR_SETTINGS_UI.RECOVERY.TOUCH_DAYS_PLACEHOLDER')" />
+              <input v-model="touchDays" :class="INPUT" :placeholder="$t('TOLZAR_SETTINGS_UI.RECOVERY.TOUCH_DAYS_PLACEHOLDER')" :aria-label="$t('TOLZAR_SETTINGS.RECOVERY.TOUCH_DAYS')" />
               <label :class="LABEL">{{ $t('TOLZAR_SETTINGS.RECOVERY.MAX_PER_RUN') }}</label>
-              <input v-model.number="data.config.max_per_run" type="number" min="1" max="50" :class="INPUT" />
+              <input v-model.number="data.config.max_per_run" type="number" min="1" max="50" :class="INPUT" :aria-label="$t('TOLZAR_SETTINGS.RECOVERY.MAX_PER_RUN')" />
               <p class="text-xs text-n-slate-10">{{ $t('TOLZAR_SETTINGS.RECOVERY.PLANNED', { n: data.planned || 0 }) }}</p>
               <ul v-if="(data.recent || []).length" class="ps-4 mt-1 text-xs text-n-slate-11">
                 <li v-for="(r, i) in data.recent.slice(0, 10)" :key="i">
@@ -786,9 +786,9 @@ onMounted(() => {
               </div>
               <button type="button" :class="BTN_GHOST" :disabled="busy.channels" @click="saveChannels">{{ busy.channels ? $t('TOLZAR_UI.SAVING') : $t('TOLZAR_SETTINGS.SAVE') }}</button>
               <label :class="LABEL">{{ $t('TOLZAR_SETTINGS.LINKS.CAMPAIGN') }}</label>
-              <input v-model="data.campaign" :class="INPUT" />
+              <input v-model="data.campaign" :class="INPUT" :aria-label="$t('TOLZAR_SETTINGS.LINKS.CAMPAIGN')" />
               <label :class="LABEL">{{ $t('TOLZAR_SETTINGS.LINKS.GREETING') }}</label>
-              <input v-model="data.greeting" :class="INPUT" />
+              <input v-model="data.greeting" :class="INPUT" :aria-label="$t('TOLZAR_SETTINGS.LINKS.GREETING')" />
               <button type="button" :class="BTN" :disabled="busy.links" @click="makeLinks">{{ busy.links ? $t('TOLZAR_UI.LOADING') : $t('TOLZAR_SETTINGS.LINKS.CREATE') }}</button>
               <div v-if="data.made" class="mt-3">
                 <div v-for="(url, ch) in data.made.links" :key="ch" class="flex flex-wrap gap-3 items-center py-2 border-t border-n-weak">
@@ -816,29 +816,29 @@ onMounted(() => {
               <ShadowBadge state="shadow" :hint="$t('TOLZAR_SETTINGS_UI.SHADOW_DETAIL.broadcasts')" />
               <p class="mt-1 mb-2 text-xs text-n-slate-10">{{ $t('TOLZAR_SETTINGS_UI.SHADOW_DETAIL.broadcasts') }}</p>
               <label :class="LABEL" class="!mt-0">{{ $t('TOLZAR_SETTINGS.BROADCASTS.NAME') }}</label>
-              <input v-model="data.draft.name" :class="INPUT" />
+              <input v-model="data.draft.name" :class="INPUT" :aria-label="$t('TOLZAR_SETTINGS.BROADCASTS.NAME')" />
               <div class="grid gap-2 md:grid-cols-2">
                 <div>
                   <label :class="LABEL">{{ $t('TOLZAR_SETTINGS_UI.BROADCASTS.AUDIENCE_FIELD') }}</label>
-                  <select v-model="data.draft.audience.field" :class="INPUT" @change="resetAudienceValue">
+                  <select v-model="data.draft.audience.field" :class="INPUT" :aria-label="$t('TOLZAR_SETTINGS_UI.BROADCASTS.AUDIENCE_FIELD')" @change="resetAudienceValue">
                     <option v-for="f in fields" :key="f.key" :value="f.key">{{ f.label }}</option>
                   </select>
                 </div>
                 <div>
                   <label :class="LABEL">{{ $t('TOLZAR_SETTINGS_UI.BROADCASTS.AUDIENCE_VALUE') }}</label>
-                  <select v-if="isStageField(data.draft.audience.field)" v-model="data.draft.audience.value" :class="INPUT">
+                  <select v-if="isStageField(data.draft.audience.field)" v-model="data.draft.audience.value" :class="INPUT" :aria-label="$t('TOLZAR_SETTINGS_UI.BROADCASTS.AUDIENCE_VALUE')">
                     <option value="">{{ $t('TOLZAR_SETTINGS_UI.BROADCASTS.PICK_STAGE') }}</option>
                     <option v-for="s in STAGES" :key="s.key" :value="s.key">{{ s.label }}</option>
                   </select>
-                  <select v-else-if="fieldValues.length" v-model="data.draft.audience.value" :class="INPUT">
+                  <select v-else-if="fieldValues.length" v-model="data.draft.audience.value" :class="INPUT" :aria-label="$t('TOLZAR_SETTINGS_UI.BROADCASTS.AUDIENCE_VALUE')">
                     <option value="">{{ $t('TOLZAR_SETTINGS_UI.BROADCASTS.PICK_VALUE') }}</option>
                     <option v-for="v in fieldValues" :key="v" :value="v">{{ v }}</option>
                   </select>
-                  <input v-else v-model="data.draft.audience.value" :class="INPUT" :placeholder="$t('TOLZAR_SETTINGS_UI.BROADCASTS.VALUE_PLACEHOLDER')" />
+                  <input v-else v-model="data.draft.audience.value" :class="INPUT" :placeholder="$t('TOLZAR_SETTINGS_UI.BROADCASTS.VALUE_PLACEHOLDER')" :aria-label="$t('TOLZAR_SETTINGS_UI.BROADCASTS.VALUE_PLACEHOLDER')" />
                 </div>
               </div>
               <label :class="LABEL">{{ $t('TOLZAR_SETTINGS.BROADCASTS.MESSAGE') }}</label>
-              <textarea v-model="data.draft.text.en" rows="3" :class="INPUT" />
+              <textarea v-model="data.draft.text.en" rows="3" :class="INPUT" :aria-label="$t('TOLZAR_SETTINGS.BROADCASTS.MESSAGE')" />
               <div class="flex flex-wrap gap-2">
                 <button type="button" :class="BTN_GHOST" :disabled="busy.broadcast_preview" @click="previewBroadcast">{{ busy.broadcast_preview ? $t('TOLZAR_UI.LOADING') : $t('TOLZAR_SETTINGS.BROADCASTS.PREVIEW') }}</button>
                 <button type="button" :class="BTN" :disabled="busy.broadcast_save" @click="saveBroadcast">{{ busy.broadcast_save ? $t('TOLZAR_UI.SAVING') : $t('TOLZAR_SETTINGS.SAVE') }}</button>

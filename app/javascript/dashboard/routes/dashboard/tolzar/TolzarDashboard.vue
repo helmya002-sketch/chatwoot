@@ -755,6 +755,7 @@ onBeforeUnmount(() => {
                   <span
                     class="inline-block rounded-full size-2"
                     :class="p.dot"
+                    aria-hidden="true"
                   />
                   <span class="text-xs font-semibold text-n-slate-11">
                     {{ t(`TOLZAR_DASHBOARD.PRESENCE.${p.key.toUpperCase()}`) }}
@@ -775,11 +776,14 @@ onBeforeUnmount(() => {
                     v-tooltip.top="a.name"
                     class="grid relative place-content-center text-[10px] font-bold rounded-full size-7 bg-n-alpha-2 text-n-slate-11"
                     :class="{ 'opacity-60': p.key === 'offline' }"
+                    role="img"
+                    :aria-label="a.name"
                   >
                     {{ initials(a.name) }}
                     <span
                       class="absolute -bottom-0.5 -end-0.5 rounded-full size-2.5 ring-2 ring-n-solid-1"
                       :class="p.dot"
+                      aria-hidden="true"
                     />
                   </span>
                   <span

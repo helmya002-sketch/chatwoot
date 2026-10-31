@@ -291,6 +291,7 @@ const PROBLEM = 'mt-1 text-xs text-n-ruby-11';
             class="mb-1.5"
             :placeholder="t('TOLZAR_ONBOARDING_UI.TIMEZONE_FILTER')"
             aria-controls="tz-onb-tz"
+            :aria-label="t('TOLZAR_ONBOARDING_UI.TIMEZONE_FILTER')"
           />
           <select
             id="tz-onb-tz"
@@ -315,6 +316,7 @@ const PROBLEM = 'mt-1 text-xs text-n-ruby-11';
               v-model="form.start"
               type="time"
               :class="INPUT"
+              :aria-label="t('TOLZAR_SETTINGS_UI.BOOKINGS.FROM')"
               class="!w-auto"
               :aria-invalid="!!problem('working_hours')"
             />
@@ -323,6 +325,7 @@ const PROBLEM = 'mt-1 text-xs text-n-ruby-11';
               v-model="form.end"
               type="time"
               :class="INPUT"
+              :aria-label="t('TOLZAR_SETTINGS_UI.BOOKINGS.UNTIL')"
               class="!w-auto"
               :aria-invalid="!!problem('working_hours')"
             />

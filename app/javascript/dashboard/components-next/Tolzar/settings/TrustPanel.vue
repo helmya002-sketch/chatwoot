@@ -152,14 +152,14 @@ onMounted(load);
     <!-- AI disclosure -->
     <div v-if="section === 'disclosure'" class="max-w-[620px]">
       <label :class="LABEL">{{ t('TOLZAR_SETTINGS.TRUST.MODE') }}</label>
-      <select v-model="data.disclosure" :class="INPUT">
+      <select v-model="data.disclosure" :class="INPUT" :aria-label="t('TOLZAR_SETTINGS.TRUST.MODE')">
         <option v-for="m in DISCLOSURE_MODES" :key="m" :value="m">{{ t(`TOLZAR_SETTINGS.TRUST.MODES.${m}`) }}</option>
       </select>
       <p class="mt-1 text-xs text-n-slate-10">{{ t(`TOLZAR_SETTINGS.TRUST.MODE_HINT.${data.disclosure}`) }}</p>
       <label :class="LABEL">{{ t('TOLZAR_SETTINGS.TRUST.TEXTS') }}</label>
       <div v-for="lang in DISCLOSURE_LANGS" :key="lang" class="flex gap-2 items-center mb-1.5">
         <span class="w-8 text-xs font-semibold uppercase text-n-slate-10">{{ lang }}</span>
-        <input v-model="data.texts[lang]" :class="INPUT" :placeholder="disclosureLine(lang, {}, data.defaults)" />
+        <input v-model="data.texts[lang]" :class="INPUT" :placeholder="disclosureLine(lang, {}, data.defaults)" :aria-label="`${t('TOLZAR_SETTINGS.TRUST.TEXTS')} (${lang})`" />
       </div>
       <p class="text-xs text-n-slate-10">{{ t('TOLZAR_SETTINGS.TRUST.TEXTS_HINT') }}</p>
       <button type="button" :class="BTN" :disabled="busy" @click="saveDisclosureNow">{{ t('TOLZAR_SETTINGS.SAVE') }}</button>
@@ -168,11 +168,11 @@ onMounted(load);
     <!-- Retention -->
     <div v-if="section === 'retention'" class="max-w-[520px]">
       <label :class="LABEL">{{ t('TOLZAR_SETTINGS.TRUST.DECISIONS_DAYS') }}</label>
-      <input v-model.number="data.config.decisions_days" type="number" min="1" max="3650" :class="INPUT" />
+      <input v-model.number="data.config.decisions_days" type="number" min="1" max="3650" :class="INPUT" :aria-label="t('TOLZAR_SETTINGS.TRUST.DECISIONS_DAYS')" />
       <label :class="LABEL">{{ t('TOLZAR_SETTINGS.TRUST.KV_DAYS') }}</label>
-      <input v-model.number="data.config.kv_days" type="number" min="1" max="3650" :class="INPUT" />
+      <input v-model.number="data.config.kv_days" type="number" min="1" max="3650" :class="INPUT" :aria-label="t('TOLZAR_SETTINGS.TRUST.KV_DAYS')" />
       <label :class="LABEL">{{ t('TOLZAR_SETTINGS.TRUST.AUDIT_DAYS') }}</label>
-      <input v-model.number="data.config.audit_days" type="number" min="1" max="3650" :class="INPUT" />
+      <input v-model.number="data.config.audit_days" type="number" min="1" max="3650" :class="INPUT" :aria-label="t('TOLZAR_SETTINGS.TRUST.AUDIT_DAYS')" />
       <p class="text-xs text-n-slate-10">{{ t('TOLZAR_SETTINGS.TRUST.RETENTION_SCOPE') }}</p>
       <div class="p-3 mt-3 rounded-lg bg-n-alpha-1 text-[13px]">
         <div class="text-xs font-semibold text-n-slate-11">{{ t('TOLZAR_SETTINGS.TRUST.NEXT_PURGE') }}</div>
@@ -186,7 +186,7 @@ onMounted(load);
       <h3 class="mt-6 mb-0 text-[14px] font-semibold text-n-slate-12">{{ t('TOLZAR_SETTINGS.TRUST.CONV_TITLE') }}</h3>
       <p class="mt-1 text-xs text-n-slate-10">{{ t('TOLZAR_SETTINGS.TRUST.CONV_HINT') }}</p>
       <label :class="LABEL">{{ t('TOLZAR_SETTINGS.TRUST.CONV_DAYS') }}</label>
-      <input v-model="data.conv.days" type="number" min="365" max="3650" :class="INPUT" :placeholder="t('TOLZAR_SETTINGS.TRUST.CONV_OFF')" />
+      <input v-model="data.conv.days" type="number" min="365" max="3650" :class="INPUT" :placeholder="t('TOLZAR_SETTINGS.TRUST.CONV_OFF')" :aria-label="t('TOLZAR_SETTINGS.TRUST.CONV_DAYS')" />
       <p v-if="data.conv.days && data.conv.expired !== null" class="text-xs text-n-amber-11">
         {{ t('TOLZAR_SETTINGS.TRUST.CONV_EXPIRED', { n: data.conv.expired }) }}
       </p>

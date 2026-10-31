@@ -299,6 +299,7 @@ const listProblems = computed(() => problems.value.filter(p => p.index < 0));
         :maxlength="MAX_WHEN + 40"
         :placeholder="t('TOLZAR_SKILLS.WHEN_PLACEHOLDER')"
         class="box-border p-2 w-full text-[12.5px] rounded-lg border outline-none resize-y border-n-weak bg-n-solid-1 text-n-slate-12 focus:border-n-brand"
+        :aria-label="t('TOLZAR_SKILLS.WHEN')"
       />
       <div class="text-[10.5px] text-n-slate-10 text-end">
         {{ (sk.when || '').trim().length }} / {{ MAX_WHEN }}

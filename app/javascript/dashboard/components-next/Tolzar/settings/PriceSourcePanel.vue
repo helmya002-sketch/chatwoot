@@ -136,7 +136,7 @@ const cell = v => {
     >
       <div>
         <label :class="LABEL">{{ t('TOLZAR_WORKSPACE.PRICE.TYPE') }}</label>
-        <select v-model="form.type" :class="INPUT">
+        <select v-model="form.type" :class="INPUT" :aria-label="t('TOLZAR_WORKSPACE.PRICE.TYPE')">
           <option v-for="ty in PRICE_TYPES" :key="ty" :value="ty">
             {{ t(`TOLZAR_WORKSPACE.PRICE.TYPES.${ty}`) }}
           </option>
@@ -150,6 +150,7 @@ const cell = v => {
             type="url"
             :class="INPUT"
             :placeholder="t('TOLZAR_WORKSPACE.PRICE.URL_PLACEHOLDER')"
+            :aria-label="t('TOLZAR_WORKSPACE.PRICE.URL')"
           />
         </div>
         <div>
@@ -162,6 +163,7 @@ const cell = v => {
             min="1"
             max="168"
             :class="INPUT"
+            :aria-label="t('TOLZAR_WORKSPACE.PRICE.REFRESH')"
           />
         </div>
       </template>

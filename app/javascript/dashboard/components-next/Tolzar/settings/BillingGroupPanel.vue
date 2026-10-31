@@ -267,6 +267,7 @@ onMounted(load);
           min="1"
           :class="INPUT"
           :placeholder="t('TOLZAR_SETTINGS.BILLING.EMPTY_UNLIMITED')"
+          :aria-label="t('TOLZAR_SETTINGS.BILLING.ALLOWANCE')"
         />
         <label :class="LABEL">{{ t('TOLZAR_SETTINGS.BILLING.TZ') }}</label>
         <input
@@ -274,6 +275,7 @@ onMounted(load);
           type="text"
           :class="INPUT"
           :placeholder="DEFAULT_TZ"
+          :aria-label="t('TOLZAR_SETTINGS.BILLING.TZ')"
         />
         <label :class="CHECK">
           <input v-model="form.enabled" type="checkbox" />

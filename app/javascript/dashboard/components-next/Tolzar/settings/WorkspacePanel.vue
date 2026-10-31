@@ -261,6 +261,7 @@ onMounted(load);
               v-model="form[f.path]"
               type="time"
               :class="INPUT"
+              :aria-label="label(f)"
               :disabled="!owner || resetting(f)"
             />
             <input
@@ -269,6 +270,7 @@ onMounted(load);
               type="number"
               min="0"
               :class="INPUT"
+              :aria-label="label(f)"
               :disabled="!owner || resetting(f)"
             />
             <div v-else-if="f.kind === 'days'" class="flex flex-wrap gap-1.5">
@@ -282,6 +284,7 @@ onMounted(load);
                     ? 'text-white bg-n-slate-11 border-n-slate-11'
                     : 'text-n-slate-11 bg-n-solid-1 border-n-weak'
                 "
+                :aria-pressed="(form[f.path] || []).includes(d)"
                 :disabled="!owner || resetting(f)"
                 @click="toggleDay(d)"
               >
@@ -293,12 +296,14 @@ onMounted(load);
               v-model="form[f.path]"
               :rows="f.kind === 'lines' ? 4 : 2"
               :class="INPUT"
+              :aria-label="label(f)"
               :disabled="!owner || resetting(f)"
             />
             <input
               v-else
               v-model="form[f.path]"
               :class="INPUT"
+              :aria-label="label(f)"
               :disabled="!owner || resetting(f)"
             />
             <div class="flex flex-wrap gap-2 justify-between items-center mt-1">

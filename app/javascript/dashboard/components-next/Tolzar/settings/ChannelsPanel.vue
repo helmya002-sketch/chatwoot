@@ -217,11 +217,11 @@ onMounted(load);
     <div v-if="section === 'sms'" class="grid gap-5 mt-2 lg:grid-cols-2">
       <div>
         <label :class="LABEL">{{ t('TOLZAR_SETTINGS.CHANNELS.PROVIDER') }}</label>
-        <select v-model="form.provider" :class="INPUT">
+        <select v-model="form.provider" :class="INPUT" :aria-label="t('TOLZAR_SETTINGS.CHANNELS.PROVIDER')">
           <option v-for="p in SMS_PROVIDERS" :key="p" :value="p">{{ t(`TOLZAR_SETTINGS.CHANNELS.P.${p}`) }}</option>
         </select>
         <label :class="LABEL">{{ t('TOLZAR_SETTINGS.CHANNELS.SMS_FROM') }}</label>
-        <input v-model="form.from" :class="INPUT" :placeholder="t('TOLZAR_SETTINGS_UI.CHANNELS.PH.SMS_FROM')" />
+        <input v-model="form.from" :class="INPUT" :placeholder="t('TOLZAR_SETTINGS_UI.CHANNELS.PH.SMS_FROM')" :aria-label="t('TOLZAR_SETTINGS.CHANNELS.SMS_FROM')" />
         <CredentialInput v-for="f in credFields" :key="f" v-model="keys[f]" :label="credLabel(f)" :status="credStatus(f)" :busy="busy" @remove="removeKey(f)" />
         <label :class="CHECK"><input v-model="form.enabled" type="checkbox" /> {{ t('TOLZAR_SETTINGS.ON_SHADOW') }}</label>
         <p class="mt-2 mb-0 text-xs text-n-slate-10">{{ t('TOLZAR_SETTINGS.CHANNELS.CRED.HINT') }}</p>
@@ -230,9 +230,9 @@ onMounted(load);
       <div>
         <h3 class="m-0 text-sm font-semibold text-n-slate-12">{{ t('TOLZAR_SETTINGS.CHANNELS.SMS_PREVIEW') }}</h3>
         <label :class="LABEL">{{ t('TOLZAR_SETTINGS.CHANNELS.SMS_TO') }}</label>
-        <input v-model="probe.to" :class="INPUT" :placeholder="t('TOLZAR_SETTINGS_UI.CHANNELS.PH.SMS_TO')" />
+        <input v-model="probe.to" :class="INPUT" :placeholder="t('TOLZAR_SETTINGS_UI.CHANNELS.PH.SMS_TO')" :aria-label="t('TOLZAR_SETTINGS.CHANNELS.SMS_TO')" />
         <label :class="LABEL">{{ t('TOLZAR_SETTINGS.CHANNELS.SMS_TEXT') }}</label>
-        <textarea v-model="probe.text" rows="3" :class="INPUT" />
+        <textarea v-model="probe.text" rows="3" :class="INPUT" :aria-label="t('TOLZAR_SETTINGS.CHANNELS.SMS_TEXT')" />
         <button type="button" :class="BTN_GHOST" :disabled="busy" @click="smsPreview">{{ t('TOLZAR_SETTINGS.CHANNELS.PREVIEW') }}</button>
         <div v-if="preview" class="mt-3 text-[13px]">
           <p class="m-0">{{ t('TOLZAR_SETTINGS.CHANNELS.WOULD_SEND') }} · {{ t('TOLZAR_SETTINGS.CHANNELS.SEGMENTS', { n: preview.segments.parts, enc: preview.segments.encoding, chars: preview.segments.characters }) }}</p>
@@ -247,16 +247,16 @@ onMounted(load);
       <div class="grid gap-5 lg:grid-cols-2">
         <div>
           <label :class="LABEL">{{ t('TOLZAR_SETTINGS.CHANNELS.PROVIDER') }}</label>
-          <select v-model="form.provider" :class="INPUT" @change="fillMap">
+          <select v-model="form.provider" :class="INPUT" :aria-label="t('TOLZAR_SETTINGS.CHANNELS.PROVIDER')" @change="fillMap">
             <option v-for="p in CRM_PROVIDERS" :key="p" :value="p">{{ t(`TOLZAR_SETTINGS.CHANNELS.P.${p}`) }}</option>
           </select>
           <CredentialInput v-for="f in credFields" :key="f" v-model="keys[f]" :label="credLabel(f)" :status="credStatus(f)" :busy="busy" @remove="removeKey(f)" />
           <template v-if="form.provider === 'zoho'">
             <label :class="LABEL">{{ t('TOLZAR_SETTINGS.CHANNELS.ZOHO_DOMAIN') }}</label>
-            <input v-model="form.api_domain" :class="INPUT" :placeholder="t('TOLZAR_SETTINGS_UI.CHANNELS.PH.ZOHO_DOMAIN')" />
+            <input v-model="form.api_domain" :class="INPUT" :placeholder="t('TOLZAR_SETTINGS_UI.CHANNELS.PH.ZOHO_DOMAIN')" :aria-label="t('TOLZAR_SETTINGS.CHANNELS.ZOHO_DOMAIN')" />
           </template>
           <label :class="LABEL">{{ t('TOLZAR_SETTINGS.CHANNELS.DIRECTION') }}</label>
-          <select v-model="form.direction" :class="INPUT">
+          <select v-model="form.direction" :class="INPUT" :aria-label="t('TOLZAR_SETTINGS.CHANNELS.DIRECTION')">
             <option v-for="d in CRM_DIRECTIONS" :key="d" :value="d">{{ t(`TOLZAR_SETTINGS.CHANNELS.DIR.${d}`) }}</option>
           </select>
           <p class="mt-1 text-xs text-n-slate-10">{{ t('TOLZAR_SETTINGS.CHANNELS.CONFLICT_RULE') }}</p>
@@ -268,7 +268,7 @@ onMounted(load);
           <h3 class="m-0 text-sm font-semibold text-n-slate-12">{{ t('TOLZAR_SETTINGS.CHANNELS.MAPPING') }}</h3>
           <div v-for="r in mapRows" :key="r.field" class="flex gap-2 items-center mt-1.5">
             <span class="w-[150px] text-[13px] text-n-slate-11">{{ t(`TOLZAR_SETTINGS.CHANNELS.FIELD.${r.field}`) }}</span>
-            <input v-model="r.crm" :class="INPUT" :placeholder="r.placeholder" spellcheck="false" />
+            <input v-model="r.crm" :class="INPUT" :placeholder="r.placeholder" :aria-label="t(`TOLZAR_SETTINGS.CHANNELS.FIELD.${r.field}`)" spellcheck="false" />
           </div>
           <p class="mt-1 text-xs text-n-slate-10">{{ t('TOLZAR_SETTINGS.CHANNELS.MAPPING_HINT') }}</p>
         </div>
@@ -277,7 +277,7 @@ onMounted(load);
 
       <h3 class="mt-6 mb-0 text-sm font-semibold text-n-slate-12">{{ t('TOLZAR_SETTINGS.CHANNELS.CRM_PREVIEW') }}</h3>
       <div class="flex gap-2 items-end max-w-[420px]">
-        <input v-model="probe.contactId" inputmode="numeric" :class="INPUT" :placeholder="t('TOLZAR_SETTINGS.TRUST.CONTACT_ID')" />
+        <input v-model="probe.contactId" inputmode="numeric" :class="INPUT" :placeholder="t('TOLZAR_SETTINGS.TRUST.CONTACT_ID')" :aria-label="t('TOLZAR_SETTINGS.TRUST.CONTACT_ID')" />
         <button type="button" :class="BTN_GHOST" :disabled="busy" @click="crmPreview">{{ t('TOLZAR_SETTINGS.CHANNELS.PREVIEW') }}</button>
       </div>
       <div v-if="preview" class="grid gap-2 mt-3 text-[13px] md:grid-cols-2">
@@ -311,16 +311,16 @@ onMounted(load);
       <div class="grid gap-5 lg:grid-cols-2">
         <div>
           <label :class="LABEL">{{ t('TOLZAR_SETTINGS.CHANNELS.PROVIDER') }}</label>
-          <select v-model="form.provider" :class="INPUT">
+          <select v-model="form.provider" :class="INPUT" :aria-label="t('TOLZAR_SETTINGS.CHANNELS.PROVIDER')">
             <option v-for="p in SHOP_PROVIDERS" :key="p" :value="p">{{ t(`TOLZAR_SETTINGS.CHANNELS.P.${p}`) }}</option>
           </select>
           <label :class="LABEL">{{ t('TOLZAR_SETTINGS.CHANNELS.SHOP_DOMAIN') }}</label>
-          <input v-model="form.shop_domain" :class="INPUT" :placeholder="t('TOLZAR_SETTINGS_UI.CHANNELS.PH.SHOP_DOMAIN')" />
+          <input v-model="form.shop_domain" :class="INPUT" :placeholder="t('TOLZAR_SETTINGS_UI.CHANNELS.PH.SHOP_DOMAIN')" :aria-label="t('TOLZAR_SETTINGS.CHANNELS.SHOP_DOMAIN')" />
           <label :class="LABEL">{{ t('TOLZAR_SETTINGS.CHANNELS.CURRENCY') }}</label>
-          <input v-model="form.currency" maxlength="3" :class="INPUT" :placeholder="t('TOLZAR_SETTINGS_UI.CHANNELS.PH.CURRENCY')" />
+          <input v-model="form.currency" maxlength="3" :class="INPUT" :placeholder="t('TOLZAR_SETTINGS_UI.CHANNELS.PH.CURRENCY')" :aria-label="t('TOLZAR_SETTINGS.CHANNELS.CURRENCY')" />
           <CredentialInput v-for="f in credFields" :key="f" v-model="keys[f]" :label="credLabel(f)" :status="credStatus(f)" :busy="busy" @remove="removeKey(f)" />
           <label :class="LABEL">{{ t('TOLZAR_SETTINGS.CHANNELS.PRICE_AGENT') }}</label>
-          <select v-model="form.agent_id" :class="INPUT">
+          <select v-model="form.agent_id" :class="INPUT" :aria-label="t('TOLZAR_SETTINGS.CHANNELS.PRICE_AGENT')">
             <option value="">—</option>
             <option v-for="a in agents" :key="a.id" :value="a.id">{{ a.name }}</option>
           </select>
@@ -354,13 +354,13 @@ onMounted(load);
             {{ t('TOLZAR_SETTINGS.CHANNELS.WIDGET_WARNING') }}
           </p>
           <label :class="LABEL">{{ t('TOLZAR_SETTINGS.CHANNELS.TRACKING_HOSTS') }}</label>
-          <input :value="hostsText" :class="INPUT" :placeholder="t('TOLZAR_SETTINGS_UI.CHANNELS.PH.TRACKING_HOSTS')" spellcheck="false" @input="setHosts($event.target.value)" />
+          <input :value="hostsText" :class="INPUT" :placeholder="t('TOLZAR_SETTINGS_UI.CHANNELS.PH.TRACKING_HOSTS')" spellcheck="false" :aria-label="t('TOLZAR_SETTINGS.CHANNELS.TRACKING_HOSTS')" @input="setHosts($event.target.value)" />
           <p class="mt-1 mb-0 text-xs text-n-slate-10">{{ t('TOLZAR_SETTINGS.CHANNELS.TRACKING_HOSTS_HINT', { max: TRACKING_HOSTS_MAX }) }}</p>
           <label :class="LABEL">{{ t('TOLZAR_SETTINGS.CHANNELS.ORDER_PATTERN') }}</label>
-          <input v-model="form.order_pattern" :maxlength="ORDER_PATTERN_MAX" :class="INPUT" :placeholder="t('TOLZAR_SETTINGS_UI.CHANNELS.PH.ORDER_PATTERN')" spellcheck="false" />
+          <input v-model="form.order_pattern" :maxlength="ORDER_PATTERN_MAX" :class="INPUT" :placeholder="t('TOLZAR_SETTINGS_UI.CHANNELS.PH.ORDER_PATTERN')" spellcheck="false" :aria-label="t('TOLZAR_SETTINGS.CHANNELS.ORDER_PATTERN')" />
           <p class="mt-1 mb-0 text-xs text-n-slate-10">{{ t('TOLZAR_SETTINGS.CHANNELS.ORDER_PATTERN_HINT') }}</p>
           <label :class="LABEL">{{ t('TOLZAR_SETTINGS.CHANNELS.ORDER_LOOKUPS') }}</label>
-          <input v-model.number="form.order_lookups_per_day" type="number" min="0" max="100000" step="1" :class="INPUT" />
+          <input v-model.number="form.order_lookups_per_day" type="number" min="0" max="100000" step="1" :class="INPUT" :aria-label="t('TOLZAR_SETTINGS.CHANNELS.ORDER_LOOKUPS')" />
           <p class="mt-2 mb-0 text-xs text-n-slate-10">{{ t('TOLZAR_SETTINGS.CHANNELS.CRED.HINT') }}</p>
           <div class="flex flex-wrap gap-2">
             <button type="button" :class="BTN" :disabled="busy" @click="save">{{ t('TOLZAR_SETTINGS.SAVE') }}</button>

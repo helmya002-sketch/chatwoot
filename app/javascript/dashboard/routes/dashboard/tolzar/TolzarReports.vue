@@ -440,6 +440,7 @@ const csv = key => {
                 ? 'bg-n-blue-3 text-n-blue-11 font-semibold'
                 : 'text-n-slate-11 hover:bg-n-slate-2'
             "
+            :aria-pressed="days === d"
             @click="days = d"
           >
             {{ t(`TOLZAR_REPORTS.RANGE.D${d}`) }}

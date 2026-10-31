@@ -147,7 +147,7 @@ onMounted(load);
 
     <h3 class="mt-4 mb-0 text-[14px] font-semibold text-n-slate-12">{{ t('TOLZAR_META_APP.APP') }}</h3>
     <label :class="LABEL">{{ t('TOLZAR_META_APP.APP_ID') }}</label>
-    <input v-model="form.app_id" :class="INPUT" inputmode="numeric" autocomplete="off" />
+    <input v-model="form.app_id" :class="INPUT" inputmode="numeric" autocomplete="off" :aria-label="t('TOLZAR_META_APP.APP_ID')" />
     <label :class="LABEL">{{ t('TOLZAR_META_APP.APP_SECRET') }}</label>
     <input
       v-model="form.app_secret"
@@ -155,6 +155,7 @@ onMounted(load);
       type="password"
       autocomplete="new-password"
       :placeholder="view ? t('TOLZAR_META_APP.SECRET_SAVED', { last4: view.secret_last4 }) : ''"
+      :aria-label="t('TOLZAR_META_APP.APP_SECRET')"
     />
     <button type="button" :class="BTN" :disabled="busy || !form.app_id" @click="saveApp">
       {{ t('TOLZAR_META_APP.SAVE') }}
@@ -185,11 +186,11 @@ onMounted(load);
       </ul>
       <p v-else class="mt-1 text-xs text-n-slate-10">{{ t('TOLZAR_META_APP.NO_PAGES') }}</p>
       <label :class="LABEL">{{ t('TOLZAR_META_APP.PAGE_ID') }}</label>
-      <input v-model="page.page_id" :class="INPUT" inputmode="numeric" autocomplete="off" />
+      <input v-model="page.page_id" :class="INPUT" inputmode="numeric" autocomplete="off" :aria-label="t('TOLZAR_META_APP.PAGE_ID')" />
       <label :class="LABEL">{{ t('TOLZAR_META_APP.TOKEN') }}</label>
-      <input v-model="page.access_token" :class="INPUT" type="password" autocomplete="new-password" />
+      <input v-model="page.access_token" :class="INPUT" type="password" autocomplete="new-password" :aria-label="t('TOLZAR_META_APP.TOKEN')" />
       <label :class="LABEL">{{ t('TOLZAR_META_APP.INBOX_NAME') }}</label>
-      <input v-model="page.inbox_name" :class="INPUT" />
+      <input v-model="page.inbox_name" :class="INPUT" :aria-label="t('TOLZAR_META_APP.INBOX_NAME')" />
       <button
         type="button"
         :class="BTN"
@@ -216,11 +217,11 @@ onMounted(load);
             <span class="font-mono text-sm font-semibold text-n-slate-12">{{ testCode }}</span>
           </p>
           <label :class="LABEL">{{ t('TOLZAR_META_APP.TEST.CONVERSATION') }}</label>
-          <input v-model="test.conversation_id" :class="INPUT" inputmode="numeric" />
+          <input v-model="test.conversation_id" :class="INPUT" inputmode="numeric" :aria-label="t('TOLZAR_META_APP.TEST.CONVERSATION')" />
           <label :class="LABEL">{{ t('TOLZAR_META_APP.TEST.TEXT') }}</label>
-          <input v-model="test.text" :class="INPUT" maxlength="300" />
+          <input v-model="test.text" :class="INPUT" maxlength="300" :aria-label="t('TOLZAR_META_APP.TEST.TEXT')" />
           <label :class="LABEL">{{ t('TOLZAR_META_APP.TEST.CONFIRM') }}</label>
-          <input v-model="test.confirm_name" :class="INPUT" autocomplete="off" />
+          <input v-model="test.confirm_name" :class="INPUT" autocomplete="off" :aria-label="t('TOLZAR_META_APP.TEST.CONFIRM')" />
           <button type="button" :class="BTN" :disabled="busy || !test.conversation_id || !test.text || !test.confirm_name" @click="sendTest">
             {{ t('TOLZAR_META_APP.TEST.SEND') }}
           </button>

@@ -772,16 +772,17 @@ onMounted(() => {
                     <option v-if="c.field && !fieldOptions.some(o => o.value === c.field)" :value="c.field">{{ c.field }}</option>
                     <option v-for="o in fieldOptions" :key="o.value" :value="o.value">{{ o.label }}</option>
                   </select>
-                  <input v-else v-model="c.field" class="mt-1" :class="INPUT" :placeholder="$t('TOLZAR_WORKFLOWS_UI.FIELD_PLACEHOLDER')" />
+                  <input v-else v-model="c.field" class="mt-1" :class="INPUT" :placeholder="$t('TOLZAR_WORKFLOWS_UI.FIELD_PLACEHOLDER')" :aria-label="$t('TOLZAR_WORKFLOWS_UI.FIELD_PLACEHOLDER')" />
                 </template>
-                <input v-if="['field_equals', 'channel_is'].includes(c.kind)" v-model="c.value" class="mt-1" :class="INPUT" :placeholder="$t('TOLZAR_WORKFLOWS.VALUE')" />
-                <input v-if="c.kind === 'has_tag'" v-model="c.tag" class="mt-1" :class="INPUT" :placeholder="$t('TOLZAR_WORKFLOWS_UI.TAG_PLACEHOLDER')" />
+                <input v-if="['field_equals', 'channel_is'].includes(c.kind)" v-model="c.value" class="mt-1" :class="INPUT" :placeholder="$t('TOLZAR_WORKFLOWS.VALUE')" :aria-label="$t('TOLZAR_WORKFLOWS.VALUE')" />
+                <input v-if="c.kind === 'has_tag'" v-model="c.tag" class="mt-1" :class="INPUT" :placeholder="$t('TOLZAR_WORKFLOWS_UI.TAG_PLACEHOLDER')" :aria-label="$t('TOLZAR_WORKFLOWS_UI.TAG_PLACEHOLDER')" />
                 <input
                   v-if="c.kind === 'reply_matches'"
                   class="mt-1"
                   :class="INPUT"
                   :value="(c.words || []).join(', ')"
                   :placeholder="$t('TOLZAR_WORKFLOWS.WORDS')"
+                  :aria-label="$t('TOLZAR_WORKFLOWS.WORDS')"
                   @change="c.words = $event.target.value.split(',').map(w => w.trim()).filter(Boolean)"
                 />
                 <div v-if="c.kind === 'reply_number'" class="flex gap-1 mt-1">

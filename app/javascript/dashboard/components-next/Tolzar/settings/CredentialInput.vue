@@ -37,6 +37,7 @@ const savedText = computed(() =>
           ? t('TOLZAR_SETTINGS.CHANNELS.CRED.REPLACE')
           : t('TOLZAR_SETTINGS.CHANNELS.CRED.PASTE')
       "
+      :aria-label="label"
     />
     <div class="flex flex-wrap gap-2 justify-between items-center mt-1 text-xs">
       <span v-if="status.set" class="text-n-teal-11" data-tz-cred-saved>{{
