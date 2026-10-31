@@ -3,6 +3,8 @@
 
 export const STRINGS = {
   en: {
+    FORM_SEND: 'Send',
+    FORM_SENT: 'Thanks, we received your answers.',
     SOURCES: 'Sources:',
     CSAT_QUESTION: 'How would you rate this conversation?',
     CSAT_THANKS: 'Thank you for your rating.',
@@ -37,6 +39,8 @@ export const STRINGS = {
     REPLY_TIME: 'We usually reply within a few minutes.',
   },
   ar: {
+    FORM_SEND: 'إرسال',
+    FORM_SENT: 'شكرًا، وصلتنا إجاباتك.',
     SOURCES: 'المصادر:',
     CSAT_QUESTION: 'كيف تقيّم هذه المحادثة؟',
     CSAT_THANKS: 'شكرًا لتقييمك.',
@@ -70,6 +74,8 @@ export const STRINGS = {
     REPLY_TIME: 'نردّ عادةً خلال دقائق.',
   },
   de: {
+    FORM_SEND: 'Senden',
+    FORM_SENT: 'Danke, wir haben Ihre Angaben erhalten.',
     SOURCES: 'Quellen:',
     CSAT_QUESTION: 'Wie bewerten Sie dieses Gespräch?',
     CSAT_THANKS: 'Danke für Ihre Bewertung.',
@@ -105,6 +111,8 @@ export const STRINGS = {
     REPLY_TIME: 'Wir antworten meist innerhalb weniger Minuten.',
   },
   fr: {
+    FORM_SEND: 'Envoyer',
+    FORM_SENT: 'Merci, nous avons bien reçu vos réponses.',
     SOURCES: 'Sources :',
     CSAT_QUESTION: 'Comment évaluez-vous cette conversation ?',
     CSAT_THANKS: 'Merci pour votre note.',
@@ -140,6 +148,8 @@ export const STRINGS = {
     REPLY_TIME: 'Nous répondons en général en quelques minutes.',
   },
   es: {
+    FORM_SEND: 'Enviar',
+    FORM_SENT: 'Gracias, hemos recibido tus respuestas.',
     SOURCES: 'Fuentes:',
     CSAT_QUESTION: '¿Cómo valoras esta conversación?',
     CSAT_THANKS: 'Gracias por tu valoración.',
@@ -174,6 +184,8 @@ export const STRINGS = {
     REPLY_TIME: 'Solemos responder en pocos minutos.',
   },
   pt: {
+    FORM_SEND: 'Enviar',
+    FORM_SENT: 'Obrigado, recebemos as suas respostas.',
     SOURCES: 'Fontes:',
     CSAT_QUESTION: 'Como avalia esta conversa?',
     CSAT_THANKS: 'Obrigado pela sua avaliação.',

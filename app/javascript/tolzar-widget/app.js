@@ -17,6 +17,7 @@ import {
 } from './extras';
 import { pickCampaign, armCampaign, csatNode, transcriptNode } from './engage';
 import { sourcesNode, pageContext } from './context';
+import { richNode } from './rich';
 import { isOpen as inHours } from './hours';
 
 const el = (doc, tag, cls, text) => {
@@ -118,6 +119,34 @@ export class WidgetApp {
       this.updateUnread();
     } catch {
       // A campaign that cannot start stays silent; the visitor can still write.
+    }
+  }
+
+  // A rich reply's option, card button or booking slot: recorded on the message and sent as the visitor's answer.
+  async choose(message, choice) {
+    try {
+      await this.api.submit(message.id, [choice]);
+      message.content_attributes = {
+        ...(message.content_attributes || {}),
+        submitted_values: [choice],
+      };
+      this.paint();
+      await this.send(choice.title || choice.value);
+    } catch {
+      this.showError(t(this.locale, 'FAILED'));
+    }
+  }
+
+  async submitForm(message, values) {
+    try {
+      await this.api.submit(message.id, values);
+      message.content_attributes = {
+        ...(message.content_attributes || {}),
+        submitted_values: values,
+      };
+      this.paint();
+    } catch {
+      this.showError(t(this.locale, 'FAILED'));
     }
   }
 
@@ -276,7 +305,6 @@ export class WidgetApp {
     this.paint();
   }
 
-
   async sendFile(file) {
     if (fileTooBig(file, this.config.maxFileMb)) {
       this.showError(t(this.locale, 'TOO_BIG'));
@@ -405,6 +433,8 @@ export class WidgetApp {
       bubble.append(...attachmentNodes(doc, m.attachments, this.locale));
       const src = sourcesNode(doc, m.content_attributes, this.locale);
       if (src) bubble.append(src);
+      const rich = richNode(this, m);
+      if (rich) bubble.append(rich);
       if (m.contentType === 'input_csat') bubble.append(csatNode(this, m));
       li.append(bubble);
       if (m.pending || m.failed)

@@ -106,6 +106,13 @@ export class Api {
     });
   }
 
+  // The answer to a rich reply (options, cards, form): the message's submitted_values.
+  submit(messageId, values) {
+    return this.request('PATCH', `messages/${encodeURIComponent(messageId)}`, {
+      body: { message: { submitted_values: values } },
+    });
+  }
+
   transcript() {
     return this.request('POST', 'conversations/transcript');
   }
