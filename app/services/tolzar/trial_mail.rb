@@ -1,6 +1,6 @@
 # Tolzar site trial form: the instant "what happens next" mail to the person who asked for a trial (launch lane,
-# conversion blueprint, 31 Oct). Off unless TOLZAR_TRIAL_MAIL_FROM is set (the sender, e.g.
-# "Adam from Tolzar <noreply@tolzar.com>"). Sent only for topic=trial, only to the address typed in the form, at most
+# conversion blueprint, 31 Oct). Off unless TOLZAR_TRIAL_MAIL_FROM is set (the sender: "Adam from Tolzar <noreply@tolzar.com>",
+# owner decision 30 Oct, same DKIM/SPF as the app mails). Sent only for topic=trial, only to the address typed in the form, at most
 # once per address a day (the form cannot be used to mail a stranger repeatedly), with a fixed text: nothing the
 # visitor typed is echoed except their first name.
 module Tolzar::TrialMail
