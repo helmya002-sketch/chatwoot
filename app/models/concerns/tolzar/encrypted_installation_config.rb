@@ -5,7 +5,8 @@
 # unchanged; a row written before this keeps its plain value readable until `rails tolzar:encrypt_credentials`
 # moves it. Other configs (flags, URLs, feature lists) stay as they are.
 module Tolzar::EncryptedInstallationConfig
-  SECRET_NAME = /(SECRET|PASSWORD|API_KEY|_TOKEN|PRIVATE_KEY|IDENTIFIER_HASH)/
+  # VAPID_KEYS holds the web-push private key next to the public one (round 4, c63: the PWA's push).
+  SECRET_NAME = /(SECRET|PASSWORD|API_KEY|_TOKEN|PRIVATE_KEY|IDENTIFIER_HASH|\AVAPID_KEYS\z)/
   # Settings about a token, not a token (WIDGET_TOKEN_EXPIRY is a number of days): never treated as secrets.
   NOT_SECRET = /(_EXPIRY|_TTL|_TIMEOUT|_LENGTH|_ENABLED)\z/
 

@@ -6,6 +6,7 @@ import {
   clearCookiesOnLogout,
   deleteIndexedDBOnLogout,
 } from '../store/utils/api';
+import { clearTolzarCachesOnLogout } from 'dashboard/components-next/Tolzar/tolzarPwa';
 
 export default {
   validityCheck() {
@@ -20,6 +21,7 @@ export default {
         .then(response => {
           deleteIndexedDBOnLogout();
           clearCookiesOnLogout();
+          clearTolzarCachesOnLogout();
           resolve(response);
         })
         .catch(error => {
