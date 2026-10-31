@@ -34,6 +34,7 @@ import ReferralBubble from 'dashboard/components-next/Conversation/ReferralBubbl
 import TolzarCopilotCard from 'next/Tolzar/CopilotCard.vue';
 import TolzarCommentContextCard from 'next/Tolzar/CommentContextCard.vue';
 import TolzarReplyWindow from 'next/Tolzar/ReplyWindow.vue';
+import TolzarReplyClosedBar from 'next/Tolzar/ReplyClosedBar.vue';
 
 // stores and apis
 import { mapGetters } from 'vuex';
@@ -90,6 +91,7 @@ export default {
     TolzarCopilotCard,
     TolzarCommentContextCard,
     TolzarReplyWindow,
+    TolzarReplyClosedBar,
   },
   mixins: [inboxMixin],
   setup() {
@@ -293,27 +295,18 @@ export default {
     instagramRestrictionStatusUrl() {
       return META_RESTRICTION_STATUS_URL;
     },
-    replyWindowBannerMessage() {
-      if (this.isAWhatsAppChannel) {
-        return this.$t('CONVERSATION.TWILIO_WHATSAPP_CAN_REPLY');
-      }
-      if (this.isAPIInbox) {
-        const { additional_attributes: additionalAttributes = {} } = this.inbox;
-        if (additionalAttributes) {
-          const {
-            agent_reply_time_window_message: agentReplyTimeWindowMessage,
-            agent_reply_time_window: agentReplyTimeWindow,
-          } = additionalAttributes;
-          return (
-            agentReplyTimeWindowMessage ||
-            this.$t('CONVERSATION.API_HOURS_WINDOW', {
-              hours: agentReplyTimeWindow,
-            })
-          );
-        }
-        return '';
-      }
-      return this.$t('CONVERSATION.CANNOT_REPLY');
+    // Tolzar (owner, 31 Oct): which "can't reply" sentence the bar shows.
+    tzReplyClosedKind() {
+      if (this.isAFacebookInbox || this.isAnInstagramChannel) return 'meta';
+      if (this.isAWhatsAppChannel) return 'whatsapp';
+      if (this.isATiktokChannel) return 'tiktok';
+      if (this.isAPIInbox) return 'api';
+      return 'other';
+    },
+    tzHumanAgentOn() {
+      return !!this.$store.getters['accounts/getAccount'](
+        this.$store.getters.getCurrentAccountId
+      )?.tolzar_meta_human_agent;
     },
     replyWindowLink() {
       if (this.isAFacebookInbox || this.isAnInstagramChannel) {
@@ -327,31 +320,6 @@ export default {
       }
       if (!this.isAPIInbox) {
         return REPLY_POLICY.TWILIO_WHATSAPP;
-      }
-      return '';
-    },
-    replyWindowLinkText() {
-      // Tolzar (c77): with HUMAN_AGENT on, Messenger / Instagram close after 7 days, not 24 hours.
-      if (
-        (this.isAFacebookInbox || this.isAnInstagramChannel) &&
-        this.$store.getters['accounts/getAccount'](
-          this.$store.getters.getCurrentAccountId
-        )?.tolzar_meta_human_agent
-      ) {
-        return this.$t('TOLZAR_INBOX.REPLY_WINDOW.CLOSED_7_DAYS');
-      }
-      if (
-        this.isAWhatsAppChannel ||
-        this.isAFacebookInbox ||
-        this.isAnInstagramChannel
-      ) {
-        return this.$t('CONVERSATION.24_HOURS_WINDOW');
-      }
-      if (this.isATiktokChannel) {
-        return this.$t('CONVERSATION.48_HOURS_WINDOW');
-      }
-      if (!this.isAPIInbox) {
-        return this.$t('CONVERSATION.TWILIO_WHATSAPP_24_HOURS_WINDOW');
       }
       return '';
     },
@@ -574,13 +542,17 @@ export default {
         :channel-type="inbox.channel_type"
         :messages="getMessages"
       />
-      <Banner
+      <TolzarReplyClosedBar
         v-if="!currentChat.can_reply"
-        color-scheme="alert"
-        class="mx-2 mt-2 overflow-hidden rounded-lg"
-        :banner-message="replyWindowBannerMessage"
-        :href-link="replyWindowLink"
-        :href-link-text="replyWindowLinkText"
+        :kind="tzReplyClosedKind"
+        :human-agent="tzHumanAgentOn"
+        :api-message="
+          inbox.additional_attributes?.agent_reply_time_window_message || ''
+        "
+        :api-hours="
+          inbox.additional_attributes?.agent_reply_time_window || null
+        "
+        :link="replyWindowLink"
       />
       <Banner
         v-if="hasDuplicateInstagramInbox"

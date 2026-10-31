@@ -66,12 +66,21 @@
         "UNKNOWN": "The AI service did not answer just now. This is checked again every minute."
       }
     },
+    "REPLY_CLOSED": {
+      "TITLE": "Reply window closed.",
+      "META_24_HOURS": "The customer last wrote more than 24 hours ago. You can reply again as soon as they send a new message.",
+      "META_7_DAYS": "The customer last wrote more than 7 days ago, past Meta's human-agent limit. You can reply again as soon as they send a new message.",
+      "WHATSAPP": "The customer last wrote more than 24 hours ago. Send an approved template to start again, or wait for their next message.",
+      "TIKTOK": "The customer last wrote more than 48 hours ago. You can reply again as soon as they send a new message.",
+      "API_HOURS": "This inbox only allows replies within {hours} hours of the customer's last message.",
+      "OTHER": "This channel doesn't allow a reply right now. You can reply again when the customer writes.",
+      "WHY": "Why?"
+    },
     "REPLY_WINDOW": {
       "STANDARD": "Standard window: {left} left",
       "HUMAN_AGENT": "Human-agent window: {left} left (your replies only, never the AI)",
       "LEFT_D": "{n} d",
       "LEFT_H": "{n} h",
-      "CLOSED_7_DAYS": "Meta's 7-day human-agent limit: more than 7 days since the customer's last message, so no reply can go out here",
       "SEND_HUMAN_AGENT": "Send as human-agent reply",
       "SENT_TAGGED": "Sent with Meta's Human Agent tag · {name}",
       "AUDIT_TITLE": "Human-agent replies",
