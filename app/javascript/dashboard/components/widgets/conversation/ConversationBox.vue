@@ -4,7 +4,6 @@ import ConversationHeader from './ConversationHeader.vue';
 import DashboardAppFrame from '../DashboardApp/Frame.vue';
 import EmptyState from './EmptyState/EmptyState.vue';
 import MessagesView from './MessagesView.vue';
-import TolzarBriefingStrip from 'next/Tolzar/BriefingStrip.vue';
 
 export default {
   components: {
@@ -12,7 +11,6 @@ export default {
     DashboardAppFrame,
     EmptyState,
     MessagesView,
-    TolzarBriefingStrip,
   },
   props: {
     inboxId: {
@@ -109,7 +107,6 @@ export default {
         'border-b border-b-n-weak !pt-2': !dashboardApps.length,
       }"
     />
-    <TolzarBriefingStrip v-if="currentChat.id" />
     <woot-tabs
       v-if="dashboardApps.length && currentChat.id"
       :index="activeIndex"

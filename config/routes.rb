@@ -146,6 +146,7 @@ Rails.application.routes.draw do
           get    'tolzar/bookings/agenda',           to: 'tolzar_bookings#agenda'
           get    'tolzar/bookings/export',           to: 'tolzar_booking_results#export'
           get    'tolzar/booking_results',           to: 'tolzar_booking_results#show'
+          get    'tolzar/briefing',                  to: 'tolzar_briefing#show'
           get    'tolzar/bookings/:id',              to: 'tolzar_bookings#show'
           post   'tolzar/bookings',                  to: 'tolzar_bookings#create'
           patch  'tolzar/bookings/:id',              to: 'tolzar_bookings#update'

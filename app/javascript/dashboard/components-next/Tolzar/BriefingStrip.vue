@@ -7,7 +7,7 @@
  * Dismissing hides it for the rest of the calendar day on this browser (localStorage,
  * a per-viewer convenience; a blocked store simply means it comes back on reload).
  */
-import { computed, ref, watch, onBeforeUnmount } from 'vue';
+import { computed, ref, watch, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useMapGetter } from 'dashboard/composables/store';
@@ -63,7 +63,35 @@ const scoreOf = c => {
   const n = Number(c?.meta?.sender?.custom_attributes?.tolzar_lead_score);
   return Number.isFinite(n) ? n : 0;
 };
-const hotLeads = computed(() =>
+// The server's count (GET tolzar/briefing: every conversation this person may open, on any page). Until it
+// answers, or if it cannot, the conversations the inbox has loaded stand in.
+const server = ref(null);
+const loadBriefing = async () => {
+  if (!accountId.value) return;
+  try {
+    const { data } = await window.axios.get(
+      `/api/v1/accounts/${accountId.value}/tolzar/briefing`
+    );
+    server.value = data && data.ok ? data : null;
+  } catch (e) {
+    server.value = null;
+  }
+};
+const REFRESH_MS = 60000;
+let timer = null;
+const onFocus = () => loadBriefing();
+onMounted(() => {
+  loadBriefing();
+  timer = window.setInterval(loadBriefing, REFRESH_MS);
+  window.addEventListener('focus', onFocus);
+});
+onBeforeUnmount(() => {
+  window.clearInterval(timer);
+  window.removeEventListener('focus', onFocus);
+});
+watch(accountId, loadBriefing);
+
+const localHotLeads = computed(() =>
   (allConversations.value || [])
     .filter(c => c.status === 'open' && scoreOf(c) >= 70)
     .map(c => ({
@@ -75,7 +103,17 @@ const hotLeads = computed(() =>
     .sort((a, b) => b.score - a.score)
     .slice(0, 5)
 );
-const hotCount = computed(() => hotLeads.value.length);
+const hotLeads = computed(() =>
+  server.value
+    ? (server.value.hot || []).map(l => ({
+        ...l,
+        name: l.name || t('TOLZAR_INBOX.BRIEFING.NO_NAME'),
+      }))
+    : localHotLeads.value
+);
+const hotCount = computed(() =>
+  server.value ? server.value.hot_count || 0 : localHotLeads.value.length
+);
 const inviting = computed(() => hotCount.value > 0 && !seen.value);
 
 const toggle = () => {
@@ -209,7 +247,9 @@ const jump = id => {
   border-bottom: 1px solid rgb(var(--slate-5));
   background: linear-gradient(90deg, rgb(var(--blue-9) / 0.07), transparent 42%),
     rgb(var(--surface-1));
-  z-index: 5;
+  /* Full width above the app: its popover opens over every page, under the mobile sidebar drawer (z-40). */
+  flex: 0 0 auto;
+  z-index: 35;
 }
 .tz-brief .tz-m {
   width: 19px;

@@ -2,6 +2,7 @@
 import { defineAsyncComponent, ref, computed } from 'vue';
 
 import NextSidebar from 'next/sidebar/Sidebar.vue';
+import TolzarBriefingStrip from 'next/Tolzar/BriefingStrip.vue';
 import WootKeyShortcutModal from 'dashboard/components/widgets/modal/WootKeyShortcutModal.vue';
 import AddAccountModal from 'dashboard/components/app/AddAccountModal.vue';
 import UpgradePage from 'dashboard/routes/dashboard/upgrade/UpgradePage.vue';
@@ -30,6 +31,7 @@ import { useCallsStore } from 'dashboard/stores/calls';
 export default {
   components: {
     NextSidebar,
+    TolzarBriefingStrip,
     CommandBar,
     WootKeyShortcutModal,
     AddAccountModal,
@@ -129,49 +131,53 @@ export default {
 </script>
 
 <template>
-  <div class="flex flex-grow overflow-hidden text-n-slate-12">
-    <NextSidebar
-      :is-mobile-sidebar-open="isMobileSidebarOpen"
-      @toggle-account-modal="toggleAccountModal"
-      @open-key-shortcut-modal="toggleKeyShortcutModal"
-      @close-key-shortcut-modal="closeKeyShortcutModal"
-      @show-create-account-modal="openCreateAccountModal"
-      @close-mobile-sidebar="closeMobileSidebar"
-    />
+  <div class="flex flex-col flex-grow min-h-0 overflow-hidden text-n-slate-12">
+    <!-- Tolzar: the greeting / briefing bar, full width above the sidebar and every page. -->
+    <TolzarBriefingStrip v-if="!showUpgradePage" />
+    <div class="flex flex-1 min-h-0 overflow-hidden">
+      <NextSidebar
+        :is-mobile-sidebar-open="isMobileSidebarOpen"
+        @toggle-account-modal="toggleAccountModal"
+        @open-key-shortcut-modal="toggleKeyShortcutModal"
+        @close-key-shortcut-modal="closeKeyShortcutModal"
+        @show-create-account-modal="openCreateAccountModal"
+        @close-mobile-sidebar="closeMobileSidebar"
+      />
 
-    <main
-      class="flex flex-1 h-full w-full min-h-0 px-0 overflow-hidden bg-n-surface-1"
-    >
-      <UpgradePage
-        v-show="showUpgradePage"
-        ref="upgradePageRef"
-        :bypass-upgrade-page="bypassUpgradePage"
+      <main
+        class="flex flex-1 h-full w-full min-h-0 px-0 overflow-hidden bg-n-surface-1"
       >
-        <MobileSidebarLauncher
-          :is-mobile-sidebar-open="isMobileSidebarOpen"
-          @toggle="toggleMobileSidebar"
+        <UpgradePage
+          v-show="showUpgradePage"
+          ref="upgradePageRef"
+          :bypass-upgrade-page="bypassUpgradePage"
+        >
+          <MobileSidebarLauncher
+            :is-mobile-sidebar-open="isMobileSidebarOpen"
+            @toggle="toggleMobileSidebar"
+          />
+        </UpgradePage>
+        <template v-if="!showUpgradePage">
+          <router-view />
+          <CopilotLauncher />
+          <MobileSidebarLauncher
+            :is-mobile-sidebar-open="isMobileSidebarOpen"
+            @toggle="toggleMobileSidebar"
+          />
+          <CopilotContainer />
+          <FloatingCallWidget v-if="hasActiveCall || hasIncomingCall" />
+        </template>
+        <CommandBar :is-paywalled="isAccountPaywalled" />
+        <AddAccountModal
+          :show="showCreateAccountModal"
+          @close-account-create-modal="closeCreateAccountModal"
         />
-      </UpgradePage>
-      <template v-if="!showUpgradePage">
-        <router-view />
-        <CopilotLauncher />
-        <MobileSidebarLauncher
-          :is-mobile-sidebar-open="isMobileSidebarOpen"
-          @toggle="toggleMobileSidebar"
+        <WootKeyShortcutModal
+          v-model:show="showShortcutModal"
+          @close="closeKeyShortcutModal"
+          @clickaway="closeKeyShortcutModal"
         />
-        <CopilotContainer />
-        <FloatingCallWidget v-if="hasActiveCall || hasIncomingCall" />
-      </template>
-      <CommandBar :is-paywalled="isAccountPaywalled" />
-      <AddAccountModal
-        :show="showCreateAccountModal"
-        @close-account-create-modal="closeCreateAccountModal"
-      />
-      <WootKeyShortcutModal
-        v-model:show="showShortcutModal"
-        @close="closeKeyShortcutModal"
-        @clickaway="closeKeyShortcutModal"
-      />
-    </main>
+      </main>
+    </div>
   </div>
 </template>
