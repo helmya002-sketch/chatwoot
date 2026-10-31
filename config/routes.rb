@@ -137,6 +137,15 @@ Rails.application.routes.draw do
           post   'tolzar/documents/:id/issue',   to: 'tolzar_documents#issue'
           post   'tolzar/documents/:id/void',    to: 'tolzar_documents#void'
           post   'tolzar/documents/:id/send',    to: 'tolzar_documents#send_document'
+          # Tolzar native bookings (Tolzar::Booking; TOLZAR_BOOKINGS_ACCOUNTS)
+          get    'tolzar/bookings',                  to: 'tolzar_bookings#index'
+          get    'tolzar/bookings/agenda',           to: 'tolzar_bookings#agenda'
+          get    'tolzar/bookings/:id',              to: 'tolzar_bookings#show'
+          post   'tolzar/bookings',                  to: 'tolzar_bookings#create'
+          patch  'tolzar/bookings/:id',              to: 'tolzar_bookings#update'
+          post   'tolzar/bookings/:id/status',       to: 'tolzar_bookings#change_status'
+          post   'tolzar/bookings/:id/payment',      to: 'tolzar_bookings#payment'
+          post   'tolzar/bookings/:id/document',     to: 'tolzar_bookings#document'
           # Tolzar booking-system connector (Tolzar::BookingConnector; TOLZAR_BOOKING_CONNECTOR)
           get    'tolzar/booking_connector',            to: 'tolzar_booking_connector#show'
           post   'tolzar/booking_connector',            to: 'tolzar_booking_connector#save'

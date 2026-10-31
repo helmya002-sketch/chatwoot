@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_10_31_140000) do
+ActiveRecord::Schema[7.1].define(version: 2026_10_31_150000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1969,6 +1969,26 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_31_140000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["account_id"], name: "index_tolzar_booking_connectors_on_account_id", unique: true
+  end
+
+  create_table "tolzar_bookings", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "contact_id"
+    t.bigint "conversation_id"
+    t.string "status", default: "draft", null: false
+    t.string "currency", default: "USD", null: false
+    t.date "starts_on"
+    t.date "ends_on"
+    t.bigint "total_cents", default: 0, null: false
+    t.bigint "paid_cents", default: 0, null: false
+    t.jsonb "data", default: {}, null: false
+    t.jsonb "history", default: [], null: false
+    t.bigint "created_by_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id", "starts_on"], name: "index_tolzar_bookings_on_account_id_and_starts_on"
+    t.index ["account_id", "status"], name: "index_tolzar_bookings_on_account_id_and_status"
+    t.index ["contact_id"], name: "index_tolzar_bookings_on_contact_id"
   end
 
   create_table "tolzar_document_counters", force: :cascade do |t|
