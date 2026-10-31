@@ -94,4 +94,17 @@ RSpec.describe 'Tolzar encrypted credentials' do
     expect(rows.to_json).not_to include('test_key')
     expect(rows.select { |r| r.key?(:unreadable) }.sum { |r| r[:unreadable] }).to eq(0)
   end
+
+  it 'rolls back: decrypt puts the plain values back where the previous release reads them' do
+    channel = create(:channel_whatsapp, account: account, provider: 'whatsapp_cloud', sync_templates: false,
+                                        validate_provider_config: false)
+    token = create(:user, account: account).access_token
+    Tolzar::CredentialsTask.encrypt!
+    Tolzar::CredentialsRollback.run!
+
+    expect(json(channel, :provider_config)['api_key']).to eq('test_key')
+    expect(raw(channel, :tolzar_secrets)).to be_nil
+    expect(raw(token, :token)).to eq(token.token)
+    expect(ActiveRecord::Encryption.encryptor.encrypted?(raw(token, :token))).to be(false)
+  end
 end
