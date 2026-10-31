@@ -573,3 +573,43 @@ body.tz-ui {
     box-shadow: 0 1px 2px rgb(30 50 120 / 0.06);
   }
 }
+
+// Phase 4 modules (round 4, c78): Reports and Results as the website mock's Results view: the page on the soft
+// surface, each chart in one white panel, metric cards with a small label over a large value. Hooks only
+// (tz-* classes and the cards' existing data-test-id), still only under `body.tz-ui`; no number or layout changes.
+body.tz-ui {
+  .tz-reports-page {
+    background-color: rgb(var(--surface-1));
+  }
+
+  .tz-report-header [class~='text-heading-1'] {
+    letter-spacing: -0.01em;
+  }
+
+  .tz-report-panel {
+    border-radius: 16px;
+    background-color: rgb(var(--solid-1));
+    outline-color: rgb(var(--border-container));
+    box-shadow:
+      0 1px 2px rgb(30 50 120 / 0.06),
+      0 12px 32px -24px rgb(30 50 120 / 0.35);
+  }
+
+  [data-test-id='reportMetricLabel'] {
+    font-size: 12px;
+    color: rgb(var(--slate-11));
+  }
+
+  [data-test-id='reportMetricValue'],
+  .tz-kpi-value {
+    font-size: 24px;
+    font-weight: 650;
+    letter-spacing: -0.03em;
+  }
+
+  .tz-kpi {
+    border-radius: 12px;
+    border-color: rgb(var(--border-container));
+    box-shadow: 0 1px 2px rgb(30 50 120 / 0.05);
+  }
+}

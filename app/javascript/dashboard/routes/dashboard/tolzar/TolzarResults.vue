@@ -160,7 +160,7 @@ onMounted(load);
           <div
             v-for="k in tiles"
             :key="k.key"
-            class="p-4 rounded-xl border border-solid border-n-weak bg-n-solid-1"
+            class="tz-kpi p-4 rounded-xl border border-solid border-n-weak bg-n-solid-1"
           >
             <div class="flex gap-1.5 justify-between items-start">
               <div class="text-xs text-n-slate-11">
@@ -174,7 +174,7 @@ onMounted(load);
                 {{ t('TOLZAR_RESULTS.WOULD_BE') }}
               </span>
             </div>
-            <div class="mt-1 text-2xl font-semibold text-n-slate-12">
+            <div class="tz-kpi-value mt-1 text-2xl font-semibold text-n-slate-12">
               {{ show(k) }}
             </div>
             <div class="mt-0.5 text-xs text-n-slate-10">{{ sub(k) }}</div>
