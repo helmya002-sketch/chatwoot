@@ -1,0 +1,35 @@
+// Tolzar installable app on the phone (round 4, c65), for TOLZAR_PWA_ACCOUNTS workspaces (body.tz-pwa, set by
+// App.vue from the account's `tolzar_pwa`). Phone-first and safe:
+// - opened from the Home Screen, the app stays clear of the notch and the home bar (safe-area insets);
+// - text inputs are 16 px on phones, so iPhone does not zoom in when the composer is tapped;
+// - touch targets in the composer and the conversation header are at least 44 px;
+// - the composer's height rules are untouched (default 72 px, at most 40 % of the pane, never collapses).
+@media (display-mode: standalone) {
+  body.tz-pwa {
+    box-sizing: border-box;
+    height: 100%;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
+      env(safe-area-inset-left);
+  }
+}
+
+@media (max-width: 767px) {
+  body.tz-pwa {
+    input:not([type='checkbox']):not([type='radio']),
+    textarea,
+    select,
+    [contenteditable='true'] {
+      font-size: 16px;
+    }
+
+    .reply-box button,
+    .tz-conversation-header button {
+      min-width: 44px;
+      min-height: 44px;
+    }
+
+    .reply-box {
+      margin-bottom: env(safe-area-inset-bottom);
+    }
+  }
+}

@@ -123,6 +123,8 @@ export default {
         account;
       // Tolzar UI redesign (TOLZAR_NEW_UI_ACCOUNTS): the website mock's palette for this workspace only.
       document.body.classList.toggle('tz-ui', !!account.tolzar_new_ui);
+      // Tolzar installable app (TOLZAR_PWA_ACCOUNTS): phone layouts (assets/scss/_tolzar-pwa.scss).
+      document.body.classList.toggle('tz-pwa', !!account.tolzar_pwa);
       const { pubsub_token: pubsubToken } = this.currentUser || {};
       // If user locale is set, use it; otherwise use account locale
       this.setLocale(this.uiSettings?.locale || locale);

@@ -402,9 +402,31 @@ const jump = id => {
   background: rgb(var(--amber-3));
   color: rgb(var(--amber-11));
 }
+/* Phones (c65): the chips scroll sideways; on very narrow screens they take the greeting's place. */
 @media (max-width: 900px) {
   .tz-brief .tz-chips {
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .tz-brief .tz-chips::-webkit-scrollbar {
     display: none;
+  }
+}
+@media (max-width: 640px) {
+  .tz-brief {
+    height: auto;
+    min-height: 52px;
+    padding: 4px 12px;
+  }
+  .tz-brief .tz-g,
+  .tz-brief .tz-sep {
+    display: none;
+  }
+  .tz-brief .tz-chip,
+  .tz-brief .tz-more,
+  .tz-brief .tz-x {
+    min-height: 44px;
   }
 }
 .tz-brief .tz-calm {

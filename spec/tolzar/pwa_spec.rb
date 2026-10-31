@@ -30,6 +30,17 @@ RSpec.describe 'Tolzar installable app', type: :request do
     expect(offline).not_to include('<script', 'onclick')
   end
 
+  it 'turns the phone layouts on only for TOLZAR_PWA_ACCOUNTS workspaces (c65)' do
+    account = create(:account)
+    admin = create(:user, account: account, role: :administrator)
+    get "/api/v1/accounts/#{account.id}", headers: admin.create_new_auth_token
+    expect(response.parsed_body['tolzar_pwa']).to be(false)
+    with_modified_env(TOLZAR_PWA_ACCOUNTS: account.id.to_s) do
+      get "/api/v1/accounts/#{account.id}", headers: admin.create_new_auth_token
+      expect(response.parsed_body['tolzar_pwa']).to be(true)
+    end
+  end
+
   it 'stores the web-push (VAPID) keys as a secret' do
     expect(Tolzar::EncryptedInstallationConfig.secret_name?('VAPID_KEYS')).to be(true)
     expect(Tolzar::EncryptedInstallationConfig.secret_name?('VAPID_KEYS_ENABLED')).to be(false)
