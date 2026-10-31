@@ -170,7 +170,7 @@ onMounted(load);
         {{ t('TOLZAR_META_APP.VERIFY_TOKEN') }}
         <code class="block mt-1 break-all">{{ verifyToken }}</code>
         <span class="text-xs text-n-amber-11">{{ t('TOLZAR_META_APP.VERIFY_ONCE') }}</span>
-        <button type="button" :class="BTN_GHOST" class="ml-2 !mt-1 !h-7" @click="hideToken">
+        <button type="button" :class="BTN_GHOST" class="ms-2 !mt-1 !h-7" @click="hideToken">
           {{ t('TOLZAR_META_APP.VERIFY_DONE') }}
         </button>
       </div>
@@ -178,7 +178,7 @@ onMounted(load);
 
     <template v-if="view">
       <h3 class="mt-5 mb-0 text-[14px] font-semibold text-n-slate-12">{{ t('TOLZAR_META_APP.PAGES') }}</h3>
-      <ul v-if="pages.length" class="pl-4 mt-1 text-[13px]">
+      <ul v-if="pages.length" class="ps-4 mt-1 text-[13px]">
         <li v-for="p in pages" :key="p.page_id">
           {{ p.name }} · {{ p.page_id }}<span v-if="p.instagram_id"> · {{ t('TOLZAR_SETTINGS_UI.CONNECTIONS.INSTAGRAM', { name: p.instagram_id }) }}</span>
         </li>
@@ -224,7 +224,7 @@ onMounted(load);
           <button type="button" :class="BTN" :disabled="busy || !test.conversation_id || !test.text || !test.confirm_name" @click="sendTest">
             {{ t('TOLZAR_META_APP.TEST.SEND') }}
           </button>
-          <button type="button" :class="BTN_GHOST" class="ml-2" :disabled="busy" @click="closeTestWindow">
+          <button type="button" :class="BTN_GHOST" class="ms-2" :disabled="busy" @click="closeTestWindow">
             {{ t('TOLZAR_META_APP.TEST.CLOSE') }}
           </button>
         </template>

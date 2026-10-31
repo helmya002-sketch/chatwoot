@@ -255,7 +255,7 @@ const sortedRows = computed(() => {
                 <span
                   v-if="row.inbox && row.inbox.channel_type"
                   v-tooltip.top="row.inbox.name"
-                  class="absolute -bottom-1 ltr:-right-1 rtl:-left-1 flex items-center justify-center size-[15px] rounded-full bg-n-background ring-2 ring-n-background"
+                  class="absolute -bottom-1 -end-1 flex items-center justify-center size-[15px] rounded-full bg-n-background ring-2 ring-n-background"
                 >
                   <ChannelIcon :inbox="row.inbox" class="size-[13px]" />
                 </span>

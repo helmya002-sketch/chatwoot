@@ -39,7 +39,7 @@ const pick = key => {
     <div
       v-if="open"
       role="menu"
-      class="absolute z-50 p-1 mt-1 border shadow-lg ltr:right-0 rtl:left-0 min-w-44 rounded-xl border-n-weak bg-n-alpha-3 backdrop-blur-[100px]"
+      class="absolute z-50 p-1 mt-1 border shadow-lg end-0 min-w-44 rounded-xl border-n-weak bg-n-alpha-3 backdrop-blur-[100px]"
     >
       <button
         v-for="s in STAGES"

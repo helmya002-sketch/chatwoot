@@ -495,7 +495,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
           <select
             v-if="inboxOptions.length"
             v-model="filter"
-            class="px-2 h-9 text-[13px] bg-transparent border-0 border-l border-solid border-n-weak outline-none text-n-slate-11"
+            class="px-2 h-9 text-[13px] bg-transparent border-0 border-s border-solid border-n-weak outline-none text-n-slate-11"
             :class="{
               'font-semibold text-n-brand': filter.startsWith('inbox:'),
             }"
@@ -668,7 +668,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
                 </span>
                 <span
                   v-if="card.ts"
-                  class="ltr:ml-auto rtl:mr-auto text-[10px] text-n-slate-10"
+                  class="ms-auto text-[10px] text-n-slate-10"
                 >
                   {{ since(card.ts) }}
                 </span>
@@ -681,7 +681,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
               {{ t('TOLZAR_PIPELINE.LOAD_FAILED') }}
               <button
                 type="button"
-                class="ml-2 underline hover:text-n-slate-12"
+                class="ms-2 underline hover:text-n-slate-12"
                 @click="loadColumn(s)"
               >
                 {{ t('TOLZAR_UI.RETRY') }}
@@ -720,7 +720,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
               </button>
               <button
                 type="button"
-                class="ml-2 underline hover:text-n-slate-12"
+                class="ms-2 underline hover:text-n-slate-12"
                 @click="openStageInContacts(s.key)"
               >
                 {{ t('TOLZAR_PIPELINE_UI.OPEN_IN_CONTACTS') }}

@@ -498,7 +498,7 @@ onMounted(() => {
               v-for="k in keys"
               :key="k"
               type="button"
-              class="block px-2.5 py-2 w-full text-left rounded-lg text-[13.5px]"
+              class="block px-2.5 py-2 w-full text-start rounded-lg text-[13.5px]"
               :class="current === k ? 'font-semibold text-n-brand bg-n-brand/10' : 'text-n-slate-11 hover:bg-n-alpha-1'"
               :aria-current="current === k ? 'page' : null"
               @click="open(k)"
@@ -596,7 +596,7 @@ onMounted(() => {
             <div v-if="current === 'audit'">
               <table class="w-full text-[13px]">
                 <thead>
-                  <tr class="text-left text-xs text-n-slate-10">
+                  <tr class="text-start text-xs text-n-slate-10">
                     <th class="py-1 font-semibold">{{ $t('TOLZAR_SETTINGS_UI.AUDIT.WHEN') }}</th>
                     <th class="px-2 font-semibold">{{ $t('TOLZAR_SETTINGS_UI.AUDIT.WHO') }}</th>
                     <th class="px-2 font-semibold">{{ $t('TOLZAR_SETTINGS_UI.AUDIT.ACTION') }}</th>
@@ -710,7 +710,7 @@ onMounted(() => {
               <label :class="LABEL">{{ $t('TOLZAR_SETTINGS.RECOVERY.MAX_PER_RUN') }}</label>
               <input v-model.number="data.config.max_per_run" type="number" min="1" max="50" :class="INPUT" />
               <p class="text-xs text-n-slate-10">{{ $t('TOLZAR_SETTINGS.RECOVERY.PLANNED', { n: data.planned || 0 }) }}</p>
-              <ul v-if="(data.recent || []).length" class="pl-4 mt-1 text-xs text-n-slate-11">
+              <ul v-if="(data.recent || []).length" class="ps-4 mt-1 text-xs text-n-slate-11">
                 <li v-for="(r, i) in data.recent.slice(0, 10)" :key="i">
                   {{ $t('TOLZAR_SETTINGS_UI.RECOVERY.PLAN_ROW', { at: at(r.planned_at), n: (r.touches || []).length, lang: r.language || '' }) }}
                 </li>
@@ -745,7 +745,7 @@ onMounted(() => {
               <div v-if="data.brief && data.brief.summary" class="grid gap-3 mt-4 md:grid-cols-2">
                 <div v-for="(items, k) in data.brief.summary" :key="k" class="p-3 rounded-lg bg-n-alpha-1">
                   <div class="text-xs font-semibold uppercase text-n-slate-10">{{ $t(`TOLZAR_SETTINGS.BRIEF.${k}`) }}</div>
-                  <ul class="pl-4 my-1 text-[13px]"><li v-for="x in items" :key="x">{{ x }}</li></ul>
+                  <ul class="ps-4 my-1 text-[13px]"><li v-for="x in items" :key="x">{{ x }}</li></ul>
                 </div>
               </div>
             </div>
@@ -799,7 +799,7 @@ onMounted(() => {
               </div>
               <table v-if="(data.refs || []).length" class="mt-3 w-full text-[13px]">
                 <thead>
-                  <tr class="text-left text-xs text-n-slate-10">
+                  <tr class="text-start text-xs text-n-slate-10">
                     <th class="py-1 font-semibold">{{ $t('TOLZAR_SETTINGS.LINKS.CAMPAIGN') }}</th>
                     <th class="font-semibold">{{ $t('TOLZAR_SETTINGS_UI.LINKS.CODE') }}</th>
                     <th class="font-semibold">{{ $t('TOLZAR_SETTINGS.USAGE.conversations') }}</th>

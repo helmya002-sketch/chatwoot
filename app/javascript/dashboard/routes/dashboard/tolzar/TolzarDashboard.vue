@@ -500,7 +500,7 @@ onBeforeUnmount(() => {
           :key="k.k"
           v-tooltip.top="errored ? t('TOLZAR_UI.LOAD_FAILED') : k.hint || ''"
           type="button"
-          class="tz-rise tz-card tz-hover overflow-hidden relative p-4 w-full text-left rounded-2xl border shadow-sm cursor-pointer bg-n-solid-1 border-n-weak"
+          class="tz-rise tz-card tz-hover overflow-hidden relative p-4 w-full text-start rounded-2xl border shadow-sm cursor-pointer bg-n-solid-1 border-n-weak"
           :style="rise(60 + i * 50)"
           :aria-label="`${k.k}: ${loaded ? (errored ? na : k.v) : ''}`"
           @click="go(k.go)"
@@ -586,7 +586,7 @@ onBeforeUnmount(() => {
             v-for="r in attention"
             :key="r.id"
             type="button"
-            class="flex gap-3 items-center px-5 py-2.5 w-full text-left border-b transition-colors border-n-weak last:border-0 hover:bg-n-alpha-1"
+            class="flex gap-3 items-center px-5 py-2.5 w-full text-start border-b transition-colors border-n-weak last:border-0 hover:bg-n-alpha-1"
             @click="openConversation(r.id)"
           >
             <span
@@ -685,7 +685,7 @@ onBeforeUnmount(() => {
                 }"
               />
             </div>
-            <div class="font-extrabold text-right text-n-slate-12 tabular-nums">
+            <div class="font-extrabold text-end text-n-slate-12 tabular-nums">
               {{ loaded ? counts[s.key] || 0 : '—' }}
               <span class="block text-[10px] font-medium text-n-slate-10">
                 {{
@@ -778,7 +778,7 @@ onBeforeUnmount(() => {
                   >
                     {{ initials(a.name) }}
                     <span
-                      class="absolute -bottom-0.5 ltr:-right-0.5 rtl:-left-0.5 rounded-full size-2.5 ring-2 ring-n-solid-1"
+                      class="absolute -bottom-0.5 -end-0.5 rounded-full size-2.5 ring-2 ring-n-solid-1"
                       :class="p.dot"
                     />
                   </span>
@@ -829,7 +829,7 @@ onBeforeUnmount(() => {
             v-for="r in recent"
             :key="r.id"
             type="button"
-            class="flex gap-3 items-center px-5 py-3 w-full text-left border-b transition-colors border-n-weak last:border-0 hover:bg-n-alpha-1"
+            class="flex gap-3 items-center px-5 py-3 w-full text-start border-b transition-colors border-n-weak last:border-0 hover:bg-n-alpha-1"
             @click="openConversation(r.id)"
           >
             <span
@@ -887,7 +887,7 @@ onBeforeUnmount(() => {
           ]"
           :key="q.name"
           type="button"
-          class="tz-rise tz-card tz-hover flex gap-3 items-center p-4 text-left rounded-2xl border shadow-sm cursor-pointer bg-n-solid-1 border-n-weak"
+          class="tz-rise tz-card tz-hover flex gap-3 items-center p-4 text-start rounded-2xl border shadow-sm cursor-pointer bg-n-solid-1 border-n-weak"
           :style="rise(450 + i * 50)"
           @click="go(q.name)"
         >
@@ -905,7 +905,7 @@ onBeforeUnmount(() => {
             </span>
           </span>
           <span
-            class="ltr:ml-auto rtl:mr-auto i-lucide-arrow-right size-4 text-n-brand rtl:rotate-180"
+            class="ms-auto i-lucide-arrow-right size-4 text-n-brand rtl:rotate-180"
           />
         </button>
       </div>

@@ -464,7 +464,7 @@ onMounted(() => {
             <summary class="!mt-0 gap-1.5 list-none" :class="BTN_GHOST">
               <span class="i-lucide-layout-template size-4" /> {{ $t('TOLZAR_WORKFLOWS.FROM_TEMPLATE') }}
             </summary>
-            <div class="absolute z-20 p-1.5 mt-1 w-[320px] rounded-xl border shadow-lg ltr:right-0 rtl:left-0 bg-n-solid-1 border-n-weak">
+            <div class="absolute z-20 p-1.5 mt-1 w-[320px] rounded-xl border shadow-lg end-0 bg-n-solid-1 border-n-weak">
               <button
                 v-for="tpl in templates"
                 :key="tpl.id"
@@ -899,7 +899,7 @@ onMounted(() => {
                     {{ ((r.log || [])[(r.log || []).length - 1] || {}).result || $t('TOLZAR_WORKFLOWS_UI.RUN.LOG_EMPTY') }}
                     <span v-if="(r.log || []).length > 1" class="text-xs text-n-brand"> · {{ $t('TOLZAR_WORKFLOWS_UI.RUN.LOG') }} ({{ r.log.length }})</span>
                   </summary>
-                  <ol v-if="(r.log || []).length" class="pl-4 mt-1 mb-0 text-xs list-decimal text-n-slate-10">
+                  <ol v-if="(r.log || []).length" class="ps-4 mt-1 mb-0 text-xs list-decimal text-n-slate-10">
                     <li v-for="(l, li) in r.log" :key="li">
                       <span class="text-n-slate-11">{{ $t(stepMeta(l.type).label) }}</span>: {{ l.result }}
                       <span v-if="l.at" class="text-n-slate-9"> · {{ at(l.at) }}</span>

@@ -61,7 +61,7 @@ async function connect() {
     <p class="mt-2 mb-0 text-[13px] text-n-slate-11">
       {{ t('TOLZAR_SETTINGS.WA_LISTEN.WHAT') }}
     </p>
-    <ul class="mt-2 mb-0 pl-4 text-[13px] text-n-slate-11 list-disc">
+    <ul class="mt-2 mb-0 ps-4 text-[13px] text-n-slate-11 list-disc">
       <li>{{ t('TOLZAR_SETTINGS.WA_LISTEN.NEVER_SENDS') }}</li>
       <li>{{ t('TOLZAR_SETTINGS.WA_LISTEN.NUMBER_UNTOUCHED') }}</li>
       <li>{{ t('TOLZAR_SETTINGS.WA_LISTEN.SECRETS') }}</li>

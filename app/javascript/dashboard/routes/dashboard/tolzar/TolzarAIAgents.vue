@@ -570,7 +570,7 @@ onMounted(async () => {
             <summary class="!mt-0 gap-1.5 list-none" :class="BTN_GHOST">
               <span class="i-lucide-layout-template size-4" /> {{ t('TOLZAR_AGENTS_UI.FROM_TEMPLATE') }}
             </summary>
-            <div class="absolute z-20 p-1.5 mt-1 w-[340px] rounded-xl border shadow-lg ltr:right-0 rtl:left-0 bg-n-solid-1 border-n-weak">
+            <div class="absolute z-20 p-1.5 mt-1 w-[340px] rounded-xl border shadow-lg end-0 bg-n-solid-1 border-n-weak">
               <button
                 v-for="tpl in templates"
                 :key="tpl.id"
@@ -904,7 +904,7 @@ onMounted(async () => {
                 <details class="mt-0.5">
                   <summary class="cursor-pointer text-n-slate-10">{{ t('TOLZAR_AGENT_TEST.MODEL_DRAFT') }}</summary>
                   <div class="px-2 py-1.5 mt-1 whitespace-pre-wrap rounded-lg bg-n-alpha-1 text-n-slate-11">{{ m.draft }}</div>
-                  <ul v-if="m.reasons.length" class="pl-4 mt-1 mb-0 list-disc text-n-slate-10">
+                  <ul v-if="m.reasons.length" class="ps-4 mt-1 mb-0 list-disc text-n-slate-10">
                     <li v-for="r in reasonLabels(m.reasons, t)" :key="r">{{ r }}</li>
                   </ul>
                 </details>

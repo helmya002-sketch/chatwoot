@@ -213,7 +213,7 @@ const cell = v => {
               <th
                 v-for="c in columns"
                 :key="c"
-                class="px-2 py-1 font-semibold text-left text-n-slate-11"
+                class="px-2 py-1 font-semibold text-start text-n-slate-11"
               >
                 {{ c }}
               </th>

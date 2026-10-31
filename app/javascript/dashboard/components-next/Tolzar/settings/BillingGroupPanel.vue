@@ -207,7 +207,7 @@ onMounted(load);
         </h3>
         <table class="w-full text-[13px]">
           <thead>
-            <tr class="text-xs text-left text-n-slate-10">
+            <tr class="text-xs text-start text-n-slate-10">
               <th class="py-1 font-medium">
                 {{ t('TOLZAR_SETTINGS.BILLING.WORKSPACE') }}
               </th>

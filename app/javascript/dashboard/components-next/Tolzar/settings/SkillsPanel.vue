@@ -192,13 +192,13 @@ const listProblems = computed(() => problems.value.filter(p => p.index < 0));
       </button>
       <div
         v-if="props.live && addOpen"
-        class="overflow-hidden absolute top-9 z-10 w-[300px] rounded-xl border shadow-lg ltr:right-0 rtl:left-0 bg-n-solid-1 border-n-weak"
+        class="overflow-hidden absolute top-9 z-10 w-[300px] rounded-xl border shadow-lg end-0 bg-n-solid-1 border-n-weak"
       >
         <button
           v-for="type in available"
           :key="type"
           type="button"
-          class="block px-3 py-2.5 w-full text-left border-b transition-colors border-n-weak last:border-0 hover:bg-n-alpha-1"
+          class="block px-3 py-2.5 w-full text-start border-b transition-colors border-n-weak last:border-0 hover:bg-n-alpha-1"
           @click="add(type)"
         >
           <div class="text-[13px] font-semibold text-n-slate-12">
@@ -300,7 +300,7 @@ const listProblems = computed(() => problems.value.filter(p => p.index < 0));
         :placeholder="t('TOLZAR_SKILLS.WHEN_PLACEHOLDER')"
         class="box-border p-2 w-full text-[12.5px] rounded-lg border outline-none resize-y border-n-weak bg-n-solid-1 text-n-slate-12 focus:border-n-brand"
       />
-      <div class="text-[10.5px] text-n-slate-10 ltr:text-right rtl:text-left">
+      <div class="text-[10.5px] text-n-slate-10 text-end">
         {{ (sk.when || '').trim().length }} / {{ MAX_WHEN }}
       </div>
 

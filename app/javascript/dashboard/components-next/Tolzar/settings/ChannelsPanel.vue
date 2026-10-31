@@ -343,7 +343,7 @@ onMounted(load);
           </div>
           <p class="mt-1 mb-0 text-xs text-n-slate-10">{{ t('TOLZAR_SETTINGS.CHANNELS.ORDER_CHANNELS_HINT') }}</p>
           <!-- each picked channel with the state it runs in: Shadow while order chat is on, Off otherwise -->
-          <ul v-if="(form.order_chat_channels || []).length" class="pl-0 mt-1.5 mb-0 list-none text-xs" data-tz-order-channel-states>
+          <ul v-if="(form.order_chat_channels || []).length" class="ps-0 mt-1.5 mb-0 list-none text-xs" data-tz-order-channel-states>
             <li v-for="c in form.order_chat_channels" :key="c" class="flex gap-2 items-center py-0.5">
               <span class="text-n-slate-11">{{ t(channelLabelKey(c)) }}</span>
               <ShadowBadge :state="form.order_chat ? 'shadow' : 'off'" :hint="t('TOLZAR_SETTINGS_UI.SHADOW_DETAIL.order_chat')" />

@@ -176,7 +176,7 @@ onBeforeUnmount(() => clearTimeout(savedTimer));
                 <span
                   v-if="rows[a.id]?.error"
                   v-tooltip.top="t('TOLZAR_AGENCY_UI.ROW_FAILED_HINT')"
-                  class="ml-2 px-2 py-0.5 text-[11px] font-semibold rounded-full align-middle"
+                  class="ms-2 px-2 py-0.5 text-[11px] font-semibold rounded-full align-middle"
                   :class="TONE_BAD"
                   role="status"
                 >
@@ -213,10 +213,10 @@ onBeforeUnmount(() => clearTimeout(savedTimer));
                 </template>
                 <template v-else>{{ number(rows[a.id].tokens) }}</template>
               </td>
-              <td class="pr-4 text-end whitespace-nowrap">
+              <td class="pe-4 text-end whitespace-nowrap">
                 <router-link
                   :to="`/app/accounts/${a.id}/dashboard`"
-                  class="mr-3 text-n-brand"
+                  class="me-3 text-n-brand"
                 >
                   {{ t('TOLZAR_AGENCY.OPEN') }}
                 </router-link>

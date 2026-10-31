@@ -138,7 +138,7 @@ onMounted(load);
     <p v-if="error" class="mt-3 mb-0 text-[13px] text-n-ruby-11">{{ error }}</p>
     <ul
       v-if="problems.length"
-      class="mt-1 mb-0 pl-4 text-[13px] text-n-ruby-11 list-disc"
+      class="mt-1 mb-0 ps-4 text-[13px] text-n-ruby-11 list-disc"
     >
       <li v-for="(p, i) in problems" :key="i">
         {{

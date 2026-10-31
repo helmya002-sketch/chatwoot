@@ -889,7 +889,7 @@ const csv = key => {
               class="relative h-1.5 mt-2 rounded bg-n-slate-3"
             >
               <span
-                class="absolute inset-y-0 left-0 rounded bg-n-brand"
+                class="absolute inset-y-0 start-0 rounded bg-n-brand"
                 :style="{ width: `${Math.min(100, (c.value || 0) * 100)}%` }"
               />
               <span

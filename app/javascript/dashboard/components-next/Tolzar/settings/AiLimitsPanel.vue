@@ -164,7 +164,7 @@ onMounted(load);
         <div v-for="e in p.edits" :key="e.n" class="pt-2 mt-2 border-t border-solid border-n-weak">
           <pre class="p-2 m-0 text-xs whitespace-pre-wrap rounded bg-n-alpha-1">{{ e.edit }}</pre>
           <p class="mt-1 mb-0 text-xs text-n-slate-11">{{ e.reason }}</p>
-          <ul v-if="(e.signals || []).length" class="pl-4 my-1 text-xs text-n-slate-10">
+          <ul v-if="(e.signals || []).length" class="ps-4 my-1 text-xs text-n-slate-10">
             <li v-for="(s, i) in e.signals" :key="i">{{ s.text || s }}</li>
           </ul>
           <div class="flex flex-wrap gap-2 items-center">

@@ -144,7 +144,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
       </span>
       <span
         v-if="hasUnread"
-        class="absolute -top-0.5 ltr:-right-0.5 rtl:-left-0.5 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full bg-n-ruby-9 text-white text-[10px] font-semibold leading-none"
+        class="absolute -top-0.5 -end-0.5 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full bg-n-ruby-9 text-white text-[10px] font-semibold leading-none"
         aria-hidden="true"
       >
         {{ badgeLabel }}
@@ -157,7 +157,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
       id="tz-bell-pop"
       role="dialog"
       :aria-label="t('TOLZAR_INBOX.BELL.TITLE')"
-      class="absolute bottom-0 ltr:left-full rtl:right-full ltr:ml-2 rtl:mr-2 z-[100] w-[320px] bg-n-alpha-3 backdrop-blur-[100px] outline outline-1 -outline-offset-1 outline-n-weak rounded-xl shadow-lg overflow-hidden"
+      class="absolute bottom-0 start-full ms-2 z-[100] w-[320px] bg-n-alpha-3 backdrop-blur-[100px] outline outline-1 -outline-offset-1 outline-n-weak rounded-xl shadow-lg overflow-hidden"
     >
       <div
         class="flex items-center justify-between px-3 py-2 border-b border-n-weak"

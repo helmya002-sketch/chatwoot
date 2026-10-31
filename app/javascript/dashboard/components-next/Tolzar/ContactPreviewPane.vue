@@ -183,7 +183,7 @@ const openConversation = conv => {
           <Avatar :name="raw.name" :src="raw.thumbnail" :size="44" />
           <span
             v-if="inbox && inbox.channel_type"
-            class="absolute -bottom-1 ltr:-right-1 rtl:-left-1 flex items-center justify-center size-[17px] rounded-full bg-n-background ring-2 ring-n-background"
+            class="absolute -bottom-1 -end-1 flex items-center justify-center size-[17px] rounded-full bg-n-background ring-2 ring-n-background"
           >
             <ChannelIcon :inbox="inbox" class="size-[14px]" />
           </span>

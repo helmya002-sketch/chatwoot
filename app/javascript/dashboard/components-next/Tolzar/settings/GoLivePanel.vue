@@ -216,7 +216,7 @@ onMounted(() => {
 
     <table v-if="rows.length" class="mt-3 w-full text-[13px]">
       <thead>
-        <tr class="text-left text-xs text-n-slate-10">
+        <tr class="text-start text-xs text-n-slate-10">
           <th class="py-1 font-semibold">
             {{ t('TOLZAR_WORKSPACE.GO_LIVE.INBOX') }}
           </th>
@@ -294,7 +294,7 @@ onMounted(() => {
       data-tz-live-refused
     >
       <b>{{ refusedTitle }}</b>
-      <ul class="pl-5 mt-1 mb-0">
+      <ul class="ps-5 mt-1 mb-0">
         <li v-for="r in refused.reasons" :key="r.raw">{{ reasonText(r) }}</li>
       </ul>
     </div>

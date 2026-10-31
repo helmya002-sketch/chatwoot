@@ -496,7 +496,7 @@ const PROBLEM = 'mt-1 text-xs text-n-ruby-11';
           </p>
           <ul
             v-if="errors.length"
-            class="pl-4 text-sm text-n-ruby-11"
+            class="ps-4 text-sm text-n-ruby-11"
             role="alert"
           >
             <li v-for="e in errors" :key="e.path + e.error">
@@ -551,7 +551,7 @@ const PROBLEM = 'mt-1 text-xs text-n-ruby-11';
             {{ t('TOLZAR_ONBOARDING.CHECKLIST.FAILED') }}
             <button
               type="button"
-              class="ml-2 font-semibold underline"
+              class="ms-2 font-semibold underline"
               @click="loadChecklist"
             >
               {{ t('TOLZAR_UI.RETRY') }}
@@ -577,7 +577,7 @@ const PROBLEM = 'mt-1 text-xs text-n-ruby-11';
                   {{ t(`TOLZAR_ONBOARDING.CHECK.${item.key}`, item.key) }}
                   <span
                     v-if="item.required === false"
-                    class="ml-1 text-[11px] font-normal text-n-slate-10"
+                    class="ms-1 text-[11px] font-normal text-n-slate-10"
                   >
                     {{ t('TOLZAR_ONBOARDING.CHECKLIST.OPTIONAL') }}
                   </span>
