@@ -95,7 +95,7 @@ class Contact < ApplicationRecord
           NULLS LAST"
         )
       )
-    )
+    ).order(id: :asc) # Tolzar: a stable order between contacts with the same (or no) city
   }
   scope :order_on_country_name, lambda { |direction|
     order(
@@ -105,7 +105,7 @@ class Contact < ApplicationRecord
           NULLS LAST"
         )
       )
-    )
+    ).order(id: :asc) # Tolzar: a stable order between contacts with the same (or no) country
   }
 
   scope :order_on_name, lambda { |direction|
