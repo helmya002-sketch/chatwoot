@@ -26,10 +26,19 @@ module Tolzar::EncryptedJsonSecrets
     end
   end
 
-  # True while any named key is still stored in the JSON column itself (not moved yet).
+  # True while any named key is still stored in the JSON column itself (not moved yet). Read from the row, not from
+  # the attribute: after load the in-memory JSON carries the merged secrets (and so does attribute_in_database,
+  # since the merge resets the change tracking), which would make every moved row look pending.
   def tolzar_json_secrets_pending?
-    raw = attribute_in_database(tolzar_json_secrets_spec[:column])
+    raw = tolzar_raw_json
     raw.is_a?(Hash) && raw.stringify_keys.slice(*tolzar_json_secrets_spec[:keys]).compact.any?
+  end
+
+  # The JSON column exactly as stored in the row ({} for a record not saved yet).
+  def tolzar_raw_json
+    return {} unless persisted?
+
+    self.class.unscoped.where(id: id).pick(tolzar_json_secrets_spec[:column]) || {}
   end
 
   # The move for `rails tolzar:encrypt_credentials`: written straight to the row (no validations, no callbacks: a
@@ -40,10 +49,10 @@ module Tolzar::EncryptedJsonSecrets
 
     column = tolzar_json_secrets_spec[:column]
     keys = tolzar_json_secrets_spec[:keys]
-    raw = attribute_in_database(column).to_h.stringify_keys
+    raw = tolzar_raw_json.to_h.stringify_keys
     secrets = tolzar_stored_secrets.merge(raw.slice(*keys).compact)
     update_columns(column => raw.except(*keys), tolzar_secrets: secrets.to_json) # rubocop:disable Rails/SkipsModelValidations
-    !self.class.unscoped.find(id).tolzar_json_secrets_pending?
+    !tolzar_json_secrets_pending?
   end
 
   private
