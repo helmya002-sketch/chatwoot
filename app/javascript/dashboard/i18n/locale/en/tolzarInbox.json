@@ -115,6 +115,20 @@
     "HEADER": {
       "SET_STAGE": "Set the stage"
     },
+    "SUMMARY": {
+      "BUTTON": "Summarise",
+      "TOOLTIP": "Ask the AI for a short summary of this conversation (only you see it)",
+      "TITLE": "Conversation summary",
+      "LOADING": "Summarising… this can take up to a minute.",
+      "STAFF_ONLY": "Only your team sees this. Nothing is sent to the customer.",
+      "SAVE_NOTE": "Save as private note",
+      "SAVED": "Saved as a private note",
+      "SAVE_FAILED": "Could not save the note. Please try again.",
+      "FAILED": "The AI could not summarise this conversation right now. Please try again in a moment.",
+      "RETRY": "Try again",
+      "CLOSE": "Close",
+      "NOTE_PREFIX": "Summary:"
+    },
     "CARD": {
       "NO_REPLY_YET": "No reply yet",
       "NO_REPLY_FOR": "No reply for {time}",

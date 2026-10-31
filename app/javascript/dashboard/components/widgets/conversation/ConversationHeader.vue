@@ -25,6 +25,7 @@ import {
 } from 'dashboard/components-next/Tolzar/tolzarStages';
 import LeadScoreRing from 'dashboard/components-next/Tolzar/LeadScoreRing.vue';
 import { tolzarBrand } from 'dashboard/components-next/Tolzar/TolzarBranding.vue';
+import ConversationSummaryButton from 'dashboard/components-next/Tolzar/ConversationSummaryButton.vue';
 
 const props = defineProps({
   chat: {
@@ -48,6 +49,12 @@ const currentChat = computed(() => store.getters.getSelectedChat);
 const accountId = computed(() => store.getters.getCurrentAccountId);
 
 const chatMetadata = computed(() => props.chat.meta);
+
+// Tolzar (round 4): inbox tools (summary, reminders) while the workspace has them on (tolzar_inbox_tools).
+const tolzarInboxTools = computed(
+  () =>
+    !!store.getters['accounts/getAccount'](accountId.value)?.tolzar_inbox_tools
+);
 
 const backButtonUrl = computed(() => {
   const {
@@ -307,6 +314,10 @@ const setStage = stage => {
         show-extended-info
         :parent-width="width"
         class="hidden md:flex"
+      />
+      <ConversationSummaryButton
+        v-if="tolzarInboxTools"
+        :conversation-id="currentChat.id"
       />
       <ConversationCallButton :inbox="inbox" :chat="currentChat" />
       <MoreActions :conversation-id="currentChat.id" />
