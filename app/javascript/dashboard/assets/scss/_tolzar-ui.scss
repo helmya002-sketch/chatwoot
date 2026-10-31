@@ -377,3 +377,36 @@ body.tz-ui {
 @media (prefers-reduced-motion: reduce) {
   body.tz-ui .tz-pulse { animation: none; }
 }
+
+// Phase 2 shell (round 3 c41): the ⌘K command palette and the conversation top bar on the tokens.
+body.tz-ui {
+  ninja-keys {
+    --ninja-accent-color: rgb(var(--blue-9));
+    --ninja-font-family: 'Inter', system-ui, sans-serif;
+    --ninja-width: 640px;
+    --ninja-modal-background: rgb(var(--solid-1));
+    --ninja-modal-shadow: 0 20px 50px -18px rgb(30 50 120 / 0.4);
+    --ninja-selected-background: rgb(var(--blue-3));
+    --ninja-secondary-background-color: rgb(var(--slate-3));
+    --ninja-footer-background: rgb(var(--slate-2));
+    --ninja-text-color: rgb(var(--slate-12));
+    --ninja-secondary-text-color: rgb(var(--slate-10));
+    --ninja-icon-color: rgb(var(--slate-11));
+    --ninja-key-border-radius: 6px;
+    --ninja-overflow-background: rgb(15 23 42 / 0.35);
+  }
+
+  // The conversation's top bar: one quiet line under it, the contact name a step larger.
+  div[class*='xl:h-12'][class*='pt-3'] {
+    border-bottom: 1px solid rgb(var(--border-weak));
+  }
+
+  .conversation--header--actions {
+    color: rgb(var(--slate-10));
+  }
+}
+
+body.dark.tz-ui ninja-keys {
+  --ninja-modal-shadow: 0 20px 50px -18px rgb(0 0 0 / 0.7);
+  --ninja-overflow-background: rgb(0 0 0 / 0.5);
+}
