@@ -21,6 +21,13 @@ RSpec.describe 'Tolzar: no Chatwoot links or calls' do
     expect(offenders).to be_empty, "Chatwoot URLs found:\n#{offenders.join("\n")}"
   end
 
+  it "never offers Chatwoot's own AI (Captain) in Super Admin's feature lists (c69)" do
+    names = SuperAdmin::AccountFeaturesHelper.account_features.pluck('name').grep(/\Acaptain/)
+    expect(names).not_to be_empty
+    features = names.index_with(true).merge('agent_management' => true)
+    expect(SuperAdmin::AccountFeaturesHelper.filter_internal_features(features).keys).to eq(['agent_management'])
+  end
+
   it 'knows a Chatwoot URL from an e-mail address or our own links' do
     expect('see https://chwt.app/hc/x').to match(chatwoot_url)
     expect('https://hub.2.chatwoot.com/ping').to match(chatwoot_url)

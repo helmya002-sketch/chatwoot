@@ -25,7 +25,13 @@ module SuperAdmin::AccountFeaturesHelper
     end
   end
 
+  # Tolzar (round 4, c69: never depend on Chatwoot): Chatwoot's own AI (Captain) is never offered; the brain is our AI.
+  def self.chatwoot_ai_features
+    account_features.pluck('name').grep(/\Acaptain/)
+  end
+
   def self.filter_internal_features(features)
+    features = features.except(*chatwoot_ai_features)
     return features if ChatwootApp.chatwoot_cloud?
 
     internal_features = account_features.select { |f| f['chatwoot_internal'] }.pluck('name')

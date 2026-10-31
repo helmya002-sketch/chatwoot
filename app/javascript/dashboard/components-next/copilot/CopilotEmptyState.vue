@@ -89,17 +89,6 @@ const handleSuggestion = opt => {
       <p class="text-sm text-n-slate-11 leading-6">
         {{ $t('CAPTAIN.ASSISTANTS.NO_ASSISTANTS_AVAILABLE') }}
       </p>
-      <router-link
-        :to="{
-          name: 'captain_assistants_create_index',
-          params: {
-            accountId: route.params.accountId,
-          },
-        }"
-        class="text-n-slate-11 underline hover:text-n-slate-12"
-      >
-        {{ $t('CAPTAIN.ASSISTANTS.ADD_NEW') }}
-      </router-link>
     </div>
     <div v-else class="w-full space-y-2">
       <span class="text-xs text-n-slate-10 block">

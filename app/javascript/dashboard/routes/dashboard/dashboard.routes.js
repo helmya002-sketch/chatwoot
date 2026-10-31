@@ -8,7 +8,6 @@ import { routes as inboxRoutes } from './inbox/routes';
 import { frontendURL } from '../../helper/URLHelper';
 import helpcenterRoutes from './helpcenter/helpcenter.routes';
 import campaignsRoutes from './campaigns/campaigns.routes';
-import { routes as captainRoutes } from './captain/captain.routes';
 import { routes as tolzarRoutes } from './tolzar/tolzar.routes';
 import AppContainer from './Dashboard.vue';
 import Suspended from './suspended/Index.vue';
@@ -29,7 +28,7 @@ export default {
       component: AppContainer,
       children: [
         ...tolzarRoutes,
-        ...captainRoutes,
+        // Tolzar (c69): Chatwoot's Captain pages are not registered; the brain is our AI.
         ...inboxRoutes,
         ...conversation.routes,
         ...settings.routes,
@@ -69,12 +68,6 @@ export default {
       path: frontendURL('no-accounts'),
       name: 'no_accounts',
       component: NoAccounts,
-    },
-    {
-      // Install links from the tools catalog can't know the account; the router guard moves them into the current one
-      path: frontendURL('captain/toolsets/install'),
-      name: 'captain_toolset_install_link',
-      component: { render: () => null },
     },
   ],
 };
