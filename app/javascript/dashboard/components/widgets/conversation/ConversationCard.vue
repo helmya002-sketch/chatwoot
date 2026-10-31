@@ -28,6 +28,7 @@ import {
   stageClass,
 } from 'dashboard/components-next/Tolzar/tolzarStages';
 import { duration } from 'dashboard/components-next/Tolzar/tolzarTime';
+import { density } from 'dashboard/components-next/Tolzar/tolzarDensity';
 import { tolzarBrand } from 'dashboard/components-next/Tolzar/TolzarBranding.vue';
 
 const props = defineProps({
@@ -53,6 +54,8 @@ const emit = defineEmits([
 const hovered = ref(false);
 
 const unreadCount = computed(() => props.chat.unread_count);
+// Tolzar density (tolzarDensity.js): compact by default, the stage pill joins the name line.
+const dense = computed(() => density.value === 'compact');
 // Tolzar: mirror conversations all sit in one API inbox; show the contact's real channel
 // (WhatsApp / Instagram / email ...) from the mirror's rio_channel_source.
 const badgeInbox = computed(() => {
@@ -109,10 +112,13 @@ const lifecycleLabel = computed(() => stageOf(lifecycleStage.value).label);
 const whyLine = computed(() =>
   props.compact
     ? ''
-    : String(props.currentContact?.custom_attributes?.tolzar_lead_hint || '').trim()
+    : String(
+        props.currentContact?.custom_attributes?.tolzar_lead_hint || ''
+      ).trim()
 );
 const aiDrafted = computed(
-  () => !!String(props.chat?.custom_attributes?.tolzar_suggested_reply || '').trim()
+  () =>
+    !!String(props.chat?.custom_attributes?.tolzar_suggested_reply || '').trim()
 );
 const aiDraftedHint = computed(() =>
   t('TOLZAR_INBOX.CARD.AI_DRAFTED_HINT', { product: tolzarBrand.productName })
@@ -202,14 +208,17 @@ watch(
     <div
       v-if="!hideThumbnail"
       class="relative flex-shrink-0"
-      :class="!showInboxName ? 'mt-4' : 'mt-8'"
+      :class="[
+        !showInboxName ? 'mt-4' : 'mt-8',
+        dense && (!showInboxName ? '!mt-2' : '!mt-6'),
+      ]"
       @mouseenter="onThumbnailHover"
       @mouseleave="onThumbnailLeave"
     >
       <Avatar
         :name="currentContact.name"
         :src="currentContact.thumbnail"
-        :size="32"
+        :size="dense ? 24 : 32"
         :status="currentContact.availability_status"
         hide-offline-status
       >
@@ -233,7 +242,10 @@ watch(
         <ChannelIcon :inbox="badgeInbox" class="size-[13px]" />
       </span>
     </div>
-    <div class="px-0 py-3 flex-1 min-w-0 border-line">
+    <div
+      class="px-0 flex-1 min-w-0 border-line"
+      :class="dense ? 'py-1.5' : 'py-3'"
+    >
       <div
         v-if="showMetaSection"
         class="flex items-center min-w-0 gap-1"
@@ -281,8 +293,20 @@ watch(
         :class="hasUnread ? 'font-semibold' : 'font-medium'"
       >
         {{ currentContact.name }}
+        <span
+          v-if="dense && lifecycleLabel"
+          class="inline-flex items-center align-middle ms-1.5 text-xxs font-semibold leading-none rounded-full px-1.5 py-0.5 whitespace-nowrap normal-case"
+          :class="lifecycleChipClass"
+          data-tz-lifecycle
+        >
+          {{ lifecycleLabel }}
+        </span>
       </h4>
-      <div v-if="lifecycleLabel" class="flex mx-2 mt-1" data-tz-lifecycle>
+      <div
+        v-if="lifecycleLabel && !dense"
+        class="flex mx-2 mt-1"
+        data-tz-lifecycle
+      >
         <span
           class="inline-flex items-center text-xxs font-semibold leading-none rounded-full px-1.5 py-1 whitespace-nowrap"
           :class="lifecycleChipClass"
@@ -301,8 +325,11 @@ watch(
         v-else-if="lastMessageInChat"
         key="message-preview"
         :message="lastMessageInChat"
-        class="my-0 mx-2 leading-6 h-6 flex-1 min-w-0 text-sm"
-        :class="messagePreviewClass"
+        class="my-0 mx-2 flex-1 min-w-0 text-sm"
+        :class="[
+          messagePreviewClass,
+          dense ? 'leading-5 h-5' : 'leading-6 h-6',
+        ]"
       />
       <p
         v-else
@@ -346,7 +373,9 @@ watch(
           v-if="noReplyFor"
           v-tooltip.left="t('TOLZAR_INBOX.CARD.NO_REPLY_YET')"
           class="inline-flex items-center gap-0.5 mt-1 rounded px-1 py-px text-xxs font-semibold leading-none text-n-amber-11 bg-n-amber-3"
-          :aria-label="t('TOLZAR_INBOX.CARD.NO_REPLY_FOR', { time: noReplyFor })"
+          :aria-label="
+            t('TOLZAR_INBOX.CARD.NO_REPLY_FOR', { time: noReplyFor })
+          "
         >
           <svg
             viewBox="0 0 24 24"

@@ -7,10 +7,12 @@ vi.mock('@vueuse/core', () => ({
     target.addEventListener(event, handler, options),
 }));
 
+// Tolzar (owner's ask, 31 Oct): the composer starts at ~3 lines, its max is 40% of the pane, a drag never
+// collapses it, and the dragged height is remembered.
 const CONTAINER_HEIGHT = 800;
-const DEFAULT_HEIGHT = 120;
-const MIN_HEIGHT = 80;
-const COLLAPSE_DISTANCE = 48;
+const DEFAULT_HEIGHT = 72;
+const MIN_HEIGHT = 48;
+const MAX_HEIGHT = CONTAINER_HEIGHT * 0.4;
 const START_Y = 500;
 
 const mountWrapper = () =>
@@ -22,12 +24,8 @@ const mountWrapper = () =>
 
 const editorHeight = wrapper =>
   parseInt(wrapper.element.style.getPropertyValue('--editor-height'), 10);
-const collapseProgress = wrapper =>
-  Number(wrapper.element.style.getPropertyValue('--editor-collapse-progress'));
-const isFading = wrapper =>
-  wrapper
-    .find('.resizable-editor-body')
-    .element.parentElement.className.includes('--editor-collapse-progress');
+const maxAllowed = wrapper =>
+  parseInt(wrapper.element.style.getPropertyValue('--editor-max-allowed'), 10);
 
 // Positive distance drags the handle down, shrinking the editor.
 const dragBy = async (wrapper, distance) => {
@@ -46,6 +44,7 @@ describe('ResizableEditorWrapper', () => {
   let wrapper;
 
   beforeEach(async () => {
+    window.localStorage.clear();
     wrapper = mountWrapper();
     await wrapper
       .find('.cursor-row-resize')
@@ -56,69 +55,40 @@ describe('ResizableEditorWrapper', () => {
     wrapper.unmount();
   });
 
-  it('stops shrinking at the minimum height', async () => {
-    await dragBy(wrapper, DEFAULT_HEIGHT - MIN_HEIGHT + 10);
-
-    expect(editorHeight(wrapper)).toBe(MIN_HEIGHT);
-    expect(wrapper.emitted('collapse')).toBeUndefined();
-  });
-
-  it('fades the editor as the handle is pulled past the minimum', async () => {
-    await dragBy(wrapper, DEFAULT_HEIGHT - MIN_HEIGHT + COLLAPSE_DISTANCE / 2);
-
-    expect(collapseProgress(wrapper)).toBe(0.5);
-    expect(isFading(wrapper)).toBe(true);
-    expect(wrapper.emitted('collapse')).toBeUndefined();
-  });
-
-  it('springs back when released before the collapse distance', async () => {
-    await dragBy(wrapper, DEFAULT_HEIGHT - MIN_HEIGHT + COLLAPSE_DISTANCE / 2);
-    await releaseDrag();
-
-    expect(collapseProgress(wrapper)).toBe(0);
-    expect(isFading(wrapper)).toBe(false);
-    expect(editorHeight(wrapper)).toBe(MIN_HEIGHT);
-    expect(wrapper.emitted('collapse')).toBeUndefined();
-    expect(document.body.style.cursor).toBe('');
-  });
-
-  it('collapses once the handle travels the full collapse distance', async () => {
-    await dragBy(wrapper, DEFAULT_HEIGHT - MIN_HEIGHT + COLLAPSE_DISTANCE);
-
-    expect(wrapper.emitted('collapse')).toHaveLength(1);
-    expect(collapseProgress(wrapper)).toBe(0);
-    expect(isFading(wrapper)).toBe(false);
+  it('starts at about three lines and stops shrinking at the minimum', async () => {
     expect(editorHeight(wrapper)).toBe(DEFAULT_HEIGHT);
-    expect(document.body.style.cursor).toBe('');
+    await dragBy(wrapper, 400);
+    expect(editorHeight(wrapper)).toBe(MIN_HEIGHT);
   });
 
-  it('collapses from a touch drag as well', async () => {
+  it('never collapses on a drag, however far it is pulled', async () => {
+    await dragBy(wrapper, 2000);
     await releaseDrag();
-    await wrapper
-      .find('.cursor-row-resize')
-      .trigger('touchstart', { touches: [{ clientY: START_Y }] });
-    const touchMove = Object.assign(
-      new Event('touchmove', { cancelable: true }),
-      {
-        touches: [
-          {
-            clientY: START_Y + DEFAULT_HEIGHT - MIN_HEIGHT + COLLAPSE_DISTANCE,
-          },
-        ],
-      }
+    expect(wrapper.emitted('collapse')).toBeUndefined();
+    expect(editorHeight(wrapper)).toBe(MIN_HEIGHT);
+  });
+
+  it('grows up to 40% of the pane, no further', async () => {
+    await dragBy(wrapper, -2000);
+    expect(editorHeight(wrapper)).toBeLessThanOrEqual(MAX_HEIGHT);
+    expect(maxAllowed(wrapper)).toBeLessThanOrEqual(MAX_HEIGHT);
+  });
+
+  it('remembers the dragged height', async () => {
+    await dragBy(wrapper, -60);
+    await releaseDrag();
+    expect(Number(window.localStorage.getItem('tz-editor-height'))).toBe(
+      DEFAULT_HEIGHT + 60
     );
-    document.dispatchEvent(touchMove);
+    wrapper.unmount();
+    wrapper = mountWrapper();
     await nextTick();
-
-    expect(wrapper.emitted('collapse')).toHaveLength(1);
-    expect(touchMove.defaultPrevented).toBe(true);
+    expect(editorHeight(wrapper)).toBe(DEFAULT_HEIGHT + 60);
   });
 
-  it('ignores further movement after collapsing', async () => {
-    await dragBy(wrapper, DEFAULT_HEIGHT - MIN_HEIGHT + COLLAPSE_DISTANCE);
-    await dragBy(wrapper, DEFAULT_HEIGHT - MIN_HEIGHT + COLLAPSE_DISTANCE * 2);
-
+  it('collapses only through the explicit collapse action', async () => {
+    await releaseDrag();
+    wrapper.vm.collapseEditor();
     expect(wrapper.emitted('collapse')).toHaveLength(1);
-    expect(editorHeight(wrapper)).toBe(DEFAULT_HEIGHT);
   });
 });

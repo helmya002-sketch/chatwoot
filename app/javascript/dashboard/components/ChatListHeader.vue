@@ -7,6 +7,10 @@ import wootConstants from 'dashboard/constants/globals';
 import ConversationBasicFilter from './widgets/conversation/ConversationBasicFilter.vue';
 import SwitchLayout from 'dashboard/routes/dashboard/conversation/search/SwitchLayout.vue';
 import NextButton from 'dashboard/components-next/button/Button.vue';
+import {
+  density,
+  toggleDensity,
+} from 'dashboard/components-next/Tolzar/tolzarDensity';
 
 const props = defineProps({
   pageTitle: { type: String, required: true },
@@ -177,7 +181,7 @@ const toggleConversationLayout = () => {
       <NextButton
         v-if="!isContactScoped"
         v-tooltip.top="'Search this list'"
-        :aria-label="'Search this list'"
+        aria-label="Search this list"
         :icon="showSearch ? 'i-lucide-x' : 'i-lucide-search'"
         slate
         xs
@@ -250,6 +254,19 @@ const toggleConversationLayout = () => {
         :is-on-expanded-layout="isOnExpandedLayout"
         :show-status-filter="!hasAppliedFiltersOrActiveFolders"
         @change-filter="onBasicFilterChange"
+      />
+      <NextButton
+        v-tooltip.right="
+          density === 'compact'
+            ? $t('CHAT_LIST.DENSITY_COMFORTABLE')
+            : $t('CHAT_LIST.DENSITY_COMPACT')
+        "
+        :icon="density === 'compact' ? 'i-lucide-rows-2' : 'i-lucide-rows-4'"
+        slate
+        xs
+        faded
+        data-tz-density-toggle
+        @click="toggleDensity"
       />
       <SwitchLayout
         :is-on-expanded-layout="isOnExpandedLayout"

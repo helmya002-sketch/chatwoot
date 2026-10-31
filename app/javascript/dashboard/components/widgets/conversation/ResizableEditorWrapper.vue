@@ -17,16 +17,37 @@ const props = defineProps({
 
 const emit = defineEmits(['collapse']);
 
-const DEFAULT_HEIGHT = 120;
-const MIN_HEIGHT = 80;
+// Tolzar (owner's ask, 31 Oct): the composer starts at about 3 lines, grows with the text up to 40% of the pane and
+// then scrolls inside, so the conversation stays visible. Dragging resizes between about 2 lines and that max and
+// NEVER collapses it (the snap-to-close is gone; collapsing is the explicit button only). The dragged height is
+// remembered in this browser (tz-editor-height).
+const DEFAULT_HEIGHT = 72;
+const MIN_HEIGHT = 48;
 const MIN_MESSAGES_HEIGHT = 200;
-const EXPAND_RATIO = 0.5;
+const MAX_PANE_RATIO = 0.4;
+const EXPAND_RATIO = 0.4;
 const RESET_DELAY_MS = 120;
-const COLLAPSE_DISTANCE = 48;
+const HEIGHT_KEY = 'tz-editor-height';
+
+const savedHeight = () => {
+  try {
+    const value = Number(window.localStorage.getItem(HEIGHT_KEY));
+    return Number.isFinite(value) && value >= MIN_HEIGHT ? value : 0;
+  } catch (e) {
+    return 0;
+  }
+};
+const saveHeight = value => {
+  try {
+    window.localStorage.setItem(HEIGHT_KEY, String(Math.round(value)));
+  } catch (e) {
+    // storage blocked: the height lasts for this page only
+  }
+};
 
 const wrapperRef = useTemplateRef('wrapperRef');
 const surroundingHeight = ref(0);
-const editorHeight = ref(DEFAULT_HEIGHT);
+const editorHeight = ref(savedHeight() || DEFAULT_HEIGHT);
 const isResizing = ref(false);
 const startY = ref(0);
 const startHeight = ref(0);
@@ -41,13 +62,16 @@ const isContainerReady = computed(() => props.containerHeight > 0);
 const sizeBounds = computed(() => {
   const h = props.containerHeight;
   const s = surroundingHeight.value;
-  const max = Math.max(MIN_HEIGHT, h - MIN_MESSAGES_HEIGHT - s);
+  const max = Math.max(
+    MIN_HEIGHT,
+    Math.min(h - MIN_MESSAGES_HEIGHT - s, Math.floor(h * MAX_PANE_RATIO) - s)
+  );
   const expanded = clamp(Math.floor(h * EXPAND_RATIO - s / 2), MIN_HEIGHT, max);
   return {
     min: MIN_HEIGHT,
     max: isContainerReady.value ? max : DEFAULT_HEIGHT,
     expanded,
-    default: clamp(DEFAULT_HEIGHT, MIN_HEIGHT, max),
+    default: clamp(savedHeight() || DEFAULT_HEIGHT, MIN_HEIGHT, max),
   };
 });
 
@@ -103,8 +127,10 @@ const onResizeEnd = () => {
   isResizing.value = false;
   collapseProgress.value = 0;
   clearDragStyles();
+  saveHeight(editorHeight.value);
 };
 
+// Only the explicit collapse button closes the editor; a drag stops at the minimum height.
 const collapseEditor = () => {
   onResizeEnd();
   editorHeight.value = sizeBounds.value.default;
@@ -116,12 +142,6 @@ const onResizeMove = event => {
   if (event.touches) event.preventDefault();
   const draggedHeight = startHeight.value + startY.value - getClientY(event);
   editorHeight.value = clampToBounds(draggedHeight);
-  collapseProgress.value = clamp(
-    (sizeBounds.value.min - draggedHeight) / COLLAPSE_DISTANCE,
-    0,
-    1
-  );
-  if (collapseProgress.value === 1) collapseEditor();
 };
 
 const resetEditorHeight = () => {
@@ -164,7 +184,7 @@ useEventListener(document, 'touchend', onResizeEnd);
 useEventListener(document, 'touchcancel', onResizeEnd);
 useEventListener(window, 'blur', onResizeEnd);
 
-defineExpose({ toggleEditorExpand, resetEditorHeight });
+defineExpose({ toggleEditorExpand, resetEditorHeight, collapseEditor });
 </script>
 
 <template>
