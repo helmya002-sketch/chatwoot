@@ -93,6 +93,16 @@ describe('tolzar loader', () => {
     );
   });
 
+  it('gives focus back to the launcher when the chat closes itself', () => {
+    window.tolzar.run({ websiteToken: 'wt1', baseUrl: 'https://app.tolzar.com' });
+    window.tolzar.toggle('open');
+    fromFrame({ event: 'closeWindow' });
+    expect(document.activeElement).toBe(document.querySelector('.tz-l-bubble'));
+    expect(document.querySelector('.tz-l-holder').className).not.toContain(
+      'tz-l-open'
+    );
+  });
+
   it('loads quietly for a returning visitor so new replies can show', () => {
     document.cookie = 'cw_conversation=OLD; Path=/';
     window.tolzar.run({

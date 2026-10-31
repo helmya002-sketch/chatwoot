@@ -121,7 +121,7 @@
       emit('chatwoot:ready', {});
     },
     setAuthCookie: function (m) { if (m.data && m.data.widgetAuthToken) writeCookie(COOKIE, m.data.widgetAuthToken); },
-    closeWindow: function () { toggle(false); },
+    closeWindow: function () { toggle(false); if (state.bubble) state.bubble.focus(); },
     setUnreadMode: function () { if (!state.open && state.bubble) state.bubble.className = 'tz-l-bubble tz-l-unread'; },
     resetUnreadMode: function () { if (state.bubble) state.bubble.className = 'tz-l-bubble'; },
     handleNotificationDot: function (m) {
