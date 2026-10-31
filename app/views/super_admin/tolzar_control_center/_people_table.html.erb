@@ -49,7 +49,9 @@
                     <%= text_field_tag :reason, nil, id: "reason-#{row[:user].id}", maxlength: 300, class: ui(:input, "min-h-9") %>
                     <div class="flex flex-wrap gap-1.5">
                       <% { reset_two_factor: :super_admin_tolzar_cc_reset_two_factor_path, end_sessions: :super_admin_tolzar_cc_end_sessions_path,
-                           resend_invite: :super_admin_tolzar_cc_resend_invite_path }.each do |key, route| %>
+                           resend_invite: :super_admin_tolzar_cc_resend_invite_path }
+                           .merge(row[:user].tolzar_deactivated_at ? { reactivate: :super_admin_tolzar_cc_reactivate_path }
+                                                                  : { deactivate: :super_admin_tolzar_cc_deactivate_path }).each do |key, route| %>
                         <%= button_tag t("#{cc}.people_action.#{key}"), type: "submit", formaction: send(route, row[:user].id),
                                        class: "h-8 px-2.5 rounded-lg border border-n-slate-6 text-label-small hover:bg-n-slate-3" %>
                       <% end %>

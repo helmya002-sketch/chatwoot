@@ -1000,6 +1000,9 @@ Rails.application.routes.draw do
       post 'control_center/people/:id/reset_two_factor', to: 'tolzar_people_actions#reset_two_factor', as: :tolzar_cc_reset_two_factor
       post 'control_center/people/:id/end_sessions', to: 'tolzar_people_actions#end_sessions', as: :tolzar_cc_end_sessions
       post 'control_center/people/:id/resend_invite', to: 'tolzar_people_actions#resend_invite', as: :tolzar_cc_resend_invite
+      post 'control_center/people/:id/deactivate', to: 'tolzar_people_actions#deactivate', as: :tolzar_cc_deactivate
+      post 'control_center/people/:id/reactivate', to: 'tolzar_people_actions#reactivate', as: :tolzar_cc_reactivate
+      post 'control_center/people/invite', to: 'tolzar_people_invites#create', as: :tolzar_cc_people_invite
       get 'control_center/health', to: 'tolzar_control_center#health', as: :tolzar_cc_health
       get 'control_center/ai', to: 'tolzar_control_center#ai', as: :tolzar_cc_ai
       get 'control_center/billing', to: 'tolzar_control_center#billing', as: :tolzar_cc_billing

@@ -161,6 +161,15 @@ class User < ApplicationRecord
     self.uid = email
   end
 
+  # Tolzar Control Center (c86): a deactivated person cannot sign in (web or API tokens) until reactivated.
+  def active_for_authentication?
+    super && tolzar_deactivated_at.nil?
+  end
+
+  def inactive_message
+    tolzar_deactivated_at.present? ? :tolzar_deactivated : super
+  end
+
   def assigned_inboxes
     administrator? ? Current.account.inboxes : inboxes.where(account_id: Current.account.id)
   end

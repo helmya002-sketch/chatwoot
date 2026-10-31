@@ -3,8 +3,10 @@
 #   POST control_center/people/:id/reset_two_factor  turn two-factor sign-in off so they set it up again
 #   POST control_center/people/:id/end_sessions      end every session and token (they sign in again)
 #   POST control_center/people/:id/resend_invite     send the invitation / confirmation e-mail again
+#   POST control_center/people/:id/deactivate        no sign-in (web or API) and every session ended; nothing deleted
+#   POST control_center/people/:id/reactivate        sign-in allowed again
 class SuperAdmin::TolzarPeopleActionsController < SuperAdmin::ApplicationController
-  ACTIONS = %w[reset_two_factor end_sessions resend_invite].freeze
+  ACTIONS = %w[reset_two_factor end_sessions resend_invite deactivate reactivate].freeze
 
   skip_after_action :tolzar_audit
   before_action :set_user
@@ -23,6 +25,16 @@ class SuperAdmin::TolzarPeopleActionsController < SuperAdmin::ApplicationControl
   def resend_invite
     @user.send_confirmation_instructions
     done('resend_invite')
+  end
+
+  def deactivate
+    @user.update!(tolzar_deactivated_at: Time.current, tokens: {})
+    done('deactivate')
+  end
+
+  def reactivate
+    @user.update!(tolzar_deactivated_at: nil)
+    done('reactivate')
   end
 
   private

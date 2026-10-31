@@ -12,6 +12,25 @@
   </div>
 
   <%= render "card", title: t("#{cc}.people"), count: @rows.size do %>
+<%# Tolzar (c86): invite a person to a workspace: the workspace name typed and a reason; audited. %>
+<details class="mb-4 rounded-xl border border-n-weak bg-n-solid-1 px-4 py-3">
+  <summary class="cursor-pointer text-label-small text-n-blue-11"><%= t("super_admin.control_center.people_invite") %></summary>
+  <%= form_with url: super_admin_tolzar_cc_people_invite_path, method: :post, class: "mt-3 grid gap-2 sm:grid-cols-2 max-w-2xl" do %>
+    <%= label_tag :invite_account, t("super_admin.control_center.people_invite_account"), class: "text-label-small" %>
+    <%= number_field_tag :account_id, nil, id: :invite_account, min: 1, class: ui(:input, "min-h-9") %>
+    <%= label_tag :invite_email, t("super_admin.control_center.people_invite_email"), class: "text-label-small" %>
+    <%= email_field_tag :email, nil, id: :invite_email, class: ui(:input, "min-h-9") %>
+    <%= label_tag :invite_name, t("super_admin.control_center.people_invite_name"), class: "text-label-small" %>
+    <%= text_field_tag :name, nil, id: :invite_name, maxlength: 100, class: ui(:input, "min-h-9") %>
+    <%= label_tag :invite_role, t("super_admin.control_center.people_invite_role"), class: "text-label-small" %>
+    <%= select_tag :role, options_for_select([%w[Agent agent], %w[Administrator administrator]]), id: :invite_role, class: ui(:input, "min-h-9") %>
+    <%= label_tag :invite_confirm, t("super_admin.control_center.people_invite_confirm"), class: "text-label-small" %>
+    <%= text_field_tag :confirm, nil, id: :invite_confirm, autocomplete: "off", class: ui(:input, "min-h-9") %>
+    <%= label_tag :invite_reason, t("super_admin.control_center.people_reason"), class: "text-label-small" %>
+    <%= text_field_tag :reason, nil, id: :invite_reason, maxlength: 300, class: ui(:input, "min-h-9") %>
+    <div class="sm:col-span-2"><%= button_tag t("super_admin.control_center.people_invite_send"), type: "submit", class: "h-9 px-3 rounded-lg bg-n-brand text-white text-label-small" %></div>
+  <% end %>
+</details>
     <%= render "super_admin/tolzar_control_center/people_table",
                rows: @rows.map { |r| r.merge(name: r[:user].name, email: r[:user].email) }, actions: true %>
   <% end %>
