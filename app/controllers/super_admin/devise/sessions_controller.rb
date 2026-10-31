@@ -6,9 +6,13 @@ class SuperAdmin::Devise::SessionsController < Devise::SessionsController
   end
 
   def create
-    redirect_to(super_admin_session_path, flash: { error: @error_message }) && return unless valid_credentials?
+    unless valid_credentials?
+      audit_sign_in('sign_in_failed')
+      return redirect_to(super_admin_session_path, flash: { error: @error_message })
+    end
 
     sign_in(:super_admin, @super_admin)
+    audit_sign_in('sign_in')
     flash.discard
     redirect_to super_admin_root_path
   end
@@ -20,6 +24,13 @@ class SuperAdmin::Devise::SessionsController < Devise::SessionsController
   end
 
   private
+
+  # Tolzar::SuperAdminAudit: the e-mail tried and the outcome; never the password or the code.
+  def audit_sign_in(action)
+    Tolzar::SuperAdminAudit.record!(request: request, controller: controller_path, action: action,
+                                    super_admin: (@super_admin if action == 'sign_in'),
+                                    email: params.dig(:super_admin, :email).to_s.downcase)
+  end
 
   def valid_credentials?
     @super_admin = SuperAdmin.find_by!(email: params[:super_admin][:email])

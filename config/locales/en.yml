@@ -717,6 +717,24 @@ en:
       submit: 'Finish Setup'
 
   super_admin:
+    tolzar_audits:
+      title: 'Audit log'
+      description: 'Every super-admin change and sign-in attempt: who, what, when and the names of the fields sent. Values are never stored.'
+      search: 'Search by e-mail, path or action'
+      search_button: 'Search'
+      entries: 'Entries'
+      empty: 'No entries yet.'
+      newer: 'Newer'
+      older: 'Older'
+      columns:
+        when: 'When (UTC)'
+        who: 'Who'
+        what: 'What'
+        path: 'Path'
+        record: 'Record'
+        fields: 'Fields sent'
+        status: 'Status'
+        ip: 'IP'
     tolzar_switches:
       title: 'Switches & 2FA'
       nav: 'Switches & 2FA'

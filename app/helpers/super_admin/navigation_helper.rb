@@ -33,7 +33,7 @@ module SuperAdmin::NavigationHelper
   end
 
   def monitor_open?
-    controller_name.in? %w[instance_statuses user_diagnostics tolzar_switches]
+    controller_name.in? %w[instance_statuses user_diagnostics tolzar_switches tolzar_audits]
   end
 
   def settings_pages
@@ -100,6 +100,8 @@ module SuperAdmin::NavigationHelper
         active: controller_name == 'user_diagnostics' },
       { label: t('super_admin.tolzar_switches.nav'), url: super_admin_tolzar_switches_path, icon: 'i-lucide-toggle-right',
         active: controller_name == 'tolzar_switches' },
+      { label: t('super_admin.tolzar_audits.title'), url: super_admin_tolzar_audits_path, icon: 'i-lucide-scroll-text',
+        active: controller_name == 'tolzar_audits' },
       { label: t('super_admin.navigation.sidekiq_dashboard'), url: sidekiq_web_path, icon: 'i-lucide-layers', external: true }
     ]
   end

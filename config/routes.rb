@@ -937,6 +937,7 @@ Rails.application.routes.draw do
       resources :platform_banners
       resource :instance_status, only: [:show]
       resource :tolzar_switches, only: [:show]
+      resource :tolzar_audits, only: [:show]
 
       resources :search, only: [] do
         collection do

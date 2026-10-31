@@ -12,6 +12,8 @@ class SuperAdmin::ApplicationController < Administrate::ApplicationController
   helper_method :render_vue_component
   # authenticiation done via devise : SuperAdmin Model
   before_action :authenticate_super_admin!
+  # Tolzar Control Center: every change is audited (Tolzar::SuperAdminAudit; field names only, never values).
+  after_action :tolzar_audit, unless: -> { request.get? || request.head? }
 
   # Override this value to specify the number of elements to display at a time
   # on index pages. Defaults to 20.
@@ -27,6 +29,11 @@ class SuperAdmin::ApplicationController < Administrate::ApplicationController
   end
 
   private
+
+  def tolzar_audit
+    Tolzar::SuperAdminAudit.record!(request: request, controller: controller_path, action: action_name,
+                                    super_admin: current_super_admin, status: response.status, record_id: params[:id])
+  end
 
   def render_vue_component(component_name, props = {})
     html_options = {

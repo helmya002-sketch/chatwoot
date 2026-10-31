@@ -1,0 +1,51 @@
+<% content_for(:title) { t("super_admin.tolzar_audits.title") } %>
+
+<%= render "section", title: t("super_admin.tolzar_audits.title"), description: t("super_admin.tolzar_audits.description") do %>
+  <%= form_with url: super_admin_tolzar_audits_path, method: :get, class: "flex gap-2" do %>
+    <%= search_field_tag :q, @query, placeholder: t("super_admin.tolzar_audits.search"), class: ui(:input, "min-h-10 flex-1") %>
+    <%= render "button", label: t("super_admin.tolzar_audits.search_button"), type: "submit", extra: "h-10" %>
+  <% end %>
+
+  <%= render "card", title: t("super_admin.tolzar_audits.entries") do %>
+    <% if @audits.empty? %>
+      <p class="px-5 py-4 text-body-main text-n-slate-11"><%= t("super_admin.tolzar_audits.empty") %></p>
+    <% else %>
+      <div class="overflow-x-auto">
+        <table class="w-full text-start text-xs">
+          <thead class="text-n-slate-11">
+            <tr class="border-b border-n-weak">
+              <% %w[when who what path record fields status ip].each do |col| %>
+                <th class="px-4 py-2 text-start font-medium"><%= t("super_admin.tolzar_audits.columns.#{col}") %></th>
+              <% end %>
+            </tr>
+          </thead>
+          <tbody class="text-n-slate-12">
+            <% @audits.each do |audit| %>
+              <tr class="border-b border-n-weak align-top">
+                <td class="whitespace-nowrap px-4 py-2 font-mono"><%= audit.created_at.utc.strftime("%Y-%m-%d %H:%M:%S") %></td>
+                <td class="px-4 py-2"><%= audit.email %></td>
+                <td class="px-4 py-2 font-mono"><%= "#{audit.http_method} #{audit.controller.delete_prefix('super_admin/')}##{audit.action}" %></td>
+                <td class="max-w-64 break-all px-4 py-2 font-mono"><%= audit.path %></td>
+                <td class="px-4 py-2 font-mono"><%= audit.record_id %></td>
+                <td class="max-w-72 break-words px-4 py-2 font-mono text-n-slate-11"><%= Array(audit.fields).join(", ") %></td>
+                <td class="px-4 py-2 font-mono"><%= audit.status %></td>
+                <td class="px-4 py-2 font-mono"><%= audit.ip %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% end %>
+  <% end %>
+
+  <div class="flex justify-between">
+    <% if @page > 1 %>
+      <%= link_to t("super_admin.tolzar_audits.newer"), super_admin_tolzar_audits_path(q: @query.presence, page: @page - 1), class: "text-n-blue-11" %>
+    <% else %>
+      <span></span>
+    <% end %>
+    <% if @more %>
+      <%= link_to t("super_admin.tolzar_audits.older"), super_admin_tolzar_audits_path(q: @query.presence, page: @page + 1), class: "text-n-blue-11" %>
+    <% end %>
+  </div>
+<% end %>

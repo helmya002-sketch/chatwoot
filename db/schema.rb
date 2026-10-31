@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_10_31_060000) do
+ActiveRecord::Schema[7.1].define(version: 2026_10_31_100000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1641,6 +1641,22 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_31_060000) do
     t.string "icon_color", default: ""
     t.index ["account_id"], name: "index_teams_on_account_id"
     t.index ["name", "account_id"], name: "index_teams_on_name_and_account_id", unique: true
+  end
+
+  create_table "tolzar_super_admin_audits", force: :cascade do |t|
+    t.bigint "super_admin_id"
+    t.string "email"
+    t.string "controller", null: false
+    t.string "action", null: false
+    t.string "http_method", null: false
+    t.string "path", null: false
+    t.string "record_id"
+    t.jsonb "fields", default: [], null: false
+    t.integer "status"
+    t.string "ip"
+    t.datetime "created_at", null: false
+    t.index ["created_at"], name: "index_tolzar_super_admin_audits_on_created_at"
+    t.index ["super_admin_id"], name: "index_tolzar_super_admin_audits_on_super_admin_id"
   end
 
   create_table "tolzar_subscriptions", force: :cascade do |t|
