@@ -88,6 +88,7 @@ RSpec.describe 'Tolzar lead intake', type: :request do
     expect(response).to have_http_status(:forbidden)
     get "/api/v1/accounts/#{account.id}/tolzar/lead_intake", headers: owner.create_new_auth_token
     expect(response).to have_http_status(:success)
-    expect(response.parsed_body['inboxes'].first['url']).to end_with("/tolzar/leads/#{inbox.id}/#{token}")
+    row = response.parsed_body['inboxes'].find { |i| i['id'] == inbox.id } # the API channel factory adds its own inbox too
+    expect(row['url']).to end_with("/tolzar/leads/#{inbox.id}/#{token}")
   end
 end

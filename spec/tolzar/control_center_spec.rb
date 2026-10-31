@@ -9,7 +9,8 @@ RSpec.describe 'Tolzar Control Center', type: :request do
 
   before do
     Rails.cache.clear
-    Tolzar::Subscription.create!(account: account, plan: 'trial', trial_ends_at: 3.days.from_now, seat_limit: 5)
+    # A new account already has its billing row (created with the account): set it, never insert a second.
+    Tolzar::Subscription.find_or_initialize_by(account: account).update!(plan: 'trial', trial_ends_at: 3.days.from_now, seat_limit: 5)
   end
 
   it 'needs a super admin session' do
