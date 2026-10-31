@@ -410,3 +410,39 @@ body.dark.tz-ui ninja-keys {
   --ninja-modal-shadow: 0 20px 50px -18px rgb(0 0 0 / 0.7);
   --ninja-overflow-background: rgb(0 0 0 / 0.5);
 }
+
+// Phase 3 inbox, list (round 3 c43). Hard requirements kept as they are: the compact density default
+// (tolzarDensity.js) and its toggle. Only colour and emphasis change here, never the row height.
+body.tz-ui {
+  .conversation.border-b {
+    border-bottom-color: rgb(var(--border-weak));
+  }
+
+  // The open conversation: a soft blue row with a brand edge on the start side.
+  .conversation.active {
+    background-color: rgb(var(--blue-2));
+    box-shadow: inset 3px 0 0 rgb(var(--blue-9));
+  }
+
+  [dir='rtl'] .conversation.active {
+    box-shadow: inset -3px 0 0 rgb(var(--blue-9));
+  }
+
+  .conversation.selected {
+    background-color: rgb(var(--blue-3));
+  }
+
+  // Unread conversations read a little stronger.
+  .conversation h4 {
+    letter-spacing: -0.005em;
+  }
+
+  // The lifecycle pill on the card follows the status-pill shape of the mock.
+  [data-tz-lifecycle] > * {
+    border-radius: 999px;
+  }
+}
+
+body.dark.tz-ui .conversation.active {
+  background-color: rgb(var(--blue-1));
+}
