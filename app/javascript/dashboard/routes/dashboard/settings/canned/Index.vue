@@ -82,6 +82,30 @@ onMounted(() => {
   fetchCannedResponses();
 });
 
+// Tolzar (round 4, c93): add the starter replies (TOLZAR_INBOX_TOOLS_ACCOUNTS; administrators).
+const tzInboxTools = computed(
+  () =>
+    !!getters['accounts/getAccount'].value(getters.getCurrentAccountId.value)
+      ?.tolzar_inbox_tools
+);
+const tzAddingStarters = ref(false);
+const tzAddStarters = async () => {
+  tzAddingStarters.value = true;
+  try {
+    const { data } = await window.axios.post(
+      `/api/v1/accounts/${getters.getCurrentAccountId.value}/tolzar/canned_starters`
+    );
+    useAlert(
+      t('TOLZAR_INBOX.STARTERS.ADDED', { n: (data.added || []).length })
+    );
+    await fetchCannedResponses();
+  } catch (e) {
+    useAlert(t('TOLZAR_INBOX.STARTERS.FAILED'));
+  } finally {
+    tzAddingStarters.value = false;
+  }
+};
+
 const showAlertMessage = message => {
   loading[activeResponse.value.id] = false;
   activeResponse.value = {};
@@ -160,6 +184,14 @@ const tableHeaders = computed(() => {
           </span>
         </template>
         <template #actions>
+          <Button
+            v-if="tzInboxTools"
+            :label="$t('TOLZAR_INBOX.STARTERS.BUTTON')"
+            size="sm"
+            slate
+            :is-loading="tzAddingStarters"
+            @click="tzAddStarters"
+          />
           <Button
             :label="$t('CANNED_MGMT.HEADER_BTN_TXT')"
             size="sm"

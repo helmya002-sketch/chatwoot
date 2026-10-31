@@ -36,6 +36,8 @@ json.tolzar_pwa Tolzar::PushPrivacy.on?(@account.id)
 json.tolzar_meta_human_agent Tolzar::MetaHumanAgent.on?(@account.id)
 # Collision guard (c92): warn before a reply when a teammate replied meanwhile.
 json.tolzar_collision_guard ENV.fetch('TOLZAR_COLLISION_GUARD_ACCOUNTS', '').split(',').map(&:strip).include?(@account.id.to_s)
+# Inbox tools (round 4, c93-c96): starter replies, bulk stage moves, shortcut sheet.
+json.tolzar_inbox_tools Tolzar::CannedStarters.enabled?(@account.id)
 json.tolzar_fair_use fair_use.slice('month', 'used', 'allowance', 'plan', 'level') if Tolzar::FairUse.enabled? && fair_use.is_a?(Hash)
 features = @account.enabled_features
 features.delete(Shopify::FeatureGate::ACCOUNT_FEATURE) unless Shopify::FeatureGate.enabled?(account: @account)

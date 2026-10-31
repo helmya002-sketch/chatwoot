@@ -66,6 +66,11 @@
         "UNKNOWN": "The AI service did not answer just now. This is checked again every minute."
       }
     },
+    "STARTERS": {
+      "BUTTON": "Add starter replies",
+      "ADDED": "Added {n} starter replies. Edit them to sound like you.",
+      "FAILED": "Could not add the starter replies. Try again."
+    },
     "COLLISION": {
       "TEXT": "{name} replied to this customer while you were writing. Read it before you send?",
       "CANCEL": "Review first",
