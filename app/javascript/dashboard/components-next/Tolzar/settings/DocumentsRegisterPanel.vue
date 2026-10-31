@@ -470,6 +470,15 @@ onMounted(() => {
               >
                 {{ t('TOLZAR_SETTINGS_UI.DOCS.ISSUE') }}
               </button>
+              <button
+                v-if="row.status === 'issued' && row.conversation_id"
+                type="button"
+                :class="BTN"
+                class="!mt-0"
+                @click="act(row, 'send')"
+              >
+                {{ t('TOLZAR_SETTINGS_UI.DOCS.SEND') }}
+              </button>
               <template v-if="row.status === 'issued'">
                 <input
                   v-model="voidReason[row.id]"

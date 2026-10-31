@@ -6,14 +6,15 @@
 #   PATCH  tolzar/documents/:id         a draft's new spec (a new version)
 #   POST   tolzar/documents/:id/issue   checks, then the gapless number
 #   POST   tolzar/documents/:id/void    {reason} (administrators); the number stays
+#   POST   tolzar/documents/:id/send    a staff member sends the issued document (PDF) into its conversation
 #   GET    tolzar/documents/:id/print   the document as a printable HTML page (print to PDF until the renderer)
 #   GET/POST tolzar/documents_settings  the number prefixes per type (POST: the workspace owner)
-# Any member drafts and issues; nothing is sent to a customer from here.
+# Any member drafts and issues; only a person's Send puts a document in front of a customer.
 class Api::V1::Accounts::TolzarDocumentsController < Api::V1::Accounts::BaseController
   PER_PAGE = 50
 
   before_action :ensure_enabled
-  before_action :set_document, only: %i[show update issue void printable]
+  before_action :set_document, only: %i[show update issue void printable send_document]
   before_action :ensure_admin, only: %i[void export]
   before_action :ensure_owner, only: :settings_save
 
@@ -60,6 +61,14 @@ class Api::V1::Accounts::TolzarDocumentsController < Api::V1::Accounts::BaseCont
     @document.issue!(by: Current.user)
     render json: { ok: true, document: @document.view }
   rescue Tolzar::Document::Refused => e
+    refused(e.message)
+  end
+
+  # A staff member's Send: the issued document as a PDF into its conversation (Tolzar::DocumentSend).
+  def send_document
+    message = Tolzar::DocumentSend.new(document: @document, user: Current.user).perform
+    render json: { ok: true, message_id: message.id, document: @document.view }
+  rescue Tolzar::DocumentSend::Refused => e
     refused(e.message)
   end
 

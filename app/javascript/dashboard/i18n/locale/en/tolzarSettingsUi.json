@@ -61,6 +61,7 @@
       "NO_NUMBER": "(draft)",
       "HAS_PLACEHOLDERS": "Has placeholders",
       "PRINT": "Print",
+      "SEND": "Send to the conversation",
       "ISSUE": "Issue",
       "VOID": "Cancel document",
       "VOID_REASON": "Reason",

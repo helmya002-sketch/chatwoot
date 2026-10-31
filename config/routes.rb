@@ -134,6 +134,7 @@ Rails.application.routes.draw do
           patch  'tolzar/documents/:id',         to: 'tolzar_documents#update'
           post   'tolzar/documents/:id/issue',   to: 'tolzar_documents#issue'
           post   'tolzar/documents/:id/void',    to: 'tolzar_documents#void'
+          post   'tolzar/documents/:id/send',    to: 'tolzar_documents#send_document'
           # Tolzar booking-system connector (Tolzar::BookingConnector; TOLZAR_BOOKING_CONNECTOR)
           get    'tolzar/booking_connector',            to: 'tolzar_booking_connector#show'
           post   'tolzar/booking_connector',            to: 'tolzar_booking_connector#save'
