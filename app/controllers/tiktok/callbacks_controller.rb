@@ -21,7 +21,24 @@ class Tiktok::CallbacksController < ApplicationController
     super.merge(Tolzar::PublicUrls.dashboard_url_options)
   end
 
+  # Rails' open-redirect guard refuses another host; the dashboard's own host (FRONTEND_URL) is allowed, and only
+  # while TIKTOK_REDIRECT_BASE moves the callback elsewhere. Any other target keeps the guard.
+  def redirect_to(options = {}, response_options = {})
+    response_options = response_options.merge(allow_other_host: true) if dashboard_redirect?(options)
+    super
+  end
+
   private
+
+  def dashboard_redirect?(options)
+    host = Tolzar::PublicUrls.dashboard_url_options[:host]
+    return false if ENV['TIKTOK_REDIRECT_BASE'].blank? || host.blank?
+
+    target = options.is_a?(String) ? options : url_for(options)
+    URI.parse(target.to_s).host == host
+  rescue URI::InvalidURIError
+    false
+  end
 
   def all_scopes_granted?
     granted_scopes = short_term_access_token[:scope].to_s.split(',')

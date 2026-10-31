@@ -59,6 +59,17 @@ RSpec.describe 'Tolzar TikTok callback redirect host', type: :request do
     expect(response).to have_http_status(:redirect)
     expect(URI.parse(response.location).host).to eq('chat.example.com')
   end
+
+  it 'lifts the open-redirect guard for the dashboard host only' do
+    controller = Tiktok::CallbacksController.new
+    with_modified_env(TIKTOK_REDIRECT_BASE: 'https://app.tolzar.com', FRONTEND_URL: 'https://chat.example.com') do
+      expect(controller.send(:dashboard_redirect?, 'https://chat.example.com/app/accounts/1')).to be(true)
+      expect(controller.send(:dashboard_redirect?, 'https://evil.example/app')).to be(false)
+    end
+    with_modified_env(TIKTOK_REDIRECT_BASE: nil, FRONTEND_URL: 'https://chat.example.com') do
+      expect(controller.send(:dashboard_redirect?, 'https://chat.example.com/app')).to be(false)
+    end
+  end
 end
 
 RSpec.describe 'Tolzar Meta webhook base' do
