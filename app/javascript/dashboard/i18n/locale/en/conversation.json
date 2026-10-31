@@ -607,7 +607,11 @@
     "CC": "Cc",
     "SUBJECT": "Subject",
     "DATE": "Date",
-    "EXPAND": "Expand email"
+    "EXPAND": "Expand email",
+    "FULL_VIEW": "Open full email",
+    "OPEN_WINDOW": "Open in new window",
+    "PRINT": "Print",
+    "CLOSE": "Close"
   },
   "FORWARD_EMAIL": {
     "HEADER_TITLE": "---------- Forwarded message ---------",

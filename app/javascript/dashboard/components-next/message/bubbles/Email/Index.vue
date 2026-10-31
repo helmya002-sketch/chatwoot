@@ -1,5 +1,13 @@
 <script setup>
-import { computed, useTemplateRef, ref, onMounted } from 'vue';
+import {
+  computed,
+  useTemplateRef,
+  ref,
+  onMounted,
+  onBeforeUnmount,
+  watch,
+  nextTick,
+} from 'vue';
 import { Letter } from 'vue-letter';
 import { sanitizeTextForRender } from '@chatwoot/utils';
 import { allowedCssProperties } from 'lettersanitizer';
@@ -11,6 +19,8 @@ import BaseBubble from 'next/message/bubbles/Base.vue';
 import AttachmentChips from 'next/message/chips/AttachmentChips.vue';
 import EmailMeta from './EmailMeta.vue';
 import TranslationToggle from 'dashboard/components-next/message/TranslationToggle.vue';
+import EmailFullView from './EmailFullView.vue';
+import { applyFit } from './emailFit';
 
 import { useMessageContext } from '../../provider.js';
 import { MESSAGE_TYPES } from 'next/message/constants.js';
@@ -31,9 +41,27 @@ const isExpanded = ref(false);
 const showQuotedMessage = ref(false);
 const contentContainer = useTemplateRef('contentContainer');
 
+// Tolzar: wide e-mails fit the pane (emailFit.js); "Expand email" opens the full view (EmailFullView.vue).
+const fitOuter = useTemplateRef('fitOuter');
+const fitInner = useTemplateRef('fitInner');
+const fitScaleApplied = ref(1);
+const showFullView = ref(false);
+let resizeObserver = null;
+
+const refit = () =>
+  nextTick(() => {
+    fitScaleApplied.value = applyFit(fitOuter.value, fitInner.value);
+  });
+
 onMounted(() => {
   isExpandable.value = contentContainer.value?.scrollHeight > 400;
+  refit();
+  if (typeof ResizeObserver !== 'undefined' && fitOuter.value) {
+    resizeObserver = new ResizeObserver(refit);
+    resizeObserver.observe(fitOuter.value);
+  }
 });
+onBeforeUnmount(() => resizeObserver?.disconnect());
 
 const isOutgoing = computed(() => messageType.value === MESSAGE_TYPES.OUTGOING);
 const isIncoming = computed(() => !isOutgoing.value);
@@ -102,6 +130,15 @@ const translationKeySuffix = computed(() => {
 const handleSeeOriginal = () => {
   showingOriginal.value = !showingOriginal.value;
 };
+
+watch([showQuotedMessage, translationKeySuffix], refit);
+
+const emailSubject = computed(
+  () => contentAttributes?.value?.email?.subject || ''
+);
+const canOpenFull = computed(
+  () => isExpandable.value || fitScaleApplied.value < 1
+);
 </script>
 
 <template>
@@ -139,7 +176,7 @@ const handleSeeOriginal = () => {
         >
           <button
             class="text-n-slate-12 py-2 px-8 mx-auto text-center flex items-center gap-2"
-            @click="isExpanded = true"
+            @click="showFullView = true"
           >
             <Icon icon="i-lucide-maximize-2" />
             {{ $t('EMAIL_HEADER.EXPAND') }}
@@ -150,7 +187,8 @@ const handleSeeOriginal = () => {
           class="text-n-slate-12"
           :content="messageContent"
         />
-        <template v-else>
+        <div v-else ref="fitOuter" class="w-full overflow-hidden">
+          <div ref="fitInner">
           <Letter
             v-if="showQuotedMessage"
             :key="`letter-quoted-${translationKeySuffix}`"
@@ -175,7 +213,17 @@ const handleSeeOriginal = () => {
             ]"
             :text="textToShow"
           />
-        </template>
+          </div>
+        </div>
+        <button
+          v-if="canOpenFull && !isExpandable"
+          type="button"
+          class="text-n-slate-11 px-1 leading-none text-sm text-center flex items-center gap-1 mt-2"
+          @click="showFullView = true"
+        >
+          <Icon icon="i-lucide-maximize-2" />
+          {{ $t('EMAIL_HEADER.FULL_VIEW') }}
+        </button>
         <button
           v-if="hasQuotedMessage"
           class="text-n-slate-11 px-1 leading-none text-sm bg-n-alpha-black2 text-center flex items-center gap-1 mt-2"
@@ -197,6 +245,23 @@ const handleSeeOriginal = () => {
         </button>
       </div>
     </section>
+    <EmailFullView
+      v-if="showFullView"
+      :title="emailSubject"
+      @close="showFullView = false"
+    >
+      <Letter
+        :key="`letter-full-${translationKeySuffix}-${showQuotedMessage}`"
+        class-name="prose prose-bubble !max-w-none letter-render letter-full"
+        :html="showQuotedMessage ? fullHTML : unquotedHTML"
+        :allowed-css-properties="[
+          ...allowedCssProperties,
+          'transform',
+          'transform-origin',
+        ]"
+        :text="textToShow"
+      />
+    </EmailFullView>
     <TranslationToggle
       v-if="!isCaptainMessage"
       class="py-2 px-3"
@@ -227,6 +292,33 @@ const handleSeeOriginal = () => {
       display: inline-block;
     }
   }
+}
+
+// Tolzar: responsive e-mail content in the pane (no sideways scroll in normal cases); anything still wider is scaled
+// down by emailFit.js. The full view keeps the e-mail's own widths.
+.letter-render:not(.letter-full) {
+  img,
+  video {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  pre {
+    white-space: pre-wrap;
+  }
+
+  a,
+  td,
+  p,
+  span,
+  div {
+    overflow-wrap: anywhere;
+  }
+}
+
+.letter-full img {
+  max-width: 100%;
+  height: auto;
 }
 
 // Email clients (Gmail, Outlook) hardcode dir="ltr" on wrapper elements.
