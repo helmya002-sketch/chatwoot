@@ -1,7 +1,9 @@
 # Tolzar (roadmap A5): "Export workspace". Everything one account holds, so a customer can
 # leave with their data. Ruby stdlib only (tar + gzip): no new dependency.
 #   contacts.csv, conversations.jsonl (with messages), inboxes/teams/labels/attributes.json,
-#   brain.json (the AI brain's export: agents, workflows, decisions, audit; never tokens).
+#   brain.json (the AI brain's export: agents, workflows, decisions, audit; never tokens),
+#   documents.jsonl and bookings.jsonl (round 4, c88: booking documents with their numbers, totals and history, and
+#   native bookings with their dates and payments, as the API shows them; never a connector token).
 # Kept 7 days as an ActiveStorage blob, then purged.
 # H4: an export is found only through the blob ids this job recorded on the account
 # (internal_attributes['tolzar_exports']) and its server-set metadata, never by filename:
@@ -61,6 +63,8 @@ class Tolzar::WorkspaceExportJob < ApplicationJob
     Gem::Package::TarWriter.new(gz) do |tar|
       add(tar, 'contacts.csv', contacts_csv(account))
       add(tar, 'conversations.jsonl', conversations_jsonl(account))
+      add(tar, 'documents.jsonl', records_jsonl(Tolzar::Document.where(account_id: account.id).includes(:contact, :conversation)))
+      add(tar, 'bookings.jsonl', records_jsonl(Tolzar::Booking.where(account_id: account.id).includes(:contact, :conversation)))
       add(tar, 'inboxes.json', account.inboxes.map { |i| { id: i.id, name: i.name, channel_type: i.channel_type } }.to_json)
       add(tar, 'teams.json', account.teams.map { |t| { id: t.id, name: t.name, members: t.members.map(&:email) } }.to_json)
       add(tar, 'labels.json', account.labels.map { |l| { title: l.title, description: l.description, color: l.color } }.to_json)
@@ -107,6 +111,12 @@ class Tolzar::WorkspaceExportJob < ApplicationJob
                 c.additional_attributes.to_json, c.custom_attributes.to_json].map { |v| self.class.csv_safe(v) }
       end
     end
+  end
+
+  def records_jsonl(scope)
+    out = +''
+    scope.find_each { |record| out << record.view.to_json << "\n" } # find_each walks by id
+    out
   end
 
   def conversations_jsonl(account)

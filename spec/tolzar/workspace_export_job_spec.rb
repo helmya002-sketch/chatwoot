@@ -22,6 +22,23 @@ RSpec.describe Tolzar::WorkspaceExportJob do
     expect(files['conversations.jsonl']).to include('Hello reef')
   end
 
+  it 'includes booking documents and bookings (c88)' do
+    allow(Tolzar::BrainClient).to receive(:get).and_return({ 'ok' => true })
+    Tolzar::Document.create!(account: account, doc_type: 'quote', currency: 'EUR',
+                             spec: { lines: [{ type: 'service', description: 'Boat day', unit_price: '60' }] })
+    Tolzar::Booking.create!(account: account, currency: 'EUR',
+                            data: { lines: [{ type: 'service', description: 'Reef dive', unit_price: '40', date: '2026-11-20' }] })
+
+    described_class.perform_now(account.id)
+
+    files = {}
+    Gem::Package::TarReader.new(Zlib::GzipReader.new(StringIO.new(described_class.blobs(account.id).first.download))) do |tar|
+      tar.each { |entry| files[entry.full_name] = entry.read }
+    end
+    expect(JSON.parse(files['documents.jsonl'].lines.first)).to include('doc_type' => 'quote', 'total_cents' => 6000)
+    expect(JSON.parse(files['bookings.jsonl'].lines.first)).to include('currency' => 'EUR', 'total_cents' => 4000)
+  end
+
   it 'records the export on the account with server-set metadata' do
     allow(Tolzar::BrainClient).to receive(:get).and_return({ 'ok' => true })
     described_class.perform_now(account.id)
