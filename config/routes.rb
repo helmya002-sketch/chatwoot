@@ -936,6 +936,7 @@ Rails.application.routes.draw do
       resources :platform_apps, only: [:index, :new, :create, :show, :edit, :update, :destroy]
       resources :platform_banners
       resource :instance_status, only: [:show]
+      resource :tolzar_switches, only: [:show]
 
       resources :search, only: [] do
         collection do

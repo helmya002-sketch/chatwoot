@@ -1,0 +1,43 @@
+<% content_for(:title) { t("super_admin.tolzar_switches.title") } %>
+
+<%= render "section", title: t("super_admin.tolzar_switches.title"), description: t("super_admin.tolzar_switches.description") do %>
+  <%= render "card", title: t("super_admin.tolzar_switches.mfa_title") do %>
+    <div class="space-y-3 px-5 py-4">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="text-body-main text-n-slate-11">TOLZAR_SUPERADMIN_2FA_REQUIRED</span>
+        <%= render "badge", label: t("super_admin.tolzar_switches.#{@mfa[:requested] ? 'on' : 'off'}"), tone: (@mfa[:requested] ? :success : :neutral) %>
+        <%= render "badge", label: t("super_admin.tolzar_switches.#{@mfa[:enforced] ? 'enforced' : 'not_enforced'}"),
+                            tone: (@mfa[:enforced] ? :success : :warning) %>
+      </div>
+      <% if @mfa[:missing].any? %>
+        <p class="text-body-main text-n-slate-11"><%= t("super_admin.tolzar_switches.missing", count: @mfa[:missing].size) %></p>
+        <ul class="list-disc ps-5 text-body-main text-n-slate-12">
+          <% @mfa[:missing].each do |email| %>
+            <li><%= email %></li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="text-body-main text-n-slate-11"><%= t("super_admin.tolzar_switches.all_set") %></p>
+      <% end %>
+    </div>
+  <% end %>
+
+  <% [[t("super_admin.tolzar_switches.app"), @app_switches], [t("super_admin.tolzar_switches.brain"), @brain_switches]].each do |title, rows| %>
+    <%= render "card", title: title do %>
+      <% if rows.nil? %>
+        <p class="px-5 py-4 text-body-main text-n-slate-11"><%= t("super_admin.tolzar_switches.brain_unavailable") %></p>
+      <% elsif rows.empty? %>
+        <p class="px-5 py-4 text-body-main text-n-slate-11"><%= t("super_admin.tolzar_switches.none") %></p>
+      <% else %>
+        <dl class="-mb-px grid grid-cols-1 overflow-hidden rounded-b-xl">
+          <% rows.each do |row| %>
+            <div class="flex min-w-0 items-baseline justify-between gap-4 border-b border-n-weak px-5 py-3">
+              <dt class="font-mono text-xs text-n-slate-11"><%= row[:name] %></dt>
+              <dd class="min-w-0 break-all text-end font-mono text-xs text-n-slate-12"><%= row[:value] %></dd>
+            </div>
+          <% end %>
+        </dl>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>

@@ -717,6 +717,23 @@ en:
       submit: 'Finish Setup'
 
   super_admin:
+    tolzar_switches:
+      title: 'Switches & 2FA'
+      nav: 'Switches & 2FA'
+      description: 'Every Tolzar switch of the app and the brain, read-only. Switches change through the deploy, never here; secret values are never shown.'
+      mfa_title: 'Super admin two-factor sign-in'
+      'on': 'Requested'
+      'off': 'Off'
+      enforced: 'Enforced'
+      not_enforced: 'Not enforced'
+      missing:
+        one: '1 super admin has no 2FA yet, so the switch cannot take effect:'
+        other: '%{count} super admins have no 2FA yet, so the switch cannot take effect:'
+      all_set: 'Every super admin has 2FA set up.'
+      app: 'App switches'
+      brain: 'Brain switches'
+      brain_unavailable: 'The brain did not return its switches.'
+      none: 'None set.'
     account_suspension:
       categories:
         spam: 'Spam'
@@ -839,6 +856,8 @@ en:
       email_placeholder: 'Email eg: someone@example.com'
       password: 'Password'
       password_placeholder: 'Password'
+      otp_code: 'One-time code'
+      otp_code_placeholder: '6-digit code or a backup code'
       submit: 'Login'
     navigation:
       label: 'Super Admin'

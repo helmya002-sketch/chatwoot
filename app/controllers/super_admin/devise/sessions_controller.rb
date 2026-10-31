@@ -24,6 +24,9 @@ class SuperAdmin::Devise::SessionsController < Devise::SessionsController
   def valid_credentials?
     @super_admin = SuperAdmin.find_by!(email: params[:super_admin][:email])
     raise StandardError, 'Invalid Password' unless @super_admin.valid_password?(params[:super_admin][:password])
+    # Tolzar::SuperAdminMfa: the one-time code, only once every super admin has 2FA (off by default).
+    raise StandardError, 'Invalid one-time code' if Tolzar::SuperAdminMfa.enforced? &&
+                                                    !Tolzar::SuperAdminMfa.verify(@super_admin, params[:super_admin][:otp_code])
 
     true
   rescue StandardError => e
