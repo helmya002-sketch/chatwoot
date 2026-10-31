@@ -3,6 +3,7 @@
 
 export const STRINGS = {
   en: {
+    SOURCES: 'Sources:',
     CSAT_QUESTION: 'How would you rate this conversation?',
     CSAT_THANKS: 'Thank you for your rating.',
     CSAT_1: 'Very poor',
@@ -36,6 +37,7 @@ export const STRINGS = {
     REPLY_TIME: 'We usually reply within a few minutes.',
   },
   ar: {
+    SOURCES: 'المصادر:',
     CSAT_QUESTION: 'كيف تقيّم هذه المحادثة؟',
     CSAT_THANKS: 'شكرًا لتقييمك.',
     CSAT_1: 'سيئة جدًا',
@@ -68,6 +70,7 @@ export const STRINGS = {
     REPLY_TIME: 'نردّ عادةً خلال دقائق.',
   },
   de: {
+    SOURCES: 'Quellen:',
     CSAT_QUESTION: 'Wie bewerten Sie dieses Gespräch?',
     CSAT_THANKS: 'Danke für Ihre Bewertung.',
     CSAT_1: 'Sehr schlecht',
@@ -102,6 +105,7 @@ export const STRINGS = {
     REPLY_TIME: 'Wir antworten meist innerhalb weniger Minuten.',
   },
   fr: {
+    SOURCES: 'Sources :',
     CSAT_QUESTION: 'Comment évaluez-vous cette conversation ?',
     CSAT_THANKS: 'Merci pour votre note.',
     CSAT_1: 'Très mauvaise',
@@ -136,6 +140,7 @@ export const STRINGS = {
     REPLY_TIME: 'Nous répondons en général en quelques minutes.',
   },
   es: {
+    SOURCES: 'Fuentes:',
     CSAT_QUESTION: '¿Cómo valoras esta conversación?',
     CSAT_THANKS: 'Gracias por tu valoración.',
     CSAT_1: 'Muy mala',
@@ -169,6 +174,7 @@ export const STRINGS = {
     REPLY_TIME: 'Solemos responder en pocos minutos.',
   },
   pt: {
+    SOURCES: 'Fontes:',
     CSAT_QUESTION: 'Como avalia esta conversa?',
     CSAT_THANKS: 'Obrigado pela sua avaliação.',
     CSAT_1: 'Muito má',

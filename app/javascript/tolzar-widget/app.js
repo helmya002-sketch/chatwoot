@@ -16,6 +16,7 @@ import {
   renderPrechat,
 } from './extras';
 import { pickCampaign, armCampaign, csatNode, transcriptNode } from './engage';
+import { sourcesNode, pageContext } from './context';
 import { isOpen as inHours } from './hours';
 
 const el = (doc, tag, cls, text) => {
@@ -268,10 +269,21 @@ export class WidgetApp {
     try {
       const saved = await this.api.sendText(content, echoId);
       upsert(this.store, [{ ...saved, echo_id: echoId }]);
+      this.tagPage();
     } catch {
       markFailed(this.store, echoId);
     }
     this.paint();
+  }
+
+  // Page-aware context (context.js): the page the visitor writes from, on the conversation, once per page.
+  tagPage() {
+    const ctx = pageContext(this.pageUrl);
+    if (!ctx || this.taggedPage === ctx.tolzar_page) return;
+    this.taggedPage = ctx.tolzar_page;
+    this.api.setConversationAttributes(ctx).catch(() => {
+      this.taggedPage = null;
+    });
   }
 
   async sendFile(file) {
@@ -400,6 +412,8 @@ export class WidgetApp {
         bubble.append(formatMessage(m.content, doc));
       }
       bubble.append(...attachmentNodes(doc, m.attachments, this.locale));
+      const src = sourcesNode(doc, m.content_attributes, this.locale);
+      if (src) bubble.append(src);
       if (m.contentType === 'input_csat') bubble.append(csatNode(this, m));
       li.append(bubble);
       if (m.pending || m.failed)
