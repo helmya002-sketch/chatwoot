@@ -30,8 +30,8 @@ class Tolzar::DocumentArchive
   end
 
   def render(document)
-    res = Tolzar::BrainClient.post('/documents/render', { document: document.view, branding: { name: @account.name } },
-                                   account_id: @account.id)
+    branding = Tolzar::DocumentBranding.for_render(@account, document.doc_type)
+    res = Tolzar::BrainClient.post('/documents/render', { document: document.view, branding: branding }, account_id: @account.id)
     raise Refused, 'the PDF renderer is not available right now' unless res['status'] == 200
 
     Base64.strict_decode64(res['pdf_b64'].to_s)

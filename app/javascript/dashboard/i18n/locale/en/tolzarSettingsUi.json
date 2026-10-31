@@ -152,7 +152,15 @@
       "VOID_REASON": "Reason",
       "PREFIXES": "Number prefixes",
       "PREFIXES_HINT": "2 to 8 capital letters or digits per type, e.g. VCH-26-0001. Owner only.",
-      "SAVE_PREFIXES": "Save prefixes"
+      "SAVE_PREFIXES": "Save prefixes",
+      "TEMPLATE": "Template",
+      "TEMPLATE_HINT": "How your documents look: accent colour, logo, address, and per type the title and the Good to know terms. Empty terms use the default shown. Owner only.",
+      "COLOUR": "Accent colour",
+      "LOGO": "Logo (PNG or JPEG)",
+      "LOGO_BAD": "Use a PNG or JPEG of at most {kb} KB.",
+      "ADDRESS": "Address or check-in place",
+      "DOC_TITLE": "Document title",
+      "SAVE_TEMPLATE": "Save template"
     },
     "LEAD_SOURCES": {
       "WHAT": "Leads from lead forms and ad clicks, per source and campaign, with how many reached your won and lost stages.",

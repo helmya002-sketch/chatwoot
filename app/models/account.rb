@@ -117,6 +117,12 @@ class Account < ApplicationRecord
   has_one :tolzar_meta_app, dependent: :destroy, class_name: '::Tolzar::MetaApp'
   # Tolzar: the last saved versions of each AI agent, Tolzar::AgentVersion.
   has_many :tolzar_agent_versions, dependent: :delete_all, class_name: '::Tolzar::AgentVersion'
+  # Tolzar: booking documents, their counters, native bookings and the booking-system connector go with the
+  # workspace (Tolzar::WorkspacePurge deletes the account; these tables have no foreign keys of their own).
+  has_many :tolzar_documents, dependent: :delete_all, class_name: '::Tolzar::Document'
+  has_many :tolzar_document_counters, dependent: :delete_all, class_name: '::Tolzar::DocumentCounter'
+  has_many :tolzar_bookings, dependent: :delete_all, class_name: '::Tolzar::Booking'
+  has_many :tolzar_booking_connectors, dependent: :delete_all, class_name: '::Tolzar::BookingConnector'
   has_many :working_hours, dependent: :destroy_async
 
   has_one_attached :contacts_export

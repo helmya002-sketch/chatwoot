@@ -3,6 +3,8 @@
 #                                                               the Chatwoot contact with its conversations,
 #                                                               messages and attachments. confirm = the contact's
 #                                                               name or e-mail, typed.
+#   GET  tolzar/data/contact_records {contact_id}               the person's booking documents and bookings (DSAR
+#                                                               export; the brain's part is brain/dsar_export).
 #   POST tolzar/data/workspace_purge {confirm, dry_run}        the whole workspace (Tolzar::WorkspacePurge).
 #                                                               dry_run (default) counts; a real purge needs the
 #                                                               workspace name typed and cannot be undone.
@@ -21,9 +23,17 @@ class Api::V1::Accounts::TolzarDataController < Api::V1::Accounts::TolzarControl
     end
 
     counts = { conversations: contact.conversations.count, messages: Message.where(sender: contact).count }
+    counts[:records] = Tolzar::DocumentPrivacy.new(Current.account).erase!(contact)
     contact.destroy!
     Rails.logger.warn("[Tolzar] contact erased account=#{Current.account.id} contact=#{contact.id} by user #{Current.user.id}")
     render json: { ok: true, brain: brain['deleted'] || {}, chatwoot: counts }
+  end
+
+  def contact_records
+    contact = Current.account.contacts.find_by(id: params[:contact_id].to_i)
+    return render(json: { ok: false, error: 'contact_not_found' }, status: :not_found) if contact.nil?
+
+    render json: { ok: true }.merge(Tolzar::DocumentPrivacy.new(Current.account).export(contact))
   end
 
   def workspace_purge

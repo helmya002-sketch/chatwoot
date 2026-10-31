@@ -13,6 +13,7 @@ import {
   TONE_MUTED,
 } from './tzClasses';
 import { emptyLine, linesTotal, toSpec, PLACEHOLDER } from './tolzarDocuments';
+import DocumentsTemplateForm from './DocumentsTemplateForm.vue';
 
 // Settings hub → Workspace → Documents (Tolzar::Document): the register, a draft editor, issue, void and a
 // printable view, plus the number prefixes. Staff draft and issue; nothing is sent to a customer from here.
@@ -545,5 +546,6 @@ onMounted(() => {
     <button type="button" :class="BTN" @click="savePrefixes">
       {{ t('TOLZAR_SETTINGS_UI.DOCS.SAVE_PREFIXES') }}
     </button>
+    <DocumentsTemplateForm />
   </div>
 </template>

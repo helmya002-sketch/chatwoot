@@ -59,3 +59,43 @@ export function toSpec(d) {
   if (String(d.terms || '').trim()) spec.terms = d.terms.trim();
   return spec;
 }
+
+// Whether a line type's pack shows a field (Tolzar::DocumentPacks.line_types, from documents_settings). Without
+// the pack list every field shows, so the editor still works if the settings call failed.
+export function showsField(lineTypes, type, field) {
+  const fields = lineTypes && lineTypes[type];
+  return Array.isArray(fields) ? fields.includes(field) : true;
+}
+
+export function isPlaceholder(value) {
+  return PLACEHOLDER.test(String(value ?? ''));
+}
+
+// The panel's next step for a document: draft -> issue, issued -> send; cancelled has none.
+export function nextStep(doc) {
+  if (!doc) return null;
+  if (doc.status === 'draft')
+    return (doc.placeholders || []).length ? 'fill' : 'issue';
+  return doc.status === 'issued' ? 'send' : null;
+}
+
+// The document logo (Tolzar::DocumentBranding::LOGO_MAX): a PNG or JPEG read into a data URL, kept in the workspace.
+export const LOGO_MAX = 90000;
+
+export function checkLogo(file, dataUrl) {
+  if (!file || !['image/png', 'image/jpeg'].includes(file.type))
+    return { error: 'type' };
+  if (!dataUrl || dataUrl.length > LOGO_MAX) return { error: 'size' };
+  return { dataUrl };
+}
+
+export function readLogo(file) {
+  if (!file || !['image/png', 'image/jpeg'].includes(file.type))
+    return Promise.resolve({ error: 'type' });
+  return new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(checkLogo(file, String(reader.result)));
+    reader.onerror = () => resolve({ error: 'read' });
+    reader.readAsDataURL(file);
+  });
+}

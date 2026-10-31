@@ -207,6 +207,7 @@ Rails.application.routes.draw do
           post   'tolzar/export',           to: 'tolzar#export_start'
           # Tolzar data deletion (Owner-only): one person's data, or the whole workspace.
           post   'tolzar/data/contact_erase',   to: 'tolzar_data#contact_erase'
+          get    'tolzar/data/contact_records', to: 'tolzar_data#contact_records'
           post   'tolzar/data/workspace_purge', to: 'tolzar_data#workspace_purge'
           get    'tolzar/export',           to: 'tolzar#export_status'
           get    'tolzar/export/download',  to: 'tolzar#export_download'

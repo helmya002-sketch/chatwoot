@@ -39,11 +39,10 @@ class Tolzar::DocumentSend
     end
   end
 
+  # The workspace's template (Tolzar::DocumentBranding). The renderer uses name, address, colour and terms; the
+  # logo and title go along for the renderer's next round.
   def branding
-    account = @document.account
-    settings = account.settings || {}
-    { name: account.name, address: settings['tolzar_document_address'], colour: settings['tolzar_document_colour'],
-      terms: settings['tolzar_document_terms'] }.compact
+    Tolzar::DocumentBranding.for_render(@document.account, @document.doc_type)
   end
 
   def caption

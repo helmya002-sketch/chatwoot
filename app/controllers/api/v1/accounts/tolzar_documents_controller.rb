@@ -110,23 +110,40 @@ class Api::V1::Accounts::TolzarDocumentsController < Api::V1::Accounts::BaseCont
   end
 
   def settings
-    render json: { ok: true, prefixes: prefixes, defaults: Tolzar::Document::DEFAULT_PREFIXES }
+    render json: settings_view
   end
 
+  # {prefixes} and/or {branding} (Tolzar::DocumentBranding); a part that is not given is left as it is.
   def settings_save
-    given = params[:prefixes].respond_to?(:to_unsafe_h) ? params[:prefixes].to_unsafe_h : (params[:prefixes] || {})
-    clean = Tolzar::DocumentSpec::TYPES.index_with { |t| given[t].to_s.strip.upcase }.select { |_t, v| v.match?(Tolzar::Document::PREFIX) }
-    bad = Tolzar::DocumentSpec::TYPES.select { |t| given[t].present? && !clean.key?(t) }
-    return refused("prefix: 2 to 8 capital letters or digits (#{bad.join(', ')})") if bad.any?
+    merged = {}
+    if params.key?(:prefixes)
+      given = params[:prefixes].respond_to?(:to_unsafe_h) ? params[:prefixes].to_unsafe_h : (params[:prefixes] || {})
+      clean = Tolzar::DocumentSpec::TYPES.index_with { |t| given[t].to_s.strip.upcase }.select { |_t, v| v.match?(Tolzar::Document::PREFIX) }
+      bad = Tolzar::DocumentSpec::TYPES.select { |t| given[t].present? && !clean.key?(t) }
+      return refused("prefix: 2 to 8 capital letters or digits (#{bad.join(', ')})") if bad.any?
 
-    Current.account.update!(settings: (Current.account.settings || {}).merge('tolzar_document_prefixes' => clean))
-    render json: { ok: true, prefixes: prefixes }
+      merged['tolzar_document_prefixes'] = clean
+    end
+    if params.key?(:branding)
+      branding, errors = Tolzar::DocumentBranding.clean(params[:branding])
+      return refused(errors.join('; ')) if errors.any?
+
+      merged[Tolzar::DocumentBranding::KEY] = branding
+    end
+    Current.account.update!(settings: (Current.account.settings || {}).merge(merged)) if merged.any?
+    render json: settings_view
   end
 
   private
 
   def prefixes
     Tolzar::DocumentSpec::TYPES.index_with { |t| Tolzar::Document.prefix_for(Current.account, t) }
+  end
+
+  def settings_view
+    { ok: true, prefixes: prefixes, defaults: Tolzar::Document::DEFAULT_PREFIXES,
+      branding: Tolzar::DocumentBranding.read(Current.account.reload), line_types: Tolzar::DocumentPacks.line_types,
+      default_terms: Tolzar::DocumentPacks::DEFAULT_TERMS }
   end
 
   def ensure_owner

@@ -5,7 +5,8 @@
 # deleted") is what the system does. Per workspace, OFF unless the Owner sets a period: the account
 # setting `tolzar_conversation_retention_days` (365 to 3650). Conversations whose last activity is
 # older than that are destroyed with their messages and attachments; contacts left with no
-# conversation are kept (a contact can be erased on request, Settings > A contact's data).
+# conversation are kept (a contact can be erased on request, Settings > A contact's data). Booking documents and
+# bookings of those conversations keep their numbers and totals but lose names and notes (Tolzar::DocumentPrivacy).
 # The brain is told which conversations went (POST /retention/forget), so it forgets their decisions,
 # timers and per-conversation notes too. At most MAX_PER_RUN a night per workspace, so a big first
 # run spreads over several nights instead of flooding Sidekiq. The respond.io mirror inboxes are never
@@ -51,6 +52,7 @@ class Tolzar::ConversationRetention
     deleted = 0
     expired.order(:id).limit(MAX_PER_RUN).in_batches(of: 200) do |relation|
       batch = relation.pluck(:id, :display_id)
+      Tolzar::DocumentPrivacy.new(@account).forget_conversations!(batch.map(&:first))
       Conversation.where(id: batch.map(&:first)).destroy_all
       forget_in_brain(batch.map(&:last))
       deleted += batch.size

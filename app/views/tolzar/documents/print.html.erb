@@ -3,6 +3,8 @@
 <% spec = view[:spec] || {} %>
 <% money = ->(cents) { format('%.2f', cents.to_i / 100.0) } %>
 <% checker = Tolzar::DocumentSpec.new(spec) %>
+<% brand = Tolzar::DocumentBranding.for_render(document.account, view[:doc_type]) %>
+<% accent = brand[:colour] || '#3e63dd' %>
 <% titles = { 'voucher' => 'Voucher', 'quote' => 'Quote', 'confirmation' => 'Booking confirmation', 'payment_summary' => 'Payment summary' } %>
 <!DOCTYPE html>
 <html lang="<%= view[:language] %>" dir="<%= view[:language].to_s.start_with?('ar') ? 'rtl' : 'ltr' %>">
@@ -12,8 +14,9 @@
   <style>
     @page { size: A4; margin: 16mm; }
     body { font: 12px/1.5 Inter, system-ui, sans-serif; color: #0f172a; margin: 0; }
-    header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #3e63dd; padding-bottom: 10px; }
-    h1 { font-size: 20px; margin: 0; }
+    header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid <%= accent %>; padding-bottom: 10px; }
+    h1 { font-size: 20px; margin: 0; color: <%= accent %>; }
+    .logo { max-height: 48px; max-width: 160px; display: block; margin-bottom: 6px; }
     .meta { text-align: end; color: #475569; }
     .stamp { display: inline-block; margin-top: 6px; padding: 2px 8px; border: 2px solid #b42318; color: #b42318; font-weight: 700; letter-spacing: .08em; }
     table { width: 100%; border-collapse: collapse; margin-top: 14px; }
@@ -31,8 +34,10 @@
 <body>
   <header>
     <div>
-      <h1><%= spec['title'].presence || titles[view[:doc_type]] %></h1>
+      <% if brand[:logo] %><img class="logo" src="<%= brand[:logo] %>" alt="<%= document.account.name %>"><% end %>
+      <h1><%= spec['title'].presence || brand[:title] || titles[view[:doc_type]] %></h1>
       <div class="muted"><%= document.account.name %></div>
+      <% if brand[:address] %><div class="muted"><%= brand[:address] %></div><% end %>
     </div>
     <div class="meta">
       <div><strong><%= view[:number] || 'DRAFT' %></strong></div>
@@ -72,6 +77,7 @@
 
   <% if spec['valid_until'].present? %><section class="muted">Valid until <%= spec['valid_until'] %></section><% end %>
   <% if spec['notes'].present? %><section><%= simple_format(spec['notes']) %></section><% end %>
-  <% if spec['terms'].present? %><section class="muted"><strong>Good to know</strong><%= simple_format(spec['terms']) %></section><% end %>
+  <% terms = spec['terms'].presence || brand[:terms] %>
+  <% if terms.present? %><section class="muted"><strong>Good to know</strong><%= simple_format(terms) %></section><% end %>
 </body>
 </html>
