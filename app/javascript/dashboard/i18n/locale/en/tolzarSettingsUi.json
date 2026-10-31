@@ -7,6 +7,13 @@
       "NO_MATCH": "No setting matches. Try another word."
     },
     "ENABLED": "On",
+    "SHELL": {
+      "AI_LIVE": "AI status",
+      "STATE_live": "AI live",
+      "STATE_shadow": "AI in Shadow",
+      "STATE_stopped": "AI stopped (kill switch)",
+      "COUNTS": "Live on {live} inboxes · Shadow on {shadow}"
+    },
     "BOOKINGS_CARD": {
       "TITLE": "Bookings",
       "LOADING": "Loading bookings…",

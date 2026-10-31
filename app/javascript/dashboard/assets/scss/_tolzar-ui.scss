@@ -334,3 +334,46 @@ body.dark.tz-ui {
     box-shadow: 0 20px 50px -18px rgb(0 0 0 / 0.7);
   }
 }
+
+// Phase 2 shell (round 3 c40): the rail and the docked panel on the mock's surfaces; the active item as a soft
+// blue pill with brand text; the AI live card's pulse (none with reduced motion).
+body.tz-ui {
+  .tz-rail {
+    background-color: rgb(var(--slate-1));
+  }
+
+  .tz-rail-ic:hover {
+    background-color: rgb(var(--blue-3));
+    color: rgb(var(--blue-11));
+  }
+
+  .tz-sub {
+    background-color: rgb(var(--solid-1));
+  }
+
+  .tz-sub h2 {
+    font-size: 16px;
+    letter-spacing: -0.01em;
+  }
+
+  .tz-sub nav a[aria-current='page'],
+  .tz-sub nav .router-link-exact-active {
+    background-color: rgb(var(--blue-3));
+    color: rgb(var(--blue-11));
+    font-weight: 600;
+  }
+
+  .tz-pulse {
+    box-shadow: 0 0 0 0 rgb(var(--teal-8) / 0.6);
+    animation: tz-pulse 2s infinite;
+  }
+}
+
+@keyframes tz-pulse {
+  70% { box-shadow: 0 0 0 6px rgb(var(--teal-8) / 0); }
+  100% { box-shadow: 0 0 0 0 rgb(var(--teal-8) / 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.tz-ui .tz-pulse { animation: none; }
+}

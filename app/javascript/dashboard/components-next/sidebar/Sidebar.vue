@@ -25,6 +25,7 @@ import ChannelIcon from 'next/icon/ChannelIcon.vue';
 import Icon from 'next/icon/Icon.vue';
 import EmojiIcon from 'next/emoji-icon-picker/EmojiIcon.vue';
 import SidebarAccountSwitcher from './SidebarAccountSwitcher.vue';
+import TolzarAiLiveCard from 'dashboard/components-next/Tolzar/AiLiveCard.vue';
 import Logo from 'next/icon/Logo.vue';
 import NotificationsBell from 'dashboard/components-next/Tolzar/NotificationsBell.vue';
 import ComposeConversation from 'dashboard/components-next/NewConversation/ComposeConversation.vue';
@@ -1234,6 +1235,8 @@ const selectSection = item => {
           <SidebarGroup :key="activeGroup.name" v-bind="activeGroup" docked />
         </ul>
       </nav>
+      <!-- Tolzar UI phase 2: the AI live card (new UI only) -->
+      <TolzarAiLiveCard />
     </div>
   </aside>
 </template>
