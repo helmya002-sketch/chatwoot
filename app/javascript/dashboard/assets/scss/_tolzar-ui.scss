@@ -213,7 +213,7 @@ body.dark.tz-ui {
 body.tz-ui {
   // Chat bubbles: incoming on #F1F5F9, outgoing filled #3E63DD with white text and a white meta line (5.2:1;
   // 92% white stays above 4.5:1 for the small meta text). Private notes (amber) and e-mails keep their own look.
-  .left-bubble.bg-n-slate-4 {
+  .left-bubble[class~='bg-n-slate-4'] {
     background-color: rgb(var(--slate-3));
   }
 
@@ -229,13 +229,13 @@ body.tz-ui {
       text-decoration: underline;
     }
 
-    .bg-n-alpha-black1 {
+    [class~='bg-n-alpha-black1'] {
       background-color: rgb(255 255 255 / 0.16);
     }
   }
 
   // Primary button: the mock's pressed shade on hover instead of a brightness filter, and a soft blue lift.
-  .bg-n-brand.text-white {
+  [class~='bg-n-brand'][class~='text-white'] {
     box-shadow:
       0 1px 2px rgb(30 50 120 / 0.18),
       0 4px 10px -4px rgb(62 99 221 / 0.45);
@@ -258,14 +258,14 @@ body.tz-ui {
     box-shadow: 0 1px 2px rgb(30 50 120 / 0.06);
   }
 
-  dialog.shadow-xl {
+  dialog[class~='shadow-xl'] {
     border-radius: 16px;
     box-shadow: 0 20px 50px -18px rgb(30 50 120 / 0.4);
   }
 }
 
 body.dark.tz-ui {
-  .bg-n-brand.text-white {
+  [class~='bg-n-brand'][class~='text-white'] {
     box-shadow: 0 4px 12px -6px rgb(0 0 0 / 0.6);
   }
 
@@ -273,7 +273,7 @@ body.dark.tz-ui {
     box-shadow: none;
   }
 
-  dialog.shadow-xl {
+  dialog[class~='shadow-xl'] {
     box-shadow: 0 20px 50px -18px rgb(0 0 0 / 0.7);
   }
 }
@@ -282,13 +282,13 @@ body.dark.tz-ui {
 // `body.tz-ui` and without a markup change.
 body.tz-ui {
   // Inputs on a solid surface (the mock's white field on the soft page), a slightly larger radius.
-  .reset-base.bg-n-alpha-black2 {
+  .reset-base[class~='bg-n-alpha-black2'] {
     background-color: rgb(var(--solid-1));
     border-radius: 10px;
   }
 
   // Tabs: the active pill reads as a raised white chip with the brand edge.
-  .bg-n-solid-active.shadow-sm.pointer-events-none {
+  .bg-n-solid-active[class~='shadow-sm'][class~='pointer-events-none'] {
     background-color: rgb(var(--solid-1));
     outline-color: rgb(var(--blue-6));
     box-shadow: 0 1px 2px rgb(30 50 120 / 0.12);
@@ -307,7 +307,7 @@ body.tz-ui {
   }
 
   // Toasts: the floating shadow and a brand edge on the start side.
-  .shadow-sm.bg-n-slate-12.rounded-lg {
+  [class~='shadow-sm'].bg-n-slate-12[class~='rounded-lg'] {
     border-radius: 12px;
     border-inline-start: 3px solid rgb(var(--blue-8));
     box-shadow: 0 20px 50px -18px rgb(30 50 120 / 0.4);
@@ -321,7 +321,7 @@ body.tz-ui {
 }
 
 body.dark.tz-ui {
-  .bg-n-solid-active.shadow-sm.pointer-events-none {
+  .bg-n-solid-active[class~='shadow-sm'][class~='pointer-events-none'] {
     background-color: rgb(var(--solid-3));
     box-shadow: none;
   }
@@ -330,7 +330,7 @@ body.dark.tz-ui {
     background-color: rgb(var(--slate-3));
   }
 
-  .shadow-sm.bg-n-slate-12.rounded-lg {
+  [class~='shadow-sm'].bg-n-slate-12[class~='rounded-lg'] {
     box-shadow: 0 20px 50px -18px rgb(0 0 0 / 0.7);
   }
 }
