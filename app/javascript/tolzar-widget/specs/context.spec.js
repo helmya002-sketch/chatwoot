@@ -33,7 +33,7 @@ describe('widget sources and page context', () => {
     expect(pageContext('')).toBeNull();
   });
 
-  it('tags the conversation with the page once, after the first message', async () => {
+  it('sends the page (origin + path) as the referer of each message, never as attributes', async () => {
     const api = {
       messages: vi.fn().mockResolvedValue([]),
       sendText: vi.fn().mockResolvedValue({
@@ -66,9 +66,11 @@ describe('widget sources and page context', () => {
     await app.onPage('https://shop.test/pricing?x=1');
     await app.send('hi');
     await app.send('again');
-    expect(api.setConversationAttributes).toHaveBeenCalledTimes(1);
-    expect(api.setConversationAttributes).toHaveBeenCalledWith({
-      tolzar_page: 'https://shop.test/pricing',
-    });
+    expect(api.sendText).toHaveBeenLastCalledWith(
+      'again',
+      expect.any(String),
+      'https://shop.test/pricing'
+    );
+    expect(api.setConversationAttributes).not.toHaveBeenCalled();
   });
 });

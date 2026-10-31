@@ -80,7 +80,8 @@ describe('tolzar widget app', () => {
     await app.send('  Hello  ');
     expect(api.sendText).toHaveBeenCalledWith(
       'Hello',
-      expect.stringMatching(/^tz-/)
+      expect.stringMatching(/^tz-/),
+      undefined
     );
     expect(root.querySelector('.tz-mine .tz-bubble').textContent).toBe('Hello');
   });
