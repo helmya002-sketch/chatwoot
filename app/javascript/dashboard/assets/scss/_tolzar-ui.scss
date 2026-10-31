@@ -646,3 +646,17 @@ body.tz-ui {
     background-color: rgb(var(--slate-2));
   }
 }
+
+// Phase 4 modules (round 4, c81): the contact page on the soft surface (tz-module-page, from c80), and forms inside
+// settings pages (labels, teams, inbox settings) with calm, readable labels and a little more room between fields.
+body.tz-ui {
+  .tz-settings-page label {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgb(var(--slate-12));
+  }
+
+  .tz-settings-page form > div + div {
+    margin-top: 4px;
+  }
+}
