@@ -63,7 +63,12 @@ class Channel::WebWidget < ApplicationRecord
     'Website'
   end
 
+  # Tolzar's own widget, phase 2 (round 4, c75): workspaces on our own widget (Tolzar::OwnWidget) are given our
+  # loader's snippet (/tz/widget.js), which pairs with our widget app. Every other workspace keeps the old snippet.
+  # A website that already has the old snippet keeps working as it is; it moves when its owner pastes the new one.
   def web_widget_script
+    return tolzar_widget_script if Tolzar::OwnWidget.on?(account_id)
+
     "
     <script>
       (function(d,t) {
@@ -74,6 +79,26 @@ class Channel::WebWidget < ApplicationRecord
         s.parentNode.insertBefore(g,s);
         g.onload=function(){
           window.tolzarSDK.run({
+            websiteToken: '#{website_token}',
+            baseUrl: BASE_URL
+          })
+        }
+      })(document,\"script\");
+    </script>
+    "
+  end
+
+  def tolzar_widget_script
+    "
+    <script>
+      (function(d,t) {
+        var BASE_URL=\"#{Tolzar::PublicUrls.widget_base}\";
+        var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+        g.src=BASE_URL+\"/tz/widget.js\";
+        g.async = true;
+        s.parentNode.insertBefore(g,s);
+        g.onload=function(){
+          window.tolzar.run({
             websiteToken: '#{website_token}',
             baseUrl: BASE_URL
           })
