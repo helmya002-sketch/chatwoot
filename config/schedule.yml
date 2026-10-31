@@ -128,6 +128,10 @@ tolzar_daily_digest_job:
   cron: '5 7 * * * UTC'
   class: 'Tolzar::DailyDigestJob'
   queue: low
+tolzar_weekly_report_job:
+  cron: '15 7 * * 1 UTC'
+  class: 'Tolzar::WeeklyReportJob'
+  queue: low
 tolzar_fair_use_job:
   cron: '17 * * * * UTC'
   class: 'Tolzar::FairUseJob'

@@ -1348,6 +1348,7 @@ en:
   tolzar:
     digest:
       subject: '%{workspace}: your day on %{day}'
+      weekly_subject: '%{workspace}: your week, %{from} to %{to}'
     push:
       new_conversation: 'New conversation from %{name}'
       new_message: 'New message from %{name}'
