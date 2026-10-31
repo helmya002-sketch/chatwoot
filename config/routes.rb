@@ -141,6 +141,9 @@ Rails.application.routes.draw do
           post   'tolzar/booking_connector/disconnect', to: 'tolzar_booking_connector#disconnect'
           get    'tolzar/booking_connector/bookings',   to: 'tolzar_booking_connector#bookings'
           post   'tolzar/booking_connector/draft',      to: 'tolzar_booking_connector#draft'
+          # Tolzar TikTok CRM events (Tolzar::AdPlatformLink; TOLZAR_TIKTOK_CRM_EVENTS, owner only)
+          get    'tolzar/tiktok_crm',                   to: 'tolzar_tiktok_crm#show'
+          post   'tolzar/tiktok_crm',                   to: 'tolzar_tiktok_crm#save'
           get    'tolzar/workspace/settings',    to: 'tolzar#workspace_settings'
           post   'tolzar/workspace/settings',    to: 'tolzar#workspace_settings_save'
           post   'tolzar/workspace/go_live',     to: 'tolzar#go_live'

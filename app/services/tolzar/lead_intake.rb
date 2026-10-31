@@ -123,6 +123,7 @@ class Tolzar::LeadIntake
     stage_attr = Tolzar::PipelineSettings::STAGE_ATTRIBUTE
     attrs[stage_attr] = Tolzar::PipelineSettings.stage_keys(@account).first if attrs[stage_attr].blank?
     attrs['lead_source'] = source
+    attrs['lead_id'] = lead_id if lead_id # the platform's own lead id (Tolzar::TiktokCrmEventJob sends it back)
     { 'lead_campaign' => :campaign, 'lead_ad' => :ad, 'lead_form' => :form }.each do |attr, key|
       attrs[attr] = detail(key) if detail(key)
     end
