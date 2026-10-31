@@ -7,6 +7,13 @@
       "NO_MATCH": "No setting matches. Try another word."
     },
     "ENABLED": "On",
+    "BOOKINGS_CARD": {
+      "TITLE": "Bookings",
+      "LOADING": "Loading bookings…",
+      "FAILED": "The booking system did not answer.",
+      "NONE": "No bookings for this guest yet.",
+      "BALANCE": "Balance {amount}"
+    },
     "DOCS": {
       "WHAT": "Vouchers, quotes, booking confirmations and payment summaries. Totals come from the lines, a placeholder (TBC) blocks issuing, and every issued document gets the next number. Nothing is sent to the customer from here.",
       "OFF": "Documents are not switched on for this workspace yet.",
