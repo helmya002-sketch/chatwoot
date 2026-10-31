@@ -33,7 +33,8 @@ RSpec.describe 'Tolzar query budgets', type: :request do
         contact = create(:contact, account: account)
         conversation = create(:conversation, account: account, contact: contact)
         Tolzar::Document.create!(account: account, contact: contact, conversation: conversation,
-                                 doc_type: 'quote', currency: 'EUR', spec: { lines: [{ type: 'service', description: 'Boat day', unit_price: '60' }] })
+                                 doc_type: 'quote', currency: 'EUR',
+                                 spec: { lines: [{ type: 'service', description: 'Boat day', unit_price: '60' }] })
       end
       expect_flat(make) { get "#{api}/documents", headers: headers }
     end
