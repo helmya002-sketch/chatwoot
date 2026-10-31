@@ -299,6 +299,11 @@ class Rack::Attack
     req.ip if req.post? && req.path.start_with?('/tz/book/')
   end
 
+  # Public quote acceptance page (round 4, D2): 5 requests per IP per 10 minutes.
+  throttle('tolzar/quote/ip', limit: ENV.fetch('RATE_LIMIT_TOLZAR_QUOTE', '5').to_i, period: 10.minutes) do |req|
+    req.ip if req.post? && req.path.start_with?('/tz/quote/')
+  end
+
   throttle('tolzar/widget/conversations/workspace',
            limit: ENV.fetch('RATE_LIMIT_TOLZAR_WIDGET_CONVERSATIONS_WORKSPACE', '300').to_i, period: 1.hour) do |req|
     next unless req.path_without_extensions == '/api/v1/widget/conversations' && req.post?

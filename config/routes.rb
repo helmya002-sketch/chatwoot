@@ -26,6 +26,11 @@ Rails.application.routes.draw do
                                     constraints: { account_id: /\d+/, token: /[0-9a-f]{64}/ }
   post 'tz/book/:account_id/:token', to: 'tolzar/booking_requests#create', format: false,
                                     constraints: { account_id: /\d+/, token: /[0-9a-f]{64}/ }
+  # Tolzar quote acceptance page (round 4, D2; Tolzar::QuoteAcceptance): 404 for a bad token or switch off.
+  get  'tz/quote/:document_id/:token', to: 'tolzar/quote_acceptances#show', format: false,
+                                      constraints: { document_id: /\d+/, token: /[0-9a-f]{64}/ }
+  post 'tz/quote/:document_id/:token', to: 'tolzar/quote_acceptances#create', format: false,
+                                      constraints: { document_id: /\d+/, token: /[0-9a-f]{64}/ }
   get  'tolzar/meta/deletion',      to: 'tolzar/meta#deletion'
   get  'tolzar/meta/error',         to: 'tolzar/meta#failed'
   get  'tolzar/meta/hook/:webhook_token', to: 'tolzar/meta_hook#verify'
@@ -150,6 +155,7 @@ Rails.application.routes.draw do
           post   'tolzar/documents/:id/issue',   to: 'tolzar_documents#issue'
           post   'tolzar/documents/:id/void',    to: 'tolzar_documents#void'
           post   'tolzar/documents/:id/send',    to: 'tolzar_documents#send_document'
+          post   'tolzar/documents/:id/accept_link', to: 'tolzar_quote_accept_link#create'
           # Tolzar native bookings (Tolzar::Booking; TOLZAR_BOOKINGS_ACCOUNTS)
           get    'tolzar/bookings',                  to: 'tolzar_bookings#index'
           get    'tolzar/bookings/agenda',           to: 'tolzar_bookings#agenda'

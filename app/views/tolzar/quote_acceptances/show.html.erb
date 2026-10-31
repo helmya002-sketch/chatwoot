@@ -1,0 +1,70 @@
+<% checker = Tolzar::DocumentSpec.new(@document.spec) %>
+<% money = ->(cents) { "#{@document.currency} #{format('%.2f', cents / 100.0)}" } %>
+<!doctype html>
+<html lang="<%= I18n.locale %>">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <%= csrf_meta_tags %>
+  <title><%= t('tolzar.quote_accept.title', number: @document.number) %></title>
+  <style>
+    body { margin: 0; font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; background: #f6f7f9; color: #1c2024; }
+    main { max-width: 560px; margin: 32px auto; padding: 24px; background: #fff; border-radius: 8px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 14px; }
+    th, td { padding: 8px 4px; border-bottom: 1px solid #e8e8ec; text-align: left; }
+    .num { text-align: right; white-space: nowrap; }
+    .muted { color: #60646c; font-size: 14px; }
+    .notice { margin: 16px 0 0; padding: 10px 12px; border-radius: 6px; font-size: 15px; }
+    .ok { background: #ecfdf3; color: #067647; }
+    .gone { background: #fff0ee; color: #b42318; }
+    button { margin-top: 20px; width: 100%; background: #1c2024; color: #fff; border: 0; border-radius: 6px; padding: 12px; font-size: 16px; cursor: pointer; }
+    @media (max-width: 600px) { main { margin: 0; border-radius: 0; } }
+  </style>
+</head>
+<body>
+  <main>
+    <h1 style="font-size:20px;margin:0 0 6px;"><%= t('tolzar.quote_accept.heading', number: @document.number) %></h1>
+    <% if @accepted %>
+      <p class="notice ok"><%= t('tolzar.quote_accept.accepted') %></p>
+    <% elsif !@open %>
+      <p class="notice gone"><%= t('tolzar.quote_accept.no_longer_valid') %></p>
+    <% end %>
+    <% if @open || @accepted %>
+      <table>
+        <thead>
+          <tr>
+            <th><%= t('tolzar.quote_accept.item') %></th>
+            <th class="num"><%= t('tolzar.quote_accept.qty') %></th>
+            <th class="num"><%= t('tolzar.quote_accept.amount') %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% checker.lines.each do |line| %>
+            <tr>
+              <td><%= line['description'] %><% if line['date'].present? %> <span class="muted">(<%= line['date'] %>)</span><% end %></td>
+              <td class="num"><%= line['qty'].presence || 1 %></td>
+              <td class="num"><%= money.call(checker.line_cents(line)) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+        <tfoot>
+          <tr>
+            <th colspan="2"><%= t('tolzar.quote_accept.total') %></th>
+            <th class="num"><%= money.call(checker.total_cents) %></th>
+          </tr>
+        </tfoot>
+      </table>
+      <% if Tolzar::QuoteAcceptance.valid_until(@document) %>
+        <p class="muted"><%= t('tolzar.quote_accept.valid_until', date: Tolzar::QuoteAcceptance.valid_until(@document).iso8601) %></p>
+      <% end %>
+    <% end %>
+    <% if @open && !@accepted %>
+      <%= form_with url: request.path, method: :post, local: true do %>
+        <button type="submit"><%= t('tolzar.quote_accept.accept') %></button>
+      <% end %>
+      <p class="muted" style="margin-top:12px;"><%= t('tolzar.quote_accept.next') %></p>
+    <% end %>
+  </main>
+</body>
+</html>

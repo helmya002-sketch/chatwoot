@@ -1348,6 +1348,18 @@ en:
   tolzar:
     follow_up:
       notification_title: 'Follow-up due: no reply yet in conversation (#%{display_id})'
+    quote_accept:
+      title: 'Quote %{number}'
+      heading: 'Quote %{number}'
+      item: 'Item'
+      qty: 'Qty'
+      amount: 'Amount'
+      total: 'Total'
+      valid_until: 'Valid until %{date}'
+      accept: 'Accept this quote'
+      next: 'The team will confirm your booking with you.'
+      accepted: 'Thank you. You have accepted this quote, and the team will confirm your booking with you.'
+      no_longer_valid: 'This quote is no longer valid. Please contact us for a new one.'
     booking_request:
       title: 'Booking request: %{workspace}'
       intro: 'Tell us when and how many, and we will get back to you.'
