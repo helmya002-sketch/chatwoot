@@ -12,6 +12,7 @@ module Tolzar::CredentialsRollback
         counts[name] += plain_columns(name.constantize, attrs.keys)
       end
       Tolzar::EncryptedCredentials::JSON_SECRETS.each_key { |name| counts["#{name} json"] += json_back(name.constantize) }
+      counts['InstallationConfig'] += installation_back
     end
     counts
   end
@@ -23,6 +24,18 @@ module Tolzar::CredentialsRollback
     klass.unscoped.find_each.sum do |record|
       values = attrs.index_with { |attr| record.public_send(attr) }
       ActiveRecord::Encryption.without_encryption { record.update_columns(values) } # rubocop:disable Rails/SkipsModelValidations
+      1
+    end
+  end
+
+  def installation_back
+    return 0 unless InstallationConfig.include?(Tolzar::EncryptedInstallationConfig)
+
+    InstallationConfig.unscoped.find_each.sum do |config|
+      next 0 if config.tolzar_encrypted_value.blank?
+
+      plain = { value: config.value }.with_indifferent_access
+      config.update_columns(serialized_value: plain, tolzar_encrypted_value: nil) # rubocop:disable Rails/SkipsModelValidations
       1
     end
   end

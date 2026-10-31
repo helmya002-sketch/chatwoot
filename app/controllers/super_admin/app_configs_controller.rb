@@ -18,10 +18,8 @@ class SuperAdmin::AppConfigsController < SuperAdmin::ApplicationController
   def show
     # ref: https://github.com/rubocop/rubocop/issues/7767
     # rubocop:disable Style/HashTransformValues
-    @app_config = InstallationConfig.where(name: @allowed_configs)
-                                    .pluck(:name, :serialized_value)
-                                    .map { |name, serialized_value| [name, serialized_value['value']] }
-                                    .to_h
+    # Tolzar: through `value`, so secrets stored encrypted (Tolzar::EncryptedInstallationConfig) are read too.
+    @app_config = InstallationConfig.where(name: @allowed_configs).to_h { |config| [config.name, config.value] }
     # rubocop:enable Style/HashTransformValues
     @installation_configs = ConfigLoader.new.general_configs.each_with_object({}) do |config_hash, result|
       result[config_hash['name']] = config_hash.except('name')

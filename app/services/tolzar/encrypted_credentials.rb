@@ -8,6 +8,7 @@
 #             (the identity-validation secrets; deterministic, they are unique and may be looked up);
 #             AccessToken#token (the user / bot API tokens; deterministic: login looks them up by value)
 #   JSON keys Tolzar::EncryptedJsonSecrets (the keys move to the encrypted `tolzar_secrets` column)
+#   app keys  Tolzar::EncryptedInstallationConfig (Super Admin's secrets: `tolzar_encrypted_value`)
 module Tolzar::EncryptedCredentials
   COLUMNS = {
     'Channel::TwilioSms' => { api_key_secret: {} },
@@ -36,6 +37,10 @@ module Tolzar::EncryptedCredentials
 
         klass.encrypts(attr, **options)
       end
+    end
+    unless InstallationConfig.include?(Tolzar::EncryptedInstallationConfig)
+      InstallationConfig.prepend(Tolzar::EncryptedInstallationConfig)
+      InstallationConfig.encrypts(:tolzar_encrypted_value)
     end
     JSON_SECRETS.each do |name, (column, keys)|
       klass = name.constantize

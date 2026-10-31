@@ -107,4 +107,39 @@ RSpec.describe 'Tolzar encrypted credentials' do
     expect(raw(token, :token)).to eq(token.token)
     expect(ActiveRecord::Encryption.encryptor.encrypted?(raw(token, :token))).to be(false)
   end
+
+  describe 'Super Admin app secrets (installation configs)' do
+    it 'stores a secret encrypted, keeps other configs plain, and GlobalConfig reads both' do
+      secret = InstallationConfig.create!(name: 'TIKTOK_APP_SECRET', value: 'tt-secret', locked: false)
+      flag = InstallationConfig.create!(name: 'TOLZAR_TEST_FLAG', value: 'on', locked: false)
+
+      expect(ActiveRecord::Encryption.encryptor.encrypted?(raw(secret, :tolzar_encrypted_value))).to be(true)
+      expect(raw(secret, :serialized_value)).not_to include('tt-secret')
+      expect(InstallationConfig.find(secret.id).value).to eq('tt-secret')
+      expect(InstallationConfig.find(flag.id).tolzar_encrypted_value).to be_nil
+      GlobalConfig.clear_cache
+      expect(GlobalConfig.get_value('TIKTOK_APP_SECRET')).to eq('tt-secret')
+      expect(GlobalConfig.get_value('TOLZAR_TEST_FLAG')).to eq('on')
+    end
+
+    it 'reads a secret written before the move, and the task moves it' do
+      config = InstallationConfig.create!(name: 'SLACK_CLIENT_SECRET', value: 'x', locked: false)
+      config.update_columns( # rubocop:disable Rails/SkipsModelValidations
+        tolzar_encrypted_value: nil, serialized_value: { value: 'legacy' }.with_indifferent_access
+      )
+      legacy = InstallationConfig.find(config.id)
+      expect(legacy.value).to eq('legacy')
+      expect(legacy.tolzar_value_pending?).to be(true)
+      Tolzar::CredentialsTask.encrypt!
+      expect(InstallationConfig.find(config.id).tolzar_value_pending?).to be(false)
+      expect(InstallationConfig.find(config.id).value).to eq('legacy')
+    end
+
+    it 'rolls back: decrypt puts the value back in the plain column' do
+      config = InstallationConfig.create!(name: 'NOTION_CLIENT_SECRET', value: 'n-secret', locked: false)
+      Tolzar::CredentialsRollback.run!
+      expect(raw(config, :tolzar_encrypted_value)).to be_nil
+      expect(InstallationConfig.find(config.id).serialized_value[:value]).to eq('n-secret')
+    end
+  end
 end

@@ -7,7 +7,7 @@ module Tolzar::CredentialsTask
     names = %w[Channel::Whatsapp Channel::Email Channel::FacebookPage Channel::Instagram Channel::Line
                Channel::Telegram Channel::Tiktok Channel::TwilioSms Channel::TwitterProfile Channel::Api
                Channel::WebWidget Channel::Sms Webhook AgentBot Integrations::Hook DataImport AccessToken
-               Tolzar::MetaApp User]
+               Tolzar::MetaApp User InstallationConfig]
     names.filter_map(&:safe_constantize)
   end
 
@@ -20,7 +20,8 @@ module Tolzar::CredentialsTask
   end
 
   def status
-    models.flat_map { |klass| encrypted_fields(klass).map { |field| field_status(klass, field) } } + json_status
+    models.flat_map { |klass| encrypted_fields(klass).map { |field| field_status(klass, field) } } + json_status +
+      [installation_status]
   end
 
   def field_status(klass, field)
@@ -43,6 +44,11 @@ module Tolzar::CredentialsTask
     false
   end
 
+  def installation_status
+    rows = InstallationConfig.unscoped.select { |c| Tolzar::EncryptedInstallationConfig.secret_name?(c.name) }
+    { model: 'InstallationConfig', field: 'secret values', rows: rows.size, value_pending: rows.count(&:tolzar_value_pending?) }
+  end
+
   def json_status
     models.select { |k| k.include?(Tolzar::EncryptedJsonSecrets) }.map do |klass|
       pending = klass.unscoped.find_each.count(&:tolzar_json_secrets_pending?)
@@ -57,6 +63,7 @@ module Tolzar::CredentialsTask
 
       klass.unscoped.find_each do |record|
         record.encrypt if encrypted_fields(klass).any?
+        record.update!(value: record.value) if record.is_a?(InstallationConfig) && record.tolzar_value_pending?
         next unless klass.include?(Tolzar::EncryptedJsonSecrets)
 
         Rails.logger.warn("[tolzar] credentials: #{klass.name} #{record.id} not moved") unless record.tolzar_move_json_secrets!
