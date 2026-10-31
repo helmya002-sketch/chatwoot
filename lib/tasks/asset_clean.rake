@@ -1,4 +1,4 @@
-# Asset clean logic taken from the article https://chwt.app/heroku-slug-size
+# Asset clean logic adapted from a public article on reducing Heroku slug size.
 
 namespace :assets do
   desc "Remove 'node_modules' folder"
