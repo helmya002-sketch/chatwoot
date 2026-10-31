@@ -42,7 +42,7 @@ RSpec.describe 'Tolzar feature switches, off by default', type: :request do
   end
 
   it 'keeps the Results team and reasons cards hidden while TOLZAR_INBOX_TOOLS_ACCOUNTS is off' do
-    %w[/team_leaderboard /channel_breakdown /outcome_reasons].each do |path|
+    %w[/team_leaderboard /channel_breakdown /outcome_reasons /contacts/0/timeline].each do |path|
       get "#{api}#{path}", headers: headers
       expect(response).to have_http_status(:not_found)
     end

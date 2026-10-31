@@ -13,6 +13,7 @@ import ContactNotes from 'dashboard/components-next/Contacts/ContactsSidebar/Con
 import ContactHistory from 'dashboard/components-next/Contacts/ContactsSidebar/ContactHistory.vue';
 import ContactMedia from 'dashboard/components-next/Contacts/ContactsSidebar/ContactMedia.vue';
 import ContactMerge from 'dashboard/components-next/Contacts/ContactsSidebar/ContactMerge.vue';
+import ContactTimeline from 'dashboard/components-next/Contacts/ContactsSidebar/ContactTimeline.vue';
 import ContactCustomAttributes from 'dashboard/components-next/Contacts/ContactsSidebar/ContactCustomAttributes.vue';
 
 const store = useStore();
@@ -20,6 +21,7 @@ const route = useRoute();
 const router = useRouter();
 
 const contact = useMapGetter('contacts/getContactById');
+const getAccount = useMapGetter('accounts/getAccount');
 const uiFlags = useMapGetter('contacts/getUIFlags');
 
 const activeTab = ref('attributes');
@@ -37,23 +39,27 @@ const showSpinner = computed(
 
 const { t } = useI18n();
 
-const CONTACT_TABS_OPTIONS = [
+// Tolzar (round 4, c99): a Timeline tab while the workspace has inbox tools on (tolzar_inbox_tools).
+const CONTACT_TABS_OPTIONS = computed(() => [
   { key: 'ATTRIBUTES', value: 'attributes' },
   { key: 'HISTORY', value: 'history' },
+  ...(getAccount.value(route.params.accountId)?.tolzar_inbox_tools
+    ? [{ key: 'TIMELINE', value: 'timeline' }]
+    : []),
   { key: 'NOTES', value: 'notes' },
   { key: 'MEDIA', value: 'media' },
   { key: 'MERGE', value: 'merge' },
-];
+]);
 
 const tabs = computed(() => {
-  return CONTACT_TABS_OPTIONS.map(tab => ({
+  return CONTACT_TABS_OPTIONS.value.map(tab => ({
     label: t(`CONTACTS_LAYOUT.SIDEBAR.TABS.${tab.key}`),
     value: tab.value,
   }));
 });
 
 const activeTabIndex = computed(() => {
-  return CONTACT_TABS_OPTIONS.findIndex(v => v.value === activeTab.value);
+  return CONTACT_TABS_OPTIONS.value.findIndex(v => v.value === activeTab.value);
 });
 
 const goToContactsList = () => {
@@ -175,6 +181,7 @@ onMounted(() => {
           />
           <ContactNotes v-if="activeTab === 'notes'" />
           <ContactHistory v-if="activeTab === 'history'" />
+          <ContactTimeline v-if="activeTab === 'timeline'" />
           <ContactMedia v-if="activeTab === 'media'" />
           <ContactMerge
             v-if="activeTab === 'merge'"

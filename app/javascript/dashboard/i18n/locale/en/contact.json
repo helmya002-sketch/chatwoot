@@ -517,7 +517,20 @@
         "HISTORY": "History",
         "NOTES": "Notes",
         "MEDIA": "Media",
-        "MERGE": "Merge"
+        "MERGE": "Merge",
+        "TIMELINE": "Timeline"
+      },
+      "TIMELINE": {
+        "LOADING": "Loading the timeline…",
+        "EMPTY": "Nothing on this contact's timeline yet.",
+        "CONVERSATION": "Conversation #{id} {inbox}",
+        "BOOKING": "Booking for {date}",
+        "WON": "Won: {reason}",
+        "LOST": "Lost: {reason}",
+        "ST_open": "Open",
+        "ST_resolved": "Resolved",
+        "ST_pending": "Pending",
+        "ST_snoozed": "Snoozed"
       },
       "HISTORY": {
         "EMPTY_STATE": "There are no previous conversations associated to this contact"
