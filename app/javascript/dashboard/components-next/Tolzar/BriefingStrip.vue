@@ -13,6 +13,7 @@ import { useI18n } from 'vue-i18n';
 import { useMapGetter } from 'dashboard/composables/store';
 import { frontendURL } from 'dashboard/helper/URLHelper';
 import { tolzarBrand } from './TolzarBranding.vue';
+import { nowChips, aiPill } from './tolzarTopbar';
 
 const { t } = useI18n();
 const router = useRouter();
@@ -69,8 +70,15 @@ const server = ref(null);
 const loadBriefing = async () => {
   if (!accountId.value) return;
   try {
+    let tz = '';
+    try {
+      tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+    } catch (e) {
+      tz = '';
+    }
     const { data } = await window.axios.get(
-      `/api/v1/accounts/${accountId.value}/tolzar/briefing`
+      `/api/v1/accounts/${accountId.value}/tolzar/briefing`,
+      { params: tz ? { tz } : {} }
     );
     server.value = data && data.ok ? data : null;
   } catch (e) {
@@ -90,6 +98,13 @@ onBeforeUnmount(() => {
   window.removeEventListener('focus', onFocus);
 });
 watch(accountId, loadBriefing);
+
+// Top bar (c62, TOLZAR_TOPBAR_ACCOUNTS): "right now" chips and the AI pill, only when the server sends them.
+const chips = computed(() => nowChips(server.value?.now, accountId.value));
+const pill = computed(() => aiPill(server.value?.ai));
+const openChip = chip => {
+  if (chip.to) router.push(chip.to);
+};
 
 const localHotLeads = computed(() =>
   (allConversations.value || [])
@@ -153,6 +168,32 @@ const jump = id => {
     </span>
     <span v-else class="tz-calm">
       {{ t('TOLZAR_INBOX.BRIEFING.ALL_CAUGHT_UP') }}
+    </span>
+
+    <nav
+      v-if="chips.length"
+      class="tz-chips"
+      :aria-label="t('TOLZAR_INBOX.BRIEFING.NOW_LABEL')"
+    >
+      <button
+        v-for="c in chips"
+        :key="c.key"
+        type="button"
+        class="tz-chip"
+        @click="openChip(c)"
+      >
+        <b>{{ c.n }}</b>
+        {{ t(`TOLZAR_INBOX.BRIEFING.NOW.${c.key}`, { n: c.n }, c.n) }}
+      </button>
+    </nav>
+    <span
+      v-if="pill"
+      class="tz-pill"
+      :class="`tz-pill-${pill.tone}`"
+      :title="t(`TOLZAR_INBOX.BRIEFING.AI_HINT.${pill.key}`)"
+    >
+      <span class="tz-pill-dot" aria-hidden="true" />
+      {{ t(`TOLZAR_INBOX.BRIEFING.AI.${pill.key}`) }}
     </span>
 
     <button
@@ -296,6 +337,75 @@ const jump = id => {
 .tz-brief .tz-nudge b {
   color: rgb(var(--slate-12));
   font-weight: 650;
+}
+.tz-brief .tz-chips {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  overflow: hidden;
+}
+.tz-brief .tz-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+  padding: 0 9px;
+  border-radius: 999px;
+  border: 1px solid rgb(var(--slate-6));
+  background: rgb(var(--surface-2, var(--surface-1)));
+  color: rgb(var(--slate-11));
+  font-size: 12px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.tz-brief .tz-chip b {
+  color: rgb(var(--slate-12));
+  font-weight: 650;
+}
+.tz-brief .tz-chip:hover {
+  border-color: rgb(var(--blue-8));
+  color: rgb(var(--slate-12));
+}
+.tz-brief .tz-chip:focus-visible {
+  outline: 2px solid rgb(var(--blue-8));
+  outline-offset: 1px;
+}
+.tz-brief .tz-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  background: rgb(var(--slate-3));
+  color: rgb(var(--slate-11));
+}
+.tz-brief .tz-pill-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.tz-brief .tz-pill-shadow {
+  background: rgb(var(--violet-3, var(--blue-3)));
+  color: rgb(var(--violet-11, var(--blue-11)));
+}
+.tz-brief .tz-pill-live {
+  background: rgb(var(--green-3));
+  color: rgb(var(--green-11));
+}
+.tz-brief .tz-pill-warn {
+  background: rgb(var(--amber-3));
+  color: rgb(var(--amber-11));
+}
+@media (max-width: 900px) {
+  .tz-brief .tz-chips {
+    display: none;
+  }
 }
 .tz-brief .tz-calm {
   color: rgb(var(--slate-11));

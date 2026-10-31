@@ -49,4 +49,62 @@ RSpec.describe 'Tolzar briefing', type: :request do
     get url
     expect(response).to have_http_status(:unauthorized)
   end
+
+  describe 'the top bar (c62)' do
+    before { allow(Tolzar::BrainClient).to receive(:get).and_return({ 'status' => 503 }) }
+
+    it 'sends no counts and no AI state while the switch is off' do
+      get url, headers: admin.create_new_auth_token
+      expect(response.parsed_body.keys).not_to include('now', 'ai')
+    end
+
+    it 'counts mine, waiting, unassigned and follow-ups due today, for what each member may open' do
+      with_modified_env(TOLZAR_TOPBAR_ACCOUNTS: account.id.to_s) do
+        create(:conversation, account: account, inbox: mine, assignee: agent, status: :open)
+        # Replied and not waiting again (a new conversation always starts as waiting): attended.
+        create(:conversation, account: account, inbox: mine, status: :open)
+          .update_columns(first_reply_created_at: 1.hour.ago, waiting_since: nil)
+        create(:conversation, account: account, inbox: other, status: :open)
+        create(:conversation, account: account, inbox: mine, status: :snoozed, snoozed_until: Time.current.utc.beginning_of_day + 1.minute)
+        create(:conversation, account: account, inbox: mine, status: :snoozed, snoozed_until: 3.days.from_now)
+
+        get url, params: { tz: 'UTC' }, headers: agent.create_new_auth_token
+        now = response.parsed_body['now']
+        expect(now).to include('mine' => 1, 'unassigned' => 1, 'due_today' => 1)
+        expect(now['waiting']).to eq(1) # the agent's own unattended open one; the other inbox is not theirs
+        expect(now).not_to have_key('bookings_today')
+
+        get url, headers: admin.create_new_auth_token
+        expect(response.parsed_body['now']).to include('unassigned' => 2)
+      end
+    end
+
+    it 'shows the AI as the brain reports it, and unknown when it does not answer' do
+      with_modified_env(TOLZAR_TOPBAR_ACCOUNTS: account.id.to_s) do
+        get url, headers: admin.create_new_auth_token
+        expect(response.parsed_body['ai']).to eq('unknown')
+
+        allow(Tolzar::BrainClient).to receive(:get).with('/workspace/settings', account_id: account.id)
+                                                   .and_return({ 'status' => 200, 'kill_switch_on' => false,
+                                                                 'inbox_modes' => { mine.id.to_s => { 'mode' => 'shadow' } } })
+        get url, headers: admin.create_new_auth_token
+        expect(response.parsed_body['ai']).to eq('shadow')
+
+        allow(Tolzar::BrainClient).to receive(:get).with('/workspace/settings', account_id: account.id)
+                                                   .and_return({ 'status' => 200, 'kill_switch_on' => true, 'inbox_modes' => {} })
+        get url, headers: admin.create_new_auth_token
+        expect(response.parsed_body['ai']).to eq('off')
+      end
+    end
+
+    it 'counts bookings today when bookings are on' do
+      with_modified_env(TOLZAR_TOPBAR_ACCOUNTS: account.id.to_s, TOLZAR_BOOKINGS_ACCOUNTS: account.id.to_s) do
+        today = Time.current.utc.to_date.iso8601
+        Tolzar::Booking.create!(account: account, currency: 'EUR',
+                                data: { lines: [{ type: 'service', description: 'Boat day', unit_price: '60', date: today }] })
+        get url, params: { tz: 'UTC' }, headers: admin.create_new_auth_token
+        expect(response.parsed_body.dig('now', 'bookings_today')).to eq(1)
+      end
+    end
+  end
 end

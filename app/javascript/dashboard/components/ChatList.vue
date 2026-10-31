@@ -50,6 +50,7 @@ import { createFiltersMatcher } from '../store/modules/conversations/helpers/fil
 import { sortComparator } from '../store/modules/conversations/helpers';
 import { CONVERSATION_EVENTS } from '../helper/AnalyticsHelper/events';
 import { ASSIGNEE_TYPE_TAB_PERMISSIONS } from 'dashboard/constants/permissions.js';
+import { tzQuickView } from 'dashboard/components-next/Tolzar/tolzarTopbar';
 
 const props = defineProps({
   conversationInbox: { type: [String, Number], default: 0 },
@@ -916,6 +917,12 @@ useEmitter('fetch_conversation_stats', () => {
 onMounted(() => {
   store.dispatch('setChatListFilters', conversationFilters.value);
   setFiltersFromUISettings();
+  // Tolzar top bar chips (c62): ?tab= and ?status= open the list they counted (known values only).
+  const quick = tzQuickView(route.query);
+  if (quick.tab) activeAssigneeTab.value = quick.tab;
+  if (quick.status) activeStatus.value = quick.status;
+  if (quick.tab || quick.status)
+    store.dispatch('setChatListFilters', conversationFilters.value);
   store.dispatch('setChatStatusFilter', activeStatus.value);
   store.dispatch('setChatSortFilter', activeSortBy.value);
   if (!applyRouteFilters()) resetAndFetchData();
@@ -931,6 +938,17 @@ watch(
   () => route.query.filters,
   serialized => {
     if (serialized) applyRouteFilters();
+  }
+);
+
+// Tolzar top bar chips while the inbox is already open: a query-only change does not remount.
+watch(
+  () => [route.query.tab, route.query.status],
+  () => {
+    const quick = tzQuickView(route.query);
+    if (quick.status && quick.status !== activeStatus.value)
+      onBasicFilterChange(quick.status, 'status');
+    if (quick.tab) updateAssigneeTab(quick.tab);
   }
 );
 

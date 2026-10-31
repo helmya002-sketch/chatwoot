@@ -38,7 +38,27 @@
       "WHAT_NEEDS_YOU": "What needs you",
       "NO_NAME": "Unnamed contact",
       "OPEN_LEAD": "Open the conversation with {name} (score {score})",
-      "EMPTY": "No urgent leads right now. {product} will flag the moment a hot one comes in."
+      "EMPTY": "No urgent leads right now. {product} will flag the moment a hot one comes in.",
+      "NOW_LABEL": "Right now",
+      "NOW": {
+        "mine": "mine open | mine open",
+        "waiting": "waiting for a reply | waiting for a reply",
+        "unassigned": "unassigned | unassigned",
+        "due_today": "follow-up due today | follow-ups due today",
+        "bookings_today": "booking today | bookings today"
+      },
+      "AI": {
+        "OFF": "AI off",
+        "SHADOW": "AI in Shadow",
+        "LIVE": "AI live",
+        "UNKNOWN": "AI status unknown"
+      },
+      "AI_HINT": {
+        "OFF": "The AI is off for this workspace (or its kill switch is on). Nothing is drafted.",
+        "SHADOW": "The AI drafts replies as private notes only. Nothing is sent to customers.",
+        "LIVE": "At least one inbox lets the AI reply to customers.",
+        "UNKNOWN": "The AI service did not answer just now. This is checked again every minute."
+      }
     },
     "BELL": {
       "TITLE": "Notifications",
