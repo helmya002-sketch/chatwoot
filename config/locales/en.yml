@@ -1346,6 +1346,8 @@ en:
           subject: 'Test email from %{brand_name} support'
   # Tolzar (round 4, c64): private push titles for TOLZAR_PWA_ACCOUNTS workspaces: who it is about, never what was written.
   tolzar:
+    digest:
+      subject: '%{workspace}: your day on %{day}'
     push:
       new_conversation: 'New conversation from %{name}'
       new_message: 'New message from %{name}'

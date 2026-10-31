@@ -123,6 +123,11 @@ tolzar_tiktok_comments_poll_job:
 
 # Tolzar: executed hourly at minute 17
 # fair use per plan: AI replies this month vs the plan's allowance; notices only (only with TOLZAR_FAIR_USE=true)
+# Tolzar owner's daily digest (c89): TOLZAR_DIGEST_ACCOUNTS workspaces only, 07:05 UTC.
+tolzar_daily_digest_job:
+  cron: '5 7 * * * UTC'
+  class: 'Tolzar::DailyDigestJob'
+  queue: low
 tolzar_fair_use_job:
   cron: '17 * * * * UTC'
   class: 'Tolzar::FairUseJob'
