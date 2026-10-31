@@ -1117,7 +1117,8 @@
       "negotiation": "Negotiation limits",
       "agent_teams": "Agents per team",
       "tuning": "Improvement proposals",
-      "whatsapp_listen": "WhatsApp (listen-only)"
+      "whatsapp_listen": "WhatsApp (listen-only)",
+      "lead_intake": "Lead forms"
     },
     "HINT": {
       "plan": "Your plan's shared AI-reply allowance across your workspaces.",
@@ -1152,7 +1153,8 @@
       "negotiation": "How far the AI may move on price. A guard checks every reply; anything outside the limits goes to a colleague.",
       "agent_teams": "Which AI agent speaks for which team (sales, support...). Empty uses the workspace's default agent.",
       "tuning": "Once a day Tolzar suggests up to 3 edits to your agent's instructions, from QA notes, guard stops and your team's answers.",
-      "whatsapp_listen": "Receive a WhatsApp number that another platform already runs, with your business's own Meta app. Owner only."
+      "whatsapp_listen": "Receive a WhatsApp number that another platform already runs, with your business's own Meta app. Owner only.",
+      "lead_intake": "Send leads from TikTok Instant Forms, ad connectors or your website straight into the pipeline. Owner only."
     },
     "SAVE": "Save",
     "NONE_YET": "Nothing yet.",

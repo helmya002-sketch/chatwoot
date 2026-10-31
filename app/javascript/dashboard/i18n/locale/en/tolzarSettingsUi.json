@@ -7,6 +7,18 @@
       "NO_MATCH": "No setting matches. Try another word."
     },
     "ENABLED": "On",
+    "LEAD_INTAKE": {
+      "OFF": "Lead forms are not switched on for this workspace yet. Ask Tolzar support to turn them on.",
+      "NO_INBOX": "Add an API inbox first (Settings → Inboxes → API). Each API inbox gets its own lead link.",
+      "LOADING": "Loading…",
+      "LINK": "Lead link · {name}",
+      "COPY": "Copy",
+      "COPIED": "Copied",
+      "SECRET": "This link works like a password: anyone with it can add leads. Paste it only into your form tool.",
+      "FIELDS_TITLE": "What to send (JSON or form fields)",
+      "FIELDS": "name, email, phone (with the + country code), source (for example tiktok), lead_id, campaign, ad, form, and answers as question and answer pairs.",
+      "RESULT": "Each lead becomes a contact on your first pipeline stage and a conversation with the answers, labelled lead."
+    },
     "QUOTED": "“{text}”",
     "SHADOW_DETAIL": {
       "sla": "Late conversations get a label and a private note. Customers see nothing.",
@@ -19,7 +31,8 @@
       "documents": "The text is read for triage only and never stored.",
       "tuning": "Proposals only: nothing in the agent changes until you copy an approved edit yourself.",
       "meta_app": "Pages connect listen-only: Tolzar receives, your team keeps answering in Meta Business Suite.",
-      "whatsapp_listen": "Tolzar only receives this number's messages. It never sends on it."
+      "whatsapp_listen": "Tolzar only receives this number's messages. It never sends on it.",
+      "lead_intake": "Leads only arrive here. Nothing is sent to the person: your team or the AI (in Shadow) follows up."
     },
     "EXPORT": {
       "PREPARING": "Preparing your export. It will appear in the list below when it is ready.",
