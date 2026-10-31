@@ -7,6 +7,33 @@
       "NO_MATCH": "No setting matches. Try another word."
     },
     "ENABLED": "On",
+    "WIDGET": {
+      "WHAT": "How your website chat looks, where visitors can continue the chat, and which pages start conversations.",
+      "NO_INBOX": "Add a website inbox first (Settings → Inboxes → Website).",
+      "INBOX": "Website inbox",
+      "OLD_WIDGET": "This workspace still uses the previous widget: the hand-off links and page stats start once the Tolzar widget is switched on.",
+      "PREVIEW": "Preview",
+      "TAGLINE": "We usually reply within a few minutes.",
+      "SAMPLE_IN": "Hi, do you deliver on Saturdays?",
+      "SAMPLE_OUT": "Yes, every Saturday until 2 pm.",
+      "CONTRAST_aa": "White text contrast {ratio}:1: passes",
+      "CONTRAST_large": "White text contrast {ratio}:1: only for large text, pick a darker colour",
+      "CONTRAST_fail": "White text contrast {ratio}:1: too light, pick a darker colour",
+      "HANDOFF": "Continue on another app",
+      "HANDOFF_HINT": "Visitors can open your WhatsApp, Instagram or Telegram from the chat. Owner only.",
+      "WA_PH": "+20 100 123 4567",
+      "HANDLE_PH": "your handle",
+      "SAVE_HANDOFF": "Save links",
+      "CH_WA": "WhatsApp number",
+      "CH_IG": "Instagram account",
+      "CH_TG": "Telegram username",
+      "STATS": "Pages, last 30 days",
+      "STATS_NONE": "No page stats yet.",
+      "PAGE": "Page",
+      "OPENS": "Chat opened",
+      "STARTS": "Chats started",
+      "RATE": "Start rate"
+    },
     "PANE": {
       "SOURCES": "Based on: {list}"
     },

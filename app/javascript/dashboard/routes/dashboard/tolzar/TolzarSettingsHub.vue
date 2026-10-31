@@ -29,6 +29,7 @@ import MetaAppPanel from 'dashboard/components-next/Tolzar/settings/MetaAppPanel
 import WhatsappListenOnlyPanel from 'dashboard/components-next/Tolzar/settings/WhatsappListenOnlyPanel.vue';
 import LeadIntakePanel from 'dashboard/components-next/Tolzar/settings/LeadIntakePanel.vue';
 import LeadSourcesPanel from 'dashboard/components-next/Tolzar/settings/LeadSourcesPanel.vue';
+import WidgetPanel from 'dashboard/components-next/Tolzar/settings/WidgetPanel.vue';
 import DocumentsRegisterPanel from 'dashboard/components-next/Tolzar/settings/DocumentsRegisterPanel.vue';
 import BookingsPanel from 'dashboard/components-next/Tolzar/settings/BookingsPanel.vue';
 import {
@@ -101,7 +102,7 @@ const SECTIONS = [
   ['team', ['sla', 'qa']],
   ['ai', ['media', 'documents', 'recovery', 'learned', 'brief', 'ask', 'negotiation', 'agent_teams', 'tuning']],
   ['contacts', ['dedupe']],
-  ['growth', ['links', 'broadcasts', 'lead_sources']],
+  ['growth', ['links', 'broadcasts', 'lead_sources', 'website_widget']],
   ['developers', ['connections', 'mcp']],
 ];
 // Round 1 panels load their own data (one component per group).
@@ -547,6 +548,7 @@ onMounted(() => {
           <WhatsappListenOnlyPanel v-if="current === 'whatsapp_listen'" />
           <LeadIntakePanel v-if="current === 'lead_intake'" />
           <LeadSourcesPanel v-if="current === 'lead_sources'" />
+          <WidgetPanel v-if="current === 'website_widget'" />
           <DocumentsRegisterPanel v-if="current === 'booking_documents'" />
           <BookingsPanel v-if="current === 'bookings'" />
           <AiLimitsPanel v-if="AI_LIMITS.includes(current)" :key="current" :section="current" />

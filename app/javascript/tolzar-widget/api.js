@@ -113,6 +113,14 @@ export class Api {
     });
   }
 
+  // Per-page counters (Tolzar::WidgetStats): open | start; never blocks the chat.
+  stat(kind, page) {
+    if (!page) return Promise.resolve();
+    return this.request('POST', 'tolzar_stats', { body: { kind, page } }).catch(
+      () => {}
+    );
+  }
+
   transcript() {
     return this.request('POST', 'conversations/transcript');
   }

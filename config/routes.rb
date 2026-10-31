@@ -126,6 +126,7 @@ Rails.application.routes.draw do
           get    'tolzar/lead_intake',           to: 'tolzar_lead_intake#show'
           get    'tolzar/widget_handoff',        to: 'tolzar_widget_handoff#show'
           post   'tolzar/widget_handoff',        to: 'tolzar_widget_handoff#save'
+          get    'tolzar/widget_stats',          to: 'tolzar_widget_stats#show'
           get    'tolzar/lead_sources',          to: 'tolzar_lead_intake#sources'
           # Tolzar booking documents (Tolzar::Document; TOLZAR_BOOKING_DOCS_ACCOUNTS)
           get    'tolzar/documents',             to: 'tolzar_documents#index'
@@ -694,6 +695,7 @@ Rails.application.routes.draw do
         resource :config, only: [:create]
         resources :campaigns, only: [:index]
         resources :events, only: [:create]
+        resource :tolzar_stats, only: [:create]
         resources :messages, only: [:index, :create, :update]
         resources :conversations, only: [:index, :create] do
           collection do

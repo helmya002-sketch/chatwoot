@@ -1120,6 +1120,7 @@
       "whatsapp_listen": "WhatsApp (listen-only)",
       "lead_intake": "Lead forms",
       "lead_sources": "Lead sources",
+      "website_widget": "Website widget",
       "booking_documents": "Vouchers & quotes",
       "bookings": "Bookings"
     },
@@ -1159,6 +1160,7 @@
       "whatsapp_listen": "Receive a WhatsApp number that another platform already runs, with your business's own Meta app. Owner only.",
       "lead_intake": "Send leads from TikTok Instant Forms, ad connectors or your website straight into the pipeline. Owner only.",
       "lead_sources": "Which sources and campaigns bring your leads, and how many you win.",
+      "website_widget": "Preview your chat colours, add WhatsApp/Instagram/Telegram links, see which pages start chats.",
       "booking_documents": "Vouchers, quotes, booking confirmations and payment summaries, with numbers and a register.",
       "bookings": "Bookings with guests and dates, the next 14 days, payments received and vouchers."
     },

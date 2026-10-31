@@ -198,6 +198,7 @@ export class WidgetApp {
   setOpen(isOpen) {
     this.open = isOpen;
     if (isOpen) {
+      this.api.stat?.('open', pageContext(this.pageUrl)?.tolzar_page);
       this.seenAt = Date.now() / 1000;
       this.api.seen();
       this.updateUnread();
@@ -298,7 +299,11 @@ export class WidgetApp {
     this.paint();
     try {
       const page = pageContext(this.pageUrl)?.tolzar_page;
+      const first = !this.store.messages.some(
+        m => m.type === TYPE.INCOMING && m.id != null
+      );
       const saved = await this.api.sendText(content, echoId, page);
+      if (first) this.api.stat?.('start', page);
       upsert(this.store, [{ ...saved, echo_id: echoId }]);
     } catch {
       markFailed(this.store, echoId);
