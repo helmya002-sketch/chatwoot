@@ -20,6 +20,7 @@ class AsyncDispatcher < BaseDispatcher
       Conversations::UnreadCounts::Listener.instance,
       ReportingEventListener.instance,
       Tolzar::CrmEventsListener.instance,
+      Tolzar::FollowUpRemindersListener.instance,
       WebhookListener.instance
     ]
   end

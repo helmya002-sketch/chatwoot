@@ -121,6 +121,13 @@ tolzar_tiktok_comments_poll_job:
   class: 'Tolzar::TiktokCommentsPollJob'
   queue: low
 
+# Tolzar: executed every 15 minutes (round 4, E4)
+# follow-up reminders that are due become in-app notifications (only for TOLZAR_INBOX_TOOLS_ACCOUNTS workspaces)
+tolzar_follow_up_reminders_job:
+  cron: '*/15 * * * * UTC'
+  class: 'Tolzar::FollowUpRemindersJob'
+  queue: low
+
 # Tolzar: executed hourly at minute 17
 # fair use per plan: AI replies this month vs the plan's allowance; notices only (only with TOLZAR_FAIR_USE=true)
 # Tolzar owner's daily digest (c89): TOLZAR_DIGEST_ACCOUNTS workspaces only, 07:05 UTC.

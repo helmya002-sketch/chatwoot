@@ -9,6 +9,8 @@
 #   ai   the AI's state as the brain reports it: off / shadow / live / unknown (view-only; cached for a minute)
 #   day  "My day" (c66): the longest waiting (open, unattended, oldest first), follow-ups due today, and today so
 #        far for this person: replies sent, conversations resolved, their median first reply (seconds)
+#        Follow-ups due today also count this person's own follow-up reminders due before the end of today (round 4,
+#        E4; TOLZAR_INBOX_TOOLS_ACCOUNTS), each conversation once.
 # Read-only; nothing is estimated, so an empty list or a 0 really means none.
 class Tolzar::Briefing
   HOT_SCORE = 70 # the same rule as the inbox (tolzarAttention.js HOT_SCORE)
@@ -54,7 +56,7 @@ class Tolzar::Briefing
     open = visible.open
     counts = { mine: open.where(assignee_id: @user.id).count, waiting: open.unattended.count,
                unassigned: open.where(assignee_id: nil).count,
-               due_today: visible.snoozed.where(snoozed_until: ..@zone.now.end_of_day).count }
+               due_today: due_ids.size }
     counts[:bookings_today] = bookings_today if Tolzar::Booking.enabled?(@account.id)
     counts
   end
@@ -62,10 +64,32 @@ class Tolzar::Briefing
   def my_day
     open = visible.open
     waiting = open.unattended.includes(:contact).reorder(Arel.sql('conversations.waiting_since ASC NULLS LAST')).limit(3)
-    due = visible.snoozed.where(snoozed_until: ..@zone.now.end_of_day).includes(:contact).reorder(:snoozed_until).limit(3)
     { waiting: waiting.map { |c| { id: c.display_id, name: c.contact&.name.to_s, since: c.waiting_since&.iso8601 } },
-      due: due.map { |c| { id: c.display_id, name: c.contact&.name.to_s, at: c.snoozed_until&.iso8601 } },
-      today: today_so_far }
+      due: due_today_rows, today: today_so_far }
+  end
+
+  # Snoozed conversations waking before the end of today, and this person's own follow-up reminders due by then.
+  def snoozed_due
+    visible.snoozed.where(snoozed_until: ..@zone.now.end_of_day)
+  end
+
+  def reminders_due
+    return {} unless Tolzar::CannedStarters.enabled?(@account.id)
+
+    Tolzar::FollowUpReminder.where(account_id: @account.id, user_id: @user.id).due(@zone.now.end_of_day)
+                            .where(conversation_id: visible.select(:id)).pluck(:conversation_id, :due_at).to_h
+  end
+
+  def due_ids
+    @due_ids ||= (snoozed_due.pluck(:id) + reminders_due.keys).uniq
+  end
+
+  def due_today_rows
+    reminders = reminders_due
+    rows = @account.conversations.where(id: due_ids).includes(:contact).map do |c|
+      { id: c.display_id, name: c.contact&.name.to_s, at: [(c.snoozed_until if c.snoozed?), reminders[c.id]].compact.min&.iso8601 }
+    end
+    rows.sort_by { |row| row[:at].to_s }.first(3)
   end
 
   def today_so_far

@@ -26,6 +26,7 @@ import {
 import LeadScoreRing from 'dashboard/components-next/Tolzar/LeadScoreRing.vue';
 import { tolzarBrand } from 'dashboard/components-next/Tolzar/TolzarBranding.vue';
 import ConversationSummaryButton from 'dashboard/components-next/Tolzar/ConversationSummaryButton.vue';
+import FollowUpReminderButton from 'dashboard/components-next/Tolzar/FollowUpReminderButton.vue';
 
 const props = defineProps({
   chat: {
@@ -316,6 +317,10 @@ const setStage = stage => {
         class="hidden md:flex"
       />
       <ConversationSummaryButton
+        v-if="tolzarInboxTools"
+        :conversation-id="currentChat.id"
+      />
+      <FollowUpReminderButton
         v-if="tolzarInboxTools"
         :conversation-id="currentChat.id"
       />

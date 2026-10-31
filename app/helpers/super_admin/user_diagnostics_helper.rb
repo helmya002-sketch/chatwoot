@@ -11,7 +11,8 @@ module SuperAdmin::UserDiagnosticsHelper
     sla_missed_next_response
     sla_missed_resolution
   ].freeze
-  PUSH_NOTIFICATION_TYPES = (PUSH_TYPE_ORDER + Notification::NOTIFICATION_TYPES.keys).uniq.freeze
+  # Tolzar (round 4, E4): follow-up reminders are in-app only, so they have no push setting to show.
+  PUSH_NOTIFICATION_TYPES = (PUSH_TYPE_ORDER + Notification::NOTIFICATION_TYPES.keys).uniq.without(:tolzar_follow_up_due).freeze
   # Available only on accounts with the SLA feature.
   SLA_PUSH_TYPES = %i[sla_missed_first_response sla_missed_next_response sla_missed_resolution].freeze
   # Available only on accounts that take calls and ring phones, as on the agent preferences screen.

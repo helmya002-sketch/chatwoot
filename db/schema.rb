@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_10_31_190000) do
+ActiveRecord::Schema[7.1].define(version: 2026_10_31_214500) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -2032,6 +2032,19 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_31_190000) do
     t.index ["account_id", "number"], name: "index_tolzar_documents_on_account_id_and_number", unique: true
     t.index ["contact_id"], name: "index_tolzar_documents_on_contact_id"
     t.index ["conversation_id"], name: "index_tolzar_documents_on_conversation_id"
+  end
+
+  create_table "tolzar_follow_up_reminders", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "conversation_id", null: false
+    t.bigint "user_id", null: false
+    t.datetime "due_at", null: false
+    t.datetime "set_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id", "due_at"], name: "index_tolzar_follow_up_reminders_on_account_id_and_due_at"
+    t.index ["conversation_id", "user_id"], name: "index_tolzar_follow_up_reminders_on_conversation_id_and_user_id", unique: true
+    t.index ["user_id", "due_at"], name: "index_tolzar_follow_up_reminders_on_user_id_and_due_at"
   end
 
   create_table "tolzar_ideas", force: :cascade do |t|

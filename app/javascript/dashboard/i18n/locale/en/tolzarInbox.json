@@ -129,6 +129,17 @@
       "CLOSE": "Close",
       "NOTE_PREFIX": "Summary:"
     },
+    "FOLLOW_UP": {
+      "BUTTON": "Remind me",
+      "TOOLTIP": "Get a reminder if the customer doesn't answer",
+      "HINT": "Remind me if the customer doesn't answer. It's cancelled by itself when they write.",
+      "IN_DAYS": "In {n} day | In {n} days",
+      "DUE": "Reminder {when}",
+      "CANCEL": "Cancel the reminder",
+      "SET": "Reminder set",
+      "CANCELLED": "Reminder cancelled",
+      "FAILED": "Could not change the reminder. Please try again."
+    },
     "SHORTCUTS": {
       "SECTION": "On {product} screens",
       "SHOW_SHEET": "Show this list of shortcuts",

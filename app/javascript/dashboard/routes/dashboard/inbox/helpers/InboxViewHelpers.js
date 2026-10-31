@@ -14,4 +14,6 @@ export const NOTIFICATION_TYPES_MAPPING = {
   SLA_MISSED_NEXT_RESPONSE: ['i-lucide-heart-crack', 'text-n-ruby-11'],
   SLA_MISSED_RESOLUTION: ['i-lucide-heart-crack', 'text-n-ruby-11'],
   VOICE_CALL_MISSED: ['i-lucide-phone-missed', 'text-n-ruby-11'],
+  // Tolzar (round 4, E4): a follow-up reminder is due.
+  TOLZAR_FOLLOW_UP_DUE: ['i-lucide-alarm-clock', 'text-n-amber-11'],
 };
