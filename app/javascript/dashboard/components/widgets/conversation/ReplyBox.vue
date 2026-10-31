@@ -30,6 +30,7 @@ import { MESSAGE_MAX_LENGTH } from 'shared/helpers/MessageTypeHelper';
 import { isComposing } from 'shared/helpers/KeyboardHelpers';
 import inboxMixin, { INBOX_FEATURES } from 'shared/mixins/inboxMixin';
 import { replyWindow } from 'dashboard/components-next/Tolzar/tolzarReplyWindow';
+import { recentReplyByOther } from 'dashboard/components-next/Tolzar/tolzarCollision';
 import { trimContent, debounce, getRecipients } from '@chatwoot/utils';
 import wootConstants from 'dashboard/constants/globals';
 import {
@@ -165,6 +166,9 @@ export default {
   },
   data() {
     return {
+      // Tolzar collision guard (c92): when I started writing, and who replied meanwhile (shown before sending).
+      tzComposeStartedAt: null,
+      tzCollisionName: '',
       message: '',
       inReplyTo: {},
       isFocused: false,
@@ -613,9 +617,15 @@ export default {
         this.isQuoteRemoved = false;
       }
     },
-    message() {
+    message(value) {
       // Autosave the current message draft.
       this.doAutoSaveDraft();
+      if (!value) {
+        this.tzComposeStartedAt = null;
+        this.tzCollisionName = '';
+      } else if (!this.tzComposeStartedAt) {
+        this.tzComposeStartedAt = Math.floor(Date.now() / 1000);
+      }
     },
     showWhatsappTemplates(isAvailable) {
       if (!isAvailable) this.hideWhatsappTemplatesModal();
@@ -985,7 +995,33 @@ export default {
             hasReplyTo: !!this.inReplyTo?.id,
           });
     },
+    // Tolzar (c92): TOLZAR_COLLISION_GUARD_ACCOUNTS workspaces.
+    tzCollisionGuardOn() {
+      return !!this.$store.getters['accounts/getAccount'](
+        this.$store.getters.getCurrentAccountId
+      )?.tolzar_collision_guard;
+    },
+    tzCancelCollision() {
+      this.tzCollisionName = '';
+    },
     async onSendReply() {
+      // Tolzar collision guard (c92): a teammate replied since I started writing: say so once; the next Send goes.
+      if (
+        !this.isPrivate &&
+        !this.tzCollisionName &&
+        this.tzCollisionGuardOn()
+      ) {
+        const who = recentReplyByOther(
+          this.currentChat?.messages,
+          this.currentUser?.id,
+          this.tzComposeStartedAt
+        );
+        if (who) {
+          this.tzCollisionName = who;
+          return;
+        }
+      }
+      this.tzCollisionName = '';
       const undefinedVariables = getUndefinedVariablesInMessage({
         message: this.message,
         variables: this.messageVariables,
@@ -1371,6 +1407,29 @@ export default {
 
 <template>
   <ReplyBoxBanner :message="message" :is-on-private-note="isOnPrivateNote" />
+  <div
+    v-if="tzCollisionName"
+    class="mx-2 mb-2 flex items-center gap-3 rounded-xl border border-solid border-n-amber-6 bg-n-amber-2 px-3.5 py-2.5"
+    role="alert"
+  >
+    <span class="flex-1 text-sm text-n-slate-12">
+      {{ $t('TOLZAR_INBOX.COLLISION.TEXT', { name: tzCollisionName }) }}
+    </span>
+    <button
+      type="button"
+      class="min-h-[36px] px-3 rounded-lg text-sm text-n-slate-11"
+      @click="tzCancelCollision"
+    >
+      {{ $t('TOLZAR_INBOX.COLLISION.CANCEL') }}
+    </button>
+    <button
+      type="button"
+      class="min-h-[36px] px-3 rounded-lg bg-n-brand text-white text-sm font-medium"
+      @click="onSendReply"
+    >
+      {{ $t('TOLZAR_INBOX.COLLISION.SEND_ANYWAY') }}
+    </button>
+  </div>
   <div class="reply-box" :class="replyBoxClass">
     <ReplyTopPanel
       :mode="replyType"

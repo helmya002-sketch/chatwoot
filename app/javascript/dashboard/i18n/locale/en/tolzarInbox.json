@@ -66,6 +66,11 @@
         "UNKNOWN": "The AI service did not answer just now. This is checked again every minute."
       }
     },
+    "COLLISION": {
+      "TEXT": "{name} replied to this customer while you were writing. Read it before you send?",
+      "CANCEL": "Review first",
+      "SEND_ANYWAY": "Send anyway"
+    },
     "REPLY_CLOSED": {
       "TITLE": "Reply window closed.",
       "META_24_HOURS": "The customer last wrote more than 24 hours ago. You can reply again as soon as they send a new message.",

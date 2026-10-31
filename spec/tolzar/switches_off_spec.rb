@@ -16,7 +16,7 @@ RSpec.describe 'Tolzar feature switches, off by default', type: :request do
     TOLZAR_TIKTOK_COMMENTS TOLZAR_TIKTOK_COMMENT_REPLIES TOLZAR_LEAD_INTAKE TOLZAR_OWN_WIDGET_ACCOUNTS
     TOLZAR_NEW_UI_ACCOUNTS TOLZAR_NEW_UI_AUTH TOLZAR_NEW_EMAILS TOLZAR_PWA_ACCOUNTS TOLZAR_TOPBAR_ACCOUNTS
     TOLZAR_META_HUMAN_AGENT TOLZAR_ANNOUNCEMENTS TOLZAR_AUTO_PROVISION TOLZAR_BILLING_ENFORCE TOLZAR_MCP_PUBLIC
-    TOLZAR_SUPERADMIN_2FA_REQUIRED TOLZAR_DIGEST_ACCOUNTS
+    TOLZAR_SUPERADMIN_2FA_REQUIRED TOLZAR_DIGEST_ACCOUNTS TOLZAR_COLLISION_GUARD_ACCOUNTS
   ].freeze
 
   it 'starts with every feature switch unset in this environment' do
@@ -53,7 +53,8 @@ RSpec.describe 'Tolzar feature switches, off by default', type: :request do
 
   it 'keeps the new screens off in the account the dashboard reads' do
     get "/api/v1/accounts/#{account.id}", headers: headers, as: :json
-    expect(response.parsed_body).to include('tolzar_new_ui' => false, 'tolzar_pwa' => false, 'tolzar_meta_human_agent' => false)
+    expect(response.parsed_body).to include('tolzar_new_ui' => false, 'tolzar_pwa' => false, 'tolzar_meta_human_agent' => false,
+                                            'tolzar_collision_guard' => false)
   end
 
   it 'sends no top-bar counts or AI state while TOLZAR_TOPBAR_ACCOUNTS is off' do
