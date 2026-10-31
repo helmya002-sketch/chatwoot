@@ -27,6 +27,8 @@ import {
   TONE_MUTED,
 } from 'dashboard/components-next/Tolzar/settings/tzClasses';
 import { OTHER_STAGES, stageCounts } from './tolzarReportsData';
+import FirstReplyCard from 'dashboard/components-next/Tolzar/FirstReplyCard.vue';
+import LiveConversationsCard from 'dashboard/components-next/Tolzar/LiveConversationsCard.vue';
 import { useMapGetter, useStore } from 'dashboard/composables/store';
 
 const route = useRoute();
@@ -35,6 +37,8 @@ const store = useStore();
 const { t } = useI18n();
 const { resolvedLocale } = useLocale();
 const accountId = computed(() => route.params.accountId);
+// UI phase 3 (new UI only): the first-reply chart and the live table.
+const newUi = ref(document.body.classList.contains('tz-ui'));
 const currentUser = useMapGetter('getCurrentUser');
 
 // Team presence: the agents endpoint is account-wide, so this is open to administrators as a
@@ -792,6 +796,12 @@ onBeforeUnmount(() => {
             </p>
           </div>
         </div>
+      </div>
+
+      <!-- Tolzar UI phase 3 (new UI only): first reply per day + live conversations -->
+      <div v-if="newUi" class="grid grid-cols-1 gap-3.5 mt-3.5 lg:grid-cols-2">
+        <FirstReplyCard />
+        <LiveConversationsCard :conversations="conversations" :account-id="accountId" />
       </div>
 
       <!-- recent conversations -->

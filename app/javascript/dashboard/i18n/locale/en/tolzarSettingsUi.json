@@ -7,6 +7,20 @@
       "NO_MATCH": "No setting matches. Try another word."
     },
     "ENABLED": "On",
+    "DASH": {
+      "FIRST_REPLY": "First reply, last 14 days (average per day)",
+      "NO_DATA": "No reply-time data yet.",
+      "MINUTES": "{n} min",
+      "NO_REPLY": "no replies",
+      "LIVE": "Live conversations",
+      "LIVE_NONE": "No open conversations right now.",
+      "COL_CONTACT": "Contact",
+      "COL_STATUS": "Status",
+      "COL_UNREAD": "Unread",
+      "ST_assigned": "With {who}",
+      "ST_team": "Team {who}",
+      "ST_waiting": "Waiting"
+    },
     "SHELL": {
       "AI_LIVE": "AI status",
       "STATE_live": "AI live",
