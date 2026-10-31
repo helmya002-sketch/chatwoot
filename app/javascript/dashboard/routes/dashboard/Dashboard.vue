@@ -3,6 +3,7 @@ import { defineAsyncComponent, ref, computed } from 'vue';
 
 import NextSidebar from 'next/sidebar/Sidebar.vue';
 import TolzarBriefingStrip from 'next/Tolzar/BriefingStrip.vue';
+import TolzarPushPrompt from 'next/Tolzar/PushPrompt.vue';
 import WootKeyShortcutModal from 'dashboard/components/widgets/modal/WootKeyShortcutModal.vue';
 import AddAccountModal from 'dashboard/components/app/AddAccountModal.vue';
 import UpgradePage from 'dashboard/routes/dashboard/upgrade/UpgradePage.vue';
@@ -32,6 +33,7 @@ export default {
   components: {
     NextSidebar,
     TolzarBriefingStrip,
+    TolzarPushPrompt,
     CommandBar,
     WootKeyShortcutModal,
     AddAccountModal,
@@ -168,6 +170,7 @@ export default {
           <FloatingCallWidget v-if="hasActiveCall || hasIncomingCall" />
         </template>
         <CommandBar :is-paywalled="isAccountPaywalled" />
+        <TolzarPushPrompt />
         <AddAccountModal
           :show="showCreateAccountModal"
           @close-account-create-modal="closeCreateAccountModal"

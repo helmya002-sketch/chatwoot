@@ -1,0 +1,18 @@
+{
+  "TOLZAR_PWA": {
+    "QUIET": {
+      "TITLE": "Quiet hours",
+      "HINT": "No notifications on your phone or in this browser between these times ({zone}). Messages still arrive in the inbox.",
+      "FROM": "From",
+      "TO": "To",
+      "SAVE": "Save quiet hours",
+      "SAVED": "Quiet hours saved."
+    },
+    "PUSH": {
+      "TITLE": "Notifications",
+      "TEXT": "Get a notification when a customer writes or a conversation is assigned to you.",
+      "LATER": "Not now",
+      "ENABLE": "Turn on"
+    }
+  }
+}

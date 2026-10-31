@@ -5,6 +5,8 @@ class Notification::PushNotificationService
 
   def perform
     return unless user_subscribed_to_notification?
+    # Tolzar (c64): no push during the person's quiet hours, for TOLZAR_PWA_ACCOUNTS workspaces.
+    return if tolzar_private? && Tolzar::PushPrivacy.quiet?(user)
 
     notification_subscriptions.each do |subscription|
       send_browser_push(subscription)
@@ -30,9 +32,18 @@ class Notification::PushNotificationService
     @conversation ||= notification.conversation
   end
 
+  def tolzar_private?
+    @tolzar_private = Tolzar::PushPrivacy.on?(notification.account_id) if @tolzar_private.nil?
+    @tolzar_private
+  end
+
+  def push_title
+    tolzar_private? ? Tolzar::PushPrivacy.title(notification) : notification.push_message_title
+  end
+
   def push_message
     {
-      title: notification.push_message_title,
+      title: push_title,
       tag: "#{notification.notification_type}_#{conversation.display_id}_#{notification.id}",
       url: push_url
     }
@@ -147,7 +158,10 @@ class Notification::PushNotificationService
     }
   end
 
+  # Tolzar (c64): a private title and no message text for TOLZAR_PWA_ACCOUNTS workspaces.
   def fcm_notification
+    return { title: push_title, body: '' } if tolzar_private?
+
     {
       title: notification.push_message_title,
       body: notification.push_message_body

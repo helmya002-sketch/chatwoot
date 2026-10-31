@@ -1327,3 +1327,13 @@ en:
         test_email:
           queued: 'Test email on its way to %{email}. Ask the user to check their inbox and spam folder.'
           subject: 'Test email from %{brand_name} support'
+  # Tolzar (round 4, c64): private push titles for TOLZAR_PWA_ACCOUNTS workspaces: who it is about, never what was written.
+  tolzar:
+    push:
+      new_conversation: 'New conversation from %{name}'
+      new_message: 'New message from %{name}'
+      assigned: 'Assigned to you: %{name}'
+      mention: '%{name} mentioned you'
+      update: 'Update on the conversation with %{name}'
+      someone: 'a customer'
+      teammate: 'A teammate'

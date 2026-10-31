@@ -39,3 +39,40 @@ describe('tolzarPwa', () => {
     ).toBe(false);
   });
 });
+
+describe('tolzarPwa quiet hours and push offer', () => {
+  it('fills quiet hours with safe defaults', async () => {
+    const { quietHours } = await import('../tolzarPwa');
+    expect(quietHours(null, 'Africa/Cairo')).toEqual({
+      on: false,
+      from: '22:00',
+      to: '07:00',
+      tz: 'Africa/Cairo',
+    });
+    expect(
+      quietHours({ on: true, from: '25:00', to: '06:30', tz: 'UTC' })
+    ).toEqual({ on: true, from: '22:00', to: '06:30', tz: 'UTC' });
+  });
+
+  it('offers push only in the installed app before the phone was asked', async () => {
+    const { shouldOfferPush } = await import('../tolzarPwa');
+    const base = {
+      navigator: { standalone: true },
+      Notification: { permission: 'default' },
+      chatwootConfig: { vapidPublicKey: 'k' },
+    };
+    expect(shouldOfferPush(base)).toBe(true);
+    expect(shouldOfferPush(base, { dismissed: true })).toBe(false);
+    expect(
+      shouldOfferPush({ ...base, Notification: { permission: 'granted' } })
+    ).toBe(false);
+    expect(
+      shouldOfferPush({
+        ...base,
+        navigator: {},
+        matchMedia: () => ({ matches: false }),
+      })
+    ).toBe(false);
+    expect(shouldOfferPush({ ...base, chatwootConfig: {} })).toBe(false);
+  });
+});

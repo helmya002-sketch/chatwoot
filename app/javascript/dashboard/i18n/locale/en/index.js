@@ -48,6 +48,7 @@ import tolzarUi from './tolzarUi.json';
 import tolzarDashboard from './tolzarDashboard.json';
 import tolzarAgents from './tolzarAgents.json';
 import tolzarInbox from './tolzarInbox.json';
+import tolzarPwa from './tolzarPwa.json';
 import tolzarSettingsUi from './tolzarSettingsUi.json';
 
 export default {
@@ -101,5 +102,6 @@ export default {
   ...tolzarDashboard,
   ...tolzarAgents,
   ...tolzarInbox,
+  ...tolzarPwa,
   ...tolzarSettingsUi,
 };

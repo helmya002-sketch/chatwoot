@@ -27,3 +27,28 @@ export function isInstalledApp(win = window) {
     return false;
   }
 }
+
+// Quiet hours (Tolzar::PushPrivacy.quiet?): what Profile > Notifications saves in ui_settings.tolzar_quiet_hours.
+export const QUIET_DEFAULT = { on: false, from: '22:00', to: '07:00', tz: '' };
+const HHMM = /^([01]\d|2[0-3]):[0-5]\d$/;
+export function quietHours(saved, browserZone = '') {
+  const q = {
+    ...QUIET_DEFAULT,
+    ...(saved && typeof saved === 'object' ? saved : {}),
+  };
+  return {
+    on: q.on === true,
+    from: HHMM.test(q.from) ? q.from : QUIET_DEFAULT.from,
+    to: HHMM.test(q.to) ? q.to : QUIET_DEFAULT.to,
+    tz: q.tz || browserZone || '',
+  };
+}
+
+// The "Turn on notifications" prompt: only inside the installed app, only while the phone has not been asked.
+export function shouldOfferPush(win = window, { dismissed = false } = {}) {
+  if (dismissed || !isInstalledApp(win)) return false;
+  const N = win.Notification;
+  return (
+    !!N && N.permission === 'default' && !!win.chatwootConfig?.vapidPublicKey
+  );
+}

@@ -11,12 +11,14 @@ import {
 import { FEATURE_FLAGS } from 'dashboard/featureFlags';
 import ToggleSwitch from 'dashboard/components-next/switch/Switch.vue';
 import { NOTIFICATION_TYPES } from './constants';
+import TolzarQuietHours from 'dashboard/components-next/Tolzar/QuietHours.vue';
 
 export default {
   components: {
     TableHeaderCell,
     ToggleSwitch,
     CheckBox,
+    TolzarQuietHours,
   },
   data() {
     return {
@@ -312,5 +314,6 @@ export default {
         @change="onRequestPermissions"
       />
     </div>
+    <TolzarQuietHours />
   </div>
 </template>
