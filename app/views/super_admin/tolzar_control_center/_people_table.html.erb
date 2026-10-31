@@ -1,4 +1,4 @@
-<%# locals: (rows:) -%>
+<%# locals: (rows:, actions: false) -%>
 <% cc = "super_admin.control_center" %>
 <% if rows.empty? %>
   <p class="px-5 py-4 text-body-main text-n-slate-11"><%= t("#{cc}.none") %></p>
@@ -10,6 +10,7 @@
           <% %w[person roles twofa last_sign_in].each do |col| %>
             <th class="px-4 py-2 text-start font-medium"><%= t("#{cc}.col.#{col}") %></th>
           <% end %>
+          <% if actions %><th class="px-4 py-2 text-start font-medium"><%= t("#{cc}.people_actions") %></th><% end %>
         </tr>
       </thead>
       <tbody>
@@ -36,6 +37,29 @@
               <% end %>
             </td>
             <td class="px-4 py-2 font-mono text-xs text-n-slate-11"><%= row[:last_sign_in_at]&.utc&.strftime("%Y-%m-%d %H:%M") || "–" %></td>
+            <% if actions && row[:user] %>
+              <td class="px-4 py-2">
+                <details>
+                  <summary class="cursor-pointer text-n-blue-11"><%= t("#{cc}.people_actions") %></summary>
+                  <%= form_with url: super_admin_tolzar_cc_reset_two_factor_path(row[:user].id), method: :post,
+                                class: "mt-2 flex flex-col gap-2 w-64" do %>
+                    <%= label_tag "confirm-#{row[:user].id}", t("#{cc}.people_confirm"), class: "text-label-small" %>
+                    <%= text_field_tag :confirm, nil, id: "confirm-#{row[:user].id}", autocomplete: "off", class: ui(:input, "min-h-9") %>
+                    <%= label_tag "reason-#{row[:user].id}", t("#{cc}.people_reason"), class: "text-label-small" %>
+                    <%= text_field_tag :reason, nil, id: "reason-#{row[:user].id}", maxlength: 300, class: ui(:input, "min-h-9") %>
+                    <div class="flex flex-wrap gap-1.5">
+                      <% { reset_two_factor: :super_admin_tolzar_cc_reset_two_factor_path, end_sessions: :super_admin_tolzar_cc_end_sessions_path,
+                           resend_invite: :super_admin_tolzar_cc_resend_invite_path }.each do |key, route| %>
+                        <%= button_tag t("#{cc}.people_action.#{key}"), type: "submit", formaction: send(route, row[:user].id),
+                                       class: "h-8 px-2.5 rounded-lg border border-n-slate-6 text-label-small hover:bg-n-slate-3" %>
+                      <% end %>
+                    </div>
+                  <% end %>
+                </details>
+              </td>
+            <% elsif actions %>
+              <td></td>
+            <% end %>
           </tr>
         <% end %>
       </tbody>

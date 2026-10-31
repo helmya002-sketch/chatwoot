@@ -59,8 +59,8 @@
           <dd class="tabular-nums">1.0</dd>
         </div>
         <div class="flex items-center justify-between gap-3">
-          <dt class="text-n-slate-11"><%= t("super_admin.dashboard.plan") %></dt>
-          <dd><%= render "badge", label: ChatwootHub.pricing_plan.titleize, tone: :info %></dd>
+          <dt class="text-n-slate-11"><%= t("super_admin.control_center.release") %></dt>
+          <dd><%= render "badge", label: ENV.fetch('TOLZAR_RELEASE', '').presence || GIT_HASH.to_s.first(9), tone: :info %></dd>
         </div>
       </dl>
     <% end %>

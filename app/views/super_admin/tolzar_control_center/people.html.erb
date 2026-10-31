@@ -13,6 +13,6 @@
 
   <%= render "card", title: t("#{cc}.people"), count: @rows.size do %>
     <%= render "super_admin/tolzar_control_center/people_table",
-               rows: @rows.map { |r| r.merge(name: r[:user].name, email: r[:user].email) } %>
+               rows: @rows.map { |r| r.merge(name: r[:user].name, email: r[:user].email) }, actions: true %>
   <% end %>
 <% end %>

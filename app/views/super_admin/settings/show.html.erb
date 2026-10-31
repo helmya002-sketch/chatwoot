@@ -17,12 +17,8 @@
     <% end %>
   <% end %>
 
-  <% user_count = User.count if ChatwootHub.pricing_plan != 'community' %>
-  <% if user_count && user_count > ChatwootHub.pricing_plan_quantity %>
-    <%= render "alert", role: "alert" do %>
-      <%= t("super_admin.settings.agents_over_limit", count: user_count) %>
-    <% end %>
-  <% end %>
+  <%# Tolzar: the upstream hub's plan limit, installation id and community/support rows are not shown (Tolzar has
+      its own billing, Control Center > Billing overview; support is Tolzar's own). %>
 
   <div class="rounded-xl border border-n-weak bg-n-solid-1 divide-y divide-n-weak">
     <% if ChatwootApp.enterprise? %>
@@ -40,27 +36,13 @@
     <% end %>
 
     <div class="<%= summary_row %>">
-      <%= render "icon_tile", icon: "i-lucide-fingerprint", tone: "bg-n-iris-3 text-n-iris-11" %>
+      <%= render "icon_tile", icon: "i-lucide-gauge", tone: "bg-n-blue-3 text-n-blue-11" %>
       <div class="min-w-0">
-        <h2 class="text-heading-3"><%= t("super_admin.settings.installation_identifier") %></h2>
-        <p class="text-body-main text-n-slate-11"><%= t("super_admin.settings.installation_identifier_description") %></p>
-      </div>
-      <div class="<%= summary_actions %> sm:w-80">
-        <div class="w-full"><%= render "secret", value: ChatwootHub.installation_identifier, boxed: true %></div>
-      </div>
-    </div>
-
-    <div class="<%= summary_row %>">
-      <%= render "icon_tile", icon: "i-lucide-life-buoy", tone: "bg-n-amber-3 text-n-amber-11" %>
-      <div class="min-w-0">
-        <h2 class="text-heading-3"><%= t("super_admin.settings.need_help") %></h2>
-        <p class="text-body-main text-n-slate-11"><%= t("super_admin.settings.need_help_description") %></p>
+        <h2 class="text-heading-3"><%= t("super_admin.control_center.title") %></h2>
+        <p class="text-body-main text-n-slate-11"><%= t("super_admin.control_center.overview_description") %></p>
       </div>
       <div class="<%= summary_actions %>">
-        <%= render "button", label: t("super_admin.settings.community_support"), icon_end: "i-lucide-arrow-up-right size-3.5 text-n-slate-10", url: "https://discord.gg/cJXdrwS", target: "_blank", variant: :secondary %>
-        <% if ChatwootHub.pricing_plan != 'community' %>
-          <%= render "button", label: t("super_admin.settings.chat_support"), icon: "i-lucide-message-circle size-3.5", variant: :secondary, data: { support_chat: true } %>
-        <% end %>
+        <%= render "button", label: t("super_admin.control_center.overview"), url: super_admin_tolzar_control_center_path, variant: :secondary %>
       </div>
     </div>
   </div>

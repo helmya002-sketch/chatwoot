@@ -853,6 +853,18 @@ en:
         other: '%{count} dead jobs'
       queue_line: '%{size} waiting · %{latency}s'
       brain_audit: 'Workspace audit (brain, last 50)'
+      people_confirm_needed: 'Type the person''s e-mail exactly and a reason (a few words) to confirm.'
+      people_actions: 'Actions'
+      people_confirm: 'Their e-mail, to confirm'
+      people_reason: 'Reason (kept in the audit log)'
+      people_done:
+        reset_two_factor: 'Two-factor sign-in reset for %{email}: they set it up again at their next sign-in.'
+        end_sessions: 'Every session of %{email} ended.'
+        resend_invite: 'Invitation sent again to %{email}.'
+      people_action:
+        reset_two_factor: 'Reset 2FA'
+        end_sessions: 'Sign out everywhere'
+        resend_invite: 'Resend invitation'
       ai_title: 'AI safety'
       ai_description: 'Every workspace: is the kill switch on, how many inboxes are live, how many agents. Read-only before 12 Nov; the kill switch is set in the workspace.'
       ai_list_unknown: 'Brain did not answer'

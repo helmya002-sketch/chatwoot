@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_10_31_150000) do
+ActiveRecord::Schema[7.1].define(version: 2026_10_31_160000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1655,6 +1655,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_31_150000) do
     t.integer "status"
     t.string "ip"
     t.datetime "created_at", null: false
+    t.string "note", limit: 300
     t.index ["created_at"], name: "index_tolzar_super_admin_audits_on_created_at"
     t.index ["super_admin_id"], name: "index_tolzar_super_admin_audits_on_super_admin_id"
   end

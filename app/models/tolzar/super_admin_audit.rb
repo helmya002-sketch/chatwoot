@@ -9,11 +9,12 @@ class Tolzar::SuperAdminAudit < ApplicationRecord
 
   scope :recent, -> { order(created_at: :desc) }
 
-  def self.record!(request:, controller:, action:, super_admin: nil, status: nil, email: nil, record_id: nil)
+  def self.record!(request:, controller:, action:, super_admin: nil, status: nil, email: nil, record_id: nil, note: nil)
     create!(super_admin_id: super_admin&.id, email: (email || super_admin&.email).to_s.first(255).presence,
             controller: controller.to_s.first(120), action: action.to_s.first(60), http_method: request.request_method,
             path: request.path.to_s.first(500), record_id: record_id.to_s.first(64).presence,
-            fields: field_names(request.request_parameters), status: status, ip: request.remote_ip, created_at: Time.current)
+            fields: field_names(request.request_parameters), status: status, ip: request.remote_ip,
+            note: note.to_s.strip.first(300).presence, created_at: Time.current)
   rescue StandardError => e
     Rails.logger.error("[tolzar] super admin audit not written: #{e.class}")
     nil
