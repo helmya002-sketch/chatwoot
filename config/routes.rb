@@ -134,6 +134,13 @@ Rails.application.routes.draw do
           patch  'tolzar/documents/:id',         to: 'tolzar_documents#update'
           post   'tolzar/documents/:id/issue',   to: 'tolzar_documents#issue'
           post   'tolzar/documents/:id/void',    to: 'tolzar_documents#void'
+          # Tolzar booking-system connector (Tolzar::BookingConnector; TOLZAR_BOOKING_CONNECTOR)
+          get    'tolzar/booking_connector',            to: 'tolzar_booking_connector#show'
+          post   'tolzar/booking_connector',            to: 'tolzar_booking_connector#save'
+          post   'tolzar/booking_connector/test',       to: 'tolzar_booking_connector#check'
+          post   'tolzar/booking_connector/disconnect', to: 'tolzar_booking_connector#disconnect'
+          get    'tolzar/booking_connector/bookings',   to: 'tolzar_booking_connector#bookings'
+          post   'tolzar/booking_connector/draft',      to: 'tolzar_booking_connector#draft'
           get    'tolzar/workspace/settings',    to: 'tolzar#workspace_settings'
           post   'tolzar/workspace/settings',    to: 'tolzar#workspace_settings_save'
           post   'tolzar/workspace/go_live',     to: 'tolzar#go_live'

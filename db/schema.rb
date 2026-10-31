@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_10_31_120000) do
+ActiveRecord::Schema[7.1].define(version: 2026_10_31_130000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1939,6 +1939,20 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_31_120000) do
     t.index ["created_at"], name: "index_tolzar_idea_votes_on_created_at"
     t.index ["idea_id", "user_id"], name: "index_tolzar_idea_votes_on_idea_id_and_user_id", unique: true
     t.index ["user_id"], name: "index_tolzar_idea_votes_on_user_id"
+  end
+
+  create_table "tolzar_booking_connectors", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.string "adapter", null: false
+    t.string "base_url", null: false
+    t.text "token"
+    t.datetime "last_test_at"
+    t.boolean "last_test_ok"
+    t.string "last_error"
+    t.bigint "updated_by_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_tolzar_booking_connectors_on_account_id", unique: true
   end
 
   create_table "tolzar_document_counters", force: :cascade do |t|
