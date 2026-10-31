@@ -19,7 +19,7 @@ RSpec.describe 'Tolzar booking documents', type: :request do
 
   around { |example| with_modified_env(TOLZAR_BOOKING_DOCS_ACCOUNTS: account.id.to_s) { example.run } }
 
-  def create_draft(body = {}, user: agent)
+  def create_draft(user: agent, **body)
     post base, params: { doc_type: 'voucher', conversation_id: conversation.display_id, currency: 'USD', spec: spec }.merge(body),
                headers: user.create_new_auth_token, as: :json
     response.parsed_body['document']
