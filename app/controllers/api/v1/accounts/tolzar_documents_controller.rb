@@ -83,9 +83,10 @@ class Api::V1::Accounts::TolzarDocumentsController < Api::V1::Accounts::BaseCont
     send_data csv, filename: "documents-#{Time.current.strftime('%Y%m%d')}.csv", type: 'text/csv'
   end
 
-  # A plain, self-contained page (no script, our own styles); every value is escaped by ERB.
+  # A plain, self-contained page (no script, our own styles); every value is escaped by ERB. formats: [:html], since
+  # the API routes default to JSON and the only template is print.html.erb (batch-2 gate: MissingTemplate).
   def printable
-    render template: 'tolzar/documents/print', layout: false, locals: { document: @document, view: @document.view },
+    render template: 'tolzar/documents/print', formats: [:html], layout: false, locals: { document: @document, view: @document.view },
            content_type: 'text/html'
   end
 
