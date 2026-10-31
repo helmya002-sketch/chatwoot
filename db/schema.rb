@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_10_30_193000) do
+ActiveRecord::Schema[7.1].define(version: 2026_10_31_050000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -627,6 +627,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_30_193000) do
     t.string "provider"
     t.string "imap_authentication", default: "plain"
     t.boolean "verified_for_sending", default: false, null: false
+    t.text "tolzar_secrets"
     t.index ["email"], name: "index_channel_email_on_email", unique: true
     t.index ["forward_to_email"], name: "index_channel_email_on_forward_to_email", unique: true
   end
@@ -674,6 +675,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_30_193000) do
     t.jsonb "provider_config", default: {}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "tolzar_secrets"
     t.index ["phone_number"], name: "index_channel_sms_on_phone_number", unique: true
   end
 
@@ -715,6 +717,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_30_193000) do
     t.string "twiml_app_sid"
     t.string "api_key_secret"
     t.jsonb "provider_config", default: {}
+    t.text "tolzar_secrets"
     t.index ["account_sid", "phone_number"], name: "index_channel_twilio_sms_on_account_sid_and_phone_number", unique: true
     t.index ["messaging_service_sid"], name: "index_channel_twilio_sms_on_messaging_service_sid", unique: true
     t.index ["phone_number"], name: "index_channel_twilio_sms_on_phone_number", unique: true
@@ -765,6 +768,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_30_193000) do
     t.jsonb "phone_number_health", default: {}, null: false
     t.datetime "phone_number_health_checked_at"
     t.string "phone_number_health_error", limit: 500
+    t.text "tolzar_secrets"
     t.index ["phone_number_health_checked_at"], name: "index_channel_whatsapp_on_phone_number_health_checked_at"
     t.index ["phone_number"], name: "index_channel_whatsapp_on_phone_number", unique: true
   end
@@ -1310,6 +1314,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_30_193000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.jsonb "settings", default: {}
+    t.text "tolzar_secrets"
   end
 
   create_table "labels", force: :cascade do |t|
