@@ -76,6 +76,25 @@ RSpec.describe Tolzar::MetaHumanAgent do
       expect(Conversations::MessageWindowService.new(wa_conversation).can_reply?).to be(false)
     end
   end
+  describe 'the audit list', type: :request do
+    it 'lists tagged replies with who sent them, for administrators only' do
+      admin = create(:user, account: account, role: :administrator)
+      agent = create(:user, account: account, role: :agent)
+      customer_wrote(2.days)
+      tagged = reply(person)
+      described_class.record!(tagged)
+      reply(person)
+
+      get "/api/v1/accounts/#{account.id}/tolzar/human_agent_replies", headers: agent.create_new_auth_token
+      expect(response).to have_http_status(:unauthorized)
+      get "/api/v1/accounts/#{account.id}/tolzar/human_agent_replies", headers: admin.create_new_auth_token
+      rows = response.parsed_body['replies']
+      expect(rows.size).to eq(1)
+      expect(rows.first).to include('id' => tagged.id, 'sender' => person.name, 'tag' => 'HUMAN_AGENT',
+                                    'conversation_id' => conversation.display_id)
+    end
+  end
+
   # The send path itself (MESSAGE_TAG / HUMAN_AGENT on the Graph call) is in spec/services/facebook and
   # spec/services/instagram, switched to TOLZAR_META_HUMAN_AGENT in this candidate.
 end

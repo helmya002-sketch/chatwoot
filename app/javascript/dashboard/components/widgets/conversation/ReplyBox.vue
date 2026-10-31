@@ -29,6 +29,7 @@ import ContentTemplates from './ContentTemplates/ContentTemplatesModal.vue';
 import { MESSAGE_MAX_LENGTH } from 'shared/helpers/MessageTypeHelper';
 import { isComposing } from 'shared/helpers/KeyboardHelpers';
 import inboxMixin, { INBOX_FEATURES } from 'shared/mixins/inboxMixin';
+import { replyWindow } from 'dashboard/components-next/Tolzar/tolzarReplyWindow';
 import { trimContent, debounce, getRecipients } from '@chatwoot/utils';
 import wootConstants from 'dashboard/constants/globals';
 import {
@@ -411,10 +412,24 @@ export default {
         (this.isATiktokChannel && tiktokAttachmentSupported)
       );
     },
+    // Tolzar (c77): Messenger / Instagram between 24 hours and 7 days, HUMAN_AGENT on for the workspace.
+    tzHumanAgentWindow() {
+      const account = this.$store.getters['accounts/getAccount'](
+        this.$store.getters.getCurrentAccountId
+      );
+      const win = replyWindow({
+        channelType: this.channelType,
+        messages: this.currentChat?.messages,
+        humanAgent: !!account?.tolzar_meta_human_agent,
+      });
+      return win?.kind === 'human_agent';
+    },
     replyButtonLabel() {
       let sendMessageText = this.$t('CONVERSATION.REPLYBOX.SEND');
       if (this.isPrivate) {
         sendMessageText = this.$t('CONVERSATION.REPLYBOX.CREATE');
+      } else if (this.tzHumanAgentWindow) {
+        sendMessageText = this.$t('TOLZAR_INBOX.REPLY_WINDOW.SEND_HUMAN_AGENT');
       }
       const keyLabel = this.isEditorHotKeyEnabled('cmd_enter')
         ? `(${this.shortcutKey})`

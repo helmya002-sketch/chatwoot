@@ -72,6 +72,15 @@
       "LEFT_D": "{n} d",
       "LEFT_H": "{n} h",
       "CLOSED_7_DAYS": "Meta's 7-day human-agent limit: more than 7 days since the customer's last message, so no reply can go out here",
+      "SEND_HUMAN_AGENT": "Send as human-agent reply",
+      "SENT_TAGGED": "Sent with Meta's Human Agent tag · {name}",
+      "AUDIT_TITLE": "Human-agent replies",
+      "AUDIT_HINT": "Every Messenger and Instagram reply sent with Meta's Human Agent tag: when, by whom and in which conversation. Only people send these, never the AI.",
+      "AUDIT_EMPTY": "No reply has used the Human Agent tag.",
+      "AUDIT_WHEN": "When",
+      "AUDIT_WHO": "Sent by",
+      "AUDIT_CONVERSATION": "Conversation",
+      "AUDIT_TAG": "Tag",
       "LEFT_MIN": "{n} min"
     },
     "BELL": {

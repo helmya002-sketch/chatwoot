@@ -32,6 +32,7 @@ import LeadSourcesPanel from 'dashboard/components-next/Tolzar/settings/LeadSour
 import WidgetPanel from 'dashboard/components-next/Tolzar/settings/WidgetPanel.vue';
 import DocumentsRegisterPanel from 'dashboard/components-next/Tolzar/settings/DocumentsRegisterPanel.vue';
 import BookingsPanel from 'dashboard/components-next/Tolzar/settings/BookingsPanel.vue';
+import HumanAgentRepliesPanel from 'dashboard/components-next/Tolzar/settings/HumanAgentRepliesPanel.vue';
 import {
   BTN,
   BTN_GHOST,
@@ -98,7 +99,7 @@ watchEffect(() =>
 const SECTIONS = [
   ['workspace', ['workspace_settings', 'routing', 'pipeline', 'usage', 'plan', 'roles', 'audit', 'export', 'go_live', 'bookings', 'booking_documents']],
   ['trust', ['disclosure', 'retention', 'privacy']],
-  ['channels', ['whatsapp_listen', 'meta_app', 'lead_intake', 'sms', 'crm', 'commerce']],
+  ['channels', ['whatsapp_listen', 'meta_app', 'human_agent_replies', 'lead_intake', 'sms', 'crm', 'commerce']],
   ['team', ['sla', 'qa']],
   ['ai', ['media', 'documents', 'recovery', 'learned', 'brief', 'ask', 'negotiation', 'agent_teams', 'tuning']],
   ['contacts', ['dedupe']],
@@ -550,6 +551,7 @@ onMounted(() => {
           <LeadSourcesPanel v-if="current === 'lead_sources'" />
           <WidgetPanel v-if="current === 'website_widget'" />
           <DocumentsRegisterPanel v-if="current === 'booking_documents'" />
+          <HumanAgentRepliesPanel v-if="current === 'human_agent_replies'" />
           <BookingsPanel v-if="current === 'bookings'" />
           <AiLimitsPanel v-if="AI_LIMITS.includes(current)" :key="current" :section="current" />
           <DocumentsPanel v-if="current === 'documents'" />

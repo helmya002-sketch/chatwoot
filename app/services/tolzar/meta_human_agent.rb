@@ -36,8 +36,9 @@ module Tolzar::MetaHumanAgent
     last.present? && last < STANDARD.ago && last > HUMAN_AGENT.ago
   end
 
+  # update! (not update_columns) so the message.updated event reaches the open conversation at once.
   def record!(message)
-    message.update_columns(content_attributes: (message.content_attributes || {}).merge('tolzar_human_agent_tag' => true))
+    message.update!(content_attributes: (message.content_attributes || {}).merge('tolzar_human_agent_tag' => true))
     Rails.logger.info("[Tolzar] HUMAN_AGENT tag on message #{message.id} (account #{message.account_id}, user #{message.sender_id})")
   end
 

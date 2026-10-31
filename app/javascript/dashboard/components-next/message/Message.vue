@@ -656,6 +656,18 @@ provideMessageContext({
         :error="contentAttributes.externalError"
         @retry="emit('retry')"
       />
+      <!-- Tolzar (c77): a reply sent with Meta's HUMAN_AGENT tag says so, with the person who sent it. -->
+      <p
+        v-if="contentAttributes.tolzarHumanAgentTag"
+        class="[grid-area:meta] m-0 mt-1 text-xs text-n-amber-11"
+        :class="flexOrientationClass"
+      >
+        {{
+          t('TOLZAR_INBOX.REPLY_WINDOW.SENT_TAGGED', {
+            name: sender?.name || '',
+          })
+        }}
+      </p>
     </div>
     <div v-if="shouldShowContextMenu" class="context-menu-wrap">
       <ContextMenu
