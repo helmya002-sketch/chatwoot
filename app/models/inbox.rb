@@ -86,6 +86,8 @@ class Inbox < ApplicationRecord
   after_create_commit :dispatch_create_event
   # Tolzar B2: a new inbox gets the system brain bot (only with TOLZAR_AUTO_PROVISION; Tolzar::BrainProvisioning).
   after_create_commit -> { Tolzar::BrainProvisioning.attach(self) }
+  # Tolzar (c100): the brain's read user joins every new inbox (TOLZAR_BRAIN_USER_IDS; unset = nothing).
+  after_create_commit -> { Tolzar::BrainUsers.add_to_inbox(self) }
   after_update_commit :dispatch_update_event
   after_destroy_commit :invalidate_filtered_unread_counts_after_destroy
 
@@ -174,7 +176,8 @@ class Inbox < ApplicationRecord
   end
 
   def assignable_agents
-    (account.users.where(id: members.select(:user_id)) + account.administrators).uniq
+    # Tolzar (c100): never the brain's read user (TOLZAR_BRAIN_USER_IDS).
+    (account.users.where(id: members.select(:user_id)) + account.administrators).uniq.select { |u| Tolzar::BrainUsers.assignable?(u.id) }
   end
 
   def inbox_type
