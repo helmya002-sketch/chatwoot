@@ -138,8 +138,9 @@ class Tiktok::AuthClient
       "#{base_url}/webhooks/tiktok"
     end
 
+    # Tolzar: TIKTOK_REDIRECT_BASE (app.tolzar.com) when set, else FRONTEND_URL (Tolzar::PublicUrls.tiktok_base).
     def base_url
-      ENV.fetch('FRONTEND_URL', 'http://localhost:3000')
+      Tolzar::PublicUrls.tiktok_base
     end
 
     def api_base_url

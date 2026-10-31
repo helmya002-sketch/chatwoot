@@ -14,6 +14,12 @@ class Tiktok::CallbacksController < ApplicationController
 
   private
 
+  # Tolzar: TikTok calls back on TIKTOK_REDIRECT_BASE (app.tolzar.com) while the dashboard and its sign-in stay on
+  # FRONTEND_URL, so every redirect from here goes back to the dashboard's own host.
+  def url_options
+    super.merge(Tolzar::PublicUrls.dashboard_url_options)
+  end
+
   def all_scopes_granted?
     granted_scopes = short_term_access_token[:scope].to_s.split(',')
     (Tiktok::AuthClient::REQUIRED_SCOPES - granted_scopes).blank?
