@@ -910,7 +910,10 @@ en:
     tolzar_audits:
       title: 'Audit log'
       description: 'Every super-admin change and sign-in attempt: who, what, when and the names of the fields sent. Values are never stored.'
-      search: 'Search by e-mail, path or action'
+      search: 'Search by e-mail, path, action or note'
+      from: 'From'
+      to: 'To'
+      sign_ins_only: 'Sign-ins only'
       search_button: 'Search'
       export: 'Export CSV'
       entries: 'Entries'

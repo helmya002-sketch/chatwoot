@@ -57,3 +57,32 @@ RSpec.describe 'Tolzar super admin audit export', type: :request do
     expect(lines.last).to include('export@tolzar.com', 'account.name')
   end
 end
+
+RSpec.describe 'Tolzar super admin audit filters (c87)', type: :request do
+  let(:super_admin) { create(:super_admin) }
+
+  def entry(action, at, note: nil, email: 'ops@tolzar.com')
+    Tolzar::SuperAdminAudit.create!(email: email, controller: 'super_admin/x', action: action, http_method: 'POST',
+                                    path: "/super_admin/#{action}", fields: [], note: note, created_at: at)
+  end
+
+  before { sign_in(super_admin, scope: :super_admin) }
+
+  it 'filters by day and by sign-ins, and exports the note with formulas made text' do
+    entry('sign_in', Time.utc(2026, 11, 2, 9))
+    entry('sign_in_failed', Time.utc(2026, 11, 2, 10))
+    entry('hold', Time.utc(2026, 11, 2, 11), note: '=HYPERLINK("x")')
+    entry('update', Time.utc(2026, 10, 1, 9))
+
+    get '/super_admin/tolzar_audits/export', params: { from: '2026-11-01', to: '2026-11-03' }
+    rows = CSV.parse(response.body, headers: true)
+    expect(rows.pluck('action')).to contain_exactly('sign_in', 'sign_in_failed', 'hold')
+    expect(rows.find { |r| r['action'] == 'hold' }['note']).to eq("'=HYPERLINK(\"x\")")
+
+    get '/super_admin/tolzar_audits/export', params: { kind: 'sign_ins' }
+    expect(CSV.parse(response.body, headers: true).pluck('action')).to contain_exactly('sign_in', 'sign_in_failed')
+
+    get '/super_admin/tolzar_audits', params: { q: 'HYPERLINK', kind: 'sign_ins' }
+    expect(response).to have_http_status(:success)
+  end
+end

@@ -1,10 +1,16 @@
 <% content_for(:title) { t("super_admin.tolzar_audits.title") } %>
 
 <%= render "section", title: t("super_admin.tolzar_audits.title"), description: t("super_admin.tolzar_audits.description") do %>
-  <%= form_with url: super_admin_tolzar_audits_path, method: :get, class: "flex gap-2" do %>
+  <%= form_with url: super_admin_tolzar_audits_path, method: :get, class: "flex flex-wrap gap-2 items-end" do %>
     <%= search_field_tag :q, @query, placeholder: t("super_admin.tolzar_audits.search"), class: ui(:input, "min-h-10 flex-1") %>
+    <label class="flex flex-col text-label-small"><%= t("super_admin.tolzar_audits.from") %>
+      <%= date_field_tag :from, @from, class: ui(:input, "min-h-10") %></label>
+    <label class="flex flex-col text-label-small"><%= t("super_admin.tolzar_audits.to") %>
+      <%= date_field_tag :to, @to, class: ui(:input, "min-h-10") %></label>
+    <label class="flex items-center gap-1.5 min-h-10 text-label-small">
+      <%= check_box_tag :kind, "sign_ins", @sign_ins %> <%= t("super_admin.tolzar_audits.sign_ins_only") %></label>
     <%= render "button", label: t("super_admin.tolzar_audits.search_button"), type: "submit", extra: "h-10" %>
-    <%= render "button", label: t("super_admin.tolzar_audits.export"), url: export_super_admin_tolzar_audits_path(q: @query.presence),
+    <%= render "button", label: t("super_admin.tolzar_audits.export"), url: export_super_admin_tolzar_audits_path(filter_params),
                          variant: :secondary, extra: "h-10" %>
   <% end %>
 
@@ -42,12 +48,12 @@
 
   <div class="flex justify-between">
     <% if @page > 1 %>
-      <%= link_to t("super_admin.tolzar_audits.newer"), super_admin_tolzar_audits_path(q: @query.presence, page: @page - 1), class: "text-n-blue-11" %>
+      <%= link_to t("super_admin.tolzar_audits.newer"), super_admin_tolzar_audits_path(filter_params.merge(page: @page - 1)), class: "text-n-blue-11" %>
     <% else %>
       <span></span>
     <% end %>
     <% if @more %>
-      <%= link_to t("super_admin.tolzar_audits.older"), super_admin_tolzar_audits_path(q: @query.presence, page: @page + 1), class: "text-n-blue-11" %>
+      <%= link_to t("super_admin.tolzar_audits.older"), super_admin_tolzar_audits_path(filter_params.merge(page: @page + 1)), class: "text-n-blue-11" %>
     <% end %>
   </div>
 <% end %>
