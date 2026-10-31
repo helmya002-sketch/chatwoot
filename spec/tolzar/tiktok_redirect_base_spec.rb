@@ -28,6 +28,39 @@ RSpec.describe 'Tolzar TikTok redirect base' do
   end
 end
 
+# The callback itself (c19 gate: a private url_options made every redirect a 500). Without TIKTOK_REDIRECT_BASE the
+# redirect stays on the request's host, as upstream; with it, it goes to the dashboard (FRONTEND_URL).
+RSpec.describe 'Tolzar TikTok callback redirect host', type: :request do
+  let(:account) { create(:account) }
+  let(:state) { JWT.encode({ sub: account.id, iat: Time.current.to_i }, 'tiktok-app-secret', 'HS256') }
+
+  def deny
+    get '/tiktok/callback', params: { error: 'access_denied', error_description: 'User cancelled', error_code: '400', state: state }
+  end
+
+  before do
+    InstallationConfig.where(name: %w[TIKTOK_APP_ID TIKTOK_APP_SECRET]).delete_all
+    GlobalConfig.clear_cache
+  end
+
+  it 'redirects on the request host when TIKTOK_REDIRECT_BASE and FRONTEND_URL are unset' do
+    with_modified_env(TIKTOK_APP_ID: 'id', TIKTOK_APP_SECRET: 'tiktok-app-secret', TIKTOK_REDIRECT_BASE: nil, FRONTEND_URL: nil) do
+      deny
+    end
+    expect(response).to have_http_status(:redirect)
+    expect(URI.parse(response.location).host).to eq('www.example.com')
+  end
+
+  it 'redirects to the dashboard host when the callback came in on TIKTOK_REDIRECT_BASE' do
+    with_modified_env(TIKTOK_APP_ID: 'id', TIKTOK_APP_SECRET: 'tiktok-app-secret',
+                      TIKTOK_REDIRECT_BASE: 'https://app.tolzar.com', FRONTEND_URL: 'https://chat.example.com') do
+      deny
+    end
+    expect(response).to have_http_status(:redirect)
+    expect(URI.parse(response.location).host).to eq('chat.example.com')
+  end
+end
+
 RSpec.describe 'Tolzar Meta webhook base' do
   it 'keeps the registered Meta webhook host when FRONTEND_URL moves' do
     app = Tolzar::MetaApp.new(webhook_token: 'tok')

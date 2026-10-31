@@ -12,13 +12,16 @@ class Tiktok::CallbacksController < ApplicationController
     handle_error(e)
   end
 
-  private
-
   # Tolzar: TikTok calls back on TIKTOK_REDIRECT_BASE (app.tolzar.com) while the dashboard and its sign-in stay on
-  # FRONTEND_URL, so every redirect from here goes back to the dashboard's own host.
+  # FRONTEND_URL, so every redirect from here goes back to the dashboard's own host. Public, as in
+  # ActionController::UrlFor: the routes' URL helpers call it from outside, and a private one raises (c19 gate).
   def url_options
+    return super if ENV['TIKTOK_REDIRECT_BASE'].blank? # callback on the dashboard's host: nothing to change
+
     super.merge(Tolzar::PublicUrls.dashboard_url_options)
   end
+
+  private
 
   def all_scopes_granted?
     granted_scopes = short_term_access_token[:scope].to_s.split(',')
