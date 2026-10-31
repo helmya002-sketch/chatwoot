@@ -7,7 +7,9 @@ import Icon from 'dashboard/components-next/icon/Icon.vue';
 const emit = defineEmits(['start']);
 const { t } = useI18n();
 
-const WHATSAPP_MANUAL_MIGRATION_GUIDE_URL = 'https://chwt.app/migrate-whatsapp';
+// Tolzar: Meta's own guide, never a Chatwoot link.
+const WHATSAPP_MANUAL_MIGRATION_GUIDE_URL =
+  'https://developers.facebook.com/docs/whatsapp/cloud-api/get-started/migrate-existing-whatsapp-number-to-a-business-account';
 
 const copy = computed(() => ({
   title: t('INBOX_MGMT.SETTINGS_POPUP.WHATSAPP_MANUAL_MIGRATION.BANNER.TITLE'),

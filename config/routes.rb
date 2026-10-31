@@ -17,6 +17,8 @@ Rails.application.routes.draw do
   # Tolzar: Connect Facebook & Instagram (public endpoints Meta calls; read scopes only).
   get  'tolzar/meta/callback',      to: 'tolzar/meta#callback'
   post 'tolzar/meta/data_deletion', to: 'tolzar/meta#data_deletion'
+  # Tolzar's own help (round 4, c67): every in-app "Learn more" opens our help centre, never Chatwoot's docs.
+  get  'tz/help/:topic', to: 'tolzar/help_topics#show', as: :tolzar_help_topic, constraints: { topic: /[a-z_]{1,40}/ }
   get  'tolzar/meta/deletion',      to: 'tolzar/meta#deletion'
   get  'tolzar/meta/error',         to: 'tolzar/meta#failed'
   get  'tolzar/meta/hook/:webhook_token', to: 'tolzar/meta_hook#verify'
