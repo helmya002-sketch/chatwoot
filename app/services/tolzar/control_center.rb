@@ -80,8 +80,26 @@ class Tolzar::ControlCenter
         { name: au.user&.name, email: au.user&.email, role: au.role, mfa: au.user&.otp_required_for_login? || false,
           last_sign_in_at: au.user&.last_sign_in_at }
       end,
-      conversations_30d: Conversation.unscoped.where(account_id: account.id, created_at: (@now - 30.days)..).count
+      conversations_30d: Conversation.unscoped.where(account_id: account.id, created_at: (@now - 30.days)..).count,
+      ai: ai_state(account)
     }
+  end
+
+  # The workspace's AI as the brain sees it (read-only): the kill switch, each inbox's mode (an inbox without an
+  # entry is in shadow) and the agents. nil when the brain does not answer.
+  def ai_state(account)
+    settings = Tolzar::BrainClient.get('/workspace/settings', account_id: account.id)
+    return unless settings['status'] == 200
+
+    agents = Tolzar::BrainClient.get('/agents', account_id: account.id)
+    modes = settings['inbox_modes'].is_a?(Hash) ? settings['inbox_modes'].transform_keys(&:to_s) : {}
+    { kill_switch_on: settings['kill_switch_on'] == true,
+      inbox_modes: modes.transform_values { |m| m.is_a?(Hash) ? m['mode'].to_s : m.to_s },
+      agents: Array(agents['agents']).filter_map do |a|
+        { name: a['name'].to_s.first(80), status: a['status'].to_s.first(20) } if a.is_a?(Hash)
+      end }
+  rescue StandardError
+    nil
   end
 
   # --- People and 2FA ------------------------------------------------------------------------------------------

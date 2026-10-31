@@ -44,15 +44,42 @@
     <% end %>
   </div>
 
+  <% ai = @detail[:ai] %>
+  <%= render "card", title: t("#{cc}.ai") do %>
+    <% if ai.nil? %>
+      <p class="px-5 py-4 text-body-main text-n-slate-11"><%= t("#{cc}.ai_unknown") %></p>
+    <% else %>
+      <div class="flex flex-wrap items-center gap-2 px-5 py-3 text-body-main">
+        <span class="text-n-slate-11"><%= t("#{cc}.kill_switch") %></span>
+        <%= render "badge", label: t("#{cc}.#{ai[:kill_switch_on] ? 'kill_on' : 'kill_off'}"), tone: (ai[:kill_switch_on] ? :danger : :neutral) %>
+        <span class="ms-4 text-n-slate-11"><%= t("#{cc}.agents") %></span>
+        <% if ai[:agents].empty? %>
+          <span class="text-n-slate-11">–</span>
+        <% else %>
+          <% ai[:agents].each do |agent| %>
+            <%= render "badge", label: [agent[:name], agent[:status].presence].compact.join(" · "), tone: :info %>
+          <% end %>
+        <% end %>
+      </div>
+      <p class="border-t border-n-weak px-5 py-2 text-label-small text-n-slate-11"><%= t("#{cc}.ai_read_only") %></p>
+    <% end %>
+  <% end %>
+
   <%= render "card", title: t("#{cc}.inboxes"), count: @detail[:inboxes].size do %>
     <% if @detail[:inboxes].empty? %>
       <p class="px-5 py-4 text-body-main text-n-slate-11"><%= t("#{cc}.none") %></p>
     <% else %>
       <ul class="divide-y divide-n-weak">
         <% @detail[:inboxes].each do |inbox| %>
-          <li class="flex justify-between gap-4 px-5 py-2.5 text-body-main">
+          <% mode = ai && ai[:inbox_modes][inbox[:id].to_s].presence %>
+          <li class="flex items-center justify-between gap-4 px-5 py-2.5 text-body-main">
             <span class="text-n-slate-12"><%= inbox[:name] %></span>
-            <span class="font-mono text-xs text-n-slate-11"><%= inbox[:channel] %> · #<%= inbox[:id] %></span>
+            <span class="flex items-center gap-2">
+              <% if ai %>
+                <%= render "badge", label: t("#{cc}.mode.#{mode == 'live' ? 'live' : 'shadow'}"), tone: (mode == "live" ? :success : :warning) %>
+              <% end %>
+              <span class="font-mono text-xs text-n-slate-11"><%= inbox[:channel] %> · #<%= inbox[:id] %></span>
+            </span>
           </li>
         <% end %>
       </ul>

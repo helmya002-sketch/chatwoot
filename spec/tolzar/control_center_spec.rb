@@ -37,6 +37,18 @@ RSpec.describe 'Tolzar Control Center', type: :request do
       expect(response.body).to include('Mona Admin', 'Plan and limits')
     end
 
+    it "shows the workspace's AI as the brain sees it: kill switch, inbox modes, agents" do
+      inbox = create(:inbox, account: account, name: 'Front desk mail')
+      allow(Tolzar::BrainClient).to receive(:get).with('/workspace/settings', account_id: account.id).and_return(
+        { 'status' => 200, 'kill_switch_on' => false, 'inbox_modes' => { inbox.id.to_s => { 'mode' => 'live' } } }
+      )
+      allow(Tolzar::BrainClient).to receive(:get).with('/agents', account_id: account.id).and_return(
+        { 'status' => 200, 'agents' => [{ 'name' => 'Sales agent', 'status' => 'active' }] }
+      )
+      get "/super_admin/control_center/workspaces/#{account.id}"
+      expect(response.body).to include('Front desk mail', 'Live', 'Sales agent · active')
+    end
+
     it 'lists people with administrators without 2FA first' do
       create(:user, account: account, role: :agent, name: 'Zed Agent')
       get '/super_admin/control_center/people', params: { missing: '1' }
