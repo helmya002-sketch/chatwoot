@@ -95,13 +95,13 @@ class DashboardController < ActionController::Base
   end
 
   def active_platform_banners
-    return [] unless ChatwootApp.chatwoot_cloud?
+    return [] unless Tolzar::Announcements.enabled?
 
     PlatformBanner.active.not_feature_announcement.order(created_at: :desc).as_json(only: %i[id banner_message banner_type updated_at])
   end
 
   def active_feature_announcements
-    return [] unless ChatwootApp.chatwoot_cloud?
+    return [] unless Tolzar::Announcements.enabled?
 
     PlatformBanner.active.feature_announcement.order(created_at: :desc).as_json(only: %i[id title banner_message video_url updated_at])
   end

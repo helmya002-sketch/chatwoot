@@ -1,0 +1,44 @@
+<%# locals: (rows:) -%>
+<% cc = "super_admin.control_center" %>
+<% if rows.empty? %>
+  <p class="px-5 py-4 text-body-main text-n-slate-11"><%= t("#{cc}.none") %></p>
+<% else %>
+  <div class="overflow-x-auto">
+    <table class="w-full text-start text-body-main">
+      <thead class="text-label-small text-n-slate-11">
+        <tr class="border-b border-n-weak">
+          <% %w[person roles twofa last_sign_in].each do |col| %>
+            <th class="px-4 py-2 text-start font-medium"><%= t("#{cc}.col.#{col}") %></th>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody>
+        <% rows.each do |row| %>
+          <tr class="border-b border-n-weak align-top">
+            <td class="px-4 py-2">
+              <div class="text-n-slate-12"><%= row[:name] %></div>
+              <div class="text-xs text-n-slate-11"><%= row[:email] %></div>
+            </td>
+            <td class="px-4 py-2">
+              <div class="flex flex-wrap gap-1">
+                <%= render "badge", label: t("#{cc}.super_admin"), tone: :accent if row[:super_admin] %>
+                <% Array(row[:roles]).each do |r| %>
+                  <%= render "badge", label: [r[:account], r[:role].to_s.humanize].compact.join(": "),
+                                      tone: (r[:role].to_s == "administrator" ? :info : :neutral) %>
+                <% end %>
+              </div>
+            </td>
+            <td class="px-4 py-2">
+              <% if row[:mfa] %>
+                <%= render "badge", label: t("#{cc}.twofa_on"), tone: :success %>
+              <% else %>
+                <%= render "badge", label: t("#{cc}.twofa_off"), tone: (row[:admin] || row[:role].to_s == "administrator" ? :danger : :warning) %>
+              <% end %>
+            </td>
+            <td class="px-4 py-2 font-mono text-xs text-n-slate-11"><%= row[:last_sign_in_at]&.utc&.strftime("%Y-%m-%d %H:%M") || "–" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>

@@ -1,0 +1,93 @@
+<% content_for(:title) { t("super_admin.control_center.health") } %>
+<% cc = "super_admin.control_center" %>
+<% h = @health %>
+<% fmt = ->(time) { time&.utc&.strftime("%Y-%m-%d %H:%M UTC") || "–" } %>
+
+<%= render "section", title: t("#{cc}.health"), description: t("#{cc}.health_description"), icon: "i-lucide-heart-pulse" do %>
+  <div class="grid gap-4 lg:grid-cols-2">
+    <%= render "card", title: t("#{cc}.release") do %>
+      <dl class="divide-y divide-n-weak">
+        <div class="flex justify-between gap-4 px-5 py-2.5 text-body-main">
+          <dt class="text-n-slate-11"><%= t("#{cc}.release_app") %></dt>
+          <dd class="font-mono text-xs text-n-slate-12"><%= h[:release][:app] %></dd>
+        </div>
+        <div class="flex justify-between gap-4 px-5 py-2.5 text-body-main">
+          <dt class="text-n-slate-11"><%= t("#{cc}.release_git") %></dt>
+          <dd class="font-mono text-xs text-n-slate-12"><%= h[:release][:git] %></dd>
+        </div>
+      </dl>
+    <% end %>
+
+    <%= render "card", title: t("#{cc}.backups") do %>
+      <% b = h[:backup] %>
+      <% if b[:known] %>
+        <dl class="divide-y divide-n-weak">
+          <div class="flex items-center justify-between gap-4 px-5 py-2.5 text-body-main">
+            <dt class="text-n-slate-11"><%= t("#{cc}.backup_last_run") %></dt>
+            <dd class="flex items-center gap-2 font-mono text-xs text-n-slate-12">
+              <%= fmt.call(b[:last_run]) %>
+              <%= render "badge", label: t("#{cc}.#{b[:stale] ? 'backup_stale' : 'backup_ok'}"), tone: (b[:stale] ? :danger : :success) %>
+            </dd>
+          </div>
+          <div class="flex justify-between gap-4 px-5 py-2.5 text-body-main">
+            <dt class="text-n-slate-11"><%= t("#{cc}.backup_restore_test") %></dt>
+            <dd class="font-mono text-xs text-n-slate-12"><%= fmt.call(b[:last_restore_test]) %></dd>
+          </div>
+        </dl>
+      <% else %>
+        <p class="px-5 py-4 text-body-main text-n-slate-11"><%= t("#{cc}.backup_unknown") %></p>
+      <% end %>
+    <% end %>
+
+    <%= render "card", title: t("#{cc}.mirror") do %>
+      <dl class="divide-y divide-n-weak">
+        <div class="flex justify-between gap-4 px-5 py-2.5 text-body-main">
+          <dt class="text-n-slate-11"><%= t("#{cc}.mirror_lag") %></dt>
+          <dd class="font-mono text-xs text-n-slate-12">
+            <%= h[:mirror_lag_seconds] ? t("#{cc}.minutes", count: (h[:mirror_lag_seconds] / 60.0).round) : t("#{cc}.mirror_never") %>
+          </dd>
+        </div>
+        <div class="flex justify-between gap-4 px-5 py-2.5 text-body-main">
+          <dt class="text-n-slate-11"><%= t("#{cc}.mirror_errors") %></dt>
+          <dd class="font-mono text-xs text-n-slate-12"><%= h[:mirror_errors_24h] %></dd>
+        </div>
+      </dl>
+    <% end %>
+
+    <%= render "card", title: t("#{cc}.monitors") do %>
+      <% if h[:monitors].nil? %>
+        <p class="px-5 py-4 text-body-main text-n-slate-11"><%= t("#{cc}.monitors_unknown") %></p>
+      <% else %>
+        <ul class="divide-y divide-n-weak">
+          <% h[:monitors].each do |m| %>
+            <li class="flex items-center justify-between gap-4 px-5 py-2.5 text-body-main">
+              <span class="font-mono text-xs text-n-slate-12">#<%= m[:id] %></span>
+              <%= render "badge", label: t("#{cc}.#{m[:up] ? 'up' : 'down'}"), tone: (m[:up] ? :success : :danger) %>
+            </li>
+          <% end %>
+        </ul>
+      <% end %>
+    <% end %>
+  </div>
+
+  <%= render "card", title: t("#{cc}.queues") do %>
+    <% sq = h[:sidekiq] %>
+    <% if sq.nil? %>
+      <p class="px-5 py-4 text-body-main text-n-slate-11"><%= t("#{cc}.queues_unknown") %></p>
+    <% else %>
+      <div class="flex flex-wrap gap-2 border-b border-n-weak px-5 py-3 text-body-main">
+        <%= render "badge", label: t("#{cc}.processes", count: sq[:processes]), tone: (sq[:processes].positive? ? :success : :danger) %>
+        <%= render "badge", label: t("#{cc}.retries", count: sq[:retries]), tone: (sq[:retries].positive? ? :warning : :neutral) %>
+        <%= render "badge", label: t("#{cc}.dead", count: sq[:dead]), tone: (sq[:dead].positive? ? :warning : :neutral) %>
+      </div>
+      <ul class="divide-y divide-n-weak">
+        <% sq[:queues].each do |q| %>
+          <li class="flex justify-between gap-4 px-5 py-2.5 text-body-main">
+            <span class="font-mono text-xs text-n-slate-12"><%= q[:name] %></span>
+            <span class="font-mono text-xs text-n-slate-11"><%= t("#{cc}.queue_line", size: q[:size], latency: q[:latency]) %></span>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  <% end %>
+<% end %>

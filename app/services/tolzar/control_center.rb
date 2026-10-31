@@ -1,0 +1,213 @@
+# Tolzar Control Center data (TOLZAR-APP-UI-REDESIGN-PLAN-2026-10-31.md phase 6): the overview figures and alerts,
+# the onboarding funnel, the workspaces list and the system health page. Read-only: nothing here changes a record.
+# Generic: no business names in code. Secret values are never read; an env-configured URL is fetched only by name.
+class Tolzar::ControlCenter
+  CACHE = 5.minutes
+  BACKUP_MAX_AGE = 26.hours
+  MIRROR_LAG_WARN = 15.minutes
+  FUNNEL_WINDOW = 30.days
+  STATES = %w[trialing active paused purge_scheduled purged].freeze
+
+  def initialize(now: Time.current)
+    @now = now
+  end
+
+  # --- Overview ------------------------------------------------------------------------------------------------
+
+  def overview
+    Rails.cache.fetch('tolzar:control_center:overview', expires_in: CACHE) do
+      rows = subscriptions
+      {
+        workspaces: STATES.index_with { |s| rows.count { |_a, sub| sub.state(@now) == s } }
+                          .merge('internal' => rows.count { |_a, sub| sub.plan == 'internal' }),
+        users_today: User.where(last_sign_in_at: @now.beginning_of_day..).count,
+        users_7d: User.where(last_sign_in_at: (@now - 7.days)..).count,
+        conversations_today: Conversation.unscoped.where(created_at: @now.beginning_of_day..).count,
+        conversations_7d: Conversation.unscoped.where(created_at: (@now - 7.days)..).count,
+        trials_ending: trials_ending(rows),
+        fair_use: fair_use(rows)
+      }
+    end
+  end
+
+  # Alerts are computed fresh (cheap): each is {level:, key:, detail:}.
+  def alerts
+    list = []
+    missing = Tolzar::SuperAdminMfa.missing
+    list << { level: :warning, key: 'superadmin_2fa', detail: missing.size } if missing.any?
+    paused = subscriptions.select { |_a, sub| sub.paused?(@now) }
+    list << { level: :warning, key: 'paused', detail: paused.size } if paused.any?
+    over = overview[:fair_use].count { |row| row[:level] == 'over' }
+    list << { level: :danger, key: 'fair_use_over', detail: over } if over.positive?
+    backup = backup_status
+    list << { level: :danger, key: 'backup_old', detail: backup[:age_hours].to_f.round } if backup[:stale]
+    lag = mirror_lag
+    list << { level: :warning, key: 'mirror_lag', detail: (lag / 60).round } if lag && lag > MIRROR_LAG_WARN
+    list
+  end
+
+  # --- Onboarding funnel ---------------------------------------------------------------------------------------
+
+  # Workspaces created in the window, and how many reached each step (each step counts those that also did the
+  # step before it): signed up -> connected a channel -> got a first customer message -> sent a first reply.
+  def funnel
+    Rails.cache.fetch('tolzar:control_center:funnel', expires_in: CACHE) do
+      ids = Account.where(created_at: (@now - FUNNEL_WINDOW)..).pluck(:id)
+      channel = Inbox.where(account_id: ids).distinct.pluck(:account_id)
+      incoming = Message.unscoped.where(account_id: channel, message_type: :incoming).distinct.pluck(:account_id)
+      replied = Message.unscoped.where(account_id: incoming, message_type: :outgoing, private: false)
+                       .distinct.pluck(:account_id)
+      [['signed_up', ids.size], ['channel', channel.size], ['first_message', incoming.size], ['first_reply', replied.size]]
+    end
+  end
+
+  # --- Workspaces ----------------------------------------------------------------------------------------------
+
+  def workspaces(query: nil, state: nil)
+    scope = Account.order(created_at: :desc)
+    scope = scope.where('accounts.name ILIKE ?', "%#{Account.sanitize_sql_like(query)}%") if query.present?
+    rows = workspace_rows(scope.limit(500).to_a)
+    state.present? ? rows.select { |r| r[:state] == state } : rows
+  end
+
+  def workspace(account)
+    sub = Tolzar::Subscription.find_by(account_id: account.id)
+    {
+      subscription: sub&.view(@now),
+      fair_use: (account.internal_attributes || {})[Tolzar::FairUse::KEY],
+      inboxes: account.inboxes.order(:id).map { |i| { id: i.id, name: i.name, channel: i.channel_type.to_s.demodulize } },
+      members: account.account_users.includes(:user).order(:id).map do |au|
+        { name: au.user&.name, email: au.user&.email, role: au.role, mfa: au.user&.otp_required_for_login? || false,
+          last_sign_in_at: au.user&.last_sign_in_at }
+      end,
+      conversations_30d: Conversation.unscoped.where(account_id: account.id, created_at: (@now - 30.days)..).count
+    }
+  end
+
+  # --- People and 2FA ------------------------------------------------------------------------------------------
+
+  # Every user with their workspaces and roles, their 2FA state and last sign-in. Administrators and super admins
+  # without 2FA come first, so the risk is at the top.
+  def people(only_missing: false)
+    users = User.includes(account_users: :account).order(:email).limit(1000).to_a
+    rows = users.map do |user|
+      roles = user.account_users.map { |au| { account: au.account&.name, role: au.role } }
+      admin = user.type == 'SuperAdmin' || roles.any? { |r| r[:role] == 'administrator' }
+      { user: user, roles: roles, super_admin: user.type == 'SuperAdmin', admin: admin,
+        mfa: user.otp_required_for_login? || false, last_sign_in_at: user.last_sign_in_at }
+    end
+    rows = rows.reject { |r| r[:mfa] } if only_missing
+    rows.sort_by { |r| [r[:admin] && !r[:mfa] ? 0 : 1, r[:user].email.to_s] }
+  end
+
+  # --- System health -------------------------------------------------------------------------------------------
+
+  def health
+    {
+      release: { app: ENV.fetch('TOLZAR_RELEASE', '').presence || GIT_HASH.to_s.first(9), git: GIT_HASH.to_s.first(12) },
+      sidekiq: sidekiq,
+      backup: backup_status,
+      mirror_lag_seconds: mirror_lag,
+      mirror_errors_24h: Tolzar::MirrorEvent.where(received_at: (@now - 24.hours)..).where.not(error: nil).count,
+      monitors: monitors
+    }
+  end
+
+  # TOLZAR_BACKUP_STATUS_FILE: a small JSON Server ops writes after each backup ({"last_run":ISO8601,
+  # "last_restore_test":ISO8601,"ok":true}). Missing or unreadable: unknown, not an alert.
+  def backup_status
+    path = ENV.fetch('TOLZAR_BACKUP_STATUS_FILE', '').presence
+    return { known: false } unless path && File.file?(path) && File.size(path) < 64.kilobytes
+
+    data = JSON.parse(File.read(path))
+    last = Time.zone.parse(data['last_run'].to_s)
+    restore = Time.zone.parse(data['last_restore_test'].to_s) if data['last_restore_test'].present?
+    age = last ? ((@now - last) / 1.hour).round(1) : nil
+    { known: true, last_run: last, last_restore_test: restore, ok: data['ok'] == true, age_hours: age,
+      stale: age.nil? || age > (BACKUP_MAX_AGE / 1.hour) || data['ok'] == false }
+  rescue JSON::ParserError, ArgumentError, SystemCallError
+    { known: false }
+  end
+
+  # Seconds since the newest mirror event arrived; nil when the mirror has never received one.
+  def mirror_lag
+    last = Tolzar::MirrorEvent.maximum(:received_at)
+    last ? (@now - last).to_i : nil
+  end
+
+  private
+
+  def workspace_rows(accounts)
+    ids = accounts.map(&:id)
+    counts = { users: AccountUser.where(account_id: ids).group(:account_id).count,
+               inboxes: Inbox.where(account_id: ids).group(:account_id).count,
+               conversations_30d: Conversation.unscoped.where(account_id: ids, created_at: (@now - 30.days)..).group(:account_id).count }
+    subs = Tolzar::Subscription.where(account_id: ids).index_by(&:account_id)
+    accounts.map do |account|
+      sub = subs[account.id]
+      { account: account, plan: sub&.plan, state: sub&.state(@now) || 'none',
+        fair_use: (account.internal_attributes || {})[Tolzar::FairUse::KEY] }
+        .merge(counts.transform_values { |by_account| by_account[account.id].to_i })
+    end
+  end
+
+  # [account, subscription] for workspaces that have a billing row (read-only: never creates one).
+  def subscriptions
+    @subscriptions ||= begin
+      subs = Tolzar::Subscription.all.index_by(&:account_id)
+      Account.where(id: subs.keys).to_a.map { |account| [account, subs[account.id]] }
+    end
+  end
+
+  def trials_ending(rows)
+    rows.select { |_a, sub| sub.plan == 'trial' && sub.trial_ends_at&.between?(@now, @now + 7.days) }
+        .map { |account, sub| { id: account.id, name: account.name, ends_at: sub.trial_ends_at } }
+        .sort_by { |r| r[:ends_at] }
+  end
+
+  def fair_use(rows)
+    rows.filter_map do |account, _sub|
+      state = (account.internal_attributes || {})[Tolzar::FairUse::KEY]
+      next unless state.is_a?(Hash) && state['allowance'].to_i.positive?
+
+      { id: account.id, name: account.name, used: state['used'].to_i, allowance: state['allowance'].to_i,
+        level: state['level'], month: state['month'] }
+    end.sort_by { |r| -r[:used].fdiv(r[:allowance]) }.first(10)
+  end
+
+  def sidekiq
+    require 'sidekiq/api'
+    queues = Sidekiq::Queue.all.map { |q| { name: q.name, size: q.size, latency: q.latency.round } }
+    stats = Sidekiq::Stats.new
+    { queues: queues, retries: stats.retry_size, dead: stats.dead_size, processes: Sidekiq::ProcessSet.new.size }
+  rescue StandardError
+    nil
+  end
+
+  # TOLZAR_KUMA_STATUS_URL: the monitoring status page's public JSON (Uptime Kuma /api/status-page/heartbeat/<slug>).
+  # Fetched server-side with a short timeout and cached; nil when unset or unreachable.
+  def monitors
+    url = ENV.fetch('TOLZAR_KUMA_STATUS_URL', '').presence
+    return unless url&.match?(%r{\Ahttps?://}i)
+
+    Rails.cache.fetch("tolzar:control_center:kuma:#{Digest::SHA256.hexdigest(url)}", expires_in: 1.minute) do
+      uri = URI(url)
+      res = Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https', open_timeout: 3, read_timeout: 3) do |http|
+        http.get(uri.request_uri)
+      end
+      kuma_rows(res.is_a?(Net::HTTPSuccess) ? JSON.parse(res.body) : nil)
+    end
+  rescue StandardError
+    nil
+  end
+
+  # {"heartbeatList": {"<id>": [{"status":1,"time":"…"}…]}} -> [{id:, up:, time:}]
+  def kuma_rows(body)
+    return unless body.is_a?(Hash) && body['heartbeatList'].is_a?(Hash)
+
+    body['heartbeatList'].map do |id, beats|
+      last = Array(beats).last || {}
+      { id: id.to_s, up: last['status'].to_i == 1, time: last['time'].to_s }
+    end
+  end
+end

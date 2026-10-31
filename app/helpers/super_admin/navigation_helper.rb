@@ -33,7 +33,12 @@ module SuperAdmin::NavigationHelper
   end
 
   def monitor_open?
-    controller_name.in? %w[instance_statuses user_diagnostics tolzar_switches tolzar_audits]
+    controller_name.in? %w[instance_statuses user_diagnostics]
+  end
+
+  # Tolzar Control Center: its own section (overview, workspaces, people, health, switches, audit log).
+  def control_center_open?
+    controller_name.in? %w[tolzar_control_center tolzar_switches tolzar_audits]
   end
 
   def settings_pages
@@ -60,6 +65,8 @@ module SuperAdmin::NavigationHelper
       *resource_nav_items,
       { label: t('super_admin.navigation.settings'), url: super_admin_settings_path, icon: 'i-lucide-settings', active: settings_open?,
         pinned: true, group: instance },
+      { label: t('super_admin.control_center.title'), url: super_admin_tolzar_control_center_path, icon: 'i-lucide-gauge',
+        active: control_center_open?, pinned: true, group: instance },
       { label: t('super_admin.navigation.monitor'), url: super_admin_instance_status_path, icon: 'i-lucide-activity', active: monitor_open?,
         group: instance },
       { label: t('super_admin.newsletter.title'), url: super_admin_newsletter_path, icon: 'i-lucide-mail',
@@ -89,7 +96,27 @@ module SuperAdmin::NavigationHelper
       { label: t('super_admin.navigation.settings'), items: settings_nav_items(current_config) }
     elsif monitor_open?
       { label: t('super_admin.navigation.monitor'), items: monitor_nav_items }
+    elsif control_center_open?
+      { label: t('super_admin.control_center.title'), items: control_center_nav_items }
     end
+  end
+
+  def control_center_nav_items
+    page = action_name if controller_name == 'tolzar_control_center'
+    [
+      { label: t('super_admin.control_center.overview'), url: super_admin_tolzar_control_center_path, icon: 'i-lucide-gauge',
+        active: page == 'overview' },
+      { label: t('super_admin.control_center.workspaces'), url: super_admin_tolzar_cc_workspaces_path, icon: 'i-lucide-building-2',
+        active: page.in?(%w[workspaces workspace]) },
+      { label: t('super_admin.control_center.people'), url: super_admin_tolzar_cc_people_path, icon: 'i-lucide-shield-check',
+        active: page == 'people' },
+      { label: t('super_admin.control_center.health'), url: super_admin_tolzar_cc_health_path, icon: 'i-lucide-heart-pulse',
+        active: page == 'health' },
+      { label: t('super_admin.tolzar_switches.nav'), url: super_admin_tolzar_switches_path, icon: 'i-lucide-toggle-right',
+        active: controller_name == 'tolzar_switches' },
+      { label: t('super_admin.tolzar_audits.title'), url: super_admin_tolzar_audits_path, icon: 'i-lucide-scroll-text',
+        active: controller_name == 'tolzar_audits' }
+    ]
   end
 
   def monitor_nav_items
@@ -98,17 +125,13 @@ module SuperAdmin::NavigationHelper
         active: controller_name == 'instance_statuses' },
       { label: t('super_admin.navigation.user_diagnostics'), url: super_admin_user_diagnostics_path, icon: 'i-lucide-stethoscope',
         active: controller_name == 'user_diagnostics' },
-      { label: t('super_admin.tolzar_switches.nav'), url: super_admin_tolzar_switches_path, icon: 'i-lucide-toggle-right',
-        active: controller_name == 'tolzar_switches' },
-      { label: t('super_admin.tolzar_audits.title'), url: super_admin_tolzar_audits_path, icon: 'i-lucide-scroll-text',
-        active: controller_name == 'tolzar_audits' },
       { label: t('super_admin.navigation.sidekiq_dashboard'), url: sidekiq_web_path, icon: 'i-lucide-layers', external: true }
     ]
   end
 
   def nav_resources
     Administrate::Namespace.new(namespace).resources_with_index_route.reject do |resource|
-      HIDDEN_RESOURCES.include?(resource) || (resource == 'platform_banners' && !ChatwootApp.chatwoot_cloud?)
+      HIDDEN_RESOURCES.include?(resource) || (resource == 'platform_banners' && !Tolzar::Announcements.enabled?)
     end
   end
 

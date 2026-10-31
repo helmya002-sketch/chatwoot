@@ -1,0 +1,18 @@
+<% content_for(:title) { t("super_admin.control_center.people") } %>
+<% cc = "super_admin.control_center" %>
+<% missing = @rows.count { |r| !r[:mfa] } %>
+
+<%= render "section", title: t("#{cc}.people"), description: t("#{cc}.people_description"), icon: "i-lucide-shield-check" do %>
+  <div class="flex flex-wrap items-center gap-2">
+    <%= render "button", label: t("#{cc}.show_all"), url: super_admin_tolzar_cc_people_path,
+                         variant: (@only_missing ? :secondary : :primary), extra: "h-9" %>
+    <%= render "button", label: t("#{cc}.show_missing"), url: super_admin_tolzar_cc_people_path(missing: 1),
+                         variant: (@only_missing ? :primary : :secondary), extra: "h-9" %>
+    <span class="text-body-main text-n-slate-11"><%= t("#{cc}.missing_count", count: missing) %></span>
+  </div>
+
+  <%= render "card", title: t("#{cc}.people"), count: @rows.size do %>
+    <%= render "super_admin/tolzar_control_center/people_table",
+               rows: @rows.map { |r| r.merge(name: r[:user].name, email: r[:user].email) } %>
+  <% end %>
+<% end %>

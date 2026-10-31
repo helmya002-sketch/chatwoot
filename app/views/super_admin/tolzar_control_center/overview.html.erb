@@ -1,0 +1,99 @@
+<% content_for(:title) { t("super_admin.control_center.overview") } %>
+<% cc = "super_admin.control_center" %>
+
+<%= render "section", title: t("#{cc}.overview"), description: t("#{cc}.overview_description"), icon: "i-lucide-gauge" do %>
+  <% if @alerts.any? %>
+    <div class="space-y-2" role="list" aria-label="<%= t("#{cc}.alerts") %>">
+      <% @alerts.each do |alert| %>
+        <div role="listitem" class="<%= class_names("flex items-center gap-3 rounded-xl border px-4 py-3 text-body-main",
+                                                     "border-n-amber-6 bg-n-amber-3 text-n-amber-12" => alert[:level] == :warning,
+                                                     "border-n-ruby-6 bg-n-ruby-3 text-n-ruby-11" => alert[:level] == :danger) %>">
+          <span class="<%= alert[:level] == :danger ? "i-lucide-octagon-alert" : "i-lucide-triangle-alert" %> size-4 shrink-0" aria-hidden="true"></span>
+          <span><%= t("#{cc}.alert.#{alert[:key]}", count: alert[:detail]) %></span>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="flex items-center gap-3 rounded-xl border border-n-teal-6 bg-n-teal-3 px-4 py-3 text-body-main text-n-teal-12">
+      <span class="i-lucide-circle-check size-4 shrink-0" aria-hidden="true"></span>
+      <span><%= t("#{cc}.no_alerts") %></span>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
+    <% [[:users_today, @overview[:users_today]], [:users_7d, @overview[:users_7d]],
+        [:conversations_today, @overview[:conversations_today]], [:conversations_7d, @overview[:conversations_7d]]].each do |key, value| %>
+      <div class="rounded-xl border border-n-weak bg-n-solid-1 px-4 py-3">
+        <div class="text-label-small text-n-slate-11"><%= t("#{cc}.kpi.#{key}") %></div>
+        <div class="mt-1 text-heading-1 text-n-slate-12"><%= number_with_delimiter(value) %></div>
+      </div>
+    <% end %>
+  </div>
+
+  <%= render "card", title: t("#{cc}.workspaces_by_state") do %>
+    <div class="flex flex-wrap gap-2 px-5 py-4">
+      <% @overview[:workspaces].each do |state, count| %>
+        <%= link_to super_admin_tolzar_cc_workspaces_path(state: (state unless state == "internal")),
+                    class: "inline-flex items-center gap-2 rounded-lg border border-n-weak px-3 py-1.5 text-body-main hover:bg-n-alpha-2" do %>
+          <span class="text-n-slate-11"><%= t("#{cc}.state.#{state}") %></span>
+          <span class="font-medium text-n-slate-12"><%= count %></span>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="grid gap-4 lg:grid-cols-2">
+    <%= render "card", title: t("#{cc}.trials_ending") do %>
+      <% if @overview[:trials_ending].empty? %>
+        <p class="px-5 py-4 text-body-main text-n-slate-11"><%= t("#{cc}.none") %></p>
+      <% else %>
+        <ul class="divide-y divide-n-weak">
+          <% @overview[:trials_ending].each do |row| %>
+            <li class="flex justify-between gap-4 px-5 py-3 text-body-main">
+              <%= link_to row[:name], super_admin_tolzar_cc_workspace_path(row[:id]), class: "text-n-blue-11 hover:underline" %>
+              <span class="font-mono text-xs text-n-slate-11"><%= row[:ends_at].utc.strftime("%Y-%m-%d") %></span>
+            </li>
+          <% end %>
+        </ul>
+      <% end %>
+    <% end %>
+
+    <%= render "card", title: t("#{cc}.fair_use") do %>
+      <% if @overview[:fair_use].empty? %>
+        <p class="px-5 py-4 text-body-main text-n-slate-11"><%= t("#{cc}.fair_use_none") %></p>
+      <% else %>
+        <ul class="divide-y divide-n-weak">
+          <% @overview[:fair_use].each do |row| %>
+            <% pct = (100.0 * row[:used] / row[:allowance]).round %>
+            <li class="space-y-1.5 px-5 py-3 text-body-main">
+              <div class="flex justify-between gap-4">
+                <%= link_to row[:name], super_admin_tolzar_cc_workspace_path(row[:id]), class: "text-n-blue-11 hover:underline" %>
+                <span class="font-mono text-xs text-n-slate-11"><%= "#{number_with_delimiter(row[:used])} / #{number_with_delimiter(row[:allowance])} (#{pct}%)" %></span>
+              </div>
+              <div class="h-1.5 overflow-hidden rounded-full bg-n-slate-3" role="img" aria-label="<%= pct %>%">
+                <div class="<%= class_names("h-full rounded-full", "bg-n-ruby-8" => row[:level] == "over",
+                                            "bg-n-amber-9" => row[:level] == "near", "bg-n-brand" => row[:level].blank?) %>"
+                     style="width: <%= [pct, 100].min %>%"></div>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      <% end %>
+    <% end %>
+  </div>
+
+  <%= render "card", title: t("#{cc}.funnel"), meta: t("#{cc}.funnel_window") do %>
+    <% top = [@funnel.first&.last.to_i, 1].max %>
+    <ol class="space-y-3 px-5 py-4">
+      <% @funnel.each do |step, count| %>
+        <li class="grid grid-cols-[10rem_minmax(0,1fr)_4rem] items-center gap-3 text-body-main">
+          <span class="text-n-slate-11"><%= t("#{cc}.funnel_step.#{step}") %></span>
+          <span class="h-2 overflow-hidden rounded-full bg-n-slate-3">
+            <span class="block h-full rounded-full bg-n-brand" style="width: <%= (100.0 * count / top).round %>%"></span>
+          </span>
+          <span class="text-end font-mono text-xs text-n-slate-12"><%= count %></span>
+        </li>
+      <% end %>
+    </ol>
+  <% end %>
+<% end %>

@@ -1,0 +1,47 @@
+<% content_for(:title) { t("super_admin.control_center.workspaces") } %>
+<% cc = "super_admin.control_center" %>
+
+<%= render "section", title: t("#{cc}.workspaces"), description: t("#{cc}.workspaces_description"), icon: "i-lucide-building-2" do %>
+  <%= form_with url: super_admin_tolzar_cc_workspaces_path, method: :get, class: "flex flex-wrap gap-2" do %>
+    <%= search_field_tag :q, @query, placeholder: t("#{cc}.search_workspaces"), class: ui(:input, "min-h-10 flex-1") %>
+    <%= select_tag :state, options_for_select([[t("#{cc}.all_states"), ""]] +
+                                              (Tolzar::ControlCenter::STATES + ["none"]).map { |s| [t("#{cc}.state.#{s}"), s] }, @state),
+                   class: ui(:input, "min-h-10 w-48") %>
+    <%= render "button", label: t("#{cc}.filter"), type: "submit", extra: "h-10" %>
+  <% end %>
+
+  <%= render "card", title: t("#{cc}.workspaces"), count: @rows.size do %>
+    <% if @rows.empty? %>
+      <p class="px-5 py-4 text-body-main text-n-slate-11"><%= t("#{cc}.none") %></p>
+    <% else %>
+      <div class="overflow-x-auto">
+        <table class="w-full text-start text-body-main">
+          <thead class="text-label-small text-n-slate-11">
+            <tr class="border-b border-n-weak">
+              <% %w[name plan state users inboxes conversations_30d fair_use created].each do |col| %>
+                <th class="px-4 py-2 text-start font-medium"><%= t("#{cc}.col.#{col}") %></th>
+              <% end %>
+            </tr>
+          </thead>
+          <tbody>
+            <% @rows.each do |row| %>
+              <tr class="border-b border-n-weak">
+                <td class="px-4 py-2"><%= link_to row[:account].name, super_admin_tolzar_cc_workspace_path(row[:account].id), class: "text-n-blue-11 hover:underline" %></td>
+                <td class="px-4 py-2"><%= row[:plan] || "–" %></td>
+                <td class="px-4 py-2"><%= render "badge", label: t("#{cc}.state.#{row[:state]}"), tone: Tolzar::ControlCenterHelper.state_tone(row[:state]) %></td>
+                <td class="px-4 py-2 tabular-nums"><%= row[:users] %></td>
+                <td class="px-4 py-2 tabular-nums"><%= row[:inboxes] %></td>
+                <td class="px-4 py-2 tabular-nums"><%= number_with_delimiter(row[:conversations_30d]) %></td>
+                <td class="px-4 py-2 tabular-nums">
+                  <% fu = row[:fair_use] %>
+                  <%= fu.is_a?(Hash) && fu["allowance"].to_i.positive? ? "#{(100.0 * fu["used"].to_i / fu["allowance"].to_i).round}%" : "–" %>
+                </td>
+                <td class="px-4 py-2 font-mono text-xs text-n-slate-11"><%= row[:account].created_at.utc.strftime("%Y-%m-%d") %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>

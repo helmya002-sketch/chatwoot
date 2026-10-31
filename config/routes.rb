@@ -938,6 +938,12 @@ Rails.application.routes.draw do
       resource :instance_status, only: [:show]
       resource :tolzar_switches, only: [:show]
       resource :tolzar_audits, only: [:show]
+      # Tolzar Control Center (read-only pages; SuperAdmin::TolzarControlCenterController)
+      get 'control_center', to: 'tolzar_control_center#overview', as: :tolzar_control_center
+      get 'control_center/workspaces', to: 'tolzar_control_center#workspaces', as: :tolzar_cc_workspaces
+      get 'control_center/workspaces/:id', to: 'tolzar_control_center#workspace', as: :tolzar_cc_workspace
+      get 'control_center/people', to: 'tolzar_control_center#people', as: :tolzar_cc_people
+      get 'control_center/health', to: 'tolzar_control_center#health', as: :tolzar_cc_health
 
       resources :search, only: [] do
         collection do

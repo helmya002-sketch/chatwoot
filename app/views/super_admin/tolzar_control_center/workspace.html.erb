@@ -1,0 +1,65 @@
+<% content_for(:title) { @account.name } %>
+<% cc = "super_admin.control_center" %>
+<% sub = @detail[:subscription] %>
+
+<%= render "section", title: @account.name, description: t("#{cc}.workspace_description", id: @account.id), icon: "i-lucide-building-2" do %>
+  <div class="flex flex-wrap gap-2">
+    <%= render "button", label: t("#{cc}.open_account"), url: super_admin_account_path(@account), variant: :secondary, extra: "h-9" %>
+    <%= render "button", label: t("#{cc}.open_billing"), url: super_admin_billing_path, variant: :secondary, extra: "h-9" %>
+  </div>
+
+  <div class="grid gap-4 lg:grid-cols-2">
+    <%= render "card", title: t("#{cc}.plan_and_limits") do %>
+      <% if sub %>
+        <dl class="divide-y divide-n-weak">
+          <% [[:plan, sub[:plan]], [:state, t("#{cc}.state.#{sub[:state]}")],
+              [:trial_ends_at, sub[:trial_ends_at]&.utc&.strftime("%Y-%m-%d")], [:paid_until, sub[:paid_until]&.utc&.strftime("%Y-%m-%d")],
+              [:seats, "#{sub[:seats_used]} / #{sub[:seat_limit]}"], [:currency, sub[:currency]],
+              [:purge_after, sub[:purge_after]&.utc&.strftime("%Y-%m-%d")]].each do |key, value| %>
+            <div class="flex justify-between gap-4 px-5 py-2.5 text-body-main">
+              <dt class="text-n-slate-11"><%= t("#{cc}.field.#{key}") %></dt>
+              <dd class="text-end text-n-slate-12"><%= value.presence || "–" %></dd>
+            </div>
+          <% end %>
+        </dl>
+      <% else %>
+        <p class="px-5 py-4 text-body-main text-n-slate-11"><%= t("#{cc}.no_subscription") %></p>
+      <% end %>
+    <% end %>
+
+    <%= render "card", title: t("#{cc}.usage") do %>
+      <dl class="divide-y divide-n-weak">
+        <div class="flex justify-between gap-4 px-5 py-2.5 text-body-main">
+          <dt class="text-n-slate-11"><%= t("#{cc}.col.conversations_30d") %></dt>
+          <dd class="tabular-nums text-n-slate-12"><%= number_with_delimiter(@detail[:conversations_30d]) %></dd>
+        </div>
+        <% fu = @detail[:fair_use] %>
+        <div class="flex justify-between gap-4 px-5 py-2.5 text-body-main">
+          <dt class="text-n-slate-11"><%= t("#{cc}.fair_use") %></dt>
+          <dd class="tabular-nums text-n-slate-12">
+            <%= fu.is_a?(Hash) && fu["allowance"].to_i.positive? ? "#{number_with_delimiter(fu["used"].to_i)} / #{number_with_delimiter(fu["allowance"].to_i)} (#{fu["month"]})" : "–" %>
+          </dd>
+        </div>
+      </dl>
+    <% end %>
+  </div>
+
+  <%= render "card", title: t("#{cc}.inboxes"), count: @detail[:inboxes].size do %>
+    <% if @detail[:inboxes].empty? %>
+      <p class="px-5 py-4 text-body-main text-n-slate-11"><%= t("#{cc}.none") %></p>
+    <% else %>
+      <ul class="divide-y divide-n-weak">
+        <% @detail[:inboxes].each do |inbox| %>
+          <li class="flex justify-between gap-4 px-5 py-2.5 text-body-main">
+            <span class="text-n-slate-12"><%= inbox[:name] %></span>
+            <span class="font-mono text-xs text-n-slate-11"><%= inbox[:channel] %> · #<%= inbox[:id] %></span>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  <% end %>
+
+  <%= render "card", title: t("#{cc}.members"), count: @detail[:members].size do %>
+    <%= render "super_admin/tolzar_control_center/people_table", rows: @detail[:members].map { |m| m.merge(roles: [{ role: m[:role] }]) } %>
+  <% end %>
+<% end %>
