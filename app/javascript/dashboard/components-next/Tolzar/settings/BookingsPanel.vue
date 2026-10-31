@@ -15,6 +15,7 @@ import {
 import { emptyLine, linesTotal, toSpec, PLACEHOLDER } from './tolzarDocuments';
 import BookingCalendarLink from './BookingCalendarLink.vue';
 import BookingSchedule from './BookingSchedule.vue';
+import { useIncrementalList } from '../useIncrementalList';
 
 // Settings hub → Workspace → Bookings (Tolzar::Booking): today and the next 14 days, the list, a booking editor,
 // status moves, the payments record (Tolzar never charges) and a draft voucher from a booking.
@@ -50,6 +51,8 @@ const editing = ref(null);
 const notice = ref('');
 const error = ref('');
 const payment = ref({});
+// Tolzar (F1): the list (up to 200 bookings) renders 50 at a time, more as it scrolls.
+const { take, hidden, grow, reset, sentinel } = useIncrementalList();
 
 const money = c => (Number(c || 0) / 100).toFixed(2);
 // Per currency, never added across currencies: "EUR 120.00 · USD 40.00".
@@ -86,6 +89,7 @@ async function loadList() {
       params: { status: statusFilter.value || undefined },
     });
     rows.value = data.bookings || [];
+    reset();
   } catch (e) {
     error.value =
       e?.response?.status === 404
@@ -232,7 +236,7 @@ onMounted(() => open('agenda'));
         {{ t('TOLZAR_SETTINGS_UI.BOOKINGS.EMPTY') }}
       </p>
       <div
-        v-for="row in rows"
+        v-for="row in take('list', rows)"
         :key="row.id"
         class="mt-3 p-3 rounded-xl border border-solid border-n-weak"
       >
@@ -290,6 +294,15 @@ onMounted(() => open('agenda'));
             {{ t('TOLZAR_SETTINGS_UI.BOOKINGS.MAKE_VOUCHER') }}
           </button>
         </div>
+      </div>
+      <div
+        v-if="hidden('list', rows)"
+        :ref="el => sentinel('list', el)"
+        class="mt-3 text-center"
+      >
+        <button type="button" :class="BTN_GHOST" @click="grow('list')">
+          {{ t('TOLZAR_UI.SHOW_MORE', { n: hidden('list', rows) }) }}
+        </button>
       </div>
     </section>
 

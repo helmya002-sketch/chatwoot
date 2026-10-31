@@ -1,5 +1,12 @@
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue';
+import {
+  ref,
+  computed,
+  watch,
+  onMounted,
+  onBeforeUnmount,
+  nextTick,
+} from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import ContactAPI from 'dashboard/api/contacts';
 import { useMapGetter } from 'dashboard/composables/store';
@@ -28,6 +35,7 @@ import {
 } from 'dashboard/components-next/Tolzar/tolzarOutcomes';
 import { contactChannel } from 'dashboard/components-next/Tolzar/tolzarChannel';
 import { ago } from 'dashboard/components-next/Tolzar/tolzarTime';
+import { useIncrementalList } from 'dashboard/components-next/Tolzar/useIncrementalList';
 import {
   HOVER_REVEAL,
   TONE_OK,
@@ -111,6 +119,9 @@ const visible = key => {
   const id = Number(filter.value.slice('inbox:'.length));
   return list.filter(c => (c.inboxes || []).some(ib => ib?.id === id));
 };
+// Tolzar (F1): a column renders 50 cards at a time however many pages are loaded; more as it scrolls.
+const { take, hidden, grow, reset, sentinel } = useIncrementalList();
+watch(filter, () => reset());
 
 // ---- Values -----------------------------------------------------------------------------------
 // Each column holds the pages loaded so far, so a value is "at least" until the whole column is
@@ -580,7 +591,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
           </div>
           <template v-else>
             <div
-              v-for="card in visible(s.key)"
+              v-for="card in take(s.key, visible(s.key))"
               :key="card.id"
               class="tz-cardlift group relative p-3 rounded-xl border border-solid shadow-sm transition-all cursor-pointer bg-n-solid-1 border-n-weak hover:border-n-slate-6"
               :class="{
@@ -698,7 +709,24 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
               }}
             </div>
             <div
-              v-if="
+              v-if="hidden(s.key, visible(s.key))"
+              :ref="el => sentinel(s.key, el)"
+              class="pt-1 text-[11px] text-center text-n-slate-10"
+            >
+              <button
+                type="button"
+                class="underline hover:text-n-slate-12"
+                @click="grow(s.key)"
+              >
+                {{
+                  t('TOLZAR_UI.SHOW_MORE', {
+                    n: hidden(s.key, visible(s.key)),
+                  })
+                }}
+              </button>
+            </div>
+            <div
+              v-else-if="
                 !col(s.key).error &&
                 col(s.key).count > col(s.key).contacts.length
               "
