@@ -99,9 +99,9 @@ describe Facebook::SendOnFacebookService do
         expect(bot).not_to have_received(:deliver).with(hash_including(:tag), anything)
       end
 
-      context 'when ENABLE_MESSENGER_CHANNEL_HUMAN_AGENT is enabled' do
+      context 'when the workspace is in TOLZAR_META_HUMAN_AGENT (Tolzar c77)' do
         around do |example|
-          with_modified_env(ENABLE_MESSENGER_CHANNEL_HUMAN_AGENT: 'true') { example.run }
+          with_modified_env(TOLZAR_META_HUMAN_AGENT: account.id.to_s, TOLZAR_BRAIN_USER_IDS: '0') { example.run }
         end
 
         it 'tags a human agent reply sent after the 24-hour window with HUMAN_AGENT' do

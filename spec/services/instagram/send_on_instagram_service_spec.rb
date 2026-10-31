@@ -108,8 +108,11 @@ describe Instagram::SendOnInstagramService do
       end
 
       context 'with message_tag HUMAN_AGENT' do
+        around do |example|
+          with_modified_env(TOLZAR_META_HUMAN_AGENT: account.id.to_s, TOLZAR_BRAIN_USER_IDS: '0') { example.run }
+        end
+
         before do
-          InstallationConfig.where(name: 'ENABLE_INSTAGRAM_CHANNEL_HUMAN_AGENT').first_or_create(value: true)
           GlobalConfig.clear_cache
           create(:message, message_type: :incoming, inbox: instagram_inbox, account: account, conversation: conversation)
         end

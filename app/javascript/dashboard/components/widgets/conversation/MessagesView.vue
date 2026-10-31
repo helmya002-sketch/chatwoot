@@ -33,6 +33,7 @@ import ResizableEditorWrapper from './ResizableEditorWrapper.vue';
 import ReferralBubble from 'dashboard/components-next/Conversation/ReferralBubble.vue';
 import TolzarCopilotCard from 'next/Tolzar/CopilotCard.vue';
 import TolzarCommentContextCard from 'next/Tolzar/CommentContextCard.vue';
+import TolzarReplyWindow from 'next/Tolzar/ReplyWindow.vue';
 
 // stores and apis
 import { mapGetters } from 'vuex';
@@ -88,6 +89,7 @@ export default {
     ReferralBubble,
     TolzarCopilotCard,
     TolzarCommentContextCard,
+    TolzarReplyWindow,
   },
   mixins: [inboxMixin],
   setup() {
@@ -329,6 +331,15 @@ export default {
       return '';
     },
     replyWindowLinkText() {
+      // Tolzar (c77): with HUMAN_AGENT on, Messenger / Instagram close after 7 days, not 24 hours.
+      if (
+        (this.isAFacebookInbox || this.isAnInstagramChannel) &&
+        this.$store.getters['accounts/getAccount'](
+          this.$store.getters.getCurrentAccountId
+        )?.tolzar_meta_human_agent
+      ) {
+        return this.$t('TOLZAR_INBOX.REPLY_WINDOW.CLOSED_7_DAYS');
+      }
       if (
         this.isAWhatsAppChannel ||
         this.isAFacebookInbox ||
@@ -557,6 +568,11 @@ export default {
         :banner-message="$t('CONVERSATION.INSTAGRAM_RESTRICTION_BANNER')"
         :href-link="instagramRestrictionStatusUrl"
         :href-link-text="$t('CONVERSATION.INSTAGRAM_RESTRICTION_STATUS_LINK')"
+      />
+      <TolzarReplyWindow
+        v-if="currentChat.can_reply"
+        :channel-type="inbox.channel_type"
+        :messages="getMessages"
       />
       <Banner
         v-if="!currentChat.can_reply"

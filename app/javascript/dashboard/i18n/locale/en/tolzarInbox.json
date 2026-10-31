@@ -66,6 +66,14 @@
         "UNKNOWN": "The AI service did not answer just now. This is checked again every minute."
       }
     },
+    "REPLY_WINDOW": {
+      "STANDARD": "Standard window: {left} left",
+      "HUMAN_AGENT": "Human-agent window: {left} left (your replies only, never the AI)",
+      "LEFT_D": "{n} d",
+      "LEFT_H": "{n} h",
+      "CLOSED_7_DAYS": "Meta's 7-day human-agent limit: more than 7 days since the customer's last message, so no reply can go out here",
+      "LEFT_MIN": "{n} min"
+    },
     "BELL": {
       "TITLE": "Notifications",
       "SEE_ALL": "See all",

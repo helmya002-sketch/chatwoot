@@ -65,14 +65,14 @@ RSpec.describe Conversations::MessageWindowService do
 
     context 'when the HUMAN_AGENT is enabled' do
       it 'return false if the last message is outgoing' do
-        with_modified_env ENABLE_MESSENGER_CHANNEL_HUMAN_AGENT: 'true' do
+        with_modified_env(TOLZAR_META_HUMAN_AGENT: conversation.account_id.to_s, TOLZAR_BRAIN_USER_IDS: '0') do
           service = described_class.new(conversation)
           expect(service.can_reply?).to be false
         end
       end
 
       it 'return true if the last message is incoming and within the messaging window (with in 24 hours)' do
-        with_modified_env ENABLE_MESSENGER_CHANNEL_HUMAN_AGENT: 'true' do
+        with_modified_env(TOLZAR_META_HUMAN_AGENT: conversation.account_id.to_s, TOLZAR_BRAIN_USER_IDS: '0') do
           create(
             :message,
             account: conversation.account,
@@ -86,7 +86,7 @@ RSpec.describe Conversations::MessageWindowService do
       end
 
       it 'return true if the last message is incoming and within the messaging window (with in 7 days)' do
-        with_modified_env ENABLE_MESSENGER_CHANNEL_HUMAN_AGENT: 'true' do
+        with_modified_env(TOLZAR_META_HUMAN_AGENT: conversation.account_id.to_s, TOLZAR_BRAIN_USER_IDS: '0') do
           create(
             :message,
             account: conversation.account,
@@ -100,7 +100,7 @@ RSpec.describe Conversations::MessageWindowService do
       end
 
       it 'return false if the last message is incoming and outside the messaging window (8 days ago )' do
-        with_modified_env ENABLE_MESSENGER_CHANNEL_HUMAN_AGENT: 'true' do
+        with_modified_env(TOLZAR_META_HUMAN_AGENT: conversation.account_id.to_s, TOLZAR_BRAIN_USER_IDS: '0') do
           create(
             :message,
             account: conversation.account,
@@ -114,7 +114,7 @@ RSpec.describe Conversations::MessageWindowService do
       end
 
       it 'return true if last message is outgoing but previous incoming message is within window' do
-        with_modified_env ENABLE_MESSENGER_CHANNEL_HUMAN_AGENT: 'true' do
+        with_modified_env(TOLZAR_META_HUMAN_AGENT: conversation.account_id.to_s, TOLZAR_BRAIN_USER_IDS: '0') do
           create(
             :message,
             account: conversation.account,
@@ -139,7 +139,7 @@ RSpec.describe Conversations::MessageWindowService do
       end
 
       it 'considers only the last incoming message for determining time window' do
-        with_modified_env ENABLE_MESSENGER_CHANNEL_HUMAN_AGENT: 'true' do
+        with_modified_env(TOLZAR_META_HUMAN_AGENT: conversation.account_id.to_s, TOLZAR_BRAIN_USER_IDS: '0') do
           # Old message outside window
           create(
             :message,
@@ -165,7 +165,7 @@ RSpec.describe Conversations::MessageWindowService do
     end
 
     context 'when the HUMAN_AGENT is disabled' do
-      with_modified_env ENABLE_MESSENGER_CHANNEL_HUMAN_AGENT: 'false' do
+      with_modified_env TOLZAR_META_HUMAN_AGENT: '' do
         it 'return false if the last message is outgoing' do
           service = described_class.new(conversation)
           expect(service.can_reply?).to be false
@@ -205,14 +205,14 @@ RSpec.describe Conversations::MessageWindowService do
 
     context 'when the HUMAN_AGENT is enabled' do
       it 'return false if the last message is outgoing' do
-        with_modified_env ENABLE_INSTAGRAM_CHANNEL_HUMAN_AGENT: 'true' do
+        with_modified_env(TOLZAR_META_HUMAN_AGENT: conversation.account_id.to_s, TOLZAR_BRAIN_USER_IDS: '0') do
           service = described_class.new(conversation)
           expect(service.can_reply?).to be false
         end
       end
 
       it 'return true if the last message is incoming and within the messaging window (with in 24 hours)' do
-        with_modified_env ENABLE_INSTAGRAM_CHANNEL_HUMAN_AGENT: 'true' do
+        with_modified_env(TOLZAR_META_HUMAN_AGENT: conversation.account_id.to_s, TOLZAR_BRAIN_USER_IDS: '0') do
           create(
             :message,
             account: conversation.account,
@@ -226,7 +226,7 @@ RSpec.describe Conversations::MessageWindowService do
       end
 
       it 'return true if the last message is incoming and within the messaging window (with in 7 days)' do
-        with_modified_env ENABLE_INSTAGRAM_CHANNEL_HUMAN_AGENT: 'true' do
+        with_modified_env(TOLZAR_META_HUMAN_AGENT: conversation.account_id.to_s, TOLZAR_BRAIN_USER_IDS: '0') do
           create(
             :message,
             account: conversation.account,
@@ -240,7 +240,7 @@ RSpec.describe Conversations::MessageWindowService do
       end
 
       it 'return false if the last message is incoming and outside the messaging window (8 days ago)' do
-        with_modified_env ENABLE_INSTAGRAM_CHANNEL_HUMAN_AGENT: 'true' do
+        with_modified_env(TOLZAR_META_HUMAN_AGENT: conversation.account_id.to_s, TOLZAR_BRAIN_USER_IDS: '0') do
           create(
             :message,
             account: conversation.account,
@@ -254,7 +254,7 @@ RSpec.describe Conversations::MessageWindowService do
       end
 
       it 'return true if last message is outgoing but previous incoming message is within window' do
-        with_modified_env ENABLE_INSTAGRAM_CHANNEL_HUMAN_AGENT: 'true' do
+        with_modified_env(TOLZAR_META_HUMAN_AGENT: conversation.account_id.to_s, TOLZAR_BRAIN_USER_IDS: '0') do
           create(
             :message,
             account: conversation.account,
@@ -279,7 +279,7 @@ RSpec.describe Conversations::MessageWindowService do
       end
 
       it 'considers only the last incoming message for determining time window' do
-        with_modified_env ENABLE_INSTAGRAM_CHANNEL_HUMAN_AGENT: 'true' do
+        with_modified_env(TOLZAR_META_HUMAN_AGENT: conversation.account_id.to_s, TOLZAR_BRAIN_USER_IDS: '0') do
           # Old message outside window
           create(
             :message,
@@ -304,7 +304,7 @@ RSpec.describe Conversations::MessageWindowService do
       end
 
       it 'return true if the last message is incoming and exactly at the edge of 24-hour window with HUMAN_AGENT disabled' do
-        with_modified_env ENABLE_INSTAGRAM_CHANNEL_HUMAN_AGENT: 'true' do
+        with_modified_env(TOLZAR_META_HUMAN_AGENT: conversation.account_id.to_s, TOLZAR_BRAIN_USER_IDS: '0') do
           create(
             :message,
             account: conversation.account,
@@ -320,14 +320,14 @@ RSpec.describe Conversations::MessageWindowService do
 
     context 'when the HUMAN_AGENT is disabled' do
       it 'return false if the last message is outgoing' do
-        with_modified_env ENABLE_INSTAGRAM_CHANNEL_HUMAN_AGENT: 'false' do
+        with_modified_env TOLZAR_META_HUMAN_AGENT: '' do
           service = described_class.new(conversation)
           expect(service.can_reply?).to be false
         end
       end
 
       it 'return false if the last message is incoming and outside the messaging window (8 days ago)' do
-        with_modified_env ENABLE_INSTAGRAM_CHANNEL_HUMAN_AGENT: 'false' do
+        with_modified_env TOLZAR_META_HUMAN_AGENT: '' do
           create(
             :message,
             account: conversation.account,
@@ -341,7 +341,7 @@ RSpec.describe Conversations::MessageWindowService do
       end
 
       it 'return true if the last message is incoming and within the messaging window (24 hours limit)' do
-        with_modified_env ENABLE_INSTAGRAM_CHANNEL_HUMAN_AGENT: 'false' do
+        with_modified_env TOLZAR_META_HUMAN_AGENT: '' do
           create(
             :message,
             account: conversation.account,

@@ -96,12 +96,14 @@ class Facebook::SendOnFacebookService < Base::SendOnChannelService
     merge_human_agent_tag(params)
   end
 
+  # Tolzar (c77): only Tolzar::MetaHumanAgent decides (TOLZAR_META_HUMAN_AGENT; a person, never the AI or a bot).
   def merge_human_agent_tag(params)
-    unless GlobalConfigService.load('ENABLE_MESSENGER_CHANNEL_HUMAN_AGENT', nil) && human_agent_tag_applicable?
+    unless Tolzar::MetaHumanAgent.tag?(message)
       params[:messaging_type] = 'RESPONSE'
       return params
     end
 
+    Tolzar::MetaHumanAgent.record!(message)
     params[:messaging_type] = 'MESSAGE_TAG'
     params[:tag] = 'HUMAN_AGENT'
     params

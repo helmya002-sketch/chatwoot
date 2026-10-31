@@ -32,6 +32,8 @@ fair_use = (@account.internal_attributes || {})['tolzar_fair_use']
 json.tolzar_new_ui Tolzar::NewUi.enabled_for?(@account.id)
 # Tolzar installable app (round 4): phone layouts and private, quiet-hours push (Tolzar::PushPrivacy).
 json.tolzar_pwa Tolzar::PushPrivacy.on?(@account.id)
+# Meta HUMAN_AGENT (c77): a person may reply to Messenger / Instagram up to 7 days (Tolzar::MetaHumanAgent).
+json.tolzar_meta_human_agent Tolzar::MetaHumanAgent.on?(@account.id)
 json.tolzar_fair_use fair_use.slice('month', 'used', 'allowance', 'plan', 'level') if Tolzar::FairUse.enabled? && fair_use.is_a?(Hash)
 features = @account.enabled_features
 features.delete(Shopify::FeatureGate::ACCOUNT_FEATURE) unless Shopify::FeatureGate.enabled?(account: @account)

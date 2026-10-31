@@ -28,11 +28,11 @@ class Instagram::Messenger::SendOnInstagramService < Instagram::BaseSendService
     )
   end
 
+  # Tolzar (c77): only Tolzar::MetaHumanAgent decides (TOLZAR_META_HUMAN_AGENT; a person, never the AI or a bot).
   def merge_human_agent_tag(params)
-    global_config = GlobalConfig.get('ENABLE_MESSENGER_CHANNEL_HUMAN_AGENT')
+    return params unless Tolzar::MetaHumanAgent.tag?(message)
 
-    return params unless global_config['ENABLE_MESSENGER_CHANNEL_HUMAN_AGENT'] && human_agent_tag_applicable?
-
+    Tolzar::MetaHumanAgent.record!(message)
     params[:messaging_type] = 'MESSAGE_TAG'
     params[:tag] = 'HUMAN_AGENT'
     params

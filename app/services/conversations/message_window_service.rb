@@ -60,8 +60,10 @@ class Conversations::MessageWindowService
     48.hours
   end
 
-  def meta_messaging_window(config_key)
-    GlobalConfigService.load(config_key, nil) ? MESSAGING_WINDOW_7_DAYS : MESSAGING_WINDOW_24_HOURS
+  # Tolzar (c77): 7 days only for TOLZAR_META_HUMAN_AGENT workspaces (Tolzar::MetaHumanAgent); the installation-wide
+  # ENABLE_*_HUMAN_AGENT settings are not used, so there is one switch, per workspace.
+  def meta_messaging_window(_config_key)
+    Tolzar::MetaHumanAgent.on?(@conversation.account_id) ? MESSAGING_WINDOW_7_DAYS : MESSAGING_WINDOW_24_HOURS
   end
 
   def last_incoming_message
