@@ -297,6 +297,7 @@ export class WidgetApp {
       },
     ]);
     this.paint();
+    this.list.setAttribute('aria-busy', 'true');
     try {
       const page = pageContext(this.pageUrl)?.tolzar_page;
       const first = !this.store.messages.some(
@@ -308,6 +309,7 @@ export class WidgetApp {
     } catch {
       markFailed(this.store, echoId);
     }
+    this.list.removeAttribute('aria-busy');
     this.paint();
   }
 
@@ -376,6 +378,11 @@ export class WidgetApp {
 
     this.list = el(doc, 'ol', 'tz-list');
     this.list.setAttribute('aria-live', 'polite');
+    this.list.setAttribute('aria-relevant', 'additions');
+    // WCAG 2.1.2 / 2.4.3: Escape closes the chat and hands focus back to the page's launcher.
+    this.root.addEventListener('keydown', e => {
+      if (e.key === 'Escape') this.bridge.send('closeWindow', {});
+    });
     this.list.setAttribute('aria-label', t(this.locale, 'MESSAGES'));
     this.typingEl = el(doc, 'div', 'tz-typing', t(this.locale, 'TYPING'));
     this.typingEl.hidden = !this.store.typing;
@@ -437,6 +444,19 @@ export class WidgetApp {
       let side = mine ? 'tz-mine' : 'tz-theirs';
       if (m.type === TYPE.ACTIVITY) side = 'tz-activity';
       const li = el(doc, 'li', `tz-msg ${side}`);
+      // Screen readers hear who wrote it and when (the bubble alone does not say it).
+      const who = mine
+        ? t(this.locale, 'YOU')
+        : m.sender?.name || t(this.locale, 'TEAM');
+      if (m.type !== TYPE.ACTIVITY) {
+        const sr = el(
+          doc,
+          'span',
+          'tz-sr',
+          `${who}, ${new Date(m.createdAt * 1000).toLocaleTimeString(this.locale, { hour: '2-digit', minute: '2-digit' })}: `
+        );
+        li.append(sr);
+      }
       if (!mine && m.sender?.name && m.type !== TYPE.ACTIVITY)
         li.append(el(doc, 'div', 'tz-sender', m.sender.name));
       const bubble = el(doc, 'div', 'tz-bubble');

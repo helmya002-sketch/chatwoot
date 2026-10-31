@@ -3,6 +3,8 @@
 
 export const STRINGS = {
   en: {
+    YOU: 'You',
+    TEAM: 'Team',
     CONTINUE_ON: 'Continue on',
     CH_WHATSAPP: 'WhatsApp',
     CH_INSTAGRAM: 'Instagram',
@@ -43,6 +45,8 @@ export const STRINGS = {
     REPLY_TIME: 'We usually reply within a few minutes.',
   },
   ar: {
+    YOU: 'أنت',
+    TEAM: 'الفريق',
     CONTINUE_ON: 'تابع على',
     CH_WHATSAPP: 'WhatsApp',
     CH_INSTAGRAM: 'Instagram',
@@ -82,6 +86,8 @@ export const STRINGS = {
     REPLY_TIME: 'نردّ عادةً خلال دقائق.',
   },
   de: {
+    YOU: 'Sie',
+    TEAM: 'Team',
     CONTINUE_ON: 'Weiter auf',
     CH_WHATSAPP: 'WhatsApp',
     CH_INSTAGRAM: 'Instagram',
@@ -123,6 +129,8 @@ export const STRINGS = {
     REPLY_TIME: 'Wir antworten meist innerhalb weniger Minuten.',
   },
   fr: {
+    YOU: 'Vous',
+    TEAM: 'Équipe',
     CONTINUE_ON: 'Continuer sur',
     CH_WHATSAPP: 'WhatsApp',
     CH_INSTAGRAM: 'Instagram',
@@ -164,6 +172,8 @@ export const STRINGS = {
     REPLY_TIME: 'Nous répondons en général en quelques minutes.',
   },
   es: {
+    YOU: 'Tú',
+    TEAM: 'Equipo',
     CONTINUE_ON: 'Continuar en',
     CH_WHATSAPP: 'WhatsApp',
     CH_INSTAGRAM: 'Instagram',
@@ -204,6 +214,8 @@ export const STRINGS = {
     REPLY_TIME: 'Solemos responder en pocos minutos.',
   },
   pt: {
+    YOU: 'Você',
+    TEAM: 'Equipa',
     CONTINUE_ON: 'Continuar no',
     CH_WHATSAPP: 'WhatsApp',
     CH_INSTAGRAM: 'Instagram',
