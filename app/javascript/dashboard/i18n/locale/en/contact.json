@@ -530,7 +530,11 @@
         "ST_open": "Open",
         "ST_resolved": "Resolved",
         "ST_pending": "Pending",
-        "ST_snoozed": "Snoozed"
+        "ST_snoozed": "Snoozed",
+        "SEARCH_PLACEHOLDER": "Search this contact's messages",
+        "SEARCH_LOADING": "Searching…",
+        "SEARCH_EMPTY": "No messages match.",
+        "SEARCH_IN": "In conversation #{id}"
       },
       "HISTORY": {
         "EMPTY_STATE": "There are no previous conversations associated to this contact"

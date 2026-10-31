@@ -75,12 +75,97 @@ const link = e =>
       )
     : null;
 
+// Search within the contact (round 4, E5; Tolzar::ContactSearch): 2–100 characters, 300 ms debounce. While a query is
+// active the hits replace the timeline.
+const query = ref('');
+const results = ref(null);
+let searchTimer = null;
+let searchSeq = 0;
+
+const active = () => query.value.trim().length >= 2;
+
+async function search() {
+  searchSeq += 1;
+  const seq = searchSeq;
+  const q = query.value.trim();
+  if (q.length < 2) {
+    results.value = null;
+    return;
+  }
+  try {
+    const { accountId, contactId } = route.params;
+    const { data } = await window.axios.get(
+      `/api/v1/accounts/${accountId}/tolzar/contacts/${contactId}/search`,
+      { params: { q: q.slice(0, 100) } }
+    );
+    if (seq === searchSeq) results.value = data.results || [];
+  } catch {
+    if (seq === searchSeq) results.value = [];
+  }
+}
+
+watch(query, () => {
+  clearTimeout(searchTimer);
+  results.value = null;
+  searchTimer = setTimeout(search, 300);
+});
+
+const resultLink = r =>
+  frontendURL(
+    conversationUrl({ accountId: route.params.accountId, id: r.conversation_id })
+  );
+
 watch(() => route.params.contactId, load, { immediate: true });
+watch(
+  () => route.params.contactId,
+  () => {
+    query.value = '';
+    results.value = null;
+  }
+);
 </script>
 
 <template>
   <div class="px-6 py-4">
-    <p v-if="events === null" class="m-0 text-sm text-n-slate-11">
+    <input
+      v-model="query"
+      type="search"
+      maxlength="100"
+      :placeholder="t('CONTACTS_LAYOUT.SIDEBAR.TIMELINE.SEARCH_PLACEHOLDER')"
+      :aria-label="t('CONTACTS_LAYOUT.SIDEBAR.TIMELINE.SEARCH_PLACEHOLDER')"
+      class="w-full mb-4 text-sm"
+    />
+    <template v-if="active()">
+      <p v-if="results === null" class="m-0 text-sm text-n-slate-11">
+        {{ t('CONTACTS_LAYOUT.SIDEBAR.TIMELINE.SEARCH_LOADING') }}
+      </p>
+      <p v-else-if="!results.length" class="m-0 text-sm text-n-slate-11">
+        {{ t('CONTACTS_LAYOUT.SIDEBAR.TIMELINE.SEARCH_EMPTY') }}
+      </p>
+      <ol v-else class="m-0 p-0 list-none flex flex-col gap-3">
+        <li
+          v-for="r in results"
+          :key="r.message_id"
+          class="ps-3 border-s-2 border-solid border-n-weak"
+        >
+          <p class="m-0 text-xs text-n-slate-10">{{ when(r.at) }}</p>
+          <router-link
+            :to="resultLink(r)"
+            class="text-sm font-medium text-n-slate-12 hover:underline"
+          >
+            {{
+              t('CONTACTS_LAYOUT.SIDEBAR.TIMELINE.SEARCH_IN', {
+                id: r.conversation_id,
+              })
+            }}
+          </router-link>
+          <p class="m-0 text-xs text-n-slate-11 break-words">
+            {{ r.snippet }}
+          </p>
+        </li>
+      </ol>
+    </template>
+    <p v-else-if="events === null" class="m-0 text-sm text-n-slate-11">
       {{ t('CONTACTS_LAYOUT.SIDEBAR.TIMELINE.LOADING') }}
     </p>
     <p v-else-if="!events.length" class="m-0 text-sm text-n-slate-11">
