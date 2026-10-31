@@ -97,6 +97,24 @@ RSpec.describe 'Tolzar briefing', type: :request do
       end
     end
 
+    it "gives My day: the longest waiting, follow-ups due, and today's replies, resolved and median first reply" do
+      with_modified_env(TOLZAR_TOPBAR_ACCOUNTS: account.id.to_s) do
+        old = create(:conversation, account: account, inbox: mine, status: :open)
+        old.update_columns(waiting_since: 3.hours.ago)
+        newer = create(:conversation, account: account, inbox: mine, status: :open)
+        newer.update_columns(waiting_since: 10.minutes.ago)
+        create(:message, account: account, conversation: newer, inbox: mine, sender: agent, message_type: :outgoing)
+        create(:message, account: account, conversation: newer, inbox: mine, sender: agent, message_type: :outgoing, private: true)
+        [60, 120, 300].each { |v| ReportingEvent.create!(account_id: account.id, user_id: agent.id, name: 'first_response', value: v) }
+        ReportingEvent.create!(account_id: account.id, user_id: agent.id, name: 'conversation_resolved', value: 0)
+
+        get url, params: { tz: 'UTC' }, headers: agent.create_new_auth_token
+        day = response.parsed_body['day']
+        expect(day['waiting'].first['id']).to eq(old.display_id)
+        expect(day['today']).to eq('replied' => 1, 'resolved' => 1, 'median_first_reply' => 120)
+      end
+    end
+
     it 'counts bookings today when bookings are on' do
       with_modified_env(TOLZAR_TOPBAR_ACCOUNTS: account.id.to_s, TOLZAR_BOOKINGS_ACCOUNTS: account.id.to_s) do
         today = Time.current.utc.to_date.iso8601

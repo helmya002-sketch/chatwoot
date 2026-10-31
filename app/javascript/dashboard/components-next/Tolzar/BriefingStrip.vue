@@ -14,6 +14,7 @@ import { useMapGetter } from 'dashboard/composables/store';
 import { frontendURL } from 'dashboard/helper/URLHelper';
 import { tolzarBrand } from './TolzarBranding.vue';
 import { nowChips, aiPill } from './tolzarTopbar';
+import { ago, duration } from './tolzarTime';
 
 const { t } = useI18n();
 const router = useRouter();
@@ -102,6 +103,15 @@ watch(accountId, loadBriefing);
 // Top bar (c62, TOLZAR_TOPBAR_ACCOUNTS): "right now" chips and the AI pill, only when the server sends them.
 const chips = computed(() => nowChips(server.value?.now, accountId.value));
 const pill = computed(() => aiPill(server.value?.ai));
+// "My day" (c66): only when the server sends it (TOLZAR_TOPBAR_ACCOUNTS).
+const day = computed(() => server.value?.day || null);
+const { locale } = useI18n();
+const since = iso => ago(iso, locale.value);
+const firstReply = computed(() =>
+  day.value?.today?.median_first_reply == null
+    ? '–'
+    : duration(day.value.today.median_first_reply, locale.value)
+);
 const openChip = chip => {
   if (chip.to) router.push(chip.to);
 };
@@ -270,6 +280,45 @@ const jump = id => {
       <div v-else class="tz-empty">
         {{ t('TOLZAR_INBOX.BRIEFING.EMPTY', { product }) }}
       </div>
+
+      <template v-if="day">
+        <div v-if="day.waiting.length" class="tz-day">
+          <b class="tz-day-h">{{ t('TOLZAR_INBOX.BRIEFING.DAY.WAITING') }}</b>
+          <button
+            v-for="c in day.waiting"
+            :key="`w${c.id}`"
+            class="tz-day-row"
+            type="button"
+            @click="jump(c.id)"
+          >
+            <span>{{ c.name || t('TOLZAR_INBOX.BRIEFING.NO_NAME') }}</span>
+            <i>{{ since(c.since) }}</i>
+          </button>
+        </div>
+        <div v-if="day.due.length" class="tz-day">
+          <b class="tz-day-h">{{ t('TOLZAR_INBOX.BRIEFING.DAY.DUE') }}</b>
+          <button
+            v-for="c in day.due"
+            :key="`d${c.id}`"
+            class="tz-day-row"
+            type="button"
+            @click="jump(c.id)"
+          >
+            <span>{{ c.name || t('TOLZAR_INBOX.BRIEFING.NO_NAME') }}</span>
+            <i>{{ since(c.at) }}</i>
+          </button>
+        </div>
+        <p class="tz-day-today">
+          <b>{{ t('TOLZAR_INBOX.BRIEFING.DAY.TODAY') }}</b>
+          {{
+            t('TOLZAR_INBOX.BRIEFING.DAY.TODAY_LINE', {
+              replied: day.today.replied,
+              resolved: day.today.resolved,
+              first: firstReply,
+            })
+          }}
+        </p>
+      </template>
     </div>
   </div>
 </template>
@@ -602,6 +651,54 @@ const jump = id => {
   fill: none;
   stroke: rgb(var(--blue-9));
   stroke-width: 1.8;
+}
+.tz-pop .tz-day {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.tz-pop .tz-day-h,
+.tz-pop .tz-day-today b {
+  font-size: 11px;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgb(var(--slate-10));
+  padding: 0 4px;
+}
+.tz-pop .tz-day-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 32px;
+  padding: 4px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  color: rgb(var(--slate-12));
+  text-align: start;
+}
+.tz-pop .tz-day-row:hover,
+.tz-pop .tz-day-row:focus-visible {
+  background: rgb(var(--slate-3));
+}
+.tz-pop .tz-day-row i {
+  font-style: normal;
+  color: rgb(var(--slate-10));
+  white-space: nowrap;
+}
+.tz-pop .tz-day-today {
+  margin: 10px 0 0;
+  padding-top: 8px;
+  border-top: 1px solid rgb(var(--slate-5));
+  font-size: 12.5px;
+  color: rgb(var(--slate-11));
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.tz-pop .tz-day-today b {
+  padding: 0;
 }
 .tz-pop .tz-empty {
   font-size: 12.5px;

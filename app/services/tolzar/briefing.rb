@@ -7,6 +7,8 @@
 #        Unattended rule), unassigned (open, nobody), due_today (snoozed, waking before the end of today in the
 #        viewer's time zone), bookings_today (when bookings are on: not cancelled, today within its dates)
 #   ai   the AI's state as the brain reports it: off / shadow / live / unknown (view-only; cached for a minute)
+#   day  "My day" (c66): the longest waiting (open, unattended, oldest first), follow-ups due today, and today so
+#        far for this person: replies sent, conversations resolved, their median first reply (seconds)
 # Read-only; nothing is estimated, so an empty list or a 0 really means none.
 class Tolzar::Briefing
   HOT_SCORE = 70 # the same rule as the inbox (tolzarAttention.js HOT_SCORE)
@@ -34,7 +36,7 @@ class Tolzar::Briefing
                 .pluck(:display_id, 'contacts.name', Arel.sql(SCORE), Arel.sql("contacts.custom_attributes->>'tolzar_lead_hint'"))
     out = { hot_count: scope.count,
             hot: rows.map { |id, name, score, hint| { id: id, name: name.to_s, score: score.to_f.round, hint: hint.to_s.first(140) } } }
-    out.merge!(now: now_counts, ai: ai_state) if self.class.topbar?(@account.id)
+    out.merge!(now: now_counts, ai: ai_state, day: my_day) if self.class.topbar?(@account.id)
     out
   end
 
@@ -55,6 +57,31 @@ class Tolzar::Briefing
                due_today: visible.snoozed.where(snoozed_until: ..@zone.now.end_of_day).count }
     counts[:bookings_today] = bookings_today if Tolzar::Booking.enabled?(@account.id)
     counts
+  end
+
+  def my_day
+    open = visible.open
+    waiting = open.unattended.includes(:contact).reorder(Arel.sql('conversations.waiting_since ASC NULLS LAST')).limit(3)
+    due = visible.snoozed.where(snoozed_until: ..@zone.now.end_of_day).includes(:contact).reorder(:snoozed_until).limit(3)
+    { waiting: waiting.map { |c| { id: c.display_id, name: c.contact&.name.to_s, since: c.waiting_since&.iso8601 } },
+      due: due.map { |c| { id: c.display_id, name: c.contact&.name.to_s, at: c.snoozed_until&.iso8601 } },
+      today: today_so_far }
+  end
+
+  def today_so_far
+    start = @zone.now.beginning_of_day
+    replies = Message.outgoing.where(account_id: @account.id, sender_type: 'User', sender_id: @user.id, private: false,
+                                     created_at: start..).count
+    events = ReportingEvent.where(account_id: @account.id, user_id: @user.id, created_at: start..)
+    firsts = events.where(name: 'first_response').pluck(:value).compact.sort
+    { replied: replies, resolved: events.where(name: 'conversation_resolved').count, median_first_reply: median(firsts) }
+  end
+
+  def median(sorted)
+    return nil if sorted.empty?
+
+    mid = sorted.size / 2
+    (sorted.size.odd? ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2.0).round
   end
 
   def bookings_today

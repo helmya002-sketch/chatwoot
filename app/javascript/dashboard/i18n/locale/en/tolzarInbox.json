@@ -39,6 +39,12 @@
       "NO_NAME": "Unnamed contact",
       "OPEN_LEAD": "Open the conversation with {name} (score {score})",
       "EMPTY": "No urgent leads right now. {product} will flag the moment a hot one comes in.",
+      "DAY": {
+        "WAITING": "Waiting longest",
+        "DUE": "Follow-ups due today",
+        "TODAY": "Your day so far",
+        "TODAY_LINE": "{replied} replies sent · {resolved} resolved · first reply {first} (median)"
+      },
       "NOW_LABEL": "Right now",
       "NOW": {
         "mine": "mine open | mine open",
