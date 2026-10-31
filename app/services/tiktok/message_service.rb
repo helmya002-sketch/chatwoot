@@ -48,6 +48,8 @@ class Tiktok::MessageService
 
     create_message_attachments(message)
     message.save!
+    # Tolzar: the ad that started this chat (click-to-message), kept on the conversation and the lead.
+    Tolzar::AdAttribution.record(conversation: conversation, contact: contact, payload: content, platform: 'tiktok') if incoming_message?
   end
 
   def message_content
