@@ -3,6 +3,10 @@ require 'rails_helper'
 # Booking-system events into Tolzar: signed (timestamp + HMAC), within 5 minutes, each once; the contact moves to
 # the won / lost stage (forward only) and the conversation gets an activity line; nothing is sent.
 RSpec.describe 'Tolzar booking hooks', type: :request do
+  # Every example uses a connector, whose token is encrypted at rest: without the ACTIVE_RECORD_ENCRYPTION_* keys
+  # (the gate's first pass) they skip; the gate's keyed pass runs them (as encrypted_credentials_spec).
+  before { skip 'ACTIVE_RECORD_ENCRYPTION_* keys are not set' unless Chatwoot.encryption_configured? }
+
   let(:account) { create(:account) }
   let(:connector) do
     Tolzar::BookingConnector.create!(account: account, adapter: 'dwt', base_url: 'https://b.example.com/api.php', token: 'dwtbk_x')
