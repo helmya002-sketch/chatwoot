@@ -1,0 +1,77 @@
+<%# Tolzar booking document, printable (Api::V1::Accounts::TolzarDocumentsController#printable). Self-contained,
+    no script; every value escaped by ERB. Drafts and voided documents carry a stamp. %>
+<% spec = view[:spec] || {} %>
+<% money = ->(cents) { format('%.2f', cents.to_i / 100.0) } %>
+<% checker = Tolzar::DocumentSpec.new(spec) %>
+<% titles = { 'voucher' => 'Voucher', 'quote' => 'Quote', 'confirmation' => 'Booking confirmation', 'payment_summary' => 'Payment summary' } %>
+<!DOCTYPE html>
+<html lang="<%= view[:language] %>" dir="<%= view[:language].to_s.start_with?('ar') ? 'rtl' : 'ltr' %>">
+<head>
+  <meta charset="utf-8">
+  <title><%= view[:number] || titles[view[:doc_type]] %></title>
+  <style>
+    @page { size: A4; margin: 16mm; }
+    body { font: 12px/1.5 Inter, system-ui, sans-serif; color: #0f172a; margin: 0; }
+    header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #3e63dd; padding-bottom: 10px; }
+    h1 { font-size: 20px; margin: 0; }
+    .meta { text-align: end; color: #475569; }
+    .stamp { display: inline-block; margin-top: 6px; padding: 2px 8px; border: 2px solid #b42318; color: #b42318; font-weight: 700; letter-spacing: .08em; }
+    table { width: 100%; border-collapse: collapse; margin-top: 14px; }
+    th, td { padding: 6px 8px; border-bottom: 1px solid #e2e8f0; text-align: start; vertical-align: top; }
+    th { color: #475569; font-weight: 600; font-size: 11px; text-transform: uppercase; }
+    td.num, th.num { text-align: end; white-space: nowrap; }
+    .totals { margin-top: 10px; margin-inline-start: auto; width: 45%; }
+    .totals div { display: flex; justify-content: space-between; padding: 3px 0; }
+    .grand { font-weight: 700; font-size: 14px; border-top: 2px solid #0f172a; }
+    .muted { color: #475569; }
+    section { margin-top: 14px; }
+    .tbc { background: #fff1db; color: #6b4a00; padding: 0 3px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1><%= spec['title'].presence || titles[view[:doc_type]] %></h1>
+      <div class="muted"><%= document.account.name %></div>
+    </div>
+    <div class="meta">
+      <div><strong><%= view[:number] || 'DRAFT' %></strong></div>
+      <div><%= (view[:issued_at] || view[:created_at])&.to_date %></div>
+      <% if view[:status] != 'issued' %><div class="stamp"><%= view[:status] == 'void' ? 'CANCELLED' : 'DRAFT' %></div><% end %>
+    </div>
+  </header>
+
+  <% if Array(spec['guests']).any? %>
+    <section><strong>Guests:</strong> <%= Array(spec['guests']).filter_map { |g| g['name'] if g.is_a?(Hash) }.join(', ') %></section>
+  <% end %>
+
+  <table>
+    <thead><tr><th>Item</th><th>Date</th><th class="num">Qty</th><th class="num">Price</th><th class="num">Amount</th></tr></thead>
+    <tbody>
+      <% checker.lines.each do |line| %>
+        <% tbc = line['unit_price'].to_s.match?(Tolzar::DocumentSpec::PLACEHOLDER) %>
+        <tr>
+          <td><%= line['description'] %><% if line['guests'].present? %><div class="muted"><%= Array(line['guests']).join(', ') %></div><% end %></td>
+          <td><%= line['date'].presence || (spec['open_date'] ? 'To be arranged' : '') %></td>
+          <td class="num"><%= line['qty'].presence || 1 %></td>
+          <td class="num"><% if tbc %><span class="tbc"><%= line['unit_price'] %></span><% else %><%= line['unit_price'] %><% end %></td>
+          <td class="num"><%= money.call(checker.line_cents(line)) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <div class="totals">
+    <div class="grand"><span>Total</span><span><%= view[:currency] %> <%= money.call(view[:total_cents]) %></span></div>
+    <% if view[:paid_cents].to_i.positive? %>
+      <div><span>Paid</span><span><%= view[:currency] %> <%= money.call(view[:paid_cents]) %></span></div>
+      <div><span>Balance</span><span><%= view[:currency] %> <%= money.call([view[:total_cents].to_i - view[:paid_cents].to_i, 0].max) %></span></div>
+    <% end %>
+    <div class="muted"><span>Payment</span><span><%= { 'paid' => 'Paid', 'deposit' => 'Deposit paid', 'due' => 'Due' }[view[:payment_state]] %></span></div>
+  </div>
+
+  <% if spec['valid_until'].present? %><section class="muted">Valid until <%= spec['valid_until'] %></section><% end %>
+  <% if spec['notes'].present? %><section><%= simple_format(spec['notes']) %></section><% end %>
+  <% if spec['terms'].present? %><section class="muted"><strong>Good to know</strong><%= simple_format(spec['terms']) %></section><% end %>
+</body>
+</html>

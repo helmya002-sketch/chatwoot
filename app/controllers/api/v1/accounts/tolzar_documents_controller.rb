@@ -6,13 +6,16 @@
 #   PATCH  tolzar/documents/:id         a draft's new spec (a new version)
 #   POST   tolzar/documents/:id/issue   checks, then the gapless number
 #   POST   tolzar/documents/:id/void    {reason} (administrators); the number stays
+#   GET    tolzar/documents/:id/print   the document as a printable HTML page (print to PDF until the renderer)
+#   GET/POST tolzar/documents_settings  the number prefixes per type (POST: the workspace owner)
 # Any member drafts and issues; nothing is sent to a customer from here.
 class Api::V1::Accounts::TolzarDocumentsController < Api::V1::Accounts::BaseController
   PER_PAGE = 50
 
   before_action :ensure_enabled
-  before_action :set_document, only: %i[show update issue void]
+  before_action :set_document, only: %i[show update issue void printable]
   before_action :ensure_admin, only: %i[void export]
+  before_action :ensure_owner, only: :settings_save
 
   def index
     scope = Tolzar::Document.where(account_id: Current.account.id).includes(:contact, :conversation).register
@@ -80,7 +83,37 @@ class Api::V1::Accounts::TolzarDocumentsController < Api::V1::Accounts::BaseCont
     send_data csv, filename: "documents-#{Time.current.strftime('%Y%m%d')}.csv", type: 'text/csv'
   end
 
+  # A plain, self-contained page (no script, our own styles); every value is escaped by ERB.
+  def printable
+    render template: 'tolzar/documents/print', layout: false, locals: { document: @document, view: @document.view },
+           content_type: 'text/html'
+  end
+
+  def settings
+    render json: { ok: true, prefixes: prefixes, defaults: Tolzar::Document::DEFAULT_PREFIXES }
+  end
+
+  def settings_save
+    given = params[:prefixes].respond_to?(:to_unsafe_h) ? params[:prefixes].to_unsafe_h : (params[:prefixes] || {})
+    clean = Tolzar::DocumentSpec::TYPES.index_with { |t| given[t].to_s.strip.upcase }.select { |_t, v| v.match?(Tolzar::Document::PREFIX) }
+    bad = Tolzar::DocumentSpec::TYPES.select { |t| given[t].present? && !clean.key?(t) }
+    return refused("prefix: 2 to 8 capital letters or digits (#{bad.join(', ')})") if bad.any?
+
+    Current.account.update!(settings: (Current.account.settings || {}).merge('tolzar_document_prefixes' => clean))
+    render json: { ok: true, prefixes: prefixes }
+  end
+
   private
+
+  def prefixes
+    Tolzar::DocumentSpec::TYPES.index_with { |t| Tolzar::Document.prefix_for(Current.account, t) }
+  end
+
+  def ensure_owner
+    return if Tolzar::AccountOwner.owner?(Current.account, Current.user)
+
+    render json: { ok: false, error: 'owner_only' }, status: :forbidden
+  end
 
   def ensure_enabled
     head :not_found unless Tolzar::Document.enabled?(Current.account.id)

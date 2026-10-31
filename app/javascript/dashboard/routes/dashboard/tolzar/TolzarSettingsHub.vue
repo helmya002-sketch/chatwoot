@@ -29,6 +29,7 @@ import MetaAppPanel from 'dashboard/components-next/Tolzar/settings/MetaAppPanel
 import WhatsappListenOnlyPanel from 'dashboard/components-next/Tolzar/settings/WhatsappListenOnlyPanel.vue';
 import LeadIntakePanel from 'dashboard/components-next/Tolzar/settings/LeadIntakePanel.vue';
 import LeadSourcesPanel from 'dashboard/components-next/Tolzar/settings/LeadSourcesPanel.vue';
+import DocumentsRegisterPanel from 'dashboard/components-next/Tolzar/settings/DocumentsRegisterPanel.vue';
 import {
   BTN,
   BTN_GHOST,
@@ -93,7 +94,7 @@ watchEffect(() =>
 );
 
 const SECTIONS = [
-  ['workspace', ['workspace_settings', 'routing', 'pipeline', 'usage', 'plan', 'roles', 'audit', 'export', 'go_live']],
+  ['workspace', ['workspace_settings', 'routing', 'pipeline', 'usage', 'plan', 'roles', 'audit', 'export', 'go_live', 'booking_documents']],
   ['trust', ['disclosure', 'retention', 'privacy']],
   ['channels', ['whatsapp_listen', 'meta_app', 'lead_intake', 'sms', 'crm', 'commerce']],
   ['team', ['sla', 'qa']],
@@ -545,6 +546,7 @@ onMounted(() => {
           <WhatsappListenOnlyPanel v-if="current === 'whatsapp_listen'" />
           <LeadIntakePanel v-if="current === 'lead_intake'" />
           <LeadSourcesPanel v-if="current === 'lead_sources'" />
+          <DocumentsRegisterPanel v-if="current === 'booking_documents'" />
           <AiLimitsPanel v-if="AI_LIMITS.includes(current)" :key="current" :section="current" />
           <DocumentsPanel v-if="current === 'documents'" />
           <WorkspacePanel v-if="current === 'workspace_settings'" />
