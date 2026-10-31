@@ -100,6 +100,15 @@
   "TOLZAR_RESULTS_UI": {
     "WHAT_IS_SHADOW": "What Shadow means",
     "WOULD_BE_HINT": "Values marked would-be are what customers would have seen.",
+    "TEAM": {
+      "TITLE": "Team",
+      "PERSON": "Person",
+      "REPLIES": "Replies",
+      "FIRST_REPLY": "First reply (median)",
+      "RESOLVED": "Resolved",
+      "CSAT": "Rating",
+      "CSAT_N": "{avg} ({n})"
+    },
     "OUTCOMES": {
       "TITLE": "Why deals were won or lost",
       "won": "Won",

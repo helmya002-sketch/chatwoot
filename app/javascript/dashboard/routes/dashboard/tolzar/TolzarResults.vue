@@ -15,6 +15,7 @@ import BrainNotice from 'dashboard/components-next/Tolzar/settings/BrainNotice.v
 import ShadowBadge from 'dashboard/components-next/Tolzar/ShadowBadge.vue';
 import TolzarBookingResultsCard from 'dashboard/components-next/Tolzar/BookingResultsCard.vue';
 import TolzarOutcomeReasonsCard from 'dashboard/components-next/Tolzar/OutcomeReasonsCard.vue';
+import TolzarTeamCard from 'dashboard/components-next/Tolzar/TeamLeaderboardCard.vue';
 import { TONE_WARN } from 'dashboard/components-next/Tolzar/settings/tzClasses';
 
 // Reports → Results (ROI): what Tolzar is worth for this workspace, from the brain's /roi.
@@ -254,6 +255,7 @@ onMounted(load);
         </div>
         <TolzarBookingResultsCard />
         <TolzarOutcomeReasonsCard />
+        <TolzarTeamCard />
       </template>
     </div>
   </div>

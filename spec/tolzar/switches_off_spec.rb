@@ -41,6 +41,13 @@ RSpec.describe 'Tolzar feature switches, off by default', type: :request do
     end
   end
 
+  it 'keeps the Results team and reasons cards hidden while TOLZAR_INBOX_TOOLS_ACCOUNTS is off' do
+    %w[/team_leaderboard /outcome_reasons].each do |path|
+      get "#{api}#{path}", headers: headers
+      expect(response).to have_http_status(:not_found)
+    end
+  end
+
   it 'keeps booking results hidden while both booking switches are off' do
     get "#{api}/booking_results", headers: headers
     expect(response).to have_http_status(:not_found)
