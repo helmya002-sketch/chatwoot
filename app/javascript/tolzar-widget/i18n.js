@@ -3,6 +3,10 @@
 
 export const STRINGS = {
   en: {
+    CONTINUE_ON: 'Continue on',
+    CH_WHATSAPP: 'WhatsApp',
+    CH_INSTAGRAM: 'Instagram',
+    CH_TELEGRAM: 'Telegram',
     FORM_SEND: 'Send',
     FORM_SENT: 'Thanks, we received your answers.',
     SOURCES: 'Sources:',
@@ -39,6 +43,10 @@ export const STRINGS = {
     REPLY_TIME: 'We usually reply within a few minutes.',
   },
   ar: {
+    CONTINUE_ON: 'تابع على',
+    CH_WHATSAPP: 'WhatsApp',
+    CH_INSTAGRAM: 'Instagram',
+    CH_TELEGRAM: 'Telegram',
     FORM_SEND: 'إرسال',
     FORM_SENT: 'شكرًا، وصلتنا إجاباتك.',
     SOURCES: 'المصادر:',
@@ -74,6 +82,10 @@ export const STRINGS = {
     REPLY_TIME: 'نردّ عادةً خلال دقائق.',
   },
   de: {
+    CONTINUE_ON: 'Weiter auf',
+    CH_WHATSAPP: 'WhatsApp',
+    CH_INSTAGRAM: 'Instagram',
+    CH_TELEGRAM: 'Telegram',
     FORM_SEND: 'Senden',
     FORM_SENT: 'Danke, wir haben Ihre Angaben erhalten.',
     SOURCES: 'Quellen:',
@@ -111,6 +123,10 @@ export const STRINGS = {
     REPLY_TIME: 'Wir antworten meist innerhalb weniger Minuten.',
   },
   fr: {
+    CONTINUE_ON: 'Continuer sur',
+    CH_WHATSAPP: 'WhatsApp',
+    CH_INSTAGRAM: 'Instagram',
+    CH_TELEGRAM: 'Telegram',
     FORM_SEND: 'Envoyer',
     FORM_SENT: 'Merci, nous avons bien reçu vos réponses.',
     SOURCES: 'Sources :',
@@ -148,6 +164,10 @@ export const STRINGS = {
     REPLY_TIME: 'Nous répondons en général en quelques minutes.',
   },
   es: {
+    CONTINUE_ON: 'Continuar en',
+    CH_WHATSAPP: 'WhatsApp',
+    CH_INSTAGRAM: 'Instagram',
+    CH_TELEGRAM: 'Telegram',
     FORM_SEND: 'Enviar',
     FORM_SENT: 'Gracias, hemos recibido tus respuestas.',
     SOURCES: 'Fuentes:',
@@ -184,6 +204,10 @@ export const STRINGS = {
     REPLY_TIME: 'Solemos responder en pocos minutos.',
   },
   pt: {
+    CONTINUE_ON: 'Continuar no',
+    CH_WHATSAPP: 'WhatsApp',
+    CH_INSTAGRAM: 'Instagram',
+    CH_TELEGRAM: 'Telegram',
     FORM_SEND: 'Enviar',
     FORM_SENT: 'Obrigado, recebemos as suas respostas.',
     SOURCES: 'Fontes:',

@@ -29,7 +29,8 @@ module Tolzar::OwnWidget
         workingHoursEnabled: inbox.working_hours_enabled, workingHours: inbox.working_hours,
         outOfOfficeMessage: inbox.out_of_office_message, timezone: inbox.timezone,
         allowMessagesAfterResolved: inbox.allow_messages_after_resolved,
-        enabledFeatures: web_widget.selected_feature_flags
+        enabledFeatures: web_widget.selected_feature_flags,
+        handoff: Tolzar::WidgetHandoff.links(inbox)
       }
     }
   end

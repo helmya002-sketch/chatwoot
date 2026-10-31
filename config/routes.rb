@@ -124,6 +124,8 @@ Rails.application.routes.draw do
           post   'tolzar/billing_group/delete', to: 'tolzar#billing_group_delete'
           post   'tolzar/whatsapp/listen_only',  to: 'tolzar#whatsapp_listen_only_connect'
           get    'tolzar/lead_intake',           to: 'tolzar_lead_intake#show'
+          get    'tolzar/widget_handoff',        to: 'tolzar_widget_handoff#show'
+          post   'tolzar/widget_handoff',        to: 'tolzar_widget_handoff#save'
           get    'tolzar/lead_sources',          to: 'tolzar_lead_intake#sources'
           # Tolzar booking documents (Tolzar::Document; TOLZAR_BOOKING_DOCS_ACCOUNTS)
           get    'tolzar/documents',             to: 'tolzar_documents#index'

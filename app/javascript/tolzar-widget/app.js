@@ -18,6 +18,7 @@ import {
 import { pickCampaign, armCampaign, csatNode, transcriptNode } from './engage';
 import { sourcesNode, pageContext } from './context';
 import { richNode } from './rich';
+import { handoffNode } from './handoff';
 import { isOpen as inHours } from './hours';
 
 const el = (doc, tag, cls, text) => {
@@ -408,10 +409,17 @@ export class WidgetApp {
     this.composer = form;
 
     const away = awayNode(this);
+    const handoff = handoffNode(doc, this.channel.handoff, this.locale);
     this.root.append(
-      ...[header, away, this.list, this.typingEl, this.errorEl, form].filter(
-        Boolean
-      )
+      ...[
+        header,
+        handoff,
+        away,
+        this.list,
+        this.typingEl,
+        this.errorEl,
+        form,
+      ].filter(Boolean)
     );
   }
 
