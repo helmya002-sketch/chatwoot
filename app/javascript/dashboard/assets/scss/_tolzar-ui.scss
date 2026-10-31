@@ -523,3 +523,37 @@ body.tz-ui {
   body.tz-ui .tz-cardlift,
   body.tz-ui .tz-cardlift:hover { transition: none; transform: none; }
 }
+
+// Phase 4 modules (round 3 c47): AI agents cards, the workflow builder canvas (blocks on a dotted grid),
+// reports and results cards.
+body.tz-ui {
+  .tz-hover {
+    transition: box-shadow 0.12s ease, border-color 0.12s ease;
+  }
+
+  .tz-hover:hover,
+  .tz-hover:focus-visible {
+    border-color: rgb(var(--blue-6));
+    box-shadow: 0 6px 16px -10px rgb(30 50 120 / 0.4);
+  }
+
+  // The workflow builder's canvas: the mock's dotted grid behind the blocks.
+  [data-tz-build='workflows-ux-r2'] {
+    background-color: rgb(var(--slate-1));
+    background-image: radial-gradient(rgb(var(--slate-6)) 1px, transparent 1px);
+    background-size: 18px 18px;
+  }
+
+  [data-tz-build='workflows-ux-r2'] .rounded-2xl.border {
+    box-shadow: 0 6px 16px -10px rgb(30 50 120 / 0.4);
+  }
+}
+
+body.dark.tz-ui [data-tz-build='workflows-ux-r2'] {
+  background-color: rgb(var(--slate-1));
+  background-image: radial-gradient(rgb(var(--slate-5)) 1px, transparent 1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.tz-ui .tz-hover { transition: none; }
+}
