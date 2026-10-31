@@ -450,7 +450,7 @@ body.dark.tz-ui .conversation.active {
 // Phase 3 inbox, reading pane (round 3 c44): the private note as the mock's amber card, the customer pane's cards
 // on the panel surface. E-mail fit (emailFit.js, EmailFullView) is untouched.
 body.tz-ui {
-  .bg-n-solid-amber.text-n-amber-12 {
+  [class~='bg-n-solid-amber'][class~='text-n-amber-12'] {
     border: 1px solid rgb(var(--amber-6));
     background-color: rgb(var(--amber-2));
   }
