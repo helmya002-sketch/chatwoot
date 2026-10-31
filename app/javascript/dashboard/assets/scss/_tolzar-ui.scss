@@ -277,3 +277,60 @@ body.dark.tz-ui {
     box-shadow: 0 20px 50px -18px rgb(0 0 0 / 0.7);
   }
 }
+
+// Phase 1b, rest (round 3 c39): inputs, tabs, tables, toasts and keyboard focus on the tokens, still only under
+// `body.tz-ui` and without a markup change.
+body.tz-ui {
+  // Inputs on a solid surface (the mock's white field on the soft page), a slightly larger radius.
+  .reset-base.bg-n-alpha-black2 {
+    background-color: rgb(var(--solid-1));
+    border-radius: 10px;
+  }
+
+  // Tabs: the active pill reads as a raised white chip with the brand edge.
+  .bg-n-solid-active.shadow-sm.pointer-events-none {
+    background-color: rgb(var(--solid-1));
+    outline-color: rgb(var(--blue-6));
+    box-shadow: 0 1px 2px rgb(30 50 120 / 0.12);
+  }
+
+  // Tables: quiet uppercase headers, a soft row hover.
+  table.table-auto thead th {
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: rgb(var(--slate-10));
+  }
+
+  table.table-auto tbody tr:hover {
+    background-color: rgb(var(--slate-2));
+  }
+
+  // Toasts: the floating shadow and a brand edge on the start side.
+  .shadow-sm.bg-n-slate-12.rounded-lg {
+    border-radius: 12px;
+    border-inline-start: 3px solid rgb(var(--blue-8));
+    box-shadow: 0 20px 50px -18px rgb(30 50 120 / 0.4);
+  }
+
+  // Keyboard focus: one visible ring on every button and link (WCAG 2.2 focus appearance).
+  :is(button, a[href], [role='button'], [role='tab']):focus-visible {
+    outline: 2px solid rgb(var(--blue-9));
+    outline-offset: 2px;
+  }
+}
+
+body.dark.tz-ui {
+  .bg-n-solid-active.shadow-sm.pointer-events-none {
+    background-color: rgb(var(--solid-3));
+    box-shadow: none;
+  }
+
+  table.table-auto tbody tr:hover {
+    background-color: rgb(var(--slate-3));
+  }
+
+  .shadow-sm.bg-n-slate-12.rounded-lg {
+    box-shadow: 0 20px 50px -18px rgb(0 0 0 / 0.7);
+  }
+}
