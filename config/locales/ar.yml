@@ -1116,3 +1116,16 @@ ar:
         test_email:
           queued: 'Test email on its way to %{email}. Ask the user to check their inbox and spam folder.'
           subject: 'Test email from %{brand_name} support'
+  # Tolzar: Arabic for the tolzar: block of en.yml (digest subjects, private push titles).
+  tolzar:
+    digest:
+      subject: '%{workspace}: يومك في %{day}'
+      weekly_subject: '%{workspace}: أسبوعك، من %{from} إلى %{to}'
+    push:
+      new_conversation: 'محادثة جديدة من %{name}'
+      new_message: 'رسالة جديدة من %{name}'
+      assigned: 'معيّنة لك: %{name}'
+      mention: 'أشار إليك %{name}'
+      update: 'تحديث على المحادثة مع %{name}'
+      someone: 'أحد العملاء'
+      teammate: 'أحد الزملاء'
