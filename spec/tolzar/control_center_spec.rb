@@ -135,7 +135,7 @@ RSpec.describe 'Tolzar Control Center AI safety and billing', type: :request do
   end
 
   it 'summarises plans, currencies, renewals and trials due' do
-    Tolzar::Subscription.create!(account: account, plan: 'team', paid_until: 5.days.from_now, seat_limit: 5, currency: 'EGP')
+    Tolzar::Subscription.find_or_initialize_by(account: account).update!(plan: 'team', paid_until: 5.days.from_now, seat_limit: 5, currency: 'EGP')
     get '/super_admin/control_center/billing'
     expect(response).to have_http_status(:success)
     expect(response.body).to include('Paid until, next 14 days', 'Nile Bikes', 'EGP')
