@@ -110,7 +110,7 @@ const inboxIcon = computed(() => {
 </script>
 
 <template>
-  <CardLayout layout="row">
+  <CardLayout layout="row" class="tz-module-card">
     <div class="flex flex-col items-start justify-between flex-1 min-w-0 gap-2">
       <div class="flex justify-between gap-3 w-fit">
         <span

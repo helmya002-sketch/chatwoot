@@ -63,7 +63,9 @@ const togglePortalSwitcher = () => {
 </script>
 
 <template>
-  <section class="flex flex-col w-full h-full overflow-hidden bg-n-surface-1">
+  <section
+    class="tz-module-page flex flex-col w-full h-full overflow-hidden bg-n-surface-1"
+  >
     <header class="sticky top-0 z-10 px-6 pb-3">
       <div class="w-full max-w-5xl mx-auto">
         <div

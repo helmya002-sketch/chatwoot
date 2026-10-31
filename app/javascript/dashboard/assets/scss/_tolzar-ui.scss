@@ -613,3 +613,36 @@ body.tz-ui {
     box-shadow: 0 1px 2px rgb(30 50 120 / 0.05);
   }
 }
+
+// Phase 4 modules (round 4, c80): Campaigns, Help Center, Automations and Macros on the mock's surfaces: the page on
+// the soft surface, cards white with the soft lift, settings tables with small muted headers and calm row lines.
+// Hook classes only (tz-module-page, tz-module-card, tz-settings-page), still only under `body.tz-ui`.
+body.tz-ui {
+  .tz-module-page {
+    background-color: rgb(var(--surface-1));
+  }
+
+  .tz-module-card {
+    border-radius: 14px;
+    background-color: rgb(var(--solid-1));
+    box-shadow:
+      0 1px 2px rgb(30 50 120 / 0.06),
+      0 10px 28px -22px rgb(30 50 120 / 0.35);
+  }
+
+  .tz-settings-page table th {
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: rgb(var(--slate-11));
+  }
+
+  .tz-settings-page table tbody tr {
+    border-color: rgb(var(--border-container));
+  }
+
+  .tz-settings-page table tbody tr:hover {
+    background-color: rgb(var(--slate-2));
+  }
+}
