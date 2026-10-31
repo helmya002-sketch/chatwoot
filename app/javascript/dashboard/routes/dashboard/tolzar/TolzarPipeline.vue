@@ -18,7 +18,14 @@ import {
   leadScore,
   scoreTone,
   money as formatMoney,
+  wonStage,
+  lostStage,
 } from 'dashboard/components-next/Tolzar/tolzarStages';
+import {
+  outcomeFor,
+  reasonsFor,
+  reasonAttributes,
+} from 'dashboard/components-next/Tolzar/tolzarOutcomes';
 import { contactChannel } from 'dashboard/components-next/Tolzar/tolzarChannel';
 import { ago } from 'dashboard/components-next/Tolzar/tolzarTime';
 import {
@@ -249,6 +256,7 @@ function onKey(e) {
 // Tolzar (round 4, c94): after a move, "Undo" for a few seconds (TOLZAR_INBOX_TOOLS_ACCOUNTS workspaces).
 const UNDO_MS = 8000;
 const lastMove = ref(null); // { card, fromKey, toKey }
+const reasonSaved = ref(false);
 let undoTimer = null;
 const inboxTools = computed(
   () => !!getAccount.value(accountId.value)?.tolzar_inbox_tools
@@ -257,9 +265,37 @@ function offerUndo(card, fromKey, toKey) {
   if (!inboxTools.value) return;
   window.clearTimeout(undoTimer);
   lastMove.value = { card, fromKey, toKey };
+  reasonSaved.value = false;
   undoTimer = window.setTimeout(() => {
     lastMove.value = null;
   }, UNDO_MS);
+}
+// Tolzar (c95): why a deal was won or lost, saved on the contact (the same safe re-read as a move).
+const lastOutcome = computed(() =>
+  lastMove.value
+    ? outcomeFor(lastMove.value.toKey, wonStage(), lostStage())
+    : null
+);
+async function saveReason(reason) {
+  const m = lastMove.value;
+  const attrs = m && reasonAttributes(lastOutcome.value, reason);
+  if (!attrs) return;
+  try {
+    let current = m.card.ca;
+    try {
+      const { data } = await ContactAPI.show(m.card.id);
+      current =
+        data?.payload?.custom_attributes || data?.custom_attributes || current;
+    } catch (readErr) {
+      current = m.card.ca;
+    }
+    const merged = { ...current, ...attrs };
+    await ContactAPI.update(m.card.id, { custom_attributes: merged });
+    m.card.ca = merged;
+    reasonSaved.value = true;
+  } catch (e) {
+    useAlert(t('TOLZAR_CONTACTS.STAGES.SET_FAILED'));
+  }
 }
 async function undoMove() {
   const m = lastMove.value;
@@ -385,6 +421,24 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
           stage:
             STAGES.find(s => s.key === lastMove.toKey)?.label || lastMove.toKey,
         })
+      }}</span>
+      <span
+        v-if="lastOutcome && !reasonSaved"
+        class="flex flex-wrap items-center gap-1.5"
+      >
+        <span class="opacity-80">{{ t('TOLZAR_CONTACTS.STAGES.WHY') }}</span>
+        <button
+          v-for="r in reasonsFor(lastOutcome)"
+          :key="r"
+          type="button"
+          class="px-2 min-h-[28px] rounded-full border border-solid border-n-slate-8 text-xs"
+          @click="saveReason(r)"
+        >
+          {{ t(`TOLZAR_CONTACTS.STAGES.REASON.${r}`) }}
+        </button>
+      </span>
+      <span v-else-if="reasonSaved" class="opacity-80">{{
+        t('TOLZAR_CONTACTS.STAGES.REASON_SAVED')
       }}</span>
       <button
         type="button"

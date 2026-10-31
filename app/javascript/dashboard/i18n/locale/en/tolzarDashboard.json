@@ -100,6 +100,12 @@
   "TOLZAR_RESULTS_UI": {
     "WHAT_IS_SHADOW": "What Shadow means",
     "WOULD_BE_HINT": "Values marked would-be are what customers would have seen.",
+    "OUTCOMES": {
+      "TITLE": "Why deals were won or lost",
+      "won": "Won",
+      "lost": "Lost",
+      "NONE": "No reasons picked yet."
+    },
     "BOOKINGS": {
       "TITLE": "Bookings and documents",
       "PERIOD": "Period",

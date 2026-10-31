@@ -28,7 +28,8 @@ RSpec.describe 'Tolzar feature switches, off by default', type: :request do
     'TOLZAR_BOOKINGS_ACCOUNTS' => '/bookings',
     'TOLZAR_BOOKING_DOCS_ACCOUNTS' => '/documents',
     'TOLZAR_BOOKING_CONNECTOR' => '/booking_connector',
-    'TOLZAR_TIKTOK_CRM_EVENTS' => '/tiktok_crm'
+    'TOLZAR_TIKTOK_CRM_EVENTS' => '/tiktok_crm',
+    'TOLZAR_INBOX_TOOLS_ACCOUNTS' => '/outcome_reasons'
   }.each do |switch, path|
     it "answers 404 for #{path} while #{switch} is off, and serves it when on" do
       get "#{api}#{path}", headers: headers
