@@ -19,7 +19,13 @@ module Tolzar::HelpTopics
     'import' => 'Import your contacts (CSV)',
     'workspace' => 'Workspace settings',
     'results' => 'Results: what the AI is doing for you',
-    'going_live' => 'Going live and the kill switch'
+    'going_live' => 'Going live and the kill switch',
+    'documents' => 'Vouchers, quotes and booking confirmations',
+    'bookings' => 'Bookings',
+    'top_bar' => 'The top bar and "My day"',
+    'phone' => 'Tolzar on your phone',
+    'widget' => 'The website chat widget',
+    'reply_windows' => 'Replying on Messenger and Instagram: the 24-hour and 7-day windows'
   }.freeze
 
   module_function

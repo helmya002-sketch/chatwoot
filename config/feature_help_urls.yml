@@ -14,6 +14,9 @@ audit_logs: /tz/help/audit
 automation: /tz/help/workflows
 automations: /tz/help/workflows
 campaigns: /tz/help/broadcasts
+channel_facebook: /tz/help/reply_windows
+channel_instagram: /tz/help/reply_windows
+channel_website: /tz/help/widget
 custom_roles: /tz/help/roles
 data_import: /tz/help/import
 google_translate: /tz/help/languages
