@@ -130,10 +130,13 @@ export const initWhatsAppEmbeddedSignup = configId => {
         config_id: configId,
         response_type: 'code',
         override_default_response_type: true,
+        // Tolzar: Embedded Signup v4 (v2/v3 were retired on 15 Oct 2026). The version comes from the
+        // Facebook Login for Business configuration (WHATSAPP_CONFIGURATION_ID, "WhatsApp Embedded
+        // Signup" variation with products selected); v4 takes no sessionInfoVersion. featureType keeps
+        // the WhatsApp Business app (coexistence) onboarding offered.
         extras: {
           setup: {},
           featureType: 'whatsapp_business_app_onboarding',
-          sessionInfoVersion: '3',
         },
       }
     );
