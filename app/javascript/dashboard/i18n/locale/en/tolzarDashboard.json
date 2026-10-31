@@ -99,7 +99,19 @@
   },
   "TOLZAR_RESULTS_UI": {
     "WHAT_IS_SHADOW": "What Shadow means",
-    "WOULD_BE_HINT": "Values marked would-be are what customers would have seen."
+    "WOULD_BE_HINT": "Values marked would-be are what customers would have seen.",
+    "BOOKINGS": {
+      "TITLE": "Bookings and documents",
+      "PERIOD": "Period",
+      "DAYS": "{n} days",
+      "DOCUMENTS": "Documents issued",
+      "ISSUED": "{n} issued, {cancelled} cancelled",
+      "BOOKINGS": "Bookings made",
+      "VALUE": "Value",
+      "PAID": "Paid",
+      "DUE": "Still due",
+      "NONE": "No confirmed bookings in this period."
+    }
   },
   "TOLZAR_ONBOARDING_UI": {
     "TIMEZONE_FILTER": "Find a time zone…",

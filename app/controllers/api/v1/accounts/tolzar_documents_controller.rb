@@ -87,7 +87,7 @@ class Api::V1::Accounts::TolzarDocumentsController < Api::V1::Accounts::BaseCont
       out << %w[number type status contact total currency paid payment_state issued_at voided_at void_reason]
       rows.each do |d|
         v = d.view
-        out << [d.number, d.doc_type, d.status, d.contact&.name, format('%.2f', d.total_cents / 100.0), d.currency,
+        out << [d.number, d.doc_type, d.status, Tolzar::CsvCell.safe(d.contact&.name), format('%.2f', d.total_cents / 100.0), d.currency,
                 format('%.2f', d.paid_cents / 100.0), v[:payment_state], d.issued_at&.utc&.iso8601, d.voided_at&.utc&.iso8601, d.void_reason]
       end
     end

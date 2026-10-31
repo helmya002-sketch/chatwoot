@@ -41,7 +41,7 @@ class Tolzar::DocumentArchive
     CSV.generate do |out|
       out << %w[number type status contact total currency issued_at void_reason]
       docs.each do |d|
-        out << [d.number, d.doc_type, d.status, d.contact&.name, format('%.2f', d.total_cents / 100.0), d.currency,
+        out << [d.number, d.doc_type, d.status, Tolzar::CsvCell.safe(d.contact&.name), format('%.2f', d.total_cents / 100.0), d.currency,
                 d.issued_at&.utc&.iso8601, d.void_reason]
       end
     end

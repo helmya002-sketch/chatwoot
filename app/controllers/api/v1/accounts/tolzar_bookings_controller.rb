@@ -30,7 +30,9 @@ class Api::V1::Accounts::TolzarBookingsController < Api::V1::Accounts::BaseContr
       list = rows.select { |b| b.starts_on && b.starts_on <= day && (b.ends_on || b.starts_on) >= day }
       { date: day, bookings: list.map { |b| b.view.slice(:id, :status, :contact_name, :currency, :balance_cents) } }
     end
-    render json: { ok: true, days: days, balances_due: rows.sum { |b| [b.total_cents - b.paid_cents, 0].max } }
+    due = rows.group_by(&:currency).map { |cur, list| { currency: cur, cents: list.sum { |b| [b.total_cents - b.paid_cents, 0].max } } }
+    # balances_due stays for older pages; it is only right when every booking has the same currency.
+    render json: { ok: true, days: days, balances_due: due.sum { |d| d[:cents] }, balances_due_by_currency: due }
   end
 
   def show

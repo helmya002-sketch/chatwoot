@@ -41,7 +41,7 @@ const NEXT = {
 
 const view = ref('agenda');
 const days = ref([]);
-const balancesDue = ref(0);
+const balancesDue = ref([]);
 const rows = ref([]);
 const statusFilter = ref('');
 const editing = ref(null);
@@ -50,6 +50,11 @@ const error = ref('');
 const payment = ref({});
 
 const money = c => (Number(c || 0) / 100).toFixed(2);
+// Per currency, never added across currencies: "EUR 120.00 · USD 40.00".
+const dueText = list =>
+  list.length
+    ? list.map(d => `${d.currency} ${money(d.cents)}`).join(' · ')
+    : money(0);
 const tone = s =>
   ({ confirmed: TONE_OK, draft: TONE_WARN, cancelled: TONE_BAD })[s] ||
   TONE_MUTED;
@@ -63,7 +68,7 @@ async function loadAgenda() {
   try {
     const { data } = await window.axios.get(`${base.value}/agenda`);
     days.value = (data.days || []).filter(d => d.bookings.length);
-    balancesDue.value = data.balances_due || 0;
+    balancesDue.value = data.balances_due_by_currency || [];
   } catch (e) {
     error.value =
       e?.response?.status === 404
@@ -172,7 +177,7 @@ onMounted(() => open('agenda'));
       <p class="m-0 text-[13px] text-n-slate-12">
         {{
           t('TOLZAR_SETTINGS_UI.BOOKINGS.BALANCES', {
-            amount: money(balancesDue),
+            amount: dueText(balancesDue),
           })
         }}
       </p>

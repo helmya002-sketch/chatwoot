@@ -13,6 +13,7 @@ import {
 import { duration as fmtDuration } from 'dashboard/components-next/Tolzar/tolzarTime';
 import BrainNotice from 'dashboard/components-next/Tolzar/settings/BrainNotice.vue';
 import ShadowBadge from 'dashboard/components-next/Tolzar/ShadowBadge.vue';
+import TolzarBookingResultsCard from 'dashboard/components-next/Tolzar/BookingResultsCard.vue';
 import { TONE_WARN } from 'dashboard/components-next/Tolzar/settings/tzClasses';
 
 // Reports → Results (ROI): what Tolzar is worth for this workspace, from the brain's /roi.
@@ -250,6 +251,7 @@ onMounted(load);
             </p>
           </div>
         </div>
+        <TolzarBookingResultsCard />
       </template>
     </div>
   </div>

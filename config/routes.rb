@@ -144,6 +144,8 @@ Rails.application.routes.draw do
           # Tolzar native bookings (Tolzar::Booking; TOLZAR_BOOKINGS_ACCOUNTS)
           get    'tolzar/bookings',                  to: 'tolzar_bookings#index'
           get    'tolzar/bookings/agenda',           to: 'tolzar_bookings#agenda'
+          get    'tolzar/bookings/export',           to: 'tolzar_booking_results#export'
+          get    'tolzar/booking_results',           to: 'tolzar_booking_results#show'
           get    'tolzar/bookings/:id',              to: 'tolzar_bookings#show'
           post   'tolzar/bookings',                  to: 'tolzar_bookings#create'
           patch  'tolzar/bookings/:id',              to: 'tolzar_bookings#update'
