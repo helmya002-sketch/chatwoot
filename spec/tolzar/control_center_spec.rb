@@ -19,7 +19,11 @@ RSpec.describe 'Tolzar Control Center', type: :request do
   end
 
   describe 'with a super admin' do
-    before { sign_in(super_admin, scope: :super_admin) }
+    before do
+      sign_in(super_admin, scope: :super_admin)
+      # The brain is not running in specs: by default it answers like a brain that is down or restarting.
+      allow(Tolzar::BrainClient).to receive(:get).and_return({ 'status' => 503 })
+    end
 
     it 'shows the overview with alerts, a trial ending soon and the funnel' do
       expect { get '/super_admin/control_center' }.not_to change(Tolzar::Subscription, :count)
@@ -36,6 +40,12 @@ RSpec.describe 'Tolzar Control Center', type: :request do
       get "/super_admin/control_center/workspaces/#{account.id}"
       expect(response).to have_http_status(:success)
       expect(response.body).to include('Mona Admin', 'Plan and limits')
+    end
+
+    it 'still shows a workspace when the brain is down, with the AI marked unavailable' do
+      get "/super_admin/control_center/workspaces/#{account.id}"
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include('The brain did not answer for this workspace.')
     end
 
     it "shows the workspace's AI as the brain sees it: kill switch, inbox modes, agents" do
@@ -73,15 +83,12 @@ RSpec.describe 'Tolzar Control Center', type: :request do
   end
 
   describe 'announcement banners (TOLZAR_ANNOUNCEMENTS)' do
-    before { sign_in(super_admin, scope: :super_admin) }
-
-    it 'stays closed while the switch is off and opens with it' do
-      get '/super_admin/platform_banners'
-      expect(response).to have_http_status(:not_found)
+    it 'stays closed while the switch is off and opens with it (the dashboard sees no banner until then)' do
+      expect(Tolzar::Announcements.enabled?).to be(false)
+      expect(DashboardController.new.send(:active_platform_banners)).to eq([])
       with_modified_env(TOLZAR_ANNOUNCEMENTS: 'true') do
         expect(Tolzar::Announcements.enabled?).to be(true)
-        get '/super_admin/platform_banners'
-        expect(response).to have_http_status(:success)
+        expect(DashboardController.new.send(:active_platform_banners)).to be_an(Array)
       end
     end
   end
