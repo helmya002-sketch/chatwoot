@@ -22,6 +22,8 @@ export const licencesView = data => {
     homepage: text(i && i.homepage),
     author: text(i && i.author),
     text: text(i && i.text),
+    // "rollback": deployed only to switch back to; the model that answers is "production".
+    role: text(i && i.role),
   });
   return {
     foundation: item(d.foundation),

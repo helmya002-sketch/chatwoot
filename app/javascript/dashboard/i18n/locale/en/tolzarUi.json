@@ -40,6 +40,7 @@
     "SOURCE": "Source",
     "SEARCH": "Search by name or licence",
     "NONE": "None",
+    "ROLLBACK": "kept only as a rollback",
     "NO_FILE": "This package ships no licence file; its licence is the one named above, as published on its home page.",
     "GROUP": {
       "gems": "Server (Ruby gems, {n})",

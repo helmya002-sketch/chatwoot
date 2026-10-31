@@ -7,7 +7,10 @@ RSpec.describe 'Tolzar open-source licences', type: :request do
   let(:agent) { create(:user, account: account, role: :agent) }
   let(:stranger) { create(:user) }
 
-  before { Tolzar::OpenSourceNotices.reset! }
+  before do
+    Tolzar::OpenSourceNotices.reset!
+    allow(Tolzar::BrainClient).to receive(:get).and_return('status' => 502)   # no brain in specs
+  end
   after { Tolzar::OpenSourceNotices.reset! }
 
   describe Tolzar::OpenSourceNotices do
@@ -25,10 +28,25 @@ RSpec.describe 'Tolzar open-source licences', type: :request do
       expect(notices[:groups][:gems].pluck(:text)).to include(a_string_including('Permission is hereby granted'))
     end
 
-    it 'lists the AI service: the brain packages from the committed file, its runtime and the model' do
-      names = notices[:groups][:ai].pluck(:name)
-      expect(names).to include('fastapi', 'Ollama', 'Qwen2.5-7B-Instruct (model weights)')
+    it 'lists the AI service: the brain packages, its runtime and the model the running brain answers with' do
+      allow(Tolzar::BrainClient).to receive(:get).with('/notices/ai', account_id: 5).and_return(
+        'status' => 200, 'items' => [
+          { 'name' => 'Gemma 4 E4B', 'version' => 'gemma-4-e4b', 'licences' => ['Apache-2.0'], 'role' => 'production' },
+          { 'name' => 'Qwen2.5-7B-Instruct', 'version' => 'qwen2.5:7b-instruct', 'licences' => ['Apache-2.0'], 'role' => 'rollback' }
+        ]
+      )
+      ai = described_class.call(5)[:groups][:ai]
+      expect(ai.pluck(:name)).to include('fastapi', 'Python', 'Gemma 4 E4B', 'Qwen2.5-7B-Instruct')
+      expect(ai.find { |i| i[:name] == 'Qwen2.5-7B-Instruct' }[:role]).to eq('rollback')
+      expect(described_class.call(5)[:counts][:ai]).to eq(ai.size)
       expect(notices[:groups][:system].pluck(:name)).to include('Ruby', 'libvips')
+    end
+
+    it 'says the model list is unavailable when the brain does not answer, and asks again next time' do
+      allow(Tolzar::BrainClient).to receive(:get).and_return('status' => 502)
+      expect(described_class.call(5)[:groups][:ai].last[:name]).to start_with('AI model (the list is unavailable')
+      allow(Tolzar::BrainClient).to receive(:get).and_return('status' => 200, 'items' => [{ 'name' => 'Gemma 4 E4B' }])
+      expect(described_class.call(5)[:groups][:ai].pluck(:name)).to include('Gemma 4 E4B')
     end
 
     it 'puts weak-copyleft components in the source offer with where their source is' do

@@ -5,9 +5,11 @@
 #   javascript  the packages in the browser bundles, written at image build by docker/tolzar/js_notices.mjs
 #   system      the image's Alpine packages (/lib/apk/db/installed) plus Ruby and libvips (built from source)
 #   ai          the brain's Python packages (config/tolzar/brain_notices.json, tools/brain_notices.py in
-#               the brain repo), its runtime, the model server and the model
+#               the brain repo) and its runtime, plus the model and model server the running brain is
+#               configured with (GET /notices/ai, read live and cached for MODELS_TTL, so it cannot drift)
 # Components under a weak-copyleft licence (LGPL, MPL, EPL, CDDL) are also listed in `source_offer` with
-# where their source code is published. Built once per process: the content only changes with a deploy.
+# where their source code is published. Everything but the live model list is built once per process: it
+# only changes with a deploy.
 class Tolzar::OpenSourceNotices
   LICENCE_FILE = /\A(licen[cs]e|copying|notice|mit-licen[cs]e|unlicen[cs]e)(\.|-|\z)/i
   WEAK_COPYLEFT = /LGPL|MPL|Mozilla Public|EPL|Eclipse Public|CDDL|Lesser General/i
@@ -16,28 +18,54 @@ class Tolzar::OpenSourceNotices
   JS_FILE = Rails.root.join('config/tolzar/js_notices.json')
   BRAIN_FILE = Rails.root.join('config/tolzar/brain_notices.json')
   VIPS_SOURCE = 'https://github.com/libvips/libvips/releases'.freeze
+  MODELS_TTL = 5.minutes
 
-  # Run outside the app's own containers; the brain image is python:3.12-slim (Debian).
+  # The brain image is python:3.12-slim (Debian). The model and its server are not listed here: they come
+  # from the running brain (live_models).
   AI_RUNTIME = [
     { name: 'Python', version: '3.12', licences: ['PSF-2.0'], homepage: 'https://docs.python.org/3/license.html' },
     { name: 'Debian base system (brain image)', version: '12', licences: ['various, incl. LGPL-2.1 (glibc)'],
-      homepage: 'https://sources.debian.org' },
-    { name: 'Ollama', version: '', licences: ['MIT'], homepage: 'https://github.com/ollama/ollama' },
-    { name: 'Qwen2.5-7B-Instruct (model weights)', version: '', licences: ['Apache-2.0'],
-      homepage: 'https://huggingface.co/Qwen/Qwen2.5-7B-Instruct' }
+      homepage: 'https://sources.debian.org' }
   ].freeze
+  MODELS_UNAVAILABLE = { name: 'AI model (the list is unavailable right now; reload later)', version: '', licences: [],
+                         homepage: '', role: 'production' }.freeze
 
-  def self.call
-    @call ||= new.call
+  def self.call(account_id = nil)
+    base = (@base ||= new.call)
+    ai = base[:groups][:ai] + live_models(account_id)
+    base.merge(groups: base[:groups].merge(ai: ai), counts: base[:counts].merge(ai: ai.size))
+  end
+
+  # The models the brain answers with, cached for MODELS_TTL; a failed read is not cached.
+  def self.live_models(account_id)
+    return @models if @models && @models_at > MODELS_TTL.ago
+
+    items = new.brain_models(account_id)
+    return [MODELS_UNAVAILABLE] if items.empty?
+
+    @models_at = Time.current
+    @models = items
   end
 
   def self.reset!
-    @call = nil
+    @base = @models = @models_at = nil
   end
 
   def call
     groups = { gems: gems, javascript: json_items(JS_FILE), system: system, ai: json_items(BRAIN_FILE) + AI_RUNTIME }
     { foundation: foundation, groups: groups, source_offer: source_offer(groups), counts: groups.transform_values(&:size) }
+  end
+
+  def brain_models(account_id)
+    res = Tolzar::BrainClient.get('/notices/ai', account_id: account_id.to_i)
+    return [] unless res.is_a?(Hash) && res['status'] == 200
+
+    Array(res['items']).map do |i|
+      { name: i['name'].to_s, version: i['version'].to_s, licences: Array(i['licences']).map(&:to_s),
+        homepage: i['homepage'].to_s, role: i['role'].to_s }
+    end
+  rescue StandardError
+    []
   end
 
   private
