@@ -42,3 +42,18 @@ RSpec.describe 'Tolzar super admin audit', type: :request do
     expect(names).to eq(%w[account.limits.agents account.name])
   end
 end
+
+RSpec.describe 'Tolzar super admin audit export', type: :request do
+  it 'exports the searched entries as CSV' do
+    super_admin = create(:super_admin)
+    Tolzar::SuperAdminAudit.create!(email: 'export@tolzar.com', controller: 'super_admin/accounts', action: 'update',
+                                    http_method: 'PATCH', path: '/super_admin/accounts/3', fields: ['account.name'], created_at: Time.current)
+    sign_in(super_admin, scope: :super_admin)
+    get '/super_admin/tolzar_audits/export', params: { q: 'export@' }
+    expect(response).to have_http_status(:success)
+    expect(response.media_type).to eq('text/csv')
+    lines = response.body.lines
+    expect(lines.first).to start_with('at,email,method')
+    expect(lines.last).to include('export@tolzar.com', 'account.name')
+  end
+end

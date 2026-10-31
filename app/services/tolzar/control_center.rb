@@ -81,8 +81,21 @@ class Tolzar::ControlCenter
           last_sign_in_at: au.user&.last_sign_in_at }
       end,
       conversations_30d: Conversation.unscoped.where(account_id: account.id, created_at: (@now - 30.days)..).count,
-      ai: ai_state(account)
+      ai: ai_state(account),
+      brain_audit: brain_audit(account)
     }
+  end
+
+  # The workspace's own audit in the brain (settings, go-live, kill switch…): when, who, what; never values.
+  def brain_audit(account)
+    res = Tolzar::BrainClient.get('/audit?limit=50', account_id: account.id)
+    return unless res['status'] == 200
+
+    Array(res['entries']).filter_map do |e|
+      { at: e['at'].to_s.first(25), actor: e['actor'].to_s.first(80), action: e['action'].to_s.first(80) } if e.is_a?(Hash)
+    end
+  rescue StandardError
+    nil
   end
 
   # The workspace's AI as the brain sees it (read-only): the kill switch, each inbox's mode (an inbox without an

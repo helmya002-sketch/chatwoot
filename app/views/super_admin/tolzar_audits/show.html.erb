@@ -4,6 +4,8 @@
   <%= form_with url: super_admin_tolzar_audits_path, method: :get, class: "flex gap-2" do %>
     <%= search_field_tag :q, @query, placeholder: t("super_admin.tolzar_audits.search"), class: ui(:input, "min-h-10 flex-1") %>
     <%= render "button", label: t("super_admin.tolzar_audits.search_button"), type: "submit", extra: "h-10" %>
+    <%= render "button", label: t("super_admin.tolzar_audits.export"), url: export_super_admin_tolzar_audits_path(q: @query.presence),
+                         variant: :secondary, extra: "h-10" %>
   <% end %>
 
   <%= render "card", title: t("super_admin.tolzar_audits.entries") do %>

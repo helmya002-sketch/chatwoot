@@ -50,6 +50,10 @@ RSpec.describe 'Tolzar Control Center', type: :request do
 
     it "shows the workspace's AI as the brain sees it: kill switch, inbox modes, agents" do
       inbox = create(:inbox, account: account, name: 'Front desk mail')
+      allow(Tolzar::BrainClient).to receive(:get).and_return({ 'status' => 503 })
+      allow(Tolzar::BrainClient).to receive(:get).with('/audit?limit=50', account_id: account.id).and_return(
+        { 'status' => 200, 'entries' => [{ 'at' => '2026-10-31T09:00:00Z', 'actor' => '3:owner@example.com', 'action' => 'workspace.kill_switch' }] }
+      )
       allow(Tolzar::BrainClient).to receive(:get).with('/workspace/settings', account_id: account.id).and_return(
         { 'status' => 200, 'kill_switch_on' => false, 'inbox_modes' => { inbox.id.to_s => { 'mode' => 'live' } } }
       )
@@ -58,6 +62,7 @@ RSpec.describe 'Tolzar Control Center', type: :request do
       )
       get "/super_admin/control_center/workspaces/#{account.id}"
       expect(response.body).to include('Front desk mail', 'Live', 'Sales agent · active')
+      expect(response.body).to include('workspace.kill_switch', '3:owner@example.com')
     end
 
     it 'lists people with administrators without 2FA first' do
