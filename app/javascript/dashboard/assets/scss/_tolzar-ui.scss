@@ -207,3 +207,73 @@ body.dark.tz-ui {
   --label-background: 22 33 61;
   --card-color: 15 23 42;
 }
+
+// Phase 1b: the core components on the tokens (plan §1.2), still only under `body.tz-ui` and without a markup
+// change: chat bubbles, the primary button, focus rings, cards and dialogs. Shadows are the mock's (rgba(30,50,120)).
+body.tz-ui {
+  // Chat bubbles: incoming on #F1F5F9, outgoing filled #3E63DD with white text and a white meta line (5.2:1;
+  // 92% white stays above 4.5:1 for the small meta text). Private notes (amber) and e-mails keep their own look.
+  .left-bubble.bg-n-slate-4 {
+    background-color: rgb(var(--slate-3));
+  }
+
+  .right-bubble.bg-n-solid-blue {
+    background-color: rgb(var(--blue-9));
+    color: rgb(255 255 255);
+
+    :is(.prose, .prose-bubble, p, li, blockquote, strong, em, code, a, time, [class*='text-n-']) {
+      color: rgb(255 255 255 / 0.92);
+    }
+
+    a {
+      text-decoration: underline;
+    }
+
+    .bg-n-alpha-black1 {
+      background-color: rgb(255 255 255 / 0.16);
+    }
+  }
+
+  // Primary button: the mock's pressed shade on hover instead of a brightness filter, and a soft blue lift.
+  .bg-n-brand.text-white {
+    box-shadow:
+      0 1px 2px rgb(30 50 120 / 0.18),
+      0 4px 10px -4px rgb(62 99 221 / 0.45);
+
+    &:hover:enabled,
+    &:focus-visible {
+      filter: none;
+      background-color: rgb(var(--blue-10));
+    }
+  }
+
+  // Focus: one blue ring for every text field.
+  :is(input:not([type='checkbox'], [type='radio'], [type='range'], [type='color']), textarea, select):focus-visible {
+    border-color: rgb(var(--blue-9));
+    box-shadow: 0 0 0 3px rgb(var(--blue-9) / 0.15);
+  }
+
+  // Cards and panels: the mock's card shadow; dialogs: the floating shadow and a 16px radius.
+  .group\/cardLayout {
+    box-shadow: 0 1px 2px rgb(30 50 120 / 0.06);
+  }
+
+  dialog.shadow-xl {
+    border-radius: 16px;
+    box-shadow: 0 20px 50px -18px rgb(30 50 120 / 0.4);
+  }
+}
+
+body.dark.tz-ui {
+  .bg-n-brand.text-white {
+    box-shadow: 0 4px 12px -6px rgb(0 0 0 / 0.6);
+  }
+
+  .group\/cardLayout {
+    box-shadow: none;
+  }
+
+  dialog.shadow-xl {
+    box-shadow: 0 20px 50px -18px rgb(0 0 0 / 0.7);
+  }
+}

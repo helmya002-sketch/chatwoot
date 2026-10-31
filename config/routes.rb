@@ -31,6 +31,10 @@ Rails.application.routes.draw do
   get     'tolzar/site/demo/businesses', to: 'tolzar/site_demo#businesses'
   post    'tolzar/site/demo', to: 'tolzar/site_demo#create'
   match   'tolzar/site/demo', to: 'tolzar/site_demo#preflight', via: :options
+  # Tolzar: the website concierge (Tolzar::SiteConciergeController; the brain's TOLZAR_DEMO switch).
+  post    'tolzar/site/concierge', to: 'tolzar/site_concierge#create'
+  post    'tolzar/site/concierge/handoff', to: 'tolzar/site_concierge#handoff'
+  match   'tolzar/site/concierge(/handoff)', to: 'tolzar/site_concierge#preflight', via: :options
   # Tolzar public feature-request board, roadmap and changelog (read: public; write: Tolzar login + workspace).
   get  'feedback',                              to: 'tolzar/feedback#index', as: :tolzar_feedback
   post 'feedback',                              to: 'tolzar/feedback#create'
