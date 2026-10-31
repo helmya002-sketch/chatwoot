@@ -7,8 +7,9 @@ class Tolzar::Briefing
   HOT_SCORE = 70 # the same rule as the inbox (tolzarAttention.js HOT_SCORE)
   LIMIT = 5
   RAW = "(contacts.custom_attributes->>'tolzar_lead_score')".freeze
-  # A score that is not a plain number counts as none (CASE, so the cast never sees text).
-  SCORE = "(CASE WHEN #{RAW} ~ '^[0-9]+([.][0-9]+)?$' THEN #{RAW}::numeric END)".freeze
+  # A score that is not a plain number counts as none (CASE, so the cast never sees text). No `?` in the regex: in a
+  # where string Rails reads every `?` as a bind placeholder (batch gate: Arel::BindError).
+  SCORE = "(CASE WHEN #{RAW} ~ '^[0-9]+([.][0-9]+){0,1}$' THEN #{RAW}::numeric END)".freeze
 
   def initialize(account, user)
     @account = account
@@ -27,6 +28,6 @@ class Tolzar::Briefing
 
   def hot_scope
     visible = Conversations::PermissionFilterService.new(@account.conversations, @user, @account).perform
-    visible.open.joins(:contact).where("#{SCORE} >= ?", HOT_SCORE)
+    visible.open.joins(:contact).where("#{SCORE} >= :min", min: HOT_SCORE)
   end
 end
