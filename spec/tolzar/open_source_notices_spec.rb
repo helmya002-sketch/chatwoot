@@ -59,6 +59,13 @@ RSpec.describe 'Tolzar open-source licences', type: :request do
       expect(notices[:source_offer]).to all(satisfy { |i| i[:licences].join(' ').match?(described_class::WEAK_COPYLEFT) })
     end
 
+    it 'lists the PDF renderer stack, with Pyphen and Pango in the source offer' do
+      ai_names = notices[:groups][:ai].pluck(:name)
+      expect(ai_names).to include('weasyprint', 'pyphen', 'Pango, Cairo, GLib (brain image, PDF text layout)')
+      offer = notices[:source_offer].pluck(:name)
+      expect(offer).to include('pyphen', 'Pango, Cairo, GLib (brain image, PDF text layout)')
+    end
+
     it 'reads the JavaScript notices written at image build, and copes when they are missing' do
       file = Rails.root.join('tmp/js_notices_spec.json')
       File.write(file, { items: [{ name: 'vue', version: '3.5.0', licences: ['MIT'], text: 'MIT vue' }] }.to_json)

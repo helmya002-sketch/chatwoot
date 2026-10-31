@@ -25,7 +25,16 @@ class Tolzar::OpenSourceNotices
   AI_RUNTIME = [
     { name: 'Python', version: '3.12', licences: ['PSF-2.0'], homepage: 'https://docs.python.org/3/license.html' },
     { name: 'Debian base system (brain image)', version: '12', licences: ['various, incl. LGPL-2.1 (glibc)'],
-      homepage: 'https://sources.debian.org' }
+      homepage: 'https://sources.debian.org' },
+    # The booking-documents PDF renderer's system libraries (WeasyPrint, brain image), dynamically linked, unmodified.
+    { name: 'Pango, Cairo, GLib (brain image, PDF text layout)', version: 'Debian 12',
+      licences: ['LGPL-2.1-or-later'], homepage: 'https://sources.debian.org/src/pango1.0/' },
+    { name: 'HarfBuzz, fontconfig (brain image)', version: 'Debian 12', licences: ['MIT'],
+      homepage: 'https://sources.debian.org/src/harfbuzz/' },
+    { name: 'FreeType (brain image)', version: 'Debian 12', licences: ['FTL (FreeType License)'],
+      homepage: 'https://sources.debian.org/src/freetype/' },
+    { name: 'DejaVu fonts (embedded in PDFs)', version: 'Debian 12', licences: ['Bitstream Vera / DejaVu (permissive)'],
+      homepage: 'https://dejavu-fonts.github.io/License.html' }
   ].freeze
   MODELS_UNAVAILABLE = { name: 'AI model (the list is unavailable right now; reload later)', version: '', licences: [],
                          homepage: '', role: 'production' }.freeze
