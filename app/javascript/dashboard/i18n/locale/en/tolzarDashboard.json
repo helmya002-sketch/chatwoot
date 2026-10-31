@@ -144,6 +144,17 @@
       "OPEN": "Conversation #{id}",
       "NO_COMMENTS": "No written comments in this period.",
       "NONE": "No ratings in this period."
+    },
+    "REPLY_TARGET": {
+      "TITLE": "Reply-time target",
+      "TARGET_SLA": "Target: first reply within {minutes} minutes (your SLA)",
+      "TARGET_SLA_HOURS": "Target: first reply within {minutes} minutes of working hours (your SLA)",
+      "TARGET_DEFAULT": "Target: first reply within {minutes} minutes (default; no SLA is on)",
+      "INBOX": "Inbox",
+      "WITHIN": "On time",
+      "LATE": "Late",
+      "SHARE": "On time share",
+      "NONE": "No first replies in this period."
     }
   },
   "TOLZAR_ONBOARDING_UI": {

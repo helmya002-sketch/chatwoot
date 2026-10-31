@@ -157,6 +157,7 @@ Rails.application.routes.draw do
           get    'tolzar/team_leaderboard',          to: 'tolzar_team_leaderboard#show'
           get    'tolzar/channel_breakdown',         to: 'tolzar_channel_breakdown#show'
           get    'tolzar/customer_ratings',          to: 'tolzar_customer_ratings#show'
+          get    'tolzar/reply_target',              to: 'tolzar_reply_target#show'
           get    'tolzar/contacts/:contact_id/timeline', to: 'tolzar_contact_timeline#show'
           post   'tolzar/conversations/:display_id/summary', to: 'tolzar_conversation_summary#create'
           get    'tolzar/conversations/:display_id/follow_up', to: 'tolzar_follow_ups#show'
