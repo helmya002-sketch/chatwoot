@@ -1123,6 +1123,7 @@
       "website_widget": "Website widget",
       "booking_documents": "Vouchers & quotes",
       "human_agent_replies": "Human-agent replies",
+      "whats_new": "What's new",
       "bookings": "Bookings"
     },
     "HINT": {
@@ -1164,6 +1165,7 @@
       "website_widget": "Preview your chat colours, add WhatsApp/Instagram/Telegram links, see which pages start chats.",
       "booking_documents": "Vouchers, quotes, booking confirmations and payment summaries, with numbers and a register.",
       "human_agent_replies": "Messenger and Instagram replies sent with Meta's Human Agent tag, by whom and when. People only, never the AI.",
+      "whats_new": "What changed in Tolzar lately, for the features your workspace uses.",
       "bookings": "Bookings with guests and dates, the next 14 days, payments received and vouchers."
     },
     "SAVE": "Save",

@@ -1,0 +1,20 @@
+# Tolzar "What's new" (round 4, c90): one entry per release, newest first. Written with each release. An item with a
+# `switch` (a TOLZAR_*_ACCOUNTS list) is shown only to workspaces where that switch is on, so nobody reads about a
+# feature they cannot see. Plain words, no internal names.
+- release: '2026-11'
+  date: '2026-11-01'
+  items:
+    - title: 'A bar across the top with what needs you'
+      text: 'A greeting with your hot leads, and counts you can tap: mine, waiting for a reply, unassigned, follow-ups due today. "See briefing" shows your day so far.'
+      switch: TOLZAR_TOPBAR_ACCOUNTS
+    - title: 'Tolzar on your phone'
+      text: 'Add Tolzar to your Home Screen from Safari and get private notifications (who, never what) with quiet hours.'
+      switch: TOLZAR_PWA_ACCOUNTS
+    - title: 'Vouchers, quotes and booking confirmations'
+      text: 'Draft a document in the conversation, issue it with the next number, and send the PDF in the same chat.'
+      switch: TOLZAR_BOOKING_DOCS_ACCOUNTS
+    - title: 'Bookings'
+      text: 'Bookings with guests, dates and payments, an agenda for the next two weeks, and their results.'
+      switch: TOLZAR_BOOKINGS_ACCOUNTS
+    - title: 'A clearer "reply window closed" message'
+      text: 'When a channel does not allow a reply yet, one sentence says why and what you can do next.'

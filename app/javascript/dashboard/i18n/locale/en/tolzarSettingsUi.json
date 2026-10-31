@@ -90,6 +90,9 @@
       "UNTIL": "Until",
       "SAVE": "Save booking"
     },
+    "WHATS_NEW": {
+      "EMPTY": "Nothing new for your workspace yet."
+    },
     "DOCS": {
       "WHAT": "Vouchers, quotes, booking confirmations and payment summaries. Totals come from the lines, a placeholder (TBC) blocks issuing, and every issued document gets the next number. Nothing is sent to the customer from here.",
       "OFF": "Documents are not switched on for this workspace yet.",
