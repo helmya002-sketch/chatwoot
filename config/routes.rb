@@ -27,6 +27,10 @@ Rails.application.routes.draw do
   post 'tolzar/newsletter/postal/:webhook_token', to: 'tolzar/newsletter_postal#create', as: :tolzar_newsletter_postal
   post    'tolzar/site/contact', to: 'tolzar/site_contact#create', as: :tolzar_site_contact
   match   'tolzar/site/contact', to: 'tolzar/site_contact#preflight', via: :options
+  # Tolzar: the website's live demo (Tolzar::SiteDemoController; the brain's TOLZAR_DEMO switch).
+  get     'tolzar/site/demo/businesses', to: 'tolzar/site_demo#businesses'
+  post    'tolzar/site/demo', to: 'tolzar/site_demo#create'
+  match   'tolzar/site/demo', to: 'tolzar/site_demo#preflight', via: :options
   # Tolzar public feature-request board, roadmap and changelog (read: public; write: Tolzar login + workspace).
   get  'feedback',                              to: 'tolzar/feedback#index', as: :tolzar_feedback
   post 'feedback',                              to: 'tolzar/feedback#create'
