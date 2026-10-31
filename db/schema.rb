@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_10_31_100000) do
+ActiveRecord::Schema[7.1].define(version: 2026_10_31_120000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1939,6 +1939,45 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_31_100000) do
     t.index ["created_at"], name: "index_tolzar_idea_votes_on_created_at"
     t.index ["idea_id", "user_id"], name: "index_tolzar_idea_votes_on_idea_id_and_user_id", unique: true
     t.index ["user_id"], name: "index_tolzar_idea_votes_on_user_id"
+  end
+
+  create_table "tolzar_document_counters", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.string "doc_type", null: false
+    t.integer "year", null: false
+    t.integer "last_seq", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id", "doc_type", "year"], name: "index_tolzar_document_counters_unique", unique: true
+  end
+
+  create_table "tolzar_documents", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "conversation_id"
+    t.bigint "contact_id"
+    t.string "doc_type", null: false
+    t.string "status", default: "draft", null: false
+    t.string "number"
+    t.integer "year"
+    t.integer "seq"
+    t.string "currency", default: "USD", null: false
+    t.bigint "total_cents", default: 0, null: false
+    t.bigint "paid_cents", default: 0, null: false
+    t.string "language", default: "en", null: false
+    t.jsonb "spec", default: {}, null: false
+    t.jsonb "history", default: [], null: false
+    t.integer "version", default: 1, null: false
+    t.bigint "created_by_id"
+    t.datetime "issued_at"
+    t.bigint "issued_by_id"
+    t.datetime "voided_at"
+    t.string "void_reason"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id", "created_at"], name: "index_tolzar_documents_on_account_id_and_created_at"
+    t.index ["account_id", "number"], name: "index_tolzar_documents_on_account_id_and_number", unique: true
+    t.index ["contact_id"], name: "index_tolzar_documents_on_contact_id"
+    t.index ["conversation_id"], name: "index_tolzar_documents_on_conversation_id"
   end
 
   create_table "tolzar_ideas", force: :cascade do |t|
