@@ -1,0 +1,54 @@
+<% content_for(:title) { t("super_admin.control_center.billing_title") } %>
+<% cc = "super_admin.control_center" %>
+<% b = @billing %>
+
+<%= render "section", title: t("#{cc}.billing_title"), description: t("#{cc}.billing_description"), icon: "i-lucide-receipt" do %>
+  <div class="<%= class_names("rounded-xl border px-4 py-3 text-body-main", b[:enforced] ? "border-n-teal-6 bg-n-teal-3 text-n-teal-12" : "border-n-weak bg-n-solid-1 text-n-slate-11") %>">
+    <%= t("#{cc}.#{b[:enforced] ? 'billing_enforced' : 'billing_not_enforced'}") %>
+  </div>
+  <div class="flex flex-wrap gap-2">
+    <%= render "button", label: t("#{cc}.open_billing"), url: super_admin_billing_path, variant: :secondary, extra: "h-9" %>
+  </div>
+
+  <div class="grid gap-4 lg:grid-cols-2">
+    <%= render "card", title: t("#{cc}.plans") do %>
+      <div class="flex flex-wrap gap-2 px-5 py-4">
+        <% b[:plans].sort.each do |plan, count| %>
+          <span class="inline-flex items-center gap-2 rounded-lg border border-n-weak px-3 py-1.5 text-body-main">
+            <span class="text-n-slate-11"><%= plan %></span><span class="font-medium text-n-slate-12"><%= count %></span>
+          </span>
+        <% end %>
+        <% if b[:plans].empty? %><span class="text-n-slate-11"><%= t("#{cc}.none") %></span><% end %>
+      </div>
+    <% end %>
+    <%= render "card", title: t("#{cc}.currencies") do %>
+      <div class="flex flex-wrap gap-2 px-5 py-4">
+        <% b[:currencies].sort.each do |currency, count| %>
+          <span class="inline-flex items-center gap-2 rounded-lg border border-n-weak px-3 py-1.5 text-body-main">
+            <span class="text-n-slate-11"><%= currency %></span><span class="font-medium text-n-slate-12"><%= count %></span>
+          </span>
+        <% end %>
+        <% if b[:currencies].empty? %><span class="text-n-slate-11"><%= t("#{cc}.none") %></span><% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="grid gap-4 lg:grid-cols-2">
+    <% [[:renewals, b[:renewals]], [:trials_14, b[:trials]]].each do |key, rows| %>
+      <%= render "card", title: t("#{cc}.#{key}"), count: rows.size do %>
+        <% if rows.empty? %>
+          <p class="px-5 py-4 text-body-main text-n-slate-11"><%= t("#{cc}.none") %></p>
+        <% else %>
+          <ul class="divide-y divide-n-weak">
+            <% rows.each do |row| %>
+              <li class="flex justify-between gap-4 px-5 py-3 text-body-main">
+                <%= link_to row[:name], super_admin_tolzar_cc_workspace_path(row[:id]), class: "text-n-blue-11 hover:underline" %>
+                <span class="font-mono text-xs text-n-slate-11"><%= row[:plan] %> · <%= row[:date].utc.strftime("%Y-%m-%d") %></span>
+              </li>
+            <% end %>
+          </ul>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>

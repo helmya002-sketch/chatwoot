@@ -27,6 +27,14 @@ class SuperAdmin::TolzarControlCenterController < SuperAdmin::ApplicationControl
     @health = center.health
   end
 
+  def ai
+    @rows = center.ai_overview
+  end
+
+  def billing
+    @billing = center.billing_overview
+  end
+
   private
 
   def center

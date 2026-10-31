@@ -111,3 +111,36 @@ RSpec.describe 'Tolzar Control Center', type: :request do
     end
   end
 end
+
+RSpec.describe 'Tolzar Control Center AI safety and billing', type: :request do
+  let(:super_admin) { create(:super_admin) }
+  let!(:account) { create(:account, name: 'Nile Bikes') }
+
+  before do
+    Rails.cache.clear
+    sign_in(super_admin, scope: :super_admin)
+  end
+
+  it 'shows each workspace kill switch and live inboxes as the brain reports them' do
+    allow(Tolzar::BrainClient).to receive(:get).and_return({ 'status' => 503 })
+    allow(Tolzar::BrainClient).to receive(:get).with('/workspace/settings', account_id: account.id).and_return(
+      { 'status' => 200, 'kill_switch_on' => true, 'inbox_modes' => { '4' => { 'mode' => 'live' } } }
+    )
+    allow(Tolzar::BrainClient).to receive(:get).with('/agents', account_id: account.id).and_return({ 'status' => 200, 'agents' => [] })
+    get '/super_admin/control_center/ai'
+    expect(response).to have_http_status(:success)
+    row = Tolzar::ControlCenter.new.ai_overview.find { |r| r[:id] == account.id }
+    expect(row).to include(known: true, kill_switch_on: true, live_inboxes: 1)
+    expect(response.body).to include('Nile Bikes', 'every inbox held in shadow')
+  end
+
+  it 'summarises plans, currencies, renewals and trials due' do
+    Tolzar::Subscription.create!(account: account, plan: 'team', paid_until: 5.days.from_now, seat_limit: 5, currency: 'EGP')
+    get '/super_admin/control_center/billing'
+    expect(response).to have_http_status(:success)
+    expect(response.body).to include('Paid until, next 14 days', 'Nile Bikes', 'EGP')
+    overview = Tolzar::ControlCenter.new.billing_overview
+    expect(overview[:plans]).to eq('team' => 1)
+    expect(overview[:renewals].first).to include(id: account.id, plan: 'team')
+  end
+end

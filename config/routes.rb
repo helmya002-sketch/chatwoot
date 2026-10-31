@@ -966,6 +966,8 @@ Rails.application.routes.draw do
       get 'control_center/workspaces/:id', to: 'tolzar_control_center#workspace', as: :tolzar_cc_workspace
       get 'control_center/people', to: 'tolzar_control_center#people', as: :tolzar_cc_people
       get 'control_center/health', to: 'tolzar_control_center#health', as: :tolzar_cc_health
+      get 'control_center/ai', to: 'tolzar_control_center#ai', as: :tolzar_cc_ai
+      get 'control_center/billing', to: 'tolzar_control_center#billing', as: :tolzar_cc_billing
 
       resources :search, only: [] do
         collection do

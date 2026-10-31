@@ -1,0 +1,37 @@
+<% content_for(:title) { t("super_admin.control_center.ai_title") } %>
+<% cc = "super_admin.control_center" %>
+
+<%= render "section", title: t("#{cc}.ai_title"), description: t("#{cc}.ai_description"), icon: "i-lucide-shield-alert" do %>
+  <%= render "card", title: t("#{cc}.workspaces"), count: @rows.size do %>
+    <div class="overflow-x-auto">
+      <table class="w-full text-start text-body-main">
+        <thead class="text-label-small text-n-slate-11">
+          <tr class="border-b border-n-weak">
+            <th class="px-4 py-2 text-start font-medium"><%= t("#{cc}.col.name") %></th>
+            <th class="px-4 py-2 text-start font-medium"><%= t("#{cc}.kill_switch") %></th>
+            <th class="px-4 py-2 text-start font-medium"><%= t("#{cc}.live_inboxes") %></th>
+            <th class="px-4 py-2 text-start font-medium"><%= t("#{cc}.agents_count") %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @rows.each do |row| %>
+            <tr class="border-b border-n-weak">
+              <td class="px-4 py-2"><%= link_to row[:name], super_admin_tolzar_cc_workspace_path(row[:id]), class: "text-n-blue-11 hover:underline" %></td>
+              <td class="px-4 py-2">
+                <% if row[:known] %>
+                  <%= render "badge", label: t("#{cc}.#{row[:kill_switch_on] ? 'kill_on' : 'kill_off'}"), tone: (row[:kill_switch_on] ? :danger : :neutral) %>
+                <% else %>
+                  <%= render "badge", label: t("#{cc}.ai_unknown"), tone: :warning %>
+                <% end %>
+              </td>
+              <td class="px-4 py-2 tabular-nums">
+                <%= render "badge", label: row[:live_inboxes].to_s, tone: (row[:live_inboxes].positive? ? :success : :neutral) %>
+              </td>
+              <td class="px-4 py-2 tabular-nums"><%= row[:agents] %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+<% end %>
