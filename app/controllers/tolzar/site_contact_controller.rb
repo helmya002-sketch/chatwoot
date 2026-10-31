@@ -82,7 +82,22 @@ class Tolzar::SiteContactController < ActionController::Base
     lines << "Monthly volume: #{form[:volume]}" if form[:volume].present?
     lines << "Phone: #{form[:phone]}" if form[:phone].present?
     lines << '' << form[:message] if form[:message].present?
-    lines.join("\n")
+    (lines + extra_lines(form[:message])).join("\n")
+  end
+
+  # Site v3 extras. With JavaScript the site folds them into `message` itself; a plain (no-JS) POST sends them as
+  # fields, so they are added here, each only when the message does not already carry that line.
+  EXTRAS = { describe: 'In their words', business_type: 'Business type', channels: 'Channels',
+             monthly: 'Monthly messages', pref_lang: 'Preferred language', time_window: 'Preferred time',
+             result: 'Calculator result' }.freeze
+
+  def extra_lines(message)
+    EXTRAS.filter_map do |key, label|
+      value = Array(params[key]).map { |v| v.to_s.strip }.compact_blank.join(', ').first(300)
+      next if value.blank? || message.to_s.include?("#{label}:")
+
+      "#{label}: #{value}"
+    end
   end
 
   # Counts this request; true when its IP or the whole form is over the limit.

@@ -50,4 +50,16 @@ RSpec.describe 'Tolzar site contact: topics and the trial mail', type: :request 
     expect(mail.html_part.body.to_s).not_to include('<script>', '<b>')
     expect(mail.body.encoded).not_to include('Call me')
   end
+
+  it 'folds the v3 extras of a plain (no-JS) post into the message, once' do
+    post '/tolzar/site/contact', params: form.merge(business_type: 'Online shop', channels: %w[WhatsApp Instagram],
+                                                    monthly: 'Under 500', pref_lang: 'Arabic', describe: 'We sell bikes.')
+    text = inbox.conversations.last.messages.last.content
+    expect(text).to include('Business type: Online shop', 'Channels: WhatsApp, Instagram', 'Monthly messages: Under 500',
+                            'Preferred language: Arabic', 'In their words: We sell bikes.')
+
+    post '/tolzar/site/contact', params: form.merge(business_type: 'Online shop', message: "Hi
+Business type: Online shop")
+    expect(inbox.conversations.last.messages.last.content.scan('Business type:').size).to eq(1)
+  end
 end
