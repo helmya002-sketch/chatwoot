@@ -21,6 +21,11 @@ Rails.application.routes.draw do
   get  'tz/help/:topic', to: 'tolzar/help_topics#show', as: :tolzar_help_topic, constraints: { topic: /[a-z_]{1,40}/ }
   get  'tz/ical/:account_id/:user_id/:token', to: 'tolzar/booking_calendar#show', format: false,
                                               constraints: { account_id: /\d+/, user_id: /\d+/, token: /[0-9a-f]{64}\.ics/ }
+  # Tolzar public booking request form (round 4, D1; Tolzar::BookingRequest): 404 for a bad token or switch off.
+  get  'tz/book/:account_id/:token', to: 'tolzar/booking_requests#show', format: false,
+                                    constraints: { account_id: /\d+/, token: /[0-9a-f]{64}/ }
+  post 'tz/book/:account_id/:token', to: 'tolzar/booking_requests#create', format: false,
+                                    constraints: { account_id: /\d+/, token: /[0-9a-f]{64}/ }
   get  'tolzar/meta/deletion',      to: 'tolzar/meta#deletion'
   get  'tolzar/meta/error',         to: 'tolzar/meta#failed'
   get  'tolzar/meta/hook/:webhook_token', to: 'tolzar/meta_hook#verify'
@@ -168,6 +173,8 @@ Rails.application.routes.draw do
           get    'tolzar/holidays',                  to: 'tolzar_holidays#show'
           post   'tolzar/holidays',                  to: 'tolzar_holidays#save'
           post   'tolzar/booking_calendar/reset',    to: 'tolzar_booking_calendar#reset'
+          get    'tolzar/booking_request_link',      to: 'tolzar_booking_request_link#show'
+          post   'tolzar/booking_request_link/reset', to: 'tolzar_booking_request_link#reset'
           get    'tolzar/human_agent_replies',       to: 'tolzar_human_agent_replies#index'
           get    'tolzar/conversations/:display_id/transcript', to: 'tolzar_transcript#show'
           get    'tolzar/bookings/:id',              to: 'tolzar_bookings#show'

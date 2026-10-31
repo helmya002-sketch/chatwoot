@@ -1348,6 +1348,23 @@ en:
   tolzar:
     follow_up:
       notification_title: 'Follow-up due: no reply yet in conversation (#%{display_id})'
+    booking_request:
+      title: 'Booking request: %{workspace}'
+      intro: 'Tell us when and how many, and we will get back to you.'
+      date: 'Date'
+      people: 'Number of people'
+      name: 'Your name'
+      reach: 'E-mail or phone'
+      note: 'Short note (optional)'
+      send: 'Send request'
+      privacy: 'We use these details only to answer your request.'
+      thanks: 'Thank you. We have your request and will get back to you soon.'
+      errors:
+        date: 'Choose a date from today on.'
+        people: 'Enter a number of people from 1 to 500.'
+        name: 'Enter your name.'
+        reach: 'Enter an e-mail address or a phone number.'
+        note: 'Keep the note to 500 characters.'
     digest:
       subject: '%{workspace}: your day on %{day}'
       weekly_subject: '%{workspace}: your week, %{from} to %{to}'

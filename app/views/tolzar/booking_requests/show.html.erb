@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="<%= I18n.locale %>">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <%= csrf_meta_tags %>
+  <title><%= t('tolzar.booking_request.title', workspace: @account.name) %></title>
+  <style>
+    body { margin: 0; font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; background: #f6f7f9; color: #1c2024; }
+    main { max-width: 480px; margin: 32px auto; padding: 24px; background: #fff; border-radius: 8px; }
+    label { display: block; margin: 14px 0 4px; font-size: 14px; font-weight: 600; }
+    input, textarea { box-sizing: border-box; width: 100%; padding: 10px; font-size: 16px; border: 1px solid #cdced6; border-radius: 6px; }
+    button { margin-top: 20px; width: 100%; background: #1c2024; color: #fff; border: 0; border-radius: 6px; padding: 12px; font-size: 16px; cursor: pointer; }
+    .errors { margin: 12px 0 0; padding: 10px 12px; background: #fff0ee; color: #b42318; border-radius: 6px; font-size: 14px; }
+    .trap { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+    @media (max-width: 520px) { main { margin: 0; border-radius: 0; } }
+  </style>
+</head>
+<body>
+  <main>
+    <h1 style="font-size:20px;margin:0 0 6px;"><%= @account.name %></h1>
+    <p style="margin:0;color:#60646c;"><%= t('tolzar.booking_request.intro') %></p>
+    <% if @errors.present? %>
+      <ul class="errors">
+        <% @errors.each do |key| %>
+          <li><%= t("tolzar.booking_request.errors.#{key}") %></li>
+        <% end %>
+      </ul>
+    <% end %>
+    <%= form_with url: request.path, method: :post, local: true do |f| %>
+      <%= f.label :date, t('tolzar.booking_request.date') %>
+      <%= f.date_field :date, value: @values['date'], required: true, min: Date.current.iso8601 %>
+      <%= f.label :people, t('tolzar.booking_request.people') %>
+      <%= f.number_field :people, value: @values['people'] || 1, required: true, min: 1, max: Tolzar::BookingRequest::MAX_PEOPLE %>
+      <%= f.label :name, t('tolzar.booking_request.name') %>
+      <%= f.text_field :name, value: @values['name'], required: true, maxlength: 120, autocomplete: 'name' %>
+      <%= f.label :reach, t('tolzar.booking_request.reach') %>
+      <%= f.text_field :reach, value: @values['reach'], required: true, maxlength: 255 %>
+      <%= f.label :note, t('tolzar.booking_request.note') %>
+      <%= f.text_area :note, value: @values['note'], rows: 3, maxlength: Tolzar::BookingRequest::MAX_NOTE %>
+      <div class="trap" aria-hidden="true">
+        <%= f.label :website, 'Website' %>
+        <%= f.text_field :website, tabindex: -1, autocomplete: 'off' %>
+      </div>
+      <button type="submit"><%= t('tolzar.booking_request.send') %></button>
+    <% end %>
+    <p style="margin:16px 0 0;font-size:12px;color:#60646c;"><%= t('tolzar.booking_request.privacy') %></p>
+  </main>
+</body>
+</html>

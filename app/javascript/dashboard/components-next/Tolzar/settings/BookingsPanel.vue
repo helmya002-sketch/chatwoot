@@ -14,6 +14,7 @@ import {
 } from './tzClasses';
 import { emptyLine, linesTotal, toSpec, PLACEHOLDER } from './tolzarDocuments';
 import BookingCalendarLink from './BookingCalendarLink.vue';
+import BookingRequestLink from './BookingRequestLink.vue';
 import BookingSchedule from './BookingSchedule.vue';
 import { useIncrementalList } from '../useIncrementalList';
 
@@ -437,5 +438,6 @@ onMounted(() => open('agenda'));
       </button>
     </section>
     <BookingCalendarLink />
+    <BookingRequestLink />
   </div>
 </template>
