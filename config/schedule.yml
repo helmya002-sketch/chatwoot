@@ -114,6 +114,13 @@ tolzar_subscription_purge_job:
   class: 'Tolzar::SubscriptionPurgeJob'
   queue: housekeeping
 
+# Tolzar: executed every 15 minutes
+# TikTok comments on the business's own videos into the TikTok inbox (only for TOLZAR_TIKTOK_COMMENTS workspaces)
+tolzar_tiktok_comments_poll_job:
+  cron: '*/15 * * * * UTC'
+  class: 'Tolzar::TiktokCommentsPollJob'
+  queue: low
+
 # Tolzar: executed hourly at minute 17
 # fair use per plan: AI replies this month vs the plan's allowance; notices only (only with TOLZAR_FAIR_USE=true)
 tolzar_fair_use_job:
