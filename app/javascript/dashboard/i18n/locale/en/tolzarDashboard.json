@@ -132,6 +132,18 @@
       "PAID": "Paid",
       "DUE": "Still due",
       "NONE": "No confirmed bookings in this period."
+    },
+    "RATINGS": {
+      "TITLE": "Customer ratings",
+      "AVERAGE": "Average rating",
+      "COUNT": "Ratings",
+      "OUT_OF": "{avg} out of 5",
+      "STARS": "{n} stars",
+      "SHARE": "{n} ({pct}%)",
+      "COMMENTS": "Latest comments",
+      "OPEN": "Conversation #{id}",
+      "NO_COMMENTS": "No written comments in this period.",
+      "NONE": "No ratings in this period."
     }
   },
   "TOLZAR_ONBOARDING_UI": {
