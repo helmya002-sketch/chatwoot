@@ -254,6 +254,18 @@ describe Webhooks::Trigger do
 
         trigger.execute(url, payload, webhook_type, secret: 'mysecret', delivery_id: 'abc-123')
       end
+
+      it 'sends the same values under the X-Tolzar-* names' do
+        expect(SafeFetch).to receive(:fetch) do |_received_url, **options, &block|
+          h = options[:headers]
+          expect(h.values_at('X-Tolzar-Delivery', 'X-Tolzar-Timestamp', 'X-Tolzar-Signature'))
+            .to eq(h.values_at('X-Chatwoot-Delivery', 'X-Chatwoot-Timestamp', 'X-Chatwoot-Signature'))
+          expect(h['X-Tolzar-Signature']).to start_with('sha256=')
+          block.call(fetch_result)
+        end
+
+        trigger.execute(url, payload, webhook_type, secret: 'mysecret', delivery_id: 'abc-123')
+      end
     end
   end
 

@@ -67,6 +67,15 @@ class Webhooks::Trigger
       headers['X-Chatwoot-Timestamp'] = ts
       headers['X-Chatwoot-Signature'] = "sha256=#{OpenSSL::HMAC.hexdigest('SHA256', @secret, "#{ts}.#{body}")}"
     end
+    tolzar_header_copies(headers)
+  end
+
+  # Tolzar: the same values under X-Tolzar-* (the names Tolzar's developer docs use); the old names stay for
+  # receivers built before.
+  def tolzar_header_copies(headers)
+    %w[Delivery Timestamp Signature].each do |name|
+      headers["X-Tolzar-#{name}"] = headers["X-Chatwoot-#{name}"] if headers.key?("X-Chatwoot-#{name}")
+    end
     headers
   end
 
