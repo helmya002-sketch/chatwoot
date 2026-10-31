@@ -22,7 +22,7 @@ class Tolzar::MetaApp < ApplicationRecord
   before_validation :ensure_tokens, on: :create
 
   def webhook_url
-    "#{ENV.fetch('FRONTEND_URL', '').to_s.chomp('/')}/tolzar/meta/hook/#{webhook_token}"
+    "#{Tolzar::PublicUrls.meta_webhook_base}/tolzar/meta/hook/#{webhook_token}"
   end
 
   # Meta signs every webhook POST with the app secret: X-Hub-Signature-256: sha256=<hex>.

@@ -27,3 +27,15 @@ RSpec.describe 'Tolzar TikTok redirect base' do
     end
   end
 end
+
+RSpec.describe 'Tolzar Meta webhook base' do
+  it 'keeps the registered Meta webhook host when FRONTEND_URL moves' do
+    app = Tolzar::MetaApp.new(webhook_token: 'tok')
+    with_modified_env(FRONTEND_URL: 'https://app.tolzar.com', TOLZAR_META_WEBHOOK_BASE: 'https://chat.example.com') do
+      expect(app.webhook_url).to eq('https://chat.example.com/tolzar/meta/hook/tok')
+    end
+    with_modified_env(FRONTEND_URL: 'https://app.tolzar.com', TOLZAR_META_WEBHOOK_BASE: nil) do
+      expect(app.webhook_url).to eq('https://app.tolzar.com/tolzar/meta/hook/tok')
+    end
+  end
+end

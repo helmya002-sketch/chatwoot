@@ -17,6 +17,13 @@ module Tolzar::PublicUrls
     (ENV['TIKTOK_REDIRECT_BASE'].presence || ENV.fetch('FRONTEND_URL', 'http://localhost:3000')).to_s.chomp('/')
   end
 
+  # The host shown and registered for Tolzar's own Meta webhooks (the in-house Meta app panel, listen-only WhatsApp).
+  # TOLZAR_META_WEBHOOK_BASE pins it to the URL already registered in Meta (e.g. the chat host while an App Review
+  # is open) when FRONTEND_URL moves to app.tolzar.com; unset: FRONTEND_URL. Both hosts keep receiving.
+  def meta_webhook_base
+    (ENV['TOLZAR_META_WEBHOOK_BASE'].presence || ENV.fetch('FRONTEND_URL', '')).to_s.chomp('/')
+  end
+
   # The dashboard's own origin (FRONTEND_URL), where the user is signed in.
   def dashboard_url_options
     uri = URI.parse(ENV.fetch('FRONTEND_URL', ''))

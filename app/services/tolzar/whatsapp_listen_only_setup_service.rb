@@ -29,7 +29,7 @@ class Tolzar::WhatsappListenOnlySetupService
   end
 
   def callback_url
-    "#{ENV.fetch('FRONTEND_URL', '').to_s.chomp('/')}/webhooks/whatsapp/#{channel.phone_number}"
+    "#{Tolzar::PublicUrls.meta_webhook_base}/webhooks/whatsapp/#{channel.phone_number}"
   end
 
   private
