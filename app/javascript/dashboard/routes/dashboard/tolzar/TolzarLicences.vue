@@ -129,6 +129,12 @@ onMounted(load);
           >
             <summary class="text-sm cursor-pointer text-n-slate-12">
               {{ itemLabel(i) }}
+              <span
+                v-if="i.role === 'rollback'"
+                class="px-1.5 ms-1 text-[10px] rounded-full bg-n-slate-3 text-n-slate-11"
+              >
+                {{ t('TOLZAR_LICENCES.ROLLBACK') }}
+              </span>
             </summary>
             <div class="py-2 text-xs text-n-slate-11">
               <p v-if="i.author" class="m-0 mb-1">{{ i.author }}</p>

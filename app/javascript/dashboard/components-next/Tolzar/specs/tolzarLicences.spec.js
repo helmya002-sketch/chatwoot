@@ -39,6 +39,7 @@ describe('tolzarLicences', () => {
       homepage: '',
       author: '',
       text: '',
+      role: '',
     });
     expect(v.foundation.text).toBe('MIT text');
     expect(v.sourceOffer[0].name).toBe('libvips');
