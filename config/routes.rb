@@ -32,6 +32,8 @@ Rails.application.routes.draw do
   post    'tolzar/site/demo', to: 'tolzar/site_demo#create'
   match   'tolzar/site/demo', to: 'tolzar/site_demo#preflight', via: :options
   # Tolzar: the website concierge (Tolzar::SiteConciergeController; the brain's TOLZAR_DEMO switch).
+  # Tolzar: lead intake (Tolzar::LeadIntake; TOLZAR_LEAD_INTAKE workspaces, per-inbox secret URL).
+  post    'tolzar/leads/:inbox_id/:token', to: 'tolzar/leads#create'
   post    'tolzar/site/concierge', to: 'tolzar/site_concierge#create'
   post    'tolzar/site/concierge/handoff', to: 'tolzar/site_concierge#handoff'
   match   'tolzar/site/concierge(/handoff)', to: 'tolzar/site_concierge#preflight', via: :options
@@ -119,6 +121,7 @@ Rails.application.routes.draw do
           post   'tolzar/billing_group',        to: 'tolzar#billing_group_save'
           post   'tolzar/billing_group/delete', to: 'tolzar#billing_group_delete'
           post   'tolzar/whatsapp/listen_only',  to: 'tolzar#whatsapp_listen_only_connect'
+          get    'tolzar/lead_intake',           to: 'tolzar_lead_intake#show'
           get    'tolzar/workspace/settings',    to: 'tolzar#workspace_settings'
           post   'tolzar/workspace/settings',    to: 'tolzar#workspace_settings_save'
           post   'tolzar/workspace/go_live',     to: 'tolzar#go_live'
