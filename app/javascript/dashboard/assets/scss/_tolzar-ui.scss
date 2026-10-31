@@ -557,3 +557,19 @@ body.dark.tz-ui [data-tz-build='workflows-ux-r2'] {
 @media (prefers-reduced-motion: reduce) {
   body.tz-ui .tz-hover { transition: none; }
 }
+
+// Phase 5 settings hub (round 3 c48): the section list as the mock's sidebar (current item soft blue with a brand
+// edge), the open section as a raised panel. Sign-in pages and e-mail layouts have no workspace context, so they
+// do not follow TOLZAR_NEW_UI_ACCOUNTS; they come with their own switch in a later round.
+body.tz-ui {
+  nav[aria-label] button[aria-current='page'] {
+    background-color: rgb(var(--blue-3));
+    color: rgb(var(--blue-11));
+    box-shadow: inset 3px 0 0 rgb(var(--blue-9));
+  }
+
+  section.min-h-\[300px\] {
+    border-radius: 16px;
+    box-shadow: 0 1px 2px rgb(30 50 120 / 0.06);
+  }
+}
