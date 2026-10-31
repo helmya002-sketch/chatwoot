@@ -121,6 +121,8 @@ export default {
       const account = this.getAccount(this.currentAccountId);
       const { locale, latest_chatwoot_version: latestChatwootVersion } =
         account;
+      // Tolzar UI redesign (TOLZAR_NEW_UI_ACCOUNTS): the website mock's palette for this workspace only.
+      document.body.classList.toggle('tz-ui', !!account.tolzar_new_ui);
       const { pubsub_token: pubsubToken } = this.currentUser || {};
       // If user locale is set, use it; otherwise use account locale
       this.setLocale(this.uiSettings?.locale || locale);

@@ -1,0 +1,209 @@
+// scss-lint:disable PropertySortOrder
+// Tolzar app UI redesign, phase 1 (TOLZAR-APP-UI-REDESIGN-PLAN-2026-10-31.md): the website mock's palette
+// (Tolzar-Launch site/src/components/AppShell.astro, ModuleScreen.astro) mapped onto the dashboard's colour
+// scales. Applied only when the workspace is switched on: `body.tz-ui`, set from the account's
+// `tolzar_new_ui` (TOLZAR_NEW_UI_ACCOUNTS, empty by default). Unlayered on purpose, so it wins over the
+// `@layer base` defaults in _next-colors.scss; the dark block is more specific than the light one.
+// Every text / background pair used by the components passes WCAG AA (the plan's §3 table).
+body.tz-ui {
+  // neutrals: the mock's slate text (#0F172A / #334155 / #475569 / #64748B) and surfaces
+  --slate-1: 251 252 255; // #FBFCFF sidebar / soft surface
+  --slate-2: 245 247 254; // #F5F7FE
+  --slate-3: 241 245 249; // #F1F5F9 incoming bubble, bars
+  --slate-4: 238 241 247; // #EEF1F7 card borders
+  --slate-5: 226 232 240; // #E2E8F0
+  --slate-6: 220 227 242; // #DCE3F2 strong border
+  --slate-7: 203 213 225; // #CBD5E1
+  --slate-8: 148 163 184; // #94A3B8 decorative only (fails AA as text)
+  --slate-9: 95 110 133; // #5F6E85: the mock's #64748B darkened just enough for AA on #F1F5F9 (4.7:1)
+  --slate-10: 75 85 99; // #4B5563 secondary text
+  --slate-11: 71 85 105; // #475569 body text
+  --slate-12: 15 23 42; // #0F172A headings / primary text
+  --gray-1: 251 252 255;
+  --gray-2: 245 247 254;
+  --gray-3: 241 245 249;
+  --gray-4: 238 241 247;
+  --gray-5: 226 232 240;
+  --gray-6: 220 227 242;
+  --gray-7: 203 213 225;
+  --gray-8: 148 163 184;
+  --gray-9: 95 110 133;
+  --gray-10: 75 85 99;
+  --gray-11: 51 65 85; // #334155 nav text
+  --gray-12: 15 23 42;
+
+  // primary #3E63DD, pressed #2F4FC4, soft #EAEFFC / #F1F4FD / #DCE4FB, accent #6E8BFF
+  --blue-1: 248 250 255;
+  --blue-2: 241 244 253;
+  --blue-3: 234 239 252;
+  --blue-4: 220 228 251;
+  --blue-5: 204 215 247;
+  --blue-6: 181 197 243;
+  --blue-7: 151 172 236;
+  --blue-8: 110 139 255;
+  --blue-9: 62 99 221;
+  --blue-10: 47 79 196;
+  --blue-11: 47 79 196;
+  --blue-12: 30 47 110;
+  --iris-1: 248 250 255;
+  --iris-2: 241 244 253;
+  --iris-3: 234 239 252;
+  --iris-4: 220 228 251;
+  --iris-5: 204 215 247;
+  --iris-6: 181 197 243;
+  --iris-7: 151 172 236;
+  --iris-8: 110 139 255;
+  --iris-9: 62 99 221;
+  --iris-10: 47 79 196;
+  --iris-11: 47 79 196;
+  --iris-12: 30 47 110;
+
+  // success #12B886 / #087F5B on #E3F8F0, text #06654A (the dashboard's success scale is teal)
+  --teal-2: 240 251 247;
+  --teal-3: 227 248 240;
+  --teal-4: 205 240 226;
+  --teal-8: 18 184 134; // #12B886 dots, bars, the live pulse
+  --teal-9: 9 134 95; // #09865F: filled success with white text (4.6:1; #12B886 is 2.6:1)
+  --teal-10: 8 127 91;
+  --teal-11: 8 127 91;
+  --teal-12: 6 101 74;
+
+  // warning #F5A524 on #FFF1DB / #FFF8E6, text #9A5B00 / #6B4A00, border #F7DFA6
+  --amber-2: 255 248 230;
+  --amber-3: 255 241 219;
+  --amber-6: 247 223 166;
+  --amber-9: 245 165 36;
+  --amber-11: 154 91 0;
+  --amber-12: 107 74 0;
+
+  // danger #E5484D, the kill-switch surface #FFF6F6 / #F8C9C9, text #B42318
+  --ruby-2: 255 246 246;
+  --ruby-3: 255 236 236;
+  --ruby-6: 248 201 201;
+  --ruby-8: 229 72 77; // #E5484D dots, the Lost stage
+  --ruby-9: 209 54 59; // #D1363B: filled danger with white text (4.9:1; #E5484D is 3.9:1)
+  --ruby-11: 180 35 24;
+
+  // violet #7A5CFA (the pipeline's "Offer sent")
+  --violet-3: 239 235 255;
+  --violet-9: 122 92 250;
+  --violet-10: 104 74 232;
+  --violet-11: 91 63 214;
+
+  --background-color: 251 252 255;
+  --surface-1: 251 252 255;
+  --surface-2: 255 255 255;
+  --text-blue: 47 79 196;
+  --border-container: 226 232 240;
+  --border-strong: 220 227 242;
+  --border-weak: 238 241 247;
+  --solid-1: 255 255 255;
+  --solid-2: 250 251 254;
+  --solid-3: 245 247 254;
+  --solid-blue: 234 239 252;
+  --solid-blue-2: 241 244 253;
+  --solid-iris: 234 239 252;
+  --solid-amber: 255 241 219;
+  --solid-red: 255 236 236;
+  --label-background: 241 245 249;
+}
+
+// Dark: the same hues on the website's night surfaces (#0A1020 / #0F172A / #16213D).
+body.dark.tz-ui {
+  --slate-1: 10 16 32;
+  --slate-2: 15 23 42;
+  --slate-3: 22 33 61;
+  --slate-4: 30 41 59;
+  --slate-5: 39 52 80;
+  --slate-6: 51 65 85;
+  --slate-7: 71 85 105;
+  --slate-8: 100 116 139;
+  --slate-9: 148 163 184;
+  --slate-10: 160 174 194;
+  --slate-11: 203 213 225;
+  --slate-12: 241 245 249;
+  --gray-1: 10 16 32;
+  --gray-2: 15 23 42;
+  --gray-3: 22 33 61;
+  --gray-4: 30 41 59;
+  --gray-5: 39 52 80;
+  --gray-6: 51 65 85;
+  --gray-7: 71 85 105;
+  --gray-8: 100 116 139;
+  --gray-9: 148 163 184;
+  --gray-10: 160 174 194;
+  --gray-11: 203 213 225;
+  --gray-12: 241 245 249;
+
+  --blue-1: 14 21 48;
+  --blue-2: 19 29 64;
+  --blue-3: 27 39 92;
+  --blue-4: 33 49 117;
+  --blue-5: 40 60 140;
+  --blue-6: 50 74 170;
+  --blue-7: 62 92 200;
+  --blue-8: 85 115 235;
+  --blue-9: 62 99 221;
+  --blue-10: 85 117 240;
+  --blue-11: 143 166 255;
+  --blue-12: 220 228 251;
+  --iris-1: 14 21 48;
+  --iris-2: 19 29 64;
+  --iris-3: 27 39 92;
+  --iris-4: 33 49 117;
+  --iris-5: 40 60 140;
+  --iris-6: 50 74 170;
+  --iris-7: 62 92 200;
+  --iris-8: 85 115 235;
+  --iris-9: 62 99 221;
+  --iris-10: 85 117 240;
+  --iris-11: 143 166 255;
+  --iris-12: 220 228 251;
+
+  --teal-2: 6 34 28;
+  --teal-3: 8 49 38;
+  --teal-4: 10 66 50;
+  --teal-8: 18 184 134;
+  --teal-9: 9 134 95;
+  --teal-10: 30 200 150;
+  --teal-11: 73 214 165;
+  --teal-12: 200 245 228;
+
+  --amber-2: 40 30 10;
+  --amber-3: 56 42 12;
+  --amber-6: 110 80 20;
+  --amber-9: 245 165 36;
+  --amber-11: 255 197 102;
+  --amber-12: 255 236 200;
+
+  --ruby-2: 45 16 20;
+  --ruby-3: 60 20 24;
+  --ruby-6: 120 40 46;
+  --ruby-8: 229 72 77;
+  --ruby-9: 209 54 59;
+  --ruby-11: 255 140 140;
+
+  --violet-3: 40 32 92;
+  --violet-9: 122 92 250;
+  --violet-10: 140 115 255;
+  --violet-11: 177 158 255;
+
+  --background-color: 10 16 32;
+  --surface-1: 11 18 36;
+  --surface-2: 15 23 42;
+  --text-blue: 143 166 255;
+  --border-container: 30 41 59;
+  --border-strong: 51 65 85;
+  --border-weak: 30 41 59;
+  --solid-1: 15 23 42;
+  --solid-2: 22 33 61;
+  --solid-3: 30 41 59;
+  --solid-active: 39 52 80;
+  --solid-blue: 27 39 92;
+  --solid-blue-2: 19 29 64;
+  --solid-iris: 27 39 92;
+  --solid-amber: 56 42 12;
+  --solid-red: 60 20 24;
+  --label-background: 22 33 61;
+  --card-color: 15 23 42;
+}

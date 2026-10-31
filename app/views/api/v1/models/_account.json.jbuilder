@@ -29,6 +29,7 @@ end
 json.domain @account.domain
 # Tolzar fair use (Tolzar::FairUse): the month's AI replies vs the plan, for the Owner's in-app notice.
 fair_use = (@account.internal_attributes || {})['tolzar_fair_use']
+json.tolzar_new_ui Tolzar::NewUi.enabled_for?(@account.id)
 json.tolzar_fair_use fair_use.slice('month', 'used', 'allowance', 'plan', 'level') if Tolzar::FairUse.enabled? && fair_use.is_a?(Hash)
 features = @account.enabled_features
 features.delete(Shopify::FeatureGate::ACCOUNT_FEATURE) unless Shopify::FeatureGate.enabled?(account: @account)
