@@ -544,7 +544,7 @@ body.tz-ui {
     background-size: 18px 18px;
   }
 
-  [data-tz-build='workflows-ux-r2'] .rounded-2xl.border {
+  [data-tz-build='workflows-ux-r2'] [class~='rounded-2xl'][class~='border'] {
     box-shadow: 0 6px 16px -10px rgb(30 50 120 / 0.4);
   }
 }
