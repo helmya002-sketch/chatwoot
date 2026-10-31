@@ -1,6 +1,8 @@
 # Tolzar: the marketing site's trial / contact form (owner's ask via the Oracle, 30 Oct 2026).
 #   POST /tolzar/site/contact   name, email (required), company, company_url, industry, volume, phone, topic, lang,
-#                               message; `website` is the honeypot
+#                               message; `website` is the honeypot. Topics: trial demo contact pricing partner setup
+#                               calculator other (anything else = contact); each conversation gets the label site-<topic>.
+#                               A trial request also sends the requester the trial confirmation mail (Tolzar::TrialMail).
 # Each request lands as a new conversation in one API inbox of Tolzar's own workspace (TOLZAR_CONTACT_INBOX_ID),
 # from a contact found or created by email, so trial requests are answered in Tolzar like any other chat.
 # No login, no CSRF token (a static site posts it): the honeypot answers "thanks" and stores nothing, and each IP
@@ -15,7 +17,7 @@ class Tolzar::SiteContactController < ActionController::Base
 
   PER_IP_HOUR = 5
   GLOBAL_DAY = 300
-  TOPICS = %w[trial demo contact pricing partner other].freeze
+  TOPICS = %w[trial demo contact pricing partner setup calculator other].freeze
   LIMITS = { name: 100, email: 255, company: 150, company_url: 255, industry: 80, volume: 40, phone: 40, lang: 10,
              message: 2000 }.freeze
   EMAIL = URI::MailTo::EMAIL_REGEXP
@@ -28,6 +30,7 @@ class Tolzar::SiteContactController < ActionController::Base
     return respond_error(:unprocessable_entity, 'invalid_email') unless form[:email].match?(EMAIL)
 
     create_conversation(form)
+    Tolzar::TrialMail.deliver_later(form) if form[:topic] == 'trial'
     respond_ok
   end
 
@@ -66,6 +69,7 @@ class Tolzar::SiteContactController < ActionController::Base
                                                                  lang: form[:lang].presence }.compact)
     conversation.messages.create!(account_id: inbox.account_id, inbox: inbox, message_type: :incoming,
                                   sender: contact_inbox.contact, content: message_text(form))
+    conversation.add_labels(["site-#{form[:topic]}"]) # the team filters "Book a setup call", calculator results, …
   end
 
   def message_text(form)
