@@ -124,7 +124,7 @@ const sortedRows = computed(() => {
 
 <template>
   <div class="overflow-hidden border rounded-xl border-n-weak bg-n-background">
-    <table class="w-full text-sm border-collapse table-fixed">
+    <table class="tz-contacts-table w-full text-sm border-collapse table-fixed">
       <colgroup>
         <col class="w-10" />
         <col />

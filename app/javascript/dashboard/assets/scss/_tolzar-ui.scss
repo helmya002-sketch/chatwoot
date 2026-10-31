@@ -491,3 +491,35 @@ body.tz-ui {
 @media (prefers-reduced-motion: reduce) {
   body.tz-ui .reply-box { transition: none; }
 }
+
+// Phase 4 modules (round 3 c46): pipeline columns and cards, the contacts table.
+body.tz-ui {
+  // Pipeline: columns on the soft page, cards that lift on hover / keyboard focus.
+  .tz-cardlift {
+    border-radius: 12px;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+
+  .tz-cardlift:hover,
+  .tz-cardlift:focus-within {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px -10px rgb(30 50 120 / 0.4);
+  }
+
+  // Contacts: quiet headers, soft row hover, avatars with a ring.
+  .tz-contacts-table th {
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: rgb(var(--slate-10));
+  }
+
+  .tz-contacts-table tbody tr:hover {
+    background-color: rgb(var(--slate-2));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.tz-ui .tz-cardlift,
+  body.tz-ui .tz-cardlift:hover { transition: none; transform: none; }
+}
