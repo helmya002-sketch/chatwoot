@@ -246,7 +246,30 @@ function onKey(e) {
 }
 
 // ---- Moving -----------------------------------------------------------------------------------
-async function move(card, fromKey, toKey) {
+// Tolzar (round 4, c94): after a move, "Undo" for a few seconds (TOLZAR_INBOX_TOOLS_ACCOUNTS workspaces).
+const UNDO_MS = 8000;
+const lastMove = ref(null); // { card, fromKey, toKey }
+let undoTimer = null;
+const inboxTools = computed(
+  () => !!getAccount.value(accountId.value)?.tolzar_inbox_tools
+);
+function offerUndo(card, fromKey, toKey) {
+  if (!inboxTools.value) return;
+  window.clearTimeout(undoTimer);
+  lastMove.value = { card, fromKey, toKey };
+  undoTimer = window.setTimeout(() => {
+    lastMove.value = null;
+  }, UNDO_MS);
+}
+async function undoMove() {
+  const m = lastMove.value;
+  lastMove.value = null;
+  window.clearTimeout(undoTimer);
+  // eslint-disable-next-line no-use-before-define
+  if (m) await move(m.card, m.toKey, m.fromKey, { undo: true });
+}
+
+async function move(card, fromKey, toKey, { undo = false } = {}) {
   closeMenu();
   if (fromKey === toKey) return;
   const from = cols.value[fromKey];
@@ -274,6 +297,7 @@ async function move(card, fromKey, toKey) {
     const merged = { ...current, lifecycle_stage: toKey };
     await ContactAPI.update(card.id, { custom_attributes: merged });
     card.ca = merged;
+    if (!undo) offerUndo(card, fromKey, toKey);
     useAlert(
       t('TOLZAR_CONTACTS.STAGES.SET_SUCCESS', {
         stage: STAGES.value.find(s => s.key === toKey)?.label || toKey,
@@ -349,6 +373,27 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
     class="flex overflow-hidden flex-col flex-1 h-full bg-n-background"
     data-tz-build="pipeline-2"
   >
+    <!-- Tolzar (c94): undo the last move -->
+    <div
+      v-if="lastMove"
+      class="fixed z-40 bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3 px-4 py-2.5 rounded-xl bg-n-slate-12 text-n-solid-1 shadow-lg text-sm"
+      role="status"
+    >
+      <span>{{
+        t('TOLZAR_CONTACTS.STAGES.MOVED', {
+          name: lastMove.card.name || '',
+          stage:
+            STAGES.find(s => s.key === lastMove.toKey)?.label || lastMove.toKey,
+        })
+      }}</span>
+      <button
+        type="button"
+        class="font-semibold underline min-h-[32px]"
+        @click="undoMove"
+      >
+        {{ t('TOLZAR_CONTACTS.STAGES.UNDO') }}
+      </button>
+    </div>
     <!-- header -->
     <div
       class="tz-rise flex flex-wrap gap-4 justify-between items-center px-5 py-4 border-b md:px-7 border-n-weak"

@@ -693,6 +693,8 @@
       "SET": "Set stage",
       "SAVING": "Saving…",
       "SET_SUCCESS": "Stage set to {stage}",
+      "MOVED": "Moved {name} to {stage}",
+      "UNDO": "Undo",
       "SET_FAILED": "Could not update the stage",
       "BULK_SUCCESS": "Stage set to {stage} for {count} contacts",
       "BULK_PARTIAL": "Stage set to {stage} for {done} of {count} contacts",
