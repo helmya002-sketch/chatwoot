@@ -7,6 +7,9 @@
       "NO_MATCH": "No setting matches. Try another word."
     },
     "ENABLED": "On",
+    "PANE": {
+      "SOURCES": "Based on: {list}"
+    },
     "DASH": {
       "FIRST_REPLY": "First reply, last 14 days (average per day)",
       "NO_DATA": "No reply-time data yet.",

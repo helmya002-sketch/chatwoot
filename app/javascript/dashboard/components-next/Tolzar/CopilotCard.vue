@@ -20,6 +20,7 @@ import { copyTextToClipboard } from 'shared/helpers/clipboard';
 import { tolzarBrand } from './TolzarBranding.vue';
 import WhyPanel from './WhyPanel.vue';
 import { brainGet } from './tolzarBrainApi';
+import { checkChips, sourcesLine } from './tolzarReadingPane';
 
 const { t } = useI18n();
 const store = useStore();
@@ -57,15 +58,20 @@ const confidence = computed(() => {
 // anyone else the request is refused and the card stays as it was.
 const accountId = useMapGetter('getCurrentAccountId');
 const decisionReply = ref('');
+const decision = ref(null);
+// UI phase 3 (new UI only): the checks and the sources of the draft inline, from the same decision.
+const newUi = document.body.classList.contains('tz-ui');
 const loadDecision = async id => {
   decisionReply.value = '';
-  if (!id || convAttrs.value.tolzar_suggested_reply) return;
+  decision.value = null;
+  if (!id || (convAttrs.value.tolzar_suggested_reply && !newUi)) return;
   try {
     const res = await brainGet(accountId.value, 'explain', {
       conversation_id: id,
     });
     if (chat.value?.id === id && res?.ok) {
       decisionReply.value = (res.explanation?.reply || '').trim();
+      decision.value = res.explanation || null;
     }
   } catch (e) {
     decisionReply.value = '';
@@ -84,6 +90,9 @@ const score = computed(() => {
   return Number.isFinite(n) && n > 0 ? Math.round(n) : null;
 });
 const hint = computed(() => (contactAttrs.value.tolzar_lead_hint || '').trim());
+
+const chips = computed(() => (newUi ? checkChips(decision.value) : []));
+const sources = computed(() => (newUi ? sourcesLine(decision.value) : ''));
 
 const hasContent = computed(
   () => !!(suggestedReply.value || summary.value || score.value || intent.value)
@@ -171,6 +180,23 @@ const buttonHint = computed(() =>
         </span>
       </div>
       <div class="tz-c-text">{{ suggestedReply }}</div>
+      <ul
+        v-if="chips.length"
+        class="tz-c-checks"
+        :aria-label="t('TOLZAR_WHY.CHECKS')"
+      >
+        <li
+          v-for="c in chips"
+          :key="c.check"
+          :class="c.passed ? 'tz-c-ok' : 'tz-c-bad'"
+        >
+          <span aria-hidden="true">{{ c.passed ? '✓' : '✗' }}</span>
+          {{ t(`TOLZAR_WHY.CHECK.${c.check.toUpperCase()}`) }}
+        </li>
+      </ul>
+      <p v-if="sources" class="tz-c-sources">
+        {{ t('TOLZAR_SETTINGS_UI.PANE.SOURCES', { list: sources }) }}
+      </p>
       <div class="tz-c-actions">
         <button
           type="button"
@@ -374,6 +400,33 @@ const buttonHint = computed(() =>
   font-size: 11px;
   color: rgb(var(--slate-11));
   line-height: 1.4;
+}
+.tz-c-checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.tz-c-checks li {
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.tz-c-ok {
+  background: rgb(var(--teal-3));
+  color: rgb(var(--teal-11));
+}
+.tz-c-bad {
+  background: rgb(var(--ruby-3));
+  color: rgb(var(--ruby-11));
+}
+.tz-c-sources {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: rgb(var(--slate-11));
 }
 .tz-c-why {
   font-size: 11.5px;
