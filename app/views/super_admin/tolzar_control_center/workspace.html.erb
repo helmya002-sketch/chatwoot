@@ -60,7 +60,7 @@
           <%= label_tag :reason, t("#{cc}.people_reason"), class: "text-label-small" %>
           <%= text_field_tag :reason, nil, maxlength: 300, class: ui(:input, "min-h-9 w-72") %>
         </div>
-        <%= render "button", label: t("#{cc}.#{held ? 'release' : 'hold'}"), type: "submit", variant: (held ? :primary : :danger), extra: "h-9" %>
+        <%= render "button", label: t("#{cc}.#{held ? 'resume' : 'hold'}"), type: "submit", variant: (held ? :primary : :danger), extra: "h-9" %>
       <% end %>
     </div>
   <% end %>

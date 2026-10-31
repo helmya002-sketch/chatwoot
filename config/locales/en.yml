@@ -870,7 +870,7 @@ en:
       held_since: 'Paused since %{at} UTC. Reason: %{reason}'
       type_name: 'Type "%{name}" to confirm'
       hold: 'Pause workspace'
-      release: 'Resume workspace'
+      resume: 'Resume workspace'
       workspace_confirm_needed: 'Type the workspace name exactly and a reason (a few words) to confirm.'
       workspace_done:
         hold: 'Workspace paused.'
